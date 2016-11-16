@@ -1,0 +1,24 @@
+<header class="navbar">
+	<div class="nav-wrap-left">
+		<a href="#">
+			<span class="nav-city">
+				
+				<i class="icon-jt">深圳&#xe606;</i>
+			</span>
+		</a>
+	</div>
+	<div class="box-search">
+		<i class="icon-search">&#xe607;</i>
+		<input type="text" class="textdown" placeholder="输入商家/品类/商圈" ng-model="search" ng-change="setVal(search)">
+		
+		<ul class="searchlist">
+			<li ng-repeat="item in searchlist">{{item}}</li>
+		</ul>
+	</div>
+	<div class="nav-wrap-right">
+		<span class="nav-btn">
+			<i class="icon-man">&#xe608;<p>我的</p></i>
+			
+		</span>
+	</div>
+</header>

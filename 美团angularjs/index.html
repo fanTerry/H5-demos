@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+		<title>美团手机版</title>
+		<link rel="stylesheet" type="text/css" href="css/header.css"/>
+		<script src="js/ajquery-1.8.3.min.js" type="text/javascript" charset="utf-8"></script>
+		
+		<script src="js/angular.min.js"></script>
+		<script src='js/ng-infinite-scroll.min.js'></script>
+	</head>
+	<body class="automove" ng-app="myApp">
+		
+		<div ng-controller="mtController">
+			
+			<div ng-include="'header.html'"></div>
+			<!--E header作为公共页面片引入进来 -->
+			
+			<section class="banner">
+				<a href="#">
+					<img ng-src="{{imgUrl}}"/>
+				</a>
+			</section>
+			<div class="list-wrap swiper-container">
+				<div class="swiper-wrapper">
+					<div class="swiper-slide" ng-repeat="item in swiperlist">
+		            	<ul class="list">
+						<li ng-repeat="k in item.result">
+							<a href="#">
+								<span class="list-radius {{k.cls}}"></span>
+								<p>{{k.title}}</p>
+							</a>
+						</li>
+					</ul>
+		           </div>
+		        </div>
+				<div class="swiper-pagination"></div>
+			</div>
+			<div class="sec-time">
+				<div class="sec-time-left">
+					<a>
+						<span class="info">
+							<strong class="green">我们约吧</strong>
+							<small>恋上家人好朋友</small>
+						</span>
+						<span class="imgbox">
+							<img src="img/yue.png"/>
+						</span>
+						
+					</a>
+				</div>
+				<div class="sec-time-right">
+					<div class="sec-low-top">
+						<a>
+							<span class="info mleft">
+								<strong class="red">低价超值</strong>
+								<small>十元惠生活</small>
+							</span>
+						</a>
+					</div>
+					<div class="sec-low-bottom">
+						<a class="righ-border">
+							<span class="info">
+								<strong class="pink">工作简餐</strong>
+								<small>实惠方便选择多</small>
+							</span>
+							<span><img class="sha" src="img/shaguo.png"/></span>
+						</a>
+						<a>
+							<span class="info">
+								<strong class="orange">名店抢购</strong>
+								<small>距离结束</small>
+							</span>
+							<span class="info dis"><i>06</i>:<i>28</i>:<i>60</i></span>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="content-box" infinite-scroll='reddit.nextPage()' infinite-scroll-disabled='reddit.busy' infinite-scroll-distance='1'>
+				<h2>猜你喜欢</h2>
+				<div class="content" ng-repeat="item in reddit.items">
+					<div class="cont-img">
+						<img src="img/hanbao.jpg"/>
+					</div>
+					<div class="cont-text">
+						<a>{{item.subject}}</a>
+						<p><b>{{item.authorid}}</b>元</p>
+						<span>已售8483</span>
+					</div>
+				</div>
+				<div class="over" ng-show="reddit.finish">加载完成！</div>
+			</div>
+			<div class="line"></div>
+			
+			<div ng-include="'footer.html'"></div>
+			<!--E footer作为公共页面片引入进来 -->
+			
+			<div class="top"></div>
+			
+		</div>
+	</body>
+	<script>
+		var app = angular.module('myApp',['infinite-scroll'])
+		
+		app.controller('mtController', function ($scope, $http, Reddit) {
+			
+			$scope.setVal = function (wd) {
+				
+				var url ='https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd='+wd+'&cb=JSON_CALLBACK'
+				$http.jsonp(url).success(function (res) {
+					$scope.searchlist = res.s;
+				})
+				
+			}
+			
+			// 图片的路径
+			$scope.imgUrl = 'img/banner.jpg';
+			
+			$scope.swiperList = [
+	          {
+	          	id: 1,
+	          	result: [
+	          		{
+	          			cls: 'meishi',
+	          			title: '美食'
+	          		},
+	          		{
+	          			cls: 'dianying',
+	          			title: '电影'
+	          		},
+	          		{
+	          			cls: 'hotel',
+	          			title: '酒店'
+	          		},
+	          		{
+	          			cls: 'xiuxian',
+	          			title: '休闲娱乐'
+	          		},
+	          		{
+	          			cls: 'waimai',
+	          			title: '外卖'
+	          		},
+	          		{
+	          			cls: 'ktv',
+	          			title: 'KTV'
+	          		},
+	          		{
+	          			cls: 'zhoubian',
+	          			title: '周边游'
+	          		},
+	          		{
+	          			cls: 'liren',
+	          			title: '丽人'
+	          		},
+	          		{
+	          			cls: 'xiaochi',
+	          			title: '小吃快餐'
+	          		},
+	          		{
+	          			cls: 'jipiao',
+	          			title: '机票/火车票'
+	          		}
+	          	]
+	          },
+	          {
+	          	id: 2,
+	          	result: [
+	          		{
+	          			cls: 'meishi',
+	          			title: '美食'
+	          		},
+	          		{
+	          			cls: 'dianying',
+	          			title: '电影'
+	          		},
+	          		{
+	          			cls: 'hotel',
+	          			title: '酒店'
+	          		},
+	          		{
+	          			cls: 'xiuxian',
+	          			title: '休闲娱乐'
+	          		},
+	          		{
+	          			cls: 'waimai',
+	          			title: '外卖'
+	          		},
+	          		{
+	          			cls: 'ktv',
+	          			title: 'KTV'
+	          		},
+	          		{
+	          			cls: 'zhoubian',
+	          			title: '周边游'
+	          		},
+	          		{
+	          			cls: 'liren',
+	          			title: '丽人'
+	          		},
+	          		{
+	          			cls: 'xiaochi',
+	          			title: '小吃快餐'
+	          		},
+	          		{
+	          			cls: 'jipiao',
+	          			title: '机票/火车票'
+	          		}
+	          	]
+	          }
+          	]
+			
+			$scope.swiperlist = $scope.swiperList;
+			
+			$scope.reddit = new Reddit();
+
+		})
+		
+		app.factory('Reddit', function($http) {
+		  var Reddit = function() {
+		    this.items = [];
+		    this.busy = false;
+		    this.page = 1;
+		    this.finish = false;
+		  };
+		
+		  Reddit.prototype.nextPage = function() {
+		    if (this.busy || this.page >= 5) {
+		    	this.finish = true;
+		    	return;
+		    } 
+		    this.busy = true;
+		
+		    var url = "http://www.phonegap100.com/appapi.php?a=getThreadList&fid=2&page=" + this.page;
+		    $http.get(url).success(function(data) {
+		      var items = data.result;
+		      this.items = this.items.concat(items);
+		      this.busy = false;
+		      this.page += 1;
+		    }.bind(this));
+		  };
+		
+		  return Reddit;
+		});
+	</script>
+	<!--<script src="js/main.min.js" type="text/javascript" charset="utf-8"></script>-->
+</html>
