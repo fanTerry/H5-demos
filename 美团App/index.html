@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimun-scale=1, maximum-scale=1, user-scaleable=no">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+		<link rel="stylesheet" href="css/swiper.min.css"> <!--滑屏css链接-->
+		<script src="js/jquery-1.8.3.min.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+		$(function(){
+			/*
+				懒加载效果
+					1）页面载入时请求部分数据
+					2）当滚动条滚动到接近底部时，加载更多的数据
+						给window绑定scroll事件
+			 */
+			var index = 0;
+
+			// 2）当滚动条滚动到接近底部时，加载更多的数据
+			$(window).on('scroll',function(){
+				
+				var scrollTop = $(window).scrollTop();
+				
+				// 文档内容高度
+				var docHeight = $(document).height();
+
+				// 窗口高度
+				var winHeight = $(window).height();
+				
+				// 滚动条滚到底时触发
+				if(scrollTop >= docHeight - winHeight){
+					index++;
+					
+					$('#loading').show();
+					ajax(showImg);
+				}
+	
+			});
+			
+			var i = (index == 1) ? index : index * 20; 
+			function ajax(callback){			
+				$.ajax({
+					url:"http://diviner.jd.com/diviner?p=610009&uuid=12396477&lid="+i+"&lim=20&cb=tempGuessLikeCallback",
+					dataType:'jsonp',
+					jsonp: 'callback',
+					scriptCharset:'gb2312',  // 京东的字体编码是gbk，页面为utf-8两者冲突了，这里解决冲突 
+					jsonpCallback: 'tempGuessLikeCallback',   // url中有callback=getCategoryCallback, 这里传入callback的值
+					success: function(data) {
+						console.log(data.data)
+						var d = data.data;
+						console.log(d.length);
+						$.each(d, function(index,ele) {
+	//						console.log('http://img13.360buyimg.com/n1/s200x200_'+ele.img);
+							var mSrc = 'http://img13.360buyimg.com/n1/s200x200_'+ele.img;
+	//						console.log(mSrc);
+	//						$(".content").html("<img src="+mSrc+"/>");
+	//						var ul = $("<img src="+mSrc+"/>");
+							var ul = $('<ul class="list-'+index+'"><li><span class="info"><img src="img/load.jpg" data-lazy-img="http://img13.360buyimg.com/n1/s200x200_'+ ele.img +'"/></span><span class="right"><p class="p1">'+ele.t+'</p><p class="p2"><i>价格'+ele.c3+'</i><b>已售'+ele.spu+'</b></p></span></li></ul>')
+							ul.appendTo($('#product'));
+						});
+						if (typeof callback == 'function') {
+							callback();   
+						}
+					}
+				});
+			}
+			function showImg () {
+				$('li img').each(function (){
+					$(this).animate({opacity:0}, 500, function() {
+						$(this).attr('src', $(this).attr('data-lazy-img')).animate({opacity: 1}, 1000);
+					});
+				})
+			}
+		})
+		
+		</script>
+	</head>
+	<body>
+		<header>
+			<div class="left">
+				<a><span>深圳<space class='space'></space><i class="icon iconfont">&#xe601;</i></span></a>
+			</div>
+			<div class="center">
+				<i class="icon iconfont">&#xe602;</i>
+				<span>输入商家/品类/商圈</span>
+			</div>
+			<div class="right">
+				<span><i class="icon iconfont">&#xe604;</i>我的</span>
+			</div>
+		</header>
+		<section class="nav swiper-container">
+			<div class="swiper-wrapper">
+				<div class="left swiper-slide" id="lb1">
+					<dl><dt style="background: #fd9d21;"><i class="icon iconfont">&#xe606;</i></dt><dd>美食</dd></dl>
+					<dl><dt style="background: #ff6767;"><i class="icon iconfont">&#xe605;</i></dt><dd>电影</dd></dl>
+					<dl><dt style="background: #8a90fa;"><i class="icon iconfont">&#xe603;</i></dt><dd>酒店</dd></dl>
+					<dl><dt style="background: #fed030;"><i class="icon iconfont">&#xe607;</i></dt><dd>休闲</dd></dl>
+					<dl><dt style="background: #fd9d21;"><i class="icon iconfont">&#xe608;</i></dt><dd>外卖</dd></dl>
+					<dl><dt style="background: #fed030;"><i class="icon iconfont">&#xe60a;</i></dt><dd>KTV</dd></dl>
+					<dl><dt style="background: #4dc6ee;"><i class="icon iconfont">&#xe60c;</i></dt><dd>周边游</dd></dl>
+					<dl><dt style="background: #ff80c2;"><i class="icon iconfont">&#xe609;</i></dt><dd>丽人</dd></dl>
+					<dl><dt style="background: #fd9d21;"><i class="icon iconfont">&#xe60b;</i></dt><dd>小吃快餐</dd></dl>
+					<dl><dt style="background: #599eec;"><i class="icon iconfont">&#xe60d;</i></dt><dd>机票/火车票</dd></dl>
+				</div>
+				<div class="right swiper-slide">
+					<dl><dt style="background: #A8DD99;"><i class="icon iconfont">&#xe611;</i></dt><dd>生活服务</dd></dl>
+					<dl><dt style="background: #00d3be;"><i class="icon iconfont">&#xe614;</i></dt><dd>今日新单</dd></dl>
+					<dl><dt style="background: #4dc6ee;"><i class="icon iconfont">&#xe615;</i></dt><dd>旅游</dd></dl>
+					<dl><dt style="background: #fed030;"><i class="icon iconfont">&#xe613;</i></dt><dd>足疗按摩</dd></dl>
+					<dl><dt style="background: #fd9d21;"><i class="icon iconfont">&#xe610;</i></dt><dd>甜点饮品</dd></dl>
+					<dl><dt style="background: #FF7360;"><i class="icon iconfont">&#xe60f;</i></dt><dd>婚纱摄影</dd></dl>
+					<dl><dt style="background: #ff80c2;"><i class="icon iconfont">&#xe616;</i></dt><dd>母婴亲子</dd></dl>
+					<dl><dt style="background: #84d23d;"><i class="icon iconfont">&#xe612;</i></dt><dd>学习培训</dd></dl>
+					<dl><dt style="background: #ff80c2;"><i class="icon iconfont">&#xe60f;</i></dt><dd>结婚</dd></dl>
+					<dl><dt style="background: #00d3be;"><i class="icon iconfont">&#xe60e;</i></dt><dd>全部分类</dd></dl>
+				</div>
+			</div>
+			<!--<div class="box">
+				<div class="circle" style="background: gainsboro;width: .16rem;height: .16rem;border-radius: 50%;left: 46%;"></div>
+				<div class="circle" style="background: gainsboro;width: .16rem;height: .16rem;border-radius: 50%;left: 52%;"></div>
+			</div>-->
+			<div class="swiper-pagination" style="bottom: .04rem;"></div>
+		</section>
+		<script src="js/swiper.min.js"></script> <!--引入滑动jq文件-->
+		<script type="text/javascript">		
+//			var fun = function(){
+//		  		if($('#lb1').get(0).className == "left swiper-slide swiper-slide-active"){
+//			  		$('.box .circle').eq(0).addClass('active').siblings().removeClass('active');
+//			  	}else if($('#lb1').get(0).className == "left swiper-slide swiper-slide-prev"){
+//			  		$('.box .circle').eq(1).addClass('active').siblings().removeClass('active');
+//			  	}
+//		  	}
+		  	var mySwiper = new Swiper('.swiper-container',{
+//		  		loop: true,
+				pagination : '.swiper-pagination',
+				autoplay: 1000,
+		  	});
+//		  	console.log($('#lb1').get(0).className);
+		  
+		  	
+		</script>
+		<section id="gg">
+			<div class="content">
+				<div class="left">
+					<span class="info">
+						<strong>我们约吧</strong>
+						<small>恋人家人好朋友</small>
+					</span>
+					<span class="img">
+						<img src="http://p0.meituan.net/mmc/fe4d2e89827aa829e12e2557ded363a112289.png"/>
+					</span>
+				</div>
+				<div class="right">
+					<div class="top">
+						<span class="info">
+							<strong>低价超值</strong>
+							<small>十元惠生活</small>
+						</span>
+						<span class="img">
+							<img src="http://p0.meituan.net/mmc/a06d0c5c0a972e784345b2d648b034ec9710.jpg"/>
+						</span>
+					</div>
+					<div class="bottom">
+						<div class="left">
+							<span class="info">
+								<strong>聚餐宴请</strong>
+								<small>朋友家人常聚聚</small>
+							</span>
+							<span class="img">
+								<img src="http://p1.meituan.net/mmc/08615b8ae15d03c44cc5eb9bda381cb212714.png"/>
+							</span>
+						</div>
+						<div class="right">
+							<span class="info">
+								<strong>名店抢购</strong>
+								<small>距离结束</small>
+							</span>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<article>
+			<div class="guess">
+				<h3>猜你喜欢</h3>
+			</div>
+			<div id="product"></div>
+			<div id="loading" style="text-align: center;"><img src="img/loading.gif"></div>
+		</article>
+		
+		<footer>
+			<div class="top">
+				<a href="#">登录</a>
+				<a href="#">注册</a>
+				<span class="city">城市：<a href="#">深圳</a></span>
+			</div>
+			<ul class="center">
+				<li><a href="#">首页</a></li>
+				<li><a href="#">订单</a></li>
+				<li><a href="#">美团下载</a></li>
+				<li><a href="#">电脑版</a></li>
+				<li><a href="#">帮助</a></li>
+			</ul>
+			<div style="text-align: center;font-size: .24rem;margin: .3rem .2rem;">友情链接：<a href="#">猫眼电影</a></div>
+			<div class="foot">
+				<div class="hr"></div>
+				<span>@2016 美团网 京ICP证070791号</span>
+			</div>
+		</footer>
+	</body>
+</html>
