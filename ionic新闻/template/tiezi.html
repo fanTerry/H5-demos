@@ -1,0 +1,11 @@
+<ion-view view-title='帖子列表'>
+	<ion-content>
+		<ion-list>
+			<ion-item ng-repeat='item in tieziList'>
+				<a href="#/tab/detail/{{item.tid}}"><h3>{{item.subject}}</h3></a>
+				<span>{{item.author}}</span>
+				<i>{{item.lastpost + '000' | date:'yyyy-MM-dd hh:mm:ss'}}</i>
+			</ion-item>
+		</ion-list>
+	</ion-content>
+</ion-view>

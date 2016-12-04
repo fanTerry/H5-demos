@@ -1,0 +1,15 @@
+<ion-view view-title='新闻'>
+	<ion-content >
+		<ion-list>
+			<ion-item ng-repeat='item in newsList'>
+				<a href="#/tab/tiezi/{{item.fid}}">{{item.name}}</a>
+				<ion-list>
+					<ion-item ng-repeat='list in item.subcate'>
+						<a href="#/tab/tiezi/{{list.fid}}">{{list.name}}</a>
+					</ion-item>
+				</ion-list>
+			</ion-item>
+		</ion-list>
+	</ion-content>
+	
+</ion-view>

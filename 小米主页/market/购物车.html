@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>我的购物车</title>
+		<link rel="stylesheet" type="text/css" href="css/购物车.css"/>
+		<script src="js/Cookie封装.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery-1.8.3.min.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div id="head">
+			<div id="header">
+				<img src="img/MI.jpg" />
+				<div class="content">
+					<h2>我的购物车</h2>
+					<p>温馨提示：产品是否购买成功，以最终下单为准哦，请尽快结算</p>
+				</div>
+			</div>
+		</div>
+		<div id="mCenter">
+			<div class="content">
+				<div class="title">
+					<div style="width: 110px;"><input type="checkbox" name="" id="" value="" />全选</div>
+					<div style="width: 120px;"></div>
+					<div style="width:380px;">商品名称</div>
+					<div style="width:75px;padding-right: 84px;">单价</div>
+					<div style="width:150px;">数量</div>
+					<div style="width:120px;padding-right: 81px;">小计</div>
+					<div style="width:80px;">操作</div>
+				</div>
+				<div class="YC" style="display: none;">
+					<div style="width: 110px;"><input type="checkbox" name="" id="" value="" /></div>
+					<div style="width: 120px;"></div>
+					<div style="width:380px;"></div>
+					<div style="width:75px;"></div>
+					<div style="width:150px;padding-left: 34px;padding-right: 50px;">
+						<span style="cursor:pointer;display: inline-block;width: 38px;height: 38px;text-align: center;line-height: 38px;padding-right: 20px;">-</span>
+						<span>1</span>
+						<span style="cursor:pointer;padding-left: 20px;display: inline-block;width: 38px;height: 38px;text-align: center;line-height: 38px;">+</span>
+					</div>
+					<div style="width:120px;padding-right: 81px;">小计</div>
+					<div style="width:80px;"><span style="padding-left: 16px;width: 24px;height: 24px;line-height: 24px;display: inline-block;margin: 0 auto;border-radius: 50%;">X</span></div>
+				</div>
+			</div>
+		</div>
+		<div id="product">
+			<dl>
+				<img src="img/购物车小米车载充电器.jpg" />
+				<dt>小米车载充电器</dt>
+				<dd>49元</dd>
+				<p>3.3万人好评</p>
+				<div style="display: none;">加入购物车</div>
+			</dl>
+			<dl>
+				<img src="img/购物车小米智能插线板.png"/>
+				<dt>小米智能插线板</dt>
+				<dd>69元</dd>
+				<p>8484人好评</p>
+				<div style="display: none;">加入购物车</div>
+			</dl>
+			<dl>
+				<img src="img/购物车彩虹7号电池.jpg" />
+				<dt>彩虹七号电池(10粒装)</dt>
+				<dd>9.9元</dd>
+				<p>4.3万人好评</p>
+				<div style="display: none;">加入购物车</div>
+			</dl>
+			<dl>
+				<img src="img/购物车米家签字笔.jpg" />
+				<dt>米家签字笔</dt>
+				<dd>19元</dd>
+				<p>3408人好评</p>
+				<div style="display: none;">加入购物车</div>
+			</dl>
+			<dl>
+
+				<img src="img/购物车彩虹5号电池.jpg" />
+				<dt>彩虹5号电池(10粒装)</dt>
+				<dd>9.9元</dd>
+				<p>7.3万人好评</p>
+				<div style="display: none;">加入购物车</div>
+			</dl>
+		</div>
+			<script>
+				$('#mCenter .content .YC div').eq(6).children('span').hover(function(){
+					$(this).css('background','#FF6700');
+				},function(){
+					$(this).css('background','#FFFFFF');
+				})
+				$('#mCenter .content .YC div').eq(6).children('span').click(function(){
+					$(this).parent('div').parent('div').remove();
+				})
+				$('#mCenter .content .YC div').eq(4).children('span').hover(function(){
+						$(this).css('background','#B0B0B0');
+					},function(){
+						$(this).css('background','#FFFFFF');
+				})
+				$('#mCenter .content .YC div').eq(4).children('span').eq(0).click(function(){
+					console.log($(this).parent('div').children('span').eq(1).html())
+					if($(this).parent('div').children('span').eq(1).html() > 1){
+						var val = $(this).parent('div').children('span').eq(1).html();
+						$(this).parent('div').children('span').eq(1).html(''+(parseFloat(val)-1)+'');
+						var x =parseInt($(this).parent('div').children('span').eq(1).html())
+						var money = parseFloat($(this).parent('div').prev().html())
+						$(this).parent('div').next().html(''+(money*x)+'元')
+					}
+				})
+				$('#mCenter .content .YC div').eq(4).children('span').eq(2).click(function(){
+					console.log($(this).parent('div').children('span').eq(1).html())
+					var val = $(this).parent('div').children('span').eq(1).html();
+					$(this).parent('div').children('span').eq(1).html(''+(parseFloat(val)+1)+'');
+					var x =parseInt($(this).parent('div').children('span').eq(1).html()) 
+					var money = parseFloat($(this).parent('div').prev().html())
+					$(this).parent('div').next().html(''+(money*x)+'元')
+				})
+				$('#product dl').hover(function(){
+					$(this).children('p').hide().siblings('div').show();
+				},function(){
+					$(this).children('p').show().siblings('div').hide();
+				})
+				$('#product dl div').click(function(){
+					document.cookie = "";
+					console.log(decodeURIComponent(document.cookie))
+					var d = new Date();
+					d.setDate(d.getDate()+7);
+					setCookie($(this).siblings('img')[0].outerHTML,$(this).siblings('dt')[0].innerHTML,$(this).siblings('dd')[0].innerHTML,d)
+					console.log(decodeURIComponent(document.cookie))
+					var img = getCookieWithImg();
+					var Key = getCookieWithKey();
+					var value = getCookieWithValue();
+					var mDiv = $("#mCenter .content .YC").clone(true);
+					mDiv.css('display','block').removeClass().addClass('Clone');
+					mDiv.children('div').eq(1).html(img);
+					mDiv.children('div').eq(2).html(Key);
+					mDiv.children('div').eq(3).html(value);
+					mDiv.children('div').eq(5).html(value);
+					$('#mCenter .content').append(mDiv);					
+				})				
+			</script>
+		<div id="foot">
+			<div id="Last">
+				<ul>
+					<li>预约维修服务</li>
+					<li>7天无理由退货</li>
+					<li>15天免费换货</li>
+					<li>满150元包邮</li>
+					<li style="border: none;">520余家售后网点</li>
+				</ul>
+				<div class="box">
+					<dl>
+						<dt>帮助中心</dt>
+						<dd>账户管理</dd>
+						<dd>购物指南</dd>
+						<dd>订单操作</dd>
+					</dl>
+					<dl>
+						<dt>服务支持</dt>
+						<dd>售后政策</dd>
+						<dd>自助服务</dd>
+						<dd>相关下载</dd>
+					</dl>
+					<dl>
+						<dt>线下门店</dt>
+						<dd>小米之家</dd>
+						<dd>服务网点</dd>
+						<dd>零售网点</dd>
+					</dl>
+					<dl>
+						<dt>关于小米</dt>
+						<dd>了解小米</dd>
+						<dd>加入小米</dd>
+						<dd>联系我们</dd>
+					</dl>
+					<dl>
+						<dt>关注我们</dt>
+						<dd>新浪微博</dd>
+						<dd>小米部落</dd>
+						<dd>官方微信</dd>
+					</dl>
+					<dl>
+						<dt>特色服务</dt>
+						<dd>F码通道</dd>
+						<dd>小米移动</dd>
+						<dd>防伪查询</dd>
+					</dl>
+					<div class="right">
+						<p class="phone">400-100-5678</p>
+						<p class="date">周一至周日 8:00-18:00<br/>(仅收市话费)</p>
+						<a href="#">24小时在线客服</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="footer">
+			<div class="box1">
+				<div class="mi"><img src="img/MI.jpg" /></div>
+				<p class="site">
+					<a href="#">小米商城</a><span>|</span>
+					<a href="#">MIUI</a><span>|</span>
+					<a href="#">米聊</a><span>|</span>
+					<a href="#">多看书城</a><span>|</span>
+					<a href="#">小米路由器</a><span>|</span>
+					<a href="#">视频电话</a><span>|</span>
+					<a href="#">小米后院</a><span>|</span>
+					<a href="#">小米天猫店</a><span>|</span>
+					<a href="#">小米淘宝直营店</a><span>|</span>
+					<a href="#">小米加盟</a><span>|</span>
+					<a href="#">问题反馈</a><span>|</span>
+					<a href="#">Select Reigon</a>
+				</p>
+				<p>
+					©mi.com 京ICP证110507号 京ICP备10046444号 京公网安备11010802020134号 京网文[2014]0059-0009号 违法和不良信息举报电话：185-0130-1238，本网站所列数据，除特殊说明，所有数据均出自我司实验室测试 
+				</p>
+				<div class="img">
+					<img src="img/footer1.jpg" />
+					<img src="img/footer2.jpg" />
+					<img src="img/footer3.jpg" />
+					<img src="img/footer4.jpg" />
+				</div>
+			</div>
+			<div class="box2">
+				<img src="img/小米标语.jpg" />
+			</div>
+		</div>
+	</body>
+</html>

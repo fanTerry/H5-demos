@@ -1,0 +1,12 @@
+<ion-view view-title='帖子详情'>
+	<ion-content >
+		<ion-list>
+			<ion-item ng-repeat='item in detailList'>
+				<div class="item item-body">
+			    	<p  ng-class="{'small':isSmall,'big':isBig,'normal':isNormal}">{{item.message}}</p>
+			  	</div>
+			</ion-item>
+			<button class="button" ng-click="setFont()">设置文字大小</button>
+		</ion-list>
+	</ion-content>
+</ion-view>

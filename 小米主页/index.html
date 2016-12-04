@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>小米官网</title>
+		<script src="js/jquery-1.8.3.min.js" type="text/javascript" charset="utf-8"></script>
+		<link rel="stylesheet" type="text/css" href="css/xiaomi.css"/>
+	</head>
+	<body>
+		<div id="ad">
+			<img src="img/广告.jpg" />
+		</div>
+		<div id="header">
+			<div class="content">
+				<div id="hLeft">
+					<a href="#hRight">小米商城</a><img src="img/header.jpg" />
+					<a href="#hRight">MIUI</a><img src="img/header.jpg" />
+					<a href="#hRight">米聊</a><img src="img/header.jpg" />
+					<a href="#hRight">游戏</a><img src="img/header.jpg" />
+					<a href="#hRight">多看阅读</a><img src="img/header.jpg" />
+					<a href="#hRight">云服务</a><img src="img/header.jpg" />
+					<a href="#hRight">金融</a><img src="img/header.jpg" />
+					<a href="#hRight">小米网移动版</a><img src="img/header.jpg" />
+					<a href="#hRight">问题反馈</a><img src="img/header.jpg" />
+					<a href="#hRight">SelectRegion</a>
+				</div>
+				<div id="hRight">
+					<a href="#hRight">登录</a><img src="img/header.jpg" />
+					<a href="#hRight">注册</a><img src="img/header.jpg" />
+					<a href="#hRight">消息通知</a>
+					<div class="GWC"> 购物车(<span>0</span>)</div>
+					<div style="position:absolute;z-index: 1; right: 0px; width: 316px;height: 58px;background: #ffffff;font-size: 11px;color: #424242;text-align: center;line-height: 58px;display: none;">访问过快，请稍后再继续操作</div>
+					<div style="position:absolute;z-index: 1; right: 0px; width: 316px;height: 98px;background: #ffffff;font-size: 11px;color: #424242;text-align: center;line-height: 98px;display: none;">购物车中还没有商品，赶紧选购吧!</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			$('#header .GWC').click(function(){
+				window.open("market/购物车.html");
+			})
+			$('#header a').hover(function(){ //a标签高亮
+				$(this).css({'color':'white'})
+			},function(){
+				$(this).css({'color':'#b0b0b0'});
+			})
+			var i=0
+			var date =Date.parse(new Date());
+			console.log(date)
+			$('#header .GWC').hover(function(){
+				$(this).css('color','#ff6700')
+				$(this).css({'background':'#ffffff url(img/红购物小车.jpg) no-repeat 16px 14px'})
+				var mDate = Date.parse(new Date());
+				console.log('本次时间'+mDate)
+				console.log('上次时间'+date)
+				console.log(mDate - date);
+				if(mDate - date<2000){
+					$(this).next().stop().slideDown();
+					$(this).next().css('box-shadow',' 0.5px 0.5px 5px #888888');
+				}else{
+					$(this).next().next().slideDown();
+					$(this).next().next().css('box-shadow','0px 1px 5px #888888');
+				}
+			},function(){
+				date = Date.parse(new Date());
+				console.log('出来时间'+date);
+				$(this).css({'color':'#b0b0b0'})
+				$(this).css({'background':'#424242 url(img/购物小车.jpg) no-repeat 16px 14px'})
+				$(this).nextAll().slideUp();
+			})
+		</script>
+		<div id="MI">
+			<div class="content">
+				<a><img src="img/MI.jpg" title="小米官网" /></a>
+				<div class="title">
+					<ul class="titleUl">
+						<li>小米手机</li>
+						<li>红米</li>
+						<li>平板 · 笔记本</li>
+						<li>电视</li>
+						<li>盒子 · 影音</li>
+						<li>路由器</li>
+						<li>智能硬件</li>
+						<li>服务</li>
+						<li>社区</li>
+					</ul>
+				</div>
+				<input style="outline:none; float:left;margin-left: 30px; width:243px;height: 48px;border: 1px solid #ccc; margin-top: 25px;" type="text" name="" id="txt" value="" />
+				<input style="outline:none;float:left;border: 1px solid #ccc;border-left: none;width: 50px;height: 50px;margin-top: 25px;" type="submit" name="" id="btn" value="" />
+				<div id="gg1" style="position: absolute;left:990px;top:41px ;"><a >手机特惠</a></div>
+                <div id="gg2" style="position: absolute;left:1050px;top:41px;"><a >红米Note3直降100</a></div>
+			</div>
+		</div>
+		<div id="Mhide">
+			<div class="box"><div class="content"></div></div>
+			<div class="box"><div class="content"></div></div>
+			<div class="box"><div class="content"></div></div>
+			<div class="box"><div class="content"></div></div>
+			<div class="box"><div class="content"></div></div>
+			<div class="box"><div class="content"></div></div>
+			<div class="box"><div class="content"></div></div>
+		</div>
+		<script>
+			$('#MI input:text').focus(function(){
+				$(this).css('border','1px solid #FF6700').next().css('border','1px solid #FF6700');
+				$('#gg1').hide().next().hide();
+			})
+			$('#MI input:text').blur(function(){
+				$(this).css('border','1px solid #ccc').next().css('border','1px solid #ccc');
+				$('#gg1').show().next().show();
+			})
+			$.get('json/xiaomi.json',function(res){
+				for(var i=0;i<res.phone.length;i++){
+					var mDl = $('<dl><img src="img/'+res.phone[i].img+'.jpg"/><dt>'+res.phone[i].dt+'</dt><dd>'+res.phone[i].dd+'</dd></dl>')
+					$('#Mhide .content:eq(0)').append(mDl);
+				}
+				for(var i=0;i<res.hongM.length;i++){
+					var mDl = $('<dl><img src="img/'+res.hongM[i].img+'.jpg"/><dt>'+res.hongM[i].dt+'</dt><dd>'+res.hongM[i].dd+'</dd></dl>')
+					$('#Mhide .content:eq(1)').append(mDl);
+				}
+				for(var i=0;i<res.PC.length;i++){
+					var mDl = $('<dl><img src="img/'+res.PC[i].img+'.jpg"/><dt>'+res.PC[i].dt+'</dt><dd>'+res.PC[i].dd+'</dd></dl>')
+					$('#Mhide .content:eq(2)').append(mDl);
+				}
+				for(var i=0;i<res.TV.length;i++){
+					var mDl = $('<dl><img src="img/'+res.TV[i].img+'.jpg"/><dt>'+res.TV[i].dt+'</dt><dd>'+res.TV[i].dd+'</dd></dl>')
+					$('#Mhide .content:eq(3)').append(mDl);
+				}
+				for(var i=0;i<res.Box.length;i++){
+					var mDl = $('<dl><img src="img/'+res.Box[i].img+'.jpg"/><dt>'+res.Box[i].dt+'</dt><dd>'+res.Box[i].dd+'</dd></dl>')
+					$('#Mhide .content:eq(4)').append(mDl);
+				}
+				for(var i=0;i<res.Lyq.length;i++){
+					var mDl = $('<dl><img src="img/'+res.Lyq[i].img+'.jpg"/><dt>'+res.Lyq[i].dt+'</dt><dd>'+res.Lyq[i].dd+'</dd></dl>')
+					$('#Mhide .content:eq(5)').append(mDl);
+				}
+				for(var i=0;i<res.Yj.length;i++){
+					var mDl = $('<dl><img src="img/'+res.Yj[i].img+'.jpg"/><dt>'+res.Yj[i].dt+'</dt><dd>'+res.Yj[i].dd+'</dd></dl>')
+					$('#Mhide .content:eq(6)').append(mDl);
+				}
+			})
+		</script>
+		<script>
+		var flag = true;
+			$('#MI .titleUl li').hover(function(){
+				var self=$(this);
+				$('#Mhide .content').hide();
+					$('#Mhide .content').eq(''+$(this).index()+'').slideDown().hover(function(){
+					$(this).show();
+					flag = false;
+					},function(){
+						$(this).slideUp();
+					})
+				console.log(flag);
+				},function(){
+					if(flag == true){
+						$('#Mhide .content').eq(''+$(this).index()+'').slideUp();
+				}
+			})
+		</script>
+		<div id="mCenter">
+			<img src="img/轮播图1.jpg"/>
+			<ul>
+				<li>手机 电话卡<i>&gt;</i>
+					<div class="son"></div>
+				</li>
+				<li>笔记本 平板<i>&gt;</i>
+					<div></div>
+				</li>
+				<li>电视 盒子<i>&gt;</i>
+					<div></div>
+				</li>
+				<li>路由器 智能硬件<i>&gt;</i>
+					<div></div>
+				</li>
+				<li>移动电源 电池 插线板<i>&gt;</i>
+					<div></div>
+				</li>
+				<li>耳机 音箱<i>&gt;</i>
+					<div></div>
+				</li>
+				<li>保护套 贴膜<i>&gt;</i>
+					<div></div>
+				</li>
+				<li>线材 支架 存储卡<i>&gt;</i>
+					<div></div>
+				</li>
+				<li>箱包 服饰<i>&gt;</i>
+					<div></div>
+				</li>
+				<li>米兔 生活周边<i>&gt;</i>
+					<div></div>
+				</li>
+			</ul>
+			<div class="Syz">&lt;</div>
+			<div class="Xyz" >&gt;</div>
+			<div class="yuan" style="left: 1100px;background: #FFFFFF;"></div>
+			<div class="yuan" style="left: 1120px;"></div>
+			<div class="yuan" style="left: 1140px;"></div>
+			<div class="yuan" style="left: 1160px;"></div>
+			<div class="yuan" style="left: 1180px;"></div>
+			<div class="jiShu">1</div>
+		</div>
+		<script>
+			var i=$('#mCenter .jiShu').html();;
+			$('#mCenter .Syz').click(function(){
+				mLeft();
+			})
+			function mLeft(){
+				if(i<=1){
+					i = 5;
+				}else{
+					i--;
+				}
+//				console.log(i)
+				$('#mCenter .yuan').css('background','gray').eq(i-1).css('background','#FFFFFF');
+				$('#mCenter').children('img').stop(true).animate({opacity:0.8}).hide().attr('src','img/轮播图'+i+'.jpg').show().animate({opacity:1});
+				$('#mCenter .jiShu').html(''+i+'');
+//				console.log($('#mCenter .jiShu').html())
+			}
+			$('#mCenter .Xyz').click(function(){
+				mRight();
+			})
+			function mRight(){
+				if(i>=5){
+					i=1;
+				}else{
+					i++;
+				}
+				$('#mCenter .yuan').css('background','gray').eq(i-1).css('background','#FFFFFF');
+				$('#mCenter').children('img').stop(true).animate({opacity:0.8}).hide().attr('src','img/轮播图'+i+'.jpg').show().animate({opacity:1});
+				
+				$('#mCenter .jiShu').html(''+i+'');
+			}
+			$('#mCenter .yuan').click(function(){
+				var a = $(this).index()-3;//1,2,3,4,5
+				$(this).css('background','white').siblings('.yuan').css('background','gray');
+				$('#mCenter').children('img').stop(true).animate({opacity:0.8}).hide().attr('src','img/轮播图'+a+'.jpg').show().animate({opacity:1});
+			})
+			var t=setInterval(mRight,2000);
+			$('#mCenter').children('img').hover(function(){
+				clearInterval(t)
+			},function(){
+				t=setInterval(mRight,2000);
+			})
+			$('#mCenter .Syz').hover(function(){
+				clearInterval(t)
+			},function(){
+				t=setInterval(mRight,2000);
+			})
+			$('#mCenter .Xyz').hover(function(){
+				clearInterval(t)
+			},function(){
+				t=setInterval(mRight,2000);
+			})
+			$.get('json/xiaomi.json',function(res){
+				for(var i = 0;i<res.Sim.length;i++){
+					var mDl = $('<dl><img src="img/'+res.Sim[i].url+'.jpg"/><dt>'+res.Sim[i].dt+'</dt><dd>'+res.Sim[i].dd+'</dd></dl>')
+					$('#mCenter .son').append(mDl);
+				}
+			})
+			$('#mCenter ul li').mouseenter(function(){
+				$(this).children('.son').show();
+			})
+			$('#mCenter ul li').mouseleave(function(){
+				$(this).children('.son').hide();
+			})
+		</script>
+		<div id="cZ">
+			<div class="left">
+				<ul>
+					<li><img src="img/选购手机.jpg"/></li>
+					<li><img src="img/企业团购.jpg"/></li>
+					<li><img src="img/官翻产品.jpg"/></li>
+					<li><img src="img/小米移动.jpg"/></li>
+					<li><img src="img/以旧换新.jpg"/></li>
+					<li><img src="img/话费充值.jpg"/></li>
+				</ul>
+			</div>
+			<div class="img">
+				<img src="img/现货.jpg"/>
+				<img src="img/兑换.jpg"/>
+				<img src="img/电饭煲.jpg"/>
+			</div>
+		</div>
+		<div id="star">
+			<h2>小米明星单品
+				<div class="left">&gt;</div>
+				<div class="right">&lt;</div>
+			</h2>
+			
+			<div class="box">
+				<div class="content"></div>
+			</div>
+		</div>
+		<script>
+			$.get('json/xiaomi.json',function(res){
+				for(var i = 0;i<res.Star.length;i++){
+					var mDl = $('<dl><img src="img/'+res.Star[i].url+'.jpg"/><h3>'+res.Star[i].p+'</h3><p>'+res.Star[i].dt+'</p><p>'+res.Star[i].dd+'</p></dl>')
+					$('#star .content').append(mDl);
+				}
+				$('#star .left').click(function(){
+					$('#star .content').animate({left:-1240});
+					$('#star .right').css('background','#CCCCCC').siblings().css('background','#fff')
+				})
+				$('#star .right').click(function(){
+					$('#star .content').animate({left:0});
+					$('#star .left').css('background','#CCCCCC').siblings().css('background','#fff')
+				})
+				function move(){
+					if($('#star .content').position().left == 0){
+						$('#star .content').animate({left:-1240});
+						$('#star .right').css('background','#CCCCCC').siblings().css('background','#fff')
+					}else{
+						$('#star .content').animate({left:0});
+						$('#star .left').css('background','#CCCCCC').siblings().css('background','#fff')
+					}
+				}
+				var t =setInterval(move,3000)
+				$('#star .right').hover(function(){
+					clearInterval(t)
+				},function(){
+					t =setInterval(move,3000)
+				})
+				$('#star .left').hover(function(){
+					clearInterval(t)
+				},function(){
+					t =setInterval(move,3000)
+				})
+				$('#star .content').hover(function(){
+					clearInterval(t)
+				},function(){
+					t =setInterval(move,3000)
+				})
+			})
+			
+		</script>
+		<div id="bZN">
+			<div id="ZN">
+				<h2>
+					<span>智能硬件</span>
+					<div>查看全部 &nbsp;<p class="right">&gt;</p></div>
+				</h2>
+				<div class="content">
+					<div class="img"><img src="img/小米净水器1.jpg" style="float: left;"></div>
+				</div>
+			</div>
+			<div id="DP">
+				<h2>
+					<span>搭配</span>
+					<p>
+						<span>热门</span>
+						<span>耳机音箱</span>
+						<span>电源</span>
+						<span>电池存储卡</span>
+					</p>
+				</h2>
+				<div class="content">
+					<div class="img"><img src="img/小米移动电源.jpg"/><img src="img/小米胶囊耳机.jpg"/></div>
+				</div>
+			</div>
+			<script>
+				$.get('json/xiaomi.json',function(res){
+					for(var i = 0;i<res.zhiNeng.length;i++){
+						var mDl = $('<dl><img src="img/'+res.zhiNeng[i].url+'.jpg"/><h3>'+res.zhiNeng[i].p+'</h3><p>'+res.zhiNeng[i].dt+'</p><p>'+res.zhiNeng[i].dd+'</p></dl>')
+						$('#ZN .content').append(mDl);
+					}
+					$.get('json/xiaomi.json',function(res){
+						for(var i = 0;i<res.daPei.length;i++){
+							var mDl = $('<dl><img src="img/'+res.daPei[i].url+'.jpg"/><h3>'+res.daPei[i].p+'</h3><p class="p1">'+res.daPei[i].dt+'</p><p class="p2">'+res.daPei[i].dd+'</p></dl>')
+							$('#DP .content').append(mDl);
+						}
+						$.get('json/xiaomi.json',function(res){
+							for(var i = 0;i<res.div.length;i++){
+								var mDiv = $('<div><p class="p3">'+res.div[i].p1+'</p><p class="p4">'+res.div[i].p2+'</p></div>')
+								$('#DP .content dl').eq(i).append(mDiv);
+							}
+							var oDiv = $('<div class="geng"><img src="img/浏览更多.jpg"/></div>');
+							$('#DP .content').append(oDiv);
+							$('#DP .content dl').hover(function(){
+								$(this).find('div').animate({top:226},200).show();
+							},function(){
+								$(this).find('div').animate({top:300},200);
+							})
+							$('#DP').append($('#DP .content').clone(true));
+							$('#DP').append($('#DP .content').clone(true));
+							$("#DP h2 p span").hover(function(){
+								var i = $(this).index();//0,1,2,3
+								$('#DP .content').eq(i).show().siblings('.content').hide();
+							})
+						})
+					})
+				})
+			</script>
+			<div id="RP">
+				<h2 style="margin-top: 14px;">热评产品</h2>
+				<div class="content"></div>
+			</div>
+			<script>
+				$.get('json/xiaomi.json',function(res){
+					for(var i = 0;i<res.RP.length;i++){
+						var mDl = $('<dl><img src="img/'+res.RP[i].url+'.jpg"/><h3>'+res.RP[i].p+'</h3><p>'+res.RP[i].dt+'</p><p>'+res.RP[i].dd+'</p></dl>')
+						$('#RP .content').append(mDl);
+					}
+				})
+			</script>
+			<div id="NR">
+				<h2>内容</h2>
+					<div class="content">
+						<h3>图书</h3>
+						<ul></ul>
+						<div class="Syz">&lt;</div>
+						<div class="Xyz" >&gt;</div>
+						<div class="yuan" style="left: 100px;"></div>
+						<div class="yuan" style="left: 130px;"></div>
+						<div class="yuan" style="left: 160px;"></div>
+						<div class="yuan" style="left: 190px;"></div>
+						<div class="jiShu" style="display: none;">0</div>
+					</div>
+			</div>
+			<script>
+				$.get('json/xiaomi.json',function(res){
+					for(var i = 0;i<res.NR.length;i++){
+						var mLi = $('<li><p class="p1">'+res.NR[i].p1+'</p><p class="p2">'+res.NR[i].p2+'</p><p class="p3">'+res.NR[i].p3+'</p><img src="img/'+res.NR[i].url+'.jpg"/></li>')
+						$('#NR .content ul').append(mLi);
+					}
+					$('#NR .content').hover(function(){
+						$(this).index();
+						$('#NR .Syz').eq($(this).index()-1).css('background','rgba(0,0,0,0.5)');
+						$('#NR .Xyz').eq($(this).index()-1).css('background','rgba(0,0,0,0.5)');
+					},function(){
+						$('#NR .Syz').eq($(this).index()-1).css('background','');
+						$('#NR .Xyz').eq($(this).index()-1).css('background','');
+					})
+					$('#NR .content .Syz').click(function(){
+						var i = $(this).parent('.content').find('ul').position().left/-294 ;
+						$(this).siblings('.yuan').css('background','gray')
+						if($(this).parent('.content').find('ul').position().left < 0){
+							$(this).parent('.content').find('ul').stop(true).animate({left:"+=294"},200);
+						}
+						if(i==0){
+							i=1
+						}
+						$(this).parent('.content').find('.yuan').eq(i-1).css('background','#FF6700')
+					})
+					$('#NR .content .Xyz').click(function(){
+						var i = $(this).parent('.content').find('ul').position().left/-294 +1;
+						$(this).siblings('.yuan').css('background','gray')
+						if($(this).parent('.content').find('ul').position().left > -882){
+							$(this).parent('.content').find('ul').stop(true).animate({left:"-=294"},200);
+						}
+						if(i==4){
+							i=3
+						}
+						$(this).parent('.content').find('.yuan').eq(i).css('background','#FF6700')
+					})
+					$('#NR .content .yuan').click(function(){
+						$(this).parent('.content').find('.yuan').css('background','gray');
+						$(this).css('background','#FF6700');
+//						var mLeft = $(this).index()*294
+						console.log($(this).index())
+						$(this).parent('.content').find('ul').stop().animate({left:-294*($(this).index()-4)},200);
+					})
+					$('#NR').append($('#NR .content').clone(true));
+					$('#NR').append($('#NR .content').clone(true));
+					$('#NR .yuan:nth-child(5)').css('background','#FF6700');
+				})
+			</script>
+			<div id="Video">
+				<h2>
+					<span>视频</span>
+					<div>查看全部 &nbsp;<p class="right">&gt;</p></div>
+				</h2>
+				<div class="content">
+					<ul>
+						<li ><img src="img/视屏1.jpg" href="http://v.youku.com/v_show/id_XMTY1ODg5ODA0MA==.html"/><p>红米年度品牌视频</p><p>一亿人喜爱你，是一种责任</p></li>
+						<li><img src="img/视屏2.jpg" href="http://v.youku.com/v_show/id_XMTY1OTg3NjQ4OA==.html"/><p>小米笔记本Air最全介绍视频</p><p>带独立显卡的轻薄笔记本</p></li>
+						<li><img src="img/视频3.jpg" href="http://v.youku.com/v_show/id_XMTY1OTg4NjY0OA==.html"/><p>小米笔记本Air可靠性测试视频</p><p>小米笔记本Air是如何炼成的？</p></li>
+						<li><img src="img/视屏4.jpg" href="http://v.youku.com/v_show/id_XMTU2NDM3NjEzMg==.html"/><p>小米Max 绝美外观视频</p><p>6.44" 大屏黄金尺寸，看什么都震撼</p></li>
+					</ul>
+				</div>
+			</div>
+			<script>
+				$('#Video img').click(function(){
+					window.open($(this).attr("href"),"newWindow","height=500%, width=800%,top=100px,left=200px,toolbar=no,location=no,directories=no,menubar=no,scrollbars=no,resizable=no,status=no");
+				})
+			</script>
+		</div>
+		<div id="foot">
+			<div id="Last">
+				<ul>
+					<li>预约维修服务</li>
+					<li>7天无理由退货</li>
+					<li>15天免费换货</li>
+					<li>满150元包邮</li>
+					<li style="border: none;">520余家售后网点</li>
+				</ul>
+				<div class="box">
+					<dl>
+						<dt>帮助中心</dt>
+						<dd>账户管理</dd>
+						<dd>购物指南</dd>
+						<dd>订单操作</dd>
+					</dl>
+					<dl>
+						<dt>服务支持</dt>
+						<dd>售后政策</dd>
+						<dd>自助服务</dd>
+						<dd>相关下载</dd>
+					</dl>
+					<dl>
+						<dt>线下门店</dt>
+						<dd>小米之家</dd>
+						<dd>服务网点</dd>
+						<dd>零售网点</dd>
+					</dl>
+					<dl>
+						<dt>关于小米</dt>
+						<dd>了解小米</dd>
+						<dd>加入小米</dd>
+						<dd>联系我们</dd>
+					</dl>
+					<dl>
+						<dt>关注我们</dt>
+						<dd>新浪微博</dd>
+						<dd>小米部落</dd>
+						<dd>官方微信</dd>
+					</dl>
+					<dl>
+						<dt>特色服务</dt>
+						<dd>F码通道</dd>
+						<dd>小米移动</dd>
+						<dd>防伪查询</dd>
+					</dl>
+					<div class="right">
+						<p class="phone">400-100-5678</p>
+						<p class="date">周一至周日 8:00-18:00<br/>(仅收市话费)</p>
+						<a href="#">24小时在线客服</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="footer">
+			<div class="box1">
+				<div class="mi"><img src="img/MI.jpg" /></div>
+				<p class="site">
+					<a href="#">小米商城</a><span>|</span>
+					<a href="#">MIUI</a><span>|</span>
+					<a href="#">米聊</a><span>|</span>
+					<a href="#">多看书城</a><span>|</span>
+					<a href="#">小米路由器</a><span>|</span>
+					<a href="#">视频电话</a><span>|</span>
+					<a href="#">小米后院</a><span>|</span>
+					<a href="#">小米天猫店</a><span>|</span>
+					<a href="#">小米淘宝直营店</a><span>|</span>
+					<a href="#">小米加盟</a><span>|</span>
+					<a href="#">问题反馈</a><span>|</span>
+					<a href="#">Select Reigon</a>
+				</p>
+				<p>
+					©mi.com 京ICP证110507号 京ICP备10046444号 京公网安备11010802020134号 京网文[2014]0059-0009号 违法和不良信息举报电话：185-0130-1238，本网站所列数据，除特殊说明，所有数据均出自我司实验室测试 
+				</p>
+				<div class="img">
+					<img src="img/footer1.jpg" />
+					<img src="img/footer2.jpg" />
+					<img src="img/footer3.jpg" />
+					<img src="img/footer4.jpg" />
+				</div>
+			</div>
+			<div class="box2">
+				<img src="img/小米标语.jpg" />
+			</div>
+		</div>
+	</body>
+</html>
