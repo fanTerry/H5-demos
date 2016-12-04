@@ -1,0 +1,41 @@
+<header id="header" class="index-header">
+	<h1>三斤耗儿鱼</h1>
+	<span>渝北店，8号桌</span>
+</header>
+								
+<div class="main">
+	<ul class="nav">
+		<li ng-class="{true: 'active'}[list.ifChose]" ng-repeat="list in allData" ng-click="changeNav($index)">
+			<a href="" title="">
+				<i class="line" ng-hide="$first"></i>
+				<span class="nav-pic {{list.class}}"></span>
+				{{ list.name }}
+			</a>
+		</li>
+	</ul>
+	<div class="list">
+		<h3>{{ dinnerTitle }}</h3>
+		<ul class="dinner-list">
+			<li ng-repeat="item in dinnerList">
+				<div class="dinner-pic">
+					<img ng-src="{{item.pic}}" alt="">
+					<span class="zhuo"><i></i>同桌一点{{item.tongzhuo}}分</span>
+				</div>
+				
+				<h5>{{ item.name }}</h5>
+				<span class="guo"><i class="price">￥{{item.price}}</i>/{{item.unit}}</span>
+				<!--<button type="button"></button>-->
+				
+				<button class="jia" ng-click="add($index)"></button>
+				<span class="dinner-num" ng-show="item.num">{{item.num}}</span>
+				<button class="jian" ng-show="item.num" ng-click='reduce($index)'></button>
+			</li>
+			
+		</ul>
+	</div>
+</div>
+
+<!--<footer>
+	<div class="veg1">已点{{totalNum}}道菜<span class="veg2">已点菜单</span></div>
+</footer>-->
+

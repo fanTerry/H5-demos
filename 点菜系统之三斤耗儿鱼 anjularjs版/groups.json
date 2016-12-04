@@ -1,0 +1,93 @@
+[{
+    "id": 1,
+    "name": "主菜",
+    "class": "zhucai",
+    "ifChose": true,
+    "items": [{
+        "id": 1,
+        "name": "三金耗儿鱼",
+        "price": 318.00,
+        "unit": "锅",
+        "tongzhuo": 3,
+        "pic": "img/banner.png"
+    }, {
+        "id": 2,
+        "name": "好大一条鱼",
+        "price": 128.00,
+        "unit": "条",
+        "tongzhuo": 2,
+        "pic": "img/banner.png"
+    }]
+},{
+    "id": 2,
+    "name": "热菜",
+    "class": "hot",
+    "ifChose": false,
+    "items": [{
+        "id": 3,
+        "name": "热三斤耗儿鱼",
+        "price": 318.00,
+        "unit": "锅",
+        "pic": "img/banner.png"
+    }, {
+        "id": 4,
+        "name": "热好大一条鱼",
+        "price": 128.00,
+        "unit": "条",
+        "pic": "img/banner.png"
+    }]
+},{
+    "id": 3,
+    "name": "凉菜",
+    "class": "cold",
+    "ifChose": false,
+    "items": [{
+        "id": 5,
+        "name": "冷三斤耗儿鱼",
+        "price": 318.00,
+        "unit": "锅",
+        "pic": "img/banner.png"
+    }, {
+        "id": 6,
+        "name": "冷好大一条鱼",
+        "price": 128.00,
+        "unit": "条",
+        "pic": "img/banner.png"
+    }]
+},{
+    "id": 4,
+    "name": "汤品",
+    "class": "drink",
+    "ifChose": false,
+    "items": [{
+        "id": 7,
+        "name": "三斤耗儿鱼汤",
+        "price": 318.00,
+        "unit": "锅",
+        "pic": "img/banner.png"
+    }, {
+        "id": 8,
+        "name": "好大一条鱼汤",
+        "price": 128.00,
+        "unit": "条",
+        "pic": "img/banner.png"
+    }]
+},{
+    "id": 5,
+    "name": "点心",
+    "class": "eat",
+    "ifChose": false,
+    "items": [{
+        "id": 9,
+        "name": "三金耗儿鱼3333",
+        "price": 318.00,
+        "unit": "锅",
+        "pic": "img/banner.png"
+    }, {
+        "id": 10,
+        "name": "好大一条鱼33333",
+        "price": 128.00,
+        "unit": "条",
+        "pic": "img/banner.png"
+    }]
+}]

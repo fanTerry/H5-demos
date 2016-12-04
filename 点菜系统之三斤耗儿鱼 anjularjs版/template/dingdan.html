@@ -1,0 +1,19 @@
+<div id="DDheader">
+	<img src="img/back.png" ng-click='back()'/>
+	<i>确认订单</i>
+</div>
+<div id="kong">
+	<div ng-repeat='item in productList' class="pd">
+		<div class="name"><div class="img"><img src="img/head01.png" /></div><div class="id">{{item.id}}</div></div>
+		<ul>
+			<li>
+				<span>{{item.name}}</span>
+				<span class="price">￥{{item.price}}/锅</span>
+				<button class="jia" ng-click="add($index)"></button>
+				<span class="dinner-num" ng-show="item.num" style="margin-top: 0;">{{item.num}}</span>
+				<button class="jian" ng-show="item.num" ng-click='reduce($index)'></button>
+			</li>
+		</ul>
+	</div>
+</div>
+<input class="DDfooter" placeholder="备注：(选填)请输入您的口味、要求、忌口等"/>

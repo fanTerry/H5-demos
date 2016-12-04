@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable">
+	<meta content="yes" name="apple-touch-fullscreen">
+	<meta content="telephone=no,email=no" name="format-detection">
+	<meta name="viewport" content="width=750,user-scalable=no">
+	<title></title>
+	<link rel="stylesheet" href="css/style.css" />
+	<script src="js/angular.min.js"></script>
+	<script src="js/angular-route.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/jquery-1.8.3.min.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+	<ng-view></ng-view>
+	<footer ng-controller='indexCtrl'>
+		<div class="veg1">已点{{totalNum}}道菜<span class="veg2" ng-click='change()'>已点菜单</span></div>
+	</footer>
+	<script>
+		$('.veg2').click(function(){
+			$(this).html('传送厨房').css({'background':'#f34336','color':'#fff'});
+		})
+	</script>
+</body>
+</html>
