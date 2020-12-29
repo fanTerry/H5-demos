@@ -11,11 +11,14 @@
 # 推荐使用anywhere
 ## 1. 安装node.js 
    安装完成后使用 node -V 检查安装版本      
+      
    ![图片](https://github.com/fanTerry/-2016-/blob/master/img/node.jpg)
 ## 2. 在项目index.html当前目录下 开启cmd 
-   输入npm install anywhere -g     
+   输入npm install anywhere -g    
+       
    ![图片](https://github.com/fanTerry/-2016-/blob/master/img/anywhere.png)
 ## 3. 开启服务器
-   输入 anywhere 即可开启服务器      
+   输入 anywhere 即可开启服务器     
+          
    ![图片](https://github.com/fanTerry/-2016-/blob/master/img/go.jpg)    
       项目成功运行
