@@ -1,0 +1,283 @@
+
+page{
+	height: 100%;
+}
+
+.main{
+	overflow-x: hidden;
+}
+
+.title_tip {
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 10.6667vw;
+  line-height: 10.6667vw;
+  padding: 0 4vw;
+  font-size: 3.4667vw;
+  color: #666;
+}
+.title_tip.h90 {
+  height: 12vw;
+  line-height: 12vw;
+}
+.title_tip a {
+  position: absolute;
+  top: 50%;
+  right: 4vw;
+  margin-top: -2.9333vw;
+  color: #e47b32;
+  border: 0.2667vw solid #e47b32;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border-radius: 5.3333vw;
+  line-height: 5.8667vw;
+  height: 5.8667vw;
+  padding: 0 1.8667vw;
+}
+.cmt_textarea {
+  position: relative;
+  overflow: hidden;
+  border-top: 0.1333vw solid #e1e1e1;
+  border-bottom: 0.1333vw solid #e1e1e1;
+}
+.cmt_images {
+  background: #fff;
+  margin-top: 2.6667vw;
+  padding: 2.6667vw 4vw;
+  border-top: 0.1333vw solid #e1e1e1;
+  border-bottom: 0.1333vw solid #e1e1e1;
+}
+.cmt_images .label {
+  font-size: 3.4667vw;
+  color: #666;
+}
+.cmt_images .label span {
+  float: right;
+  color: #999;
+}
+
+.cmt_images .images li span {
+  position: absolute;
+  right: -3.4667vw;
+  top: -3.4667vw;
+  width: 8vw;
+  height: 8vw;
+  background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/my/icon_close.png") no-repeat;
+  background-size: 4.2667vw 4.2667vw;
+  background-position: center;
+}
+.phone_input {
+  border-top: 0.1333vw solid #e1e1e1;
+  border-bottom: 0.1333vw solid #e1e1e1;
+}
+.phone_input input {
+  display: block;
+  width: 100%;
+  height: 11.4667vw;
+  padding-left: 4vw;
+  font-size: 3.7333vw;
+  color: #333;
+  background-color: #fff;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+  border: none;
+  outline: none;
+}
+.phone_input input::-webkit-input-placeholder {
+  font-size: 3.7333vw;
+  color: #e1e1e1;
+}
+.textarea_wrap {
+  padding: 3.3333vw 4vw;
+  background: #fff;
+  position: relative;
+}
+.textarea_wrap textarea {
+  width: 100%;
+  height: 44vw;
+  line-height: 1.2;
+  font-size: 3.7333vw;
+  color: #333;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+  border: none;
+  outline: none;
+  resize: none;
+}
+.textarea_wrap textarea::-webkit-input-placeholder {
+  font-size: 3.7333vw;
+  color: #e1e1e1;
+}
+.textarea_wrap span {
+  position: absolute;
+  right: 4.6667vw;
+  bottom: 2.1333vw;
+  font-size: 3.4667vw;
+  color: #999;
+}
+.cmt_btns {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+}
+.cmt_btns .cmt_btn {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  height: 12vw;
+  line-height: 12vw;
+  text-align: center;
+  font-size: 4.5333vw;
+  color: #fff;
+  background-image: -webkit-linear-gradient(left, #e69e59, #e47b32);
+  border: 0 solid transparent;
+  -webkit-border-image: -webkit-linear-gradient(#eebb8b, #eca370) 30 30;
+  border-image: -webkit-linear-gradient(#eebb8b, #eca370) 30 30;
+  border-top-width: 0.1333vw;
+}
+.btn_add {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/my/icon_add.png") no-repeat;
+  background-size: cover;
+}
+.btn_add input {
+  width: 100%;
+  height: 100%;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+  border: none;
+  outline: none;
+  opacity: 0;
+}
+.add_container {
+	/* @extend .flex_hc; */
+	display: flex;
+	display: -webkit-flex;
+	align-items: center;
+	-webkit-align-items: center;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  margin-top: 3.3333vw;
+}
+
+.add_item {
+  position: relative;
+  width: 27.4%;
+  padding-top: 26.9%;
+  margin: 0 0 10px 10px;
+  border: 1px dashed #ddd;
+  border-radius: 8px;
+}
+
+.add_item input {
+	/* @extend .g_v_c_mid; */
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%,-50%);
+	-webkit-transform: translate(-50%,-50%);
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+}
+.add_item image,
+.add_item video {
+	/* @extend .g_v_c_mid; */
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%,-50%);
+	-webkit-transform: translate(-50%,-50%);
+	width: 102%;
+	height: 102%;
+	border-radius: 8px;
+	object-fit: cover;
+}
+.add_item .close {
+	position: absolute;
+	width: 24px;
+	height: 24px;
+	z-index: 100;
+	right: 3px;
+	top: 3px;
+	background-color: rgba(0, 0, 0, 0.5);
+	border-radius: 50%;
+}
+.add_item .close::before,.add_item .close::after{
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	content: " ";
+	display: inline-block;
+	width: 1px;
+	height: 12px;
+	background-color: #fff;
+}
+.add_item .close::before{
+	transform: translate3d(-50%, -50%, 0) rotate(45deg);
+	-webkit-transform: translate3d(-50%, -50%, 0) rotate(45deg);
+}
+.add_item .close::after{
+	transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+	-webkit-transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+}
+.add_item .edit {
+	position: absolute;
+	bottom: 3px;
+	left: 3px;
+	z-index: 100;
+	padding: 0 5px;
+	font-size: 13px;
+	line-height: 18px;
+	color: #fff;
+	border-radius: 5px;
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+.add_icon {
+  position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%,-50%);
+	-webkit-transform: translate(-50%,-50%);
+  width: 24px;
+  height: 24px;
+}
+
+.add_icon::before {
+	content: "";
+	/* @extend .g_v_mid; */
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	left: 0;
+	width: 100%;
+	height: 3px;
+	border-radius: 5px;
+	background-color: #ddd;
+}
+.add_icon::after {
+	content: "";
+	/* @extend .g_c_mid; */
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	top: 0;
+	width: 3px;
+	height: 100%;
+	border-radius: 5px;
+	background-color: #ddd;
+}

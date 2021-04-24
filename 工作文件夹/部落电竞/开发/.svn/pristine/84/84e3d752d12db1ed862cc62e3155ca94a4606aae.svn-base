@@ -1,0 +1,338 @@
+<template>
+  <div class="Page">
+    <div class="main">
+      <div class="count_tips">{{quetionTime}}</div>
+      <div class="rank_title">
+        第<span class="num">{{subjectNum}}</span>题
+      </div>
+      <div class="title">{{currSubject.name}}</div>
+      <div class="option_group">
+        <!-- 答对加active -->
+        <div :class="{'active': index == active}" v-for="(item ,index) in currSubject.hdSubjectOptions"
+          @click="verigyAswer(item.id,index)">
+
+          {{index==0?'A.':index==1?'B.':index==2?'C.':'D.'}} {{item.name}}</div>
+        <!-- <div class="">B. WE</div> -->
+      </div>
+    </div>
+    <!-- 答题倒计时提醒 -->
+    <div class="pop_count_att" :class="{'none':prepareDialog}">
+      <div class="tips">
+        <p>每题限时10秒</p>
+        <p>每次续命操作限时1分钟</p>
+        <p>准备好了吗?</p>
+      </div>
+      <div class="count">{{prepareTime}}</div>
+    </div>
+    <!-- 弹窗集合组件 -->
+    <pops ref="popRef" :shareCode='shareCode' @reStartTimeCountDown="reStartTimeCountDown" @payToRestartGame="payToRestartGame"></pops>
+
+    <!-- <footer class="mod_footer">
+      <tabs></tabs>
+    </footer> -->
+  </div>
+</template>
+
+<script>
+import tabs from "./components/tabs";
+import pops from "./components/pops";
+import wxApi from "../../../libs/weixinShare";
+import localStorage from "../../../libs/storages/localStorage";
+export default {
+  components: { tabs, pops },
+  props: [],
+  data() {
+    return {
+      quetionTime: 10,
+      prepareTime: 3,
+      prepareDialog: false,
+      currSubject: {},
+      subjectNum: 1,
+      active: null,
+      subjectParam: {
+        hdUserLogId: "", //参与流水ID
+        subjectLogId: "", //答题流水ID
+        subjectId: "" //题目ID
+      },
+      showPopType: 0,
+      verigyAswerStatus: 1, //暂停题目标记 控制是否可以回答题目，答题结束时，设置为0,当续命成功，再次进行答题是，设置1
+      shareCode:null
+    };
+  },
+  mounted() {
+    this.subjectParam.hdUserLogId = this.$route.query.hdUserLogId;
+    this.subjectParam.subjectId = this.$route.query.subjectId;
+    this.subjectParam.subjectLogId = this.$route.query.subjectLogId;
+    this.shareCode = this.$route.query.shareCode;
+    console.log(this.shareCode,'mounted-shareCode-answer');
+    this.prepareDialogCountDonwn();
+  },
+  methods: {
+    wxShare(shareCode) {
+      let option = {
+        title: "一战到底，答题赢大奖", // 分享标题, 请自行替换
+        desc: "在这里要么暴露智商，要么赢取大奖，你敢来挑战吗？", // 分享描述
+        imgUrl:
+          "https://rs.esportzoo.com/svn/esport-res/mini/images/icon/hongbao.png", // 分享图标, 请自行替换，需要绝对路径
+        link:
+          "https://m.esportzoo.com/hd/hd101/home?shareCode=" +
+          shareCode +
+          "&agentId=10006&biz=1&clientType=7"
+      };
+      console.log(option);
+      wxApi.wxRegister(option);
+    },
+
+    verigyAswer(optinId, index) {
+      if (this.verigyAswerStatus == 0) {
+        return;
+      }
+      //选择的答案ID
+      this.active = index;
+      console.log(optinId);
+      //校对答案并返回下一道题目
+      let param = this.subjectParam;
+      param.userOptionIdList = optinId;
+      this.$post("/api/subject/verifyAnswer", param)
+        .then(rsp => {
+          console.log(rsp, "verigyAswer");
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.currSubject = dataResponse.data;
+            this.subjectParam.subjectId = this.currSubject.id;
+            this.active = null;
+            // clearTimeout(this.subjectTimeCountDown())
+            this.quetionTime = 10;
+            this.subjectNum+=1;
+            // this.subjectTimeCountDown();
+          } else if (dataResponse.code == "3222") {
+            //答案出错并结束答题
+            let prizeInfo = dataResponse.data;
+            this.$refs.popRef.answerOver(
+              this.subjectParam.subjectLogId,
+              6,
+              prizeInfo
+            );
+            console.log("答案出错并结束答题");
+            this.verigyAswerStatus = 0;
+          } else if (dataResponse.code == "3111" || dataResponse.code == "3222" ) {
+            let prizeInfo = dataResponse.data;
+            this.$refs.popRef.answerOver(
+              this.subjectParam.subjectLogId,
+              6,
+              prizeInfo
+            );
+            console.log("所有题目正确，没有获得头奖");
+            this.verigyAswerStatus = 0;
+          } else if (dataResponse.code == "3333"  ) {
+            this.$refs.popRef.answerOver(this.subjectParam.subjectLogId, 5);
+            console.log("所有题目正确，并获得头奖");
+            this.verigyAswerStatus = 0;
+          } else if (dataResponse.code == "3444") {
+            this.$refs.popRef.answerWrong(this.subjectParam.subjectLogId,this.subjectParam.hdUserLogId);
+            this.verigyAswerStatus = 0;
+            console.log("弹出续命窗口");
+          } else if (dataResponse.code == "2111") {
+             this.verigyAswerStatus = 0;
+            this.$refs.popRef.openDialog(2);
+            console.log("支付1毛继续挑战");
+          } else if (dataResponse.code == "1607") {
+            this.verigyAswerStatus = 0;
+            this.$refs.popRef.openDialog(4);
+            console.log("今天没有答题机会");
+          }else {
+            this.$toast("答题出现异常");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    getFirstSubject() {
+      let param = this.subjectParam;
+      console.log(param, "param");
+      // param.hdUserLogId = this.hdUserLogId
+      // param.subjectId = this.subjectId
+      // param.subjectLogId = this.subjectLogId
+      this.$post("/api/subject/startGame", param)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log(dataResponse, "getFirstSubject");
+            this.currSubject = dataResponse.data;
+            this.subjectTimeCountDown();
+            this.wxShare(this.currSubject.shareCode);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    /**
+     * 重新启动倒计时，继续答题
+     */
+    reStartTimeCountDown() {
+      this.active = null;
+      this.verigyAswerStatus = 1;
+      this.quetionTime = 10;
+      this.subjectTimeCountDown();
+    },
+    /**
+     * 答题计时器
+     */
+    subjectTimeCountDown() {
+      let _self = this;
+      setTimeout(() => {
+        if (this.verigyAswerStatus == 0) {
+          return;
+        }
+        _self.quetionTime--;
+        if(_self.quetionTime==-1){
+            _self.quetionTime=0 
+        }
+        if (_self.quetionTime == 0) {
+          console.log("时间到");
+          // this.$toast("时间到，答题结束");
+          //时间到自动校验答案
+            _self.quetionTime=0 
+          this.verigyAswer();
+        
+
+          clearTimeout();
+        } else {
+          _self.subjectTimeCountDown();
+        }
+      }, 1000);
+    },
+
+    prepareDialogCountDonwn() {
+      let _self = this;
+      setTimeout(() => {
+        _self.prepareTime--;
+        if (_self.prepareTime == 0) {
+          _self.prepareDialog = true;
+          _self.getFirstSubject();
+        } else {
+          _self.prepareDialogCountDonwn();
+        }
+      }, 1000);
+    },
+    payToRestartGame(subjectParam){
+      console.log(subjectParam,'payToRestartGame-subjectParam');
+      this.subjectParam.hdUserLogId = subjectParam.hdUserLogId;
+      this.subjectParam.subjectId = subjectParam.subjectId;
+      this.subjectParam.subjectLogId = subjectParam.subjectLogId;
+      this.shareCode = subjectParam.shareCode;
+      this.prepareTime=3;
+      this.prepareDialog=false;
+      this.active = null;
+      this.verigyAswerStatus = 1;
+      this.quetionTime = 10;
+      this.currSubject={};
+      this.showPopType=0;
+      this.subjectNum=1;
+      this.prepareDialogCountDonwn();
+    }
+  },
+  destroyed() {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  background-color: rgb(255, 231, 131);
+}
+
+.main {
+  @include getBgImg("../../../assets/images/hd/hd101/answering_bg.png");
+  background-size: 100% auto;
+  background-position: top center;
+}
+
+.count_tips {
+  width: 19.7vw;
+  height: 19.7vw;
+  line-height: 19.7vw;
+  border-radius: 50%;
+  margin: 4.8vw auto 0;
+  font-size: 12vw;
+  font-family: "PangMenZhengDao";
+  color: #ffe783;
+  text-align: center;
+  background-color: #e97542;
+  box-shadow: 0 5px 0 0 rgba($color: #000000, $alpha: 0.12);
+}
+
+.rank_title {
+  padding-top: 4vw;
+  font-size: 4.5vw;
+  color: #fff;
+  text-align: center;
+  .num {
+    padding: 0 5px;
+    color: #fcff00;
+  }
+}
+
+.title {
+  padding: 10vw 10.7vw 0;
+  font-size: 4.3vw;
+  line-height: 7.4vw;
+}
+
+.option_group {
+  padding-top: 1.3vw;
+  > div {
+    width: 82.4vw;
+    margin: 3.2vw auto 0;
+    padding: 4.5vw 0 5.6vw 5.9vw;
+    font-size: 4.5vw;
+    line-height: 3.5vw;
+    color: #fff;
+    @include getBgImg("../../../assets/images/hd/hd101/option_bg.png");
+    background-size: 100% 100%;
+    &.active {
+      @include getBgImg("../../../assets/images/hd/hd101/option_active.png");
+      background-size: 100% 100%;
+    }
+  }
+}
+
+.pop_count_att {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  background: rgb(255, 231, 131);
+}
+
+.tips {
+  padding-top: 138px;
+  text-align: center;
+  p {
+    padding-top: 10px;
+    font-size: 18px;
+    color: #333;
+  }
+}
+
+.count {
+  width: 164px;
+  margin: 48px auto 0;
+  border-radius: 50%;
+  font-size: 112px;
+  line-height: 164px;
+  font-family: "PangMenZhengDao";
+  text-align: center;
+  color: #ffe783;
+  background-color: #e97542;
+}
+</style>

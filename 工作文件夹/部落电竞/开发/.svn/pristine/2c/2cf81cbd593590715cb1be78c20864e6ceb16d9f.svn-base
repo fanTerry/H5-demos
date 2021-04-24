@@ -1,0 +1,151 @@
+<template>
+  <div class="login-container">
+    <!--    <span>QQ第三方登录 - 回调页面</span>-->    
+    <loading v-if="loading"></loading>
+  </div>
+</template>
+
+<script>
+import loading from "components/common/loading";
+import { getCookie, delCookie } from "../../../libs/utils";
+export default {
+  components: {
+    loading
+  },
+  name: "qqLogin",
+  data() {
+    return {
+      loading: false,
+      URLdata:"",
+    };
+  },
+
+  created() {   
+    // console.log(window.localStorage.getItem("qqLoginType"));
+    // if(window.localStorage.getItem("qqLoginType")==1){
+      this.toqqLogin(); //基于接口
+      this.loading=true;    
+    // }   
+  },
+  mounted(){
+        // 添加返回事件监听
+        // if (window.history && window.history.pushState){
+        //   window.addEventListener("popstate",function(e){
+        //     //这里进行跳转操作
+        //     console.log("记录1");
+        //   }, false);
+        // }
+        // this.pushHistory()
+      },
+  methods: {
+    //调用登录接口成功后处理逻辑
+    afterLoginSuccess(member) {
+      if (/^1(3|4|5|6|7|8|9)\d{9}$/.test(member.nickName)) {
+        member.nickName = member.nickName.substring(0, 7) + "XXXX";
+      }
+      let user = {
+        nickName: member.nickName,
+        icon: member.icon ? member.icon : this.globalConst.userDefaultIcon,
+        userId: member.id,
+        phone: member.phone
+      };
+      window.localStorage.setItem("user", JSON.stringify(user));
+      window.localStorage.user = JSON.stringify(user);
+      this.$store.dispatch("setUserInfo", user);
+      let redirect = decodeURIComponent(
+        window.localStorage.getItem("toRedirectUrl") || "/"
+      );
+      console.log(redirect, "回到拦截前的redirect");
+      this.$router.push({
+        path: redirect
+      });
+      setTimeout(_ => {
+        window.localStorage.removeItem("toRedirectUrl");
+      }, 500);
+    },
+
+    toqqLogin() {           
+      var access_token = this.GetURLString("access_token");
+      var state = this.GetURLString("state");
+      console.log("参数", access_token, state);
+       var url=window.localStorage.getItem("toRedirectUrl"); 
+      var agentId= this.$route.query.agentId;
+      var clientType= this.$route.query.clientType;
+      var biz=this.$route.query.biz;
+      var ADTAG=this.$route.query.ADTAG;
+      var decodeUrl=decodeURIComponent(url);      
+      if(url==null){       
+       var toHomeUrl=window.location.origin+"/?clientType="+clientType+"&agentId="+agentId+"&biz="+biz+"&ADTAG="+ADTAG;
+        console.log(toHomeUrl,"无URL缓存0")
+        url=encodeURIComponent(toHomeUrl);
+        console.log(url,"无URL缓存")
+      }
+      else{
+        var toUrl= decodeUrl.substring(0,decodeUrl.indexOf("?"));
+        console.log(toUrl,"截取后");
+        var toqqUrl=toUrl+"/?clientType="+clientType+"&agentId="+agentId+"&biz="+biz+"&ADTAG="+ADTAG;
+        console.log(toqqUrl,"拼接后");
+        url=encodeURIComponent(toqqUrl);
+      }    
+      window.location.href = "/api/qqlogin/appIndex?access_token="+ access_token+"&state="+state+"&redirect="+url;  
+      // return this.$post("/api/qqlogin/appIndex", {
+      //   access_token: access_token,
+      //   state: state
+      // })
+      //   .then(dataResponse => {
+      //     console.log(dataResponse, "返回的消息");
+      //     if (dataResponse.code != "200") {
+      //       this.$toast(dataResponse.message);
+      //       return;
+      //     }
+      //     var newUserType = dataResponse.data.newUser;
+      //     var key = dataResponse.data.key;
+      //     this.loading=false;
+      //     window.localStorage.setItem("qqLoginType",2);
+      //     //如果是新用户则跳转到注册页
+      //     if (newUserType) {
+      //       this.$router.push({
+      //         path: "register",
+      //         query: {
+      //           key: key,
+      //           newUserType: newUserType
+      //         }
+      //       });
+      //     } else {
+      //       this.afterLoginSuccess(dataResponse.data.h5LoginUserResponse);
+      //     }
+      //   })
+      //   .catch(error => {
+      //     this.$toast("登录失败,请稍后重试");
+      //     console.log(error, 8888);
+      //   });
+    },
+    //获取当前URL?后面的参数
+    GetURLString(name) {
+      this.URLdata= window.sessionStorage.getItem("qqBack");
+      console.log(this.URLdata,"URLdata");
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+      var r =this.URLdata.substr(1).match(reg); //获取url中"?"符后的字符串并正则匹配
+      var context = "";
+      if (r != null) context = r[2];
+      reg = null;
+      r = null;
+      return context == null || context == "" || context == "undefined"
+        ? ""
+        : context;
+    },
+    // pushHistory() {
+    //   let state = {
+    //     title: "",
+    //     url: "/home"
+    //   };
+    //   window.history.pushState(state, state.title, state.url);
+    // },    
+
+  },
+  // destroyed (){ 
+  //       window.removeEventListener('popstate',this.radeRouterback, false);
+  //     },
+};
+</script>
+<style rel="stylesheet/scss" lang="scss"></style>

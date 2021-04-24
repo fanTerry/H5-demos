@@ -1,0 +1,230 @@
+<template>
+  <div class="Page peaceElitePage">
+    <!-- peaceElitePage为和平精英需要加的类名 -->
+    <!-- kingGloryPage为王者荣耀的 -->
+    <header class="mod_header">
+      <nav-bar :pageTitle="'创建赛事'"></nav-bar>
+      <div class="room_title">
+        <title>小橘子创建的和平精英比赛</title>
+      </div>
+    </header>
+    <div class="main">
+      <!-- 参赛队伍 -->
+      <div class="join_team">
+        <h3>
+          <div class="flex_hc">
+            <span>参赛队伍</span>
+            <span class="format">[16支队伍，淘汰赛制]</span>
+          </div>
+          <a class="more">更多队伍<span></span></a>
+        </h3>
+        <!-- 参赛队伍列表 -->
+        <team-list></team-list>
+        <!-- 赛事信息 -->
+        <div class="match_info">
+          <div class="info">
+            <div>
+              <span>当前状态</span>
+              <span>报名中</span>
+            </div>
+            <div>
+              <span>当前队伍数</span>
+              <p><span class="team_num">4</span>/16</p>
+            </div>
+            <div>
+              <span>报名结束时间:</span>
+              <span>12月18日 12:00</span>
+            </div>
+          </div>
+          <!-- 主办方显示 -->
+          <!-- <div class="manage_btn">
+            <a class="bg_orange">队伍管理</a>
+          </div> -->
+          <!-- 参赛者显示 -->
+          <div class="manage_btn">
+            <p>已报名</p>
+            <a class="bg_blue">申请退赛</a>
+          </div>
+        </div>
+      </div>
+      <!-- 赛程 -->
+      <div class="team_schedule">
+        <h3>
+          <div class="flex_hc">
+            <span>赛程</span>
+          </div>
+          <a class="more">更多赛程<span></span></a>
+        </h3>
+        <schedule-list></schedule-list>
+      </div>
+
+      <!-- 聊天室 -->
+      <div class="chat_room">
+        <h3>
+          <div class="flex_hc">
+            <span>聊天室</span>
+          </div>
+        </h3>
+        <chat-room></chat-room>
+      </div>
+    </div>
+    <footer class="mod_footer">
+      <div class="">
+        <a class="rule_btn">规则管理</a>
+        <a class="share_btn">分享赛事</a>
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "components/header/nav_bar/index.vue";
+import teamList from "./components/teamlist.vue";
+import scheduleList from "./components/schedulelist.vue";
+import chatRoom from "./components/chatroom.vue";
+
+export default {
+  components: { navBar, teamList, scheduleList, chatRoom },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_mixin";
+@import "../../assets/common/_base";
+
+.peaceElitePage {
+  background: url("../../assets/images/matchtool/peace_elite_bg.png") center
+    43.2vw no-repeat;
+  background-size: 100% auto;
+  .room_title {
+    background: url("../../assets/images/matchtool/hpjy_header_bg.png") top
+      center no-repeat;
+    background-size: 100% auto;
+  }
+}
+
+.kingGloryPage {
+  background: url("../../assets/images/matchtool/king_glory_bg.png") center
+    43.2vw no-repeat;
+  background-size: 100% auto;
+  .room_title {
+    background: url("../../assets/images/matchtool/wzry_header_bg.png") top
+      center no-repeat;
+    background-size: 100% auto;
+  }
+}
+
+.room_title {
+  padding: 22.1333vw 13.4667vw 1.3333vw;
+  title {
+    display: block;
+    padding: 0 12.5333vw;
+    line-height: 8vw;
+    font-size: 4vw;
+    font-weight: 600;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 4vw;
+  }
+}
+
+h3 {
+  @extend .flex_v_justify;
+  padding: 2.9333vw;
+  font-size: 5.3333vw;
+  line-height: 5.8667vw;
+  color: #fff;
+  font-weight: normal;
+  .format {
+    padding-left: 2.4vw;
+    font-size: 3.4667vw;
+    color: #ff7e00;
+  }
+  .more {
+    @extend .flex_hc;
+    font-size: 3.7333vw;
+    font-weight: normal;
+    span {
+      width: 3.2vw;
+      height: 3.2vw;
+      margin-left: 2.1333vw;
+      @include getArrow(0.16rem, rgba(255, 255, 255, 0.3), right);
+    }
+  }
+}
+
+.match_info {
+  @extend .flex_v_justify;
+  width: 94.6667vw;
+  margin: 0 2.6667vw 2.6667vw;
+  padding: 2.6667vw;
+  font-size: 3.7333vw;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.2);
+  .info {
+    width: 56.8vw;
+    > div {
+      @extend .flex_v_justify;
+      padding-bottom: 2.6667vw;
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+    .team_num {
+      color: #ff7e00;
+    }
+  }
+}
+
+.manage_btn {
+  p {
+    line-height: 5.3333vw;
+    padding-bottom: 1.3333vw;
+    text-align: center;
+  }
+  a {
+    @extend .flex_v_h;
+    width: 23.2vw;
+    height: 9.3333vw;
+    font-weight: bold;
+    border-radius: 6vw;
+  }
+  .bg_orange {
+    @include getBgLinear(right, #ee701d, #f5951d);
+  }
+  .bg_blue {
+    @include getBgLinear(right, #1a74ff, #00b4ff);
+  }
+}
+
+.chat_room {
+  padding-top: 1.3333vw;
+}
+
+.mod_footer {
+  > div {
+    @extend .flex_v_h;
+    padding: 3.4667vw 0;
+  }
+  a {
+    @extend .flex_v_h;
+    width: 30.6667vw;
+    height: 11.7333vw;
+    margin: 0 4vw;
+    font-size: 4.5333vw;
+    color: #fff;
+    border-radius: 11.7333vw;
+  }
+  .rule_btn {
+    @include getBgLinear(right bottom, #6950fb, #b83af3);
+  }
+  .share_btn {
+    @include getBgLinear(right bottom, #1a74ff, #00b4ff);
+  }
+}
+</style>

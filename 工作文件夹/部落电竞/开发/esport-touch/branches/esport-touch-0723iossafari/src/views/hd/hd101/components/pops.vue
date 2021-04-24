@@ -1,0 +1,777 @@
+<template>
+  <div class="ui_pop" v-if='showFlag'>
+    <!-- 所有弹窗按钮默认皆为绿色bg_green,选中状态为bg_red;不可选为bg_grey -->
+    <!-- 分享弹窗 -->
+    <div class="mod_pop pop_share" v-if="curType==1">
+      <a class="close" @click="closePop(7)"></a>
+      <div class="share_tag"></div>
+      <div class="title">点击本页面右上角“...”进行分享，有用户点击进入分享链接后，方可成功续命！</div>
+      <div class="rule_tips">
+        <p>1. 选择续命均需在1分钟内达成</p>
+        <p>2. 每次只可选择一次续命方式</p>
+      </div>
+    </div>
+    <!-- 支付三毛，再次挑战 -->
+    <div class="mod_pop" v-if="curType==2">
+      <a class='close' @click="closePop"></a>
+      <div class="title">每人每天仅有一次免费答题机会，您已用完～</div>
+      <a class="bg_green mt36 mb50" @click="payToJoin(1)">支付三毛，再次挑战</a>
+    </div>
+    <!-- 提交派奖申请 -->
+    <div class="mod_pop" v-if="curType==3">
+      <a class="close" @click="closePop"></a>
+      <div class="title tac">领取成功</div>
+      <img class="success_logo mt36" src="../../../../assets/images/hd/hd101/success_logo.png" alt="">
+      <a class="bg_green mt36 mb36" @click="toHdHome">返回首页</a>
+      <div class="rule_tips mt14">
+        <p>1. 在官方商城，1星星等值于1元人民币</p>
+        <p>2. 星星限定在2天内使用</p>
+      </div>
+    </div>
+    <!-- 答题机会用完 -->
+    <div class="mod_pop pop_nochance" v-if="curType==4">
+      <a class="close" @click="closePop"></a>
+      <div class="title">
+        您今天的答题机会已经用完，
+        请明天再来挑战～
+      </div>
+    </div>
+    <!-- 今日头奖 -->
+    <div class="mod_pop pop_award" v-if="curType==5">
+      <a class="close" @click="closePop"></a>
+      <img class="award_logo" src="../../../../assets/images/hd/hd101/award_logo.png" alt="">
+      <div class="title">成功答对20题，恭喜获得</div>
+      <div class="award_title">今日头奖</div>
+      <!-- <div class="title">请联系官方客服核实领取！</div> -->
+      <div class="bg_red mt14" @click="getYourPrize(prizeInfo.userGiftLogId,1)">点击领取</div>
+      <div class="att_tips mb50">请在5分钟之内领取 </div>
+      <div class="rule_tips">
+        <!-- <p>1. 在官方商城，1星星等值于1元人民币</p>
+        <p>2. 星星限定在2天内使用</p> -->
+      </div>
+    </div>
+    <!-- 答对多少题获得星星 -->
+    <div class="mod_pop pop_award" v-if="curType==6">
+      <a class="close" @click="closePop"></a>
+      <img class="award_logo" src="../../../../assets/images/hd/hd101/award_logo.png" alt="">
+      <template v-if="prizeInfo.userGiftLogId">
+        <div class="title tac">成功答对{{prizeInfo.rightAnswer}}题，获得</div>
+        <div class="award_title">{{prizeInfo.startPrizeNum}}<span>元</span></div>
+        <div class="att_tips mt14 mb7">请在5分钟之内领取</div>
+        <div class="bg_red" @click="getYourPrize(prizeInfo.userGiftLogId,1)">点击领取</div>
+        <!-- <div class="bg_green " v-if="prizeInfo.canJoinSubject" @click="payToJoin(3,prizeInfo.userGiftLogId)">
+          <p class="pay_one">【支付三毛】</p>
+          <p>点击领取并再次挑战</p>
+        </div> -->
+      </template>
+      <template v-else>
+        <div class="title tac lh34">成功答对{{prizeInfo.rightAnswer}}题<br>还请再接再厉</div>
+        <div class="bg_green mb50 mt36" v-if="prizeInfo.canJoinSubject" @click="payToJoin(3)">
+          <p class="pay_one">【支付三毛】</p>
+          <p>再次挑战</p>
+        </div>
+      </template>
+      <div class="rule_tips">
+        <!-- <p>1. 在官方商城，1星星等值于1元人民币</p>
+        <p>2. 星星限定在2天内使用</p> -->
+      </div>
+    </div>
+    <!-- 答错可选续命方式 -->
+    <div class="mod_pop" v-if="curType==7">
+      <a class="close" @click="closePop"></a>
+      <div class="count_tips" v-if="totalTime>0">{{totalTime}}</div>
+      <div class="title lh_one">答题错误！可选续命方式</div>
+      <div :class="{'bg_green':item.canActive,'bg_grey':!item.canActive,'bg_red':clickFlag==index,'mt36':index==0}"
+        v-for="(item,index) in wayList" :key="index" @click="wayContinue(item,index)">
+        <p>{{item.wayName}}</p>
+      </div>
+      <div class="bg_green" @click="toEndGame">
+        <p>结束答题</p>
+      </div>
+      <div class="rule_tips mt36">
+        <p>1. 选择续命均需在1分钟内达成</p>
+        <p>2. 每次只可选择一次续命方式</p>
+      </div>
+    </div>
+
+    <!-- 提现弹窗 -->
+    <div class="mod_pop" v-if="curType==8">
+      <a class="close" @click="closePop"></a>
+      <div class="title lh_one tac">可提现金额</div>
+      <div class="money mt36 mb36">￥{{withdrawMoney}}</div>
+      <div class="bg_green mb36" @click="goWithdrawMonery()">
+        <p>点我提现</p>
+      </div>
+      <div class="rule_tips mt14 tac">
+        <p class=" pl0">1. 一天仅可提现一次</p>
+        <p class=" pl0">2. 每天仅可提现5元</p>
+      </div>
+    </div>
+    <!-- 提现成功 -->
+    <div class="mod_pop" v-if="curType==9">
+      <a class="close" @click="closePop"></a>
+      <img class="success_logo" src="../../../../assets/images/hd/hd101/success_logo.png" alt="">
+      <div class="title mb36">
+        您已成功提交申请，请留意
+        提现记录和个人钱包哦～
+      </div>
+    </div>
+    <!-- 答题机会用完 -->
+    <div class="mod_pop pop_nochance" v-if="curType==10">
+      <a class="close" @click="closePop"></a>
+      <div class="title">
+        一天仅可提现一次，请明天再来！
+      </div>
+    </div>
+    <!-- 联系客服领取头奖弹窗 -->
+    <div class="mod_pop pop_nochance" v-if="curType==11">
+      <a class="close" @click="closePop"></a>
+      <div class="title">
+        请联系官方客服微信领取：jzdj08。
+      </div>
+    </div>
+    <!-- 答对题目数量不够，没有奖励，提醒支付三毛再来一次 -->
+    <!-- <div class="mod_pop pop_award" v-if="curType==10">
+      <a class="close"></a>
+      <img class="award_logo" src="../../../../assets/images/hd/hd101/award_logo.png" alt="">
+      <div class="title tac lh34">成功答对33题<br>还请再接再厉</div>
+      <div class="bg_green mb50 mt36">
+        <p class="pay_one">【支付三毛】</p>
+        <p>点击领取并继续挑战</p>
+      </div>
+      <div class="rule_tips">
+        <p>1. 在官方商城，1星星等值于1元人民币</p>
+        <p>2. 星星限定在2天内使用</p>
+      </div>
+    </div> -->
+  </div>
+</template>
+
+<script>
+import localStorage from "../../../../libs/storages/localStorage";
+let clock = null;
+export default {
+  components: {},
+  props: ["type", "shareCode"],
+  data() {
+    return {
+      showFlag: true,
+      curType: this.type,
+      clickFlag: -1,
+      totalTime: 60, //记录具体倒计时时间
+      wayList: [],
+      subjectLogId: null,
+      hdUserLogId: null,
+      prizeInfo: {},
+      isDoSubject: false,
+      withdrawMoney: 0,
+      closeNum: 300
+    };
+  },
+  mounted() {
+    console.log(this.shareCode, "mounted-shareCode");
+    if (!this.curType) {
+      this.showFlag = false;
+    }
+  },
+  methods: {
+    //支付1毛，再次挑战
+    payToJoin(type, giftId) {
+      let _self = this;
+      if (giftId) {
+        _self.getYourPrize(giftId);
+      }
+      //支付1毛挑战
+      _self.getWxConfig().then(res => {
+        _self.toPayStart(type);
+      });
+    },
+    //去领取奖品
+    getYourPrize(userGiftLogId, type) {
+      let param = {};
+      param.userGiftLogId = userGiftLogId;
+      param.subjectLogId = this.subjectLogId;
+      this.$post("/api/subject/getGifts", param)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            //领取完成，弹出申请弹窗
+            this.showFlag = true;
+            if (type == 1) {
+              this.curType = 11;
+            } else {
+              this.curType = 3;
+            }
+          } else {
+            this.$toast("礼品领取失败，请联系客服");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //答题结束弹窗
+    answerOver(subjectLogId, showType, prizeInfo) {
+      this.curType = showType;
+      this.showFlag = true;
+      this.subjectLogId = subjectLogId;
+      console.log(prizeInfo);
+      this.prizeInfo = prizeInfo;
+      this.closeDown();
+    },
+
+    closeDown() {
+      //五分钟自动关闭，并返回首页
+      let _self = this;
+      setTimeout(() => {
+        _self.closeNum--;
+        if (_self.closeNum == 0) {
+          _self.showFlag = false;
+          _self.toHdHome();
+        } else {
+          this.closeDown();
+        }
+      }, 1000);
+    },
+
+    openDialog(showType) {
+      this.curType = showType;
+      this.showFlag = true;
+    },
+
+    openWithdarwDialog(money) {
+      this.curType = 8;
+      this.showFlag = true;
+      this.withdrawMoney = money;
+    },
+    goWithdrawMonery() {
+      this.$post("/api/hd101/userWithdraw")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.curType = 9;
+            this.showFlag = true;
+          } else if (dataResponse.code == 1999) {
+            this.$toast("每天只可以提现一次");
+          } else {
+            this.$toast("提现失败");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    answerWrong(subjectLogId, hdUserLogId) {
+      //回答错误弹窗
+      this.curType = 7;
+      this.showFlag = true;
+      this.subjectLogId = subjectLogId;
+      this.hdUserLogId = hdUserLogId;
+      this.totalTime = 60;
+      this.getContinueWay();
+    },
+    wayContinue(wayItem, curIdx) {
+      let _self = this;
+      if (!wayItem.canActive) {
+        _self.$toast("该续命方式已使用~");
+        return;
+      }
+      if (_self.totalTime == 0) {
+        _self.$toast("时间已到,不支持续命~");
+        return;
+      }
+      if (wayItem.wayType == 2) {
+        //支付续命
+        _self.getWxConfig().then(res => {
+          _self.toPayContinue();
+        });
+      } else {
+        //分享续命
+        _self.curType = 1;
+        _self.toShareContinue();
+      }
+      this.clickFlag = curIdx;
+      setTimeout(() => {
+        this.clickFlag = -1;
+      }, 1 * 300);
+    },
+    //分享续命
+    toShareContinue() {
+      let _self = this;
+      this.$post("/api/hd101/share/getShareUrl", {
+        hdSubjectLogId: _self.subjectLogId
+      })
+        .then(res => {
+          console.log(res, "分享续命");
+          if ((res.code = "200" && res.data != null)) {
+            this.$toast("选择分享续命");
+          } else {
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //判断续命方式
+    getContinueWay() {
+      let _self = this;
+      this.$post("/api/hd101/getContinueWay", {
+        hdSubjectLogId: _self.subjectLogId
+      })
+        .then(res => {
+          console.log(res, "续命方式");
+          if ((res.code = "200" && res.data != null)) {
+            _self.wayList = res.data;
+            _self.countDown();
+          } else {
+            _self.$toast("获取续命方式异常");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    countDown() {
+      let _self = this;
+      clock = window.setInterval(() => {
+        if (_self.totalTime > 0) {
+          _self.checkContinueStatus();
+          _self.totalTime--;
+        }
+        if (_self.totalTime == 0) {
+          //当倒计时等于0时清除定时器
+          window.clearInterval(clock);
+          // 超时 结束答题
+          this.toEndGame();
+        }
+      }, 1000);
+    },
+    toEndGame() {
+      if (null != clock) {
+        //清空定时器
+        window.clearInterval(clock);
+      }
+      let _self = this;
+      _self
+        .$post("/api/subject/endGame", {
+          subjectLogId: _self.subjectLogId,
+          hdUserLogId: _self.hdUserLogId
+        })
+        .then(res => {
+          if ((res.code = "200" && res.data != null)) {
+            let prizeInfo = res.data;
+            _self.answerOver(_self.subjectLogId, 6, prizeInfo);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    checkContinueStatus() {
+      let _self = this;
+      this.$post("/api/hd101/share/checkContinueStatus", {
+        hdSubjectLogId: _self.subjectLogId,
+        hdUserLogId: _self.hdUserLogId
+      })
+        .then(res => {
+          console.log(res, "查询续命状态");
+          if ((res.code = "200" && res.data != null)) {
+            if (res.data.continueVo.isDoSubject) {
+              //alert('刷新续命成功');
+              //继续答题,关闭当前弹窗,继续答题 TODO
+              _self.isDoSubject = true;
+              _self.$toast("恭喜你,续命成功~", "4");
+              _self.closePop();
+              _self.$emit("reStartTimeCountDown");
+            }
+          } else {
+          }
+          //_self.countDown();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    closePop(nextType) {
+      if (Number.parseInt(nextType)) {
+        //关闭当前弹窗,显示其他弹窗
+        this.curType = nextType;
+      } else {
+        this.showFlag = false;
+        if (null != clock) {
+          window.clearInterval(clock);
+        }
+      }
+    },
+    toPayContinue() {
+      let _self = this;
+      let shareCode = this.shareCode;
+      console.log(shareCode, "toPayContinue-shareCode");
+      let param = {
+        hdSubjectLogId: _self.subjectLogId,
+        choosedPayWay: 4
+      };
+      if (shareCode) {
+        param.shareCode = shareCode;
+      }
+      _self
+        .$post("/api/hd101/subjectPay", param)
+        .then(res => {
+          console.log(res, "subjectPay");
+          if ((res.code = "200" && res.data != null)) {
+            _self.weixinPay(res.data, _self, 2);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    toPayStart(type) {
+      let _self = this;
+      let shareCode = this.shareCode;
+      console.log(shareCode, "toPayStart-shareCode");
+      let param = { choosedPayWay: 4 };
+      if (shareCode) {
+        param.shareCode = shareCode;
+      }
+      _self
+        .$post("/api/hd101/subjectJoinPay", param)
+        .then(res => {
+          console.log(res, "subjectJoinPay");
+          if ((res.code = "200" && res.data != null)) {
+            _self.weixinPay(res.data, _self, type);
+          } else {
+            _self.$toast("系统繁忙,请稍后重试~");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getWxConfig: function() {
+      return this.$post("/api/wxlogin/getJsConfig")
+        .then(rsp => {
+          console.log(rsp, "rsp");
+          if (rsp) {
+            this.wx.config({
+              debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+              appId: rsp.appId, // 必填，公众号的唯一标识
+              timestamp: rsp.timestamp, // 必填，生成签名的时间戳
+              nonceStr: rsp.nonceStr, // 必填，生成签名的随机串
+              signature: rsp.signature, // 必填，签名，见附录1
+              jsApiList: ["chooseWXPay"]
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    weixinPay: function(params, _self, type) {
+      console.log(params, "params");
+      _self.wx.ready(function() {
+        _self.wx.chooseWXPay({
+          timestamp: params.requestParams.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+          nonceStr: params.requestParams.nonceStr, // 支付签名随机串，不长于 32 位
+          package: params.requestParams.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+          signType: "MD5", // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+          paySign: params.requestParams.paySign, // 支付签名
+          success: function(res) {
+            if (type == 1 || type == 3) {
+              //答题首页支付||继续挑战支付
+              _self.callbackPayStart(params, type);
+            } else if (type == 2) {
+              //续命支付
+              _self.callbackPayContinue(params);
+            }
+          },
+          cancel: function(res) {
+            _self.$toast("支付取消", 2);
+          },
+          fail: function(res) {
+            _self.$toast("支付失败", 2);
+          }
+        });
+      });
+    },
+    callbackPayContinue(params) {
+      this.$toast("支付成功，请继续答题", 4);
+      setTimeout(() => {
+        this.closePop();
+        if (this.isDoSubject) {
+          this.$emit("reStartTimeCountDown");
+        }
+      }, 2 * 1000);
+    },
+    callbackPayStart(params, type) {
+      let apiParam = {
+        subjectLogId: params.outOrderId,
+        thirdOrderId: params.thirdId,
+        joinType: 1
+      };
+      console.log(params, "callbackPayStart-params");
+      console.log(apiParam, "callbackPayStart-apiParam");
+      console.log(type, "支付类型");
+      if (type == 1) {
+        //答题首页支付
+        this.$emit("joinHdSubject", apiParam);
+      } else if (type == 3) {
+        this.joinHdSubject(apiParam);
+      }
+      console.log("the end");
+    },
+    closePropCompoment() {
+      this.$emit("close");
+    },
+    joinHdSubject(apiParam) {
+      apiParam = apiParam ? apiParam : {};
+      console.log(apiParam, "pop调用joinHdSubject");
+      let _self = this;
+      _self
+        .$post("/api/subject/joinSubject", apiParam)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            _self.showFlag = false;
+            let subject = dataResponse.data;
+            //跳转答题页
+            let queryParam = {
+              hdUserLogId: subject.hdUserLogId,
+              subjectId: subject.subjectId,
+              subjectLogId: subject.subjectLogId
+            };
+            let shareCode = this.shareCode;
+            if (shareCode) {
+              queryParam.shareCode = shareCode;
+            }
+            this.$emit("payToRestartGame", queryParam);
+          } else if (dataResponse.code == "1607") {
+            _self.openDialog(4);
+          } else if (dataResponse.code == "4444") {
+            _self.$toast("请勿频繁重复点击");
+          } else if (dataResponse.code == "2111") {
+            _self.openDialog(2);
+          } else {
+            _self.$toast("参加答题异常，请稍后再试");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    toHdHome() {
+      let shareCode = this.shareCode;
+      console.log(shareCode, "toHdHome");
+      let queryParam = {};
+      if (shareCode) {
+        queryParam.shareCode = shareCode;
+      }
+      this.$router.push({
+        name: "hd101Home",
+        query: queryParam
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../../assets/common/_base";
+@import "../../../../assets/common/_mixin";
+
+.mod_pop {
+  position: relative;
+  width: 90.1vw;
+  border: 3px solid #333;
+  border-radius: 11.5vw;
+  background-color: #fff;
+}
+.close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 99;
+  width: 10.1vw;
+  height: 10.1vw;
+  @include getBgImg("../../../../assets/images/hd/hd101/close.png");
+  background-size: contain;
+}
+.share_tag {
+  position: absolute;
+  right: 5.3vw;
+  top: 0;
+  transform: translateY(-100%);
+  width: 11.5vw;
+  height: 28.8vw;
+  @include getBgImg("../../../../assets/images/hd/hd101/share_tag.png");
+}
+.title {
+  padding: 13.3vw 10.1vw 0;
+  font-size: 5.3vw;
+  line-height: 9.1vw;
+  text-align: justify;
+}
+.rule_tips {
+  margin-top: 29.3vw;
+  padding-bottom: 8.5vw;
+  p {
+    padding-top: 2.7vw;
+    padding-left: 12vw;
+    font-size: 4vw;
+  }
+}
+
+.pop_share .rule_tips p {
+  text-align: center;
+  padding-left: 0;
+}
+
+.pop_nochance {
+  padding: 26.7vw 10.1vw;
+  .title {
+    padding: 0;
+  }
+}
+
+.award_logo {
+  position: absolute;
+  top: -33.5vw;
+  right: 3.5vw;
+  width: 76.5vw;
+}
+
+.pop_award {
+  top: 17.6vw;
+  .close {
+    top: -25.1vw;
+    transform: translateY(-100%);
+  }
+  .title {
+    line-height: 1;
+    text-align: center;
+    &:first-of-type {
+      padding-top: 8vw;
+    }
+    &:nth-of-type(3) {
+      padding-top: 16.8vw;
+      margin-bottom: 4vw;
+    }
+  }
+  .award_title {
+    @extend .flex_v_h;
+    padding-top: 6.4vw;
+    font-size: 48px;
+    color: #e97542;
+    text-align: center;
+    span {
+      font-size: 40px;
+    }
+  }
+  .rule_tips {
+    margin-top: 0;
+  }
+}
+.pay_one {
+  padding-bottom: 2vw;
+  font-size: 4vw;
+}
+
+.att_tips {
+  font-size: 4vw;
+  text-align: center;
+}
+
+.money {
+  font-size: 45px;
+  color: #333;
+  text-align: center;
+}
+
+.success_logo {
+  display: block;
+  width: 22.7vw;
+  height: 22.7vw;
+  margin: 11.7vw auto -5.3vw;
+}
+
+.count_tips {
+  @extend .g_c_mid;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  width: 19.7vw;
+  height: 19.7vw;
+  line-height: 19.7vw;
+  border-radius: 50%;
+  font-size: 12vw;
+  font-family: "PangMenZhengDao";
+  color: #ffe783;
+  text-align: center;
+  background-color: #e97542;
+  box-shadow: 0 5px 0 0 rgba($color: #000000, $alpha: 0.12);
+}
+
+.bg_green,
+.bg_red,
+.bg_grey {
+  @extend .flex_v_h;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  width: 76vw;
+  height: 16.8vw;
+  margin: 0 auto 2.7vw;
+  font-size: 5.3vw;
+  letter-spacing: 1.3vw;
+  color: #fff;
+  background-color: initial;
+}
+
+.bg_green {
+  @include getBgImg("../../../../assets/images/hd/hd101/bg_green.png");
+}
+
+.bg_red {
+  @include getBgImg("../../../../assets/images/hd/hd101/bg_red.png");
+}
+
+.bg_grey {
+  @include getBgImg("../../../../assets/images/hd/hd101/bg_grey.png");
+}
+
+.mt14 {
+  margin-top: 3.7vw;
+}
+
+.mb7 {
+  margin-bottom: 1.9vw;
+}
+
+.mt36 {
+  margin-top: 9.6vw;
+}
+
+.mb36 {
+  margin-bottom: 9.6vw;
+}
+.mb50 {
+  margin-bottom: 13.3vw;
+}
+
+.lh_one {
+  line-height: 1;
+}
+
+.lh34 {
+  line-height: 9.1vw !important;
+}
+
+.tac {
+  text-align: center;
+}
+
+.pl0 {
+  padding-left: 0 !important;
+}
+</style>

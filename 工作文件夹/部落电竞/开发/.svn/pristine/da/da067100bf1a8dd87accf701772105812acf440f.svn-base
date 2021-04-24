@@ -1,0 +1,31 @@
+<!--pages/my/userInfo/writeInfo.wxml-->
+<view class="main">
+  <!-- <view>
+        <label for="account">账户名</label>
+        <input type="text" id="account" placeholder="4-14位汉字、字母和数字的组合">
+      </view> -->
+  <view class="section" v-if="type ==1">
+    <label for="nick">昵称:</label>
+
+    <input type="text" id="nick" v-model="userInfo.nickName" placeholder="4-14位汉字、字母和数字的组合" ></input>
+  </view>
+
+  <view class="section personal_sign" v-if="type ==2">
+    <label for="p_sign">个人简介</label>
+
+    <textarea v-model="userInfo.intro" name="" id="p_sign" cols="10" rows="10" placeholder="不能超过18个字符" ></textarea>
+  </view>
+
+  <view class="section" v-if="type ==3">
+    <label for="real_name">真实姓名</label>
+
+    <input v-model="userInfo.trueName" id="real_name" type="text" placeholder="4-10位汉字、字母和数字的组合" ></input>
+  </view>
+
+  <view class="section" v-if="type ==4">
+    <label for="ID_num">身份证号</label>
+    <input v-model="userInfo.certNo" id="ID_num" type="text" placeholder="字母和数字的组合" ></input>
+  </view>
+
+  <a class="submit_btn">保存</a>
+</view>

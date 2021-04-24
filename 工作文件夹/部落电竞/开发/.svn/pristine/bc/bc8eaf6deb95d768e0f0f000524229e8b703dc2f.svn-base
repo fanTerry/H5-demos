@@ -1,0 +1,456 @@
+{
+	"data": [
+		{
+			"type": "0",
+			"desc": "商城",
+			"imgUrl": "http://daily-rs.esportzoo.com/svn/esport-res/mini/images/help/ledou.png",
+			"questionList": [
+				{
+					"index": 1,
+					"questionName": "商品是否都有货？",
+					"questionAnswer": [
+						"您好，商城中上架的商城均有货，有过没货我们会下架或提醒的。"
+					]
+				},
+				{
+					"index": 2,
+					"questionName": "商品是否包邮？",
+					"questionAnswer": [
+						"您好，商品是支持包邮的。"
+					]
+				},
+				{
+					"index": 3,
+					"questionName": "商城中展示的商品是否都为正品？",
+					"questionAnswer": [
+						"在售商品均为官方正品授权，详情页有正品授权文件。"
+					]
+				},
+				{
+					"index": 4,
+					"questionName": "能否享受三包服务（包修、包换、包退）？",
+					"questionAnswer": [
+						"在售商品均享受三包服务，如有问题可以联系橘子官方工作人员（客服联系微信：Jzdj08）。"
+					]
+				},
+				{
+					"index": 5,
+					"questionName": "是否支持货到付款？",
+					"questionAnswer": [
+						"很抱歉，暂时不支持货到付款。您可以使用星星币进行在线付款。"
+					]
+				},
+				{
+					"index": 6,
+					"questionName": "能否使用支付宝或者微信付款？",
+					"questionAnswer": [
+						"您好，很抱歉。目前仅支持星星币和微信支付进行购买。星星币暂时只支持微信支付进行充值。"
+					]
+				},
+				{
+					"index": 7,
+					"questionName": "商城中是否都为全新商品？",
+					"questionAnswer": [
+						"商城中的商品均为正版授权的全新正品。"
+					]
+				},
+				{
+					"index": 8,
+					"questionName": "购买后商品有瑕疵？",
+					"questionAnswer": [
+						"商品收到后有瑕疵可以及时与橘子官方工作人员进行联系，看是否需要退换货。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 9,
+					"questionName": "商品发错了？",
+					"questionAnswer": [
+						"商品发错了请根据订单详情和收到物品和橘子官方工作人员进行核实，我们这边会及时为您退换货。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 10,
+					"questionName": "商品漏发了？",
+					"questionAnswer": [
+						"商品漏发了请根据订单详情和收到的物品和橘子官方工作人员进行核实，我们这边会及时为您进行补发。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 11,
+					"questionName": "订单成功付款后，商品多久发货？",
+					"questionAnswer": [
+						"订单成功付款后，我们会马上安排进行发货。"
+					]
+				},
+				{
+					"index": 12,
+					"questionName": "发货后，商品发什么快递？",
+					"questionAnswer": [
+						"默认是随机发送三通一达，如有需要指定快递请留言。若需要发顺丰需要加一定的邮费。"
+					]
+				},
+				{
+					"index": 13,
+					"questionName": "订单如何退款？",
+					"questionAnswer": [
+						"在订单界面选择后右下角可以选择推荐。当然，如有任何其他原因可以先及时和橘子官方工作人员进行联系，我们将竭力为您服务。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 14,
+					"questionName": "申请退货后的退款多久返还？",
+					"questionAnswer": [
+						"退款后的星星币一般在1个工作日内进行返还，如超过一个工作日可以与橘子官方工作人员进行核实并联系。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 15,
+					"questionName": "在哪里查看我的订单？",
+					"questionAnswer": [
+						"在【我的】界面中选择【我的订单】即可查看自己的订单情况"
+					]
+				},
+				{
+					"index": 16,
+					"questionName": "如何查看订单物流消息？",
+					"questionAnswer": [
+						"很抱歉，目前我们无法实时查看物流消息，不过我们可以提供快递单号。"
+					]
+				},
+				{
+					"index": 17,
+					"questionName": "为什么我的订单被取消了？",
+					"questionAnswer": [
+						"有可能是系统网络波动，可以刷新后再看看。如若问题依旧，可以先与橘子官方工作人员进行核实联系。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 18,
+					"questionName": "订单支付后商品降价了，可以退还差价吗？",
+					"questionAnswer": [
+						"很抱歉，订单支持价格以交易时为准，暂时不支持退还差价。"
+					]
+				},
+				{
+					"index": 19,
+					"questionName": "付款后可以修改收货地址吗？",
+					"questionAnswer": [
+						"若商品还未发货请及时与橘子官方工作人员进行联系修改收货地址，如若发货请联系快递公司并告知其订单号进行更新。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 20,
+					"questionName": "收货后是否需要订单中“确认收货”？",
+					"questionAnswer": [
+						"您好，这边是不需要的，默认您收到货即可。"
+					]
+				}
+			]
+		},
+		{
+			"type": "1",
+			"desc": "发现",
+			"imgUrl": "http://daily-rs.esportzoo.com/svn/esport-res/mini/images/help/jindou.png",
+			"questionList": [
+				{
+					"index": 1,
+					"questionName": "帖子为啥无法发送？",
+					"questionAnswer": [
+						"您好，在排除网络原因之外，请刷新页面清理缓存即可，亦有服务器承载的问题（可能性较低），如遇该问题可与橘子官方工作人员联系反馈。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 2,
+					"questionName": "帖子被很多人举报会怎么样？",
+					"questionAnswer": [
+						"您好，我们有举报机制和人工审理流程，帖子被举报后进入相应流程环节，依程序处理。"
+					]
+				},
+				{
+					"index": 3,
+					"questionName": "帖子中有人恶意攻击我怎么办？",
+					"questionAnswer": [
+						"您好，您可通过平台进行投诉或诉诸正常途径维护自己的合法权益。如遇此类问题，也请及时同我们取得联系，我们会在受理后的第一时间进行进行处理。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 4,
+					"questionName": "帖子有哪些不能发的内容吗？",
+					"questionAnswer": [
+						"一：具有商业行为及嫌疑的帖子，帖子中出现【联系方式】、【价格】、【店铺信息】商业信息。",
+						"二：复制粘贴贴、标题贴无内容、对版面有影响的【图片贴】。",
+						"三：用【裸露、血腥、色情】的图片镇楼吸引点击的帖子。",
+						"四：不具备切实证据的【曝光帖】。",
+						"五：未向吧务组申请擅自发表的【结缘贴】。",
+						"六：非橘子官方组建的【官方交流群】的群贴。",
+						"七：贴内包含了【政治倾向以及政治敏感话题】。",
+						"八：不得散步不负责任的谣言，如若发现将进行封号处理。",
+						"九：不能重复性的发布毫无意义的帖子。",
+						"十：本发现页已将话题进行分类，请尽量发布话题相关内容。维护论坛整洁性。",
+						"十一：标题中尽量使用内容相关的关键词，尽量规范、正确用词。",
+						"十二：任何个人或者团体、公司不得注册多个用户名，隐瞒真实身份，进行恶意攻击或者自我吹捧、炒做，一旦发现立即公布，并封用户名。",
+						"十三：违法违规、触及相关条例的不良内容。"
+					]
+				},
+				{
+					"index": 5,
+					"questionName": "为什么我的用户名被和谐了？",
+					"questionAnswer": [
+						"用户名管理规则，用户不得注册以下用户名",
+						"a、党和国家领导人或其他名人的真实姓名、字号、艺名、笔名；",
+						"b、国家机构或其他机构的名称；",
+						"c、不文明、不健康之名字；",
+						"d、易产生歧义、引起他人误解之名字，如“管理员”之类。"
+					]
+				},
+				{
+					"index": 6,
+					"questionName": "发现页删帖规则",
+					"questionAnswer": [
+						"一：具有商业行为及嫌疑的帖子，帖子中出现【联系方式】、【价格】、【店铺信息】商业信息。",
+						"二：复制粘贴贴、标题贴无内容、对版面有影响的【图片贴】。",
+						"三：用【裸露、血腥、色情】的图片镇楼吸引点击的帖子。",
+						"四：不具备切实证据的【曝光帖】。",
+						"五：未向吧务组申请擅自发表的【结缘贴】。",
+						"六：非橘子官方组建的【官方交流群】的群贴。",
+						"七：贴内包含了【政治倾向以及政治敏感话题】。",
+						"八：不得散步不负责任的谣言，如若发现将进行封号处理。",
+						"九：不能重复性的发布毫无意义的帖子。",
+						"十：本发现页已将话题进行分类，请尽量发布话题相关内容。维护论坛整洁性。",
+						"十一：标题中尽量使用内容相关的关键词，尽量规范、正确用词。",
+						"十二：任何个人或者团体、公司不得注册多个用户名，隐瞒真实身份，进行恶意攻击或者自我吹捧、炒做，一旦发现立即公布，并封用户名。",
+						"十三：违法违规、触及相关条例的不良内容。"
+					]
+				},
+				{
+					"index": 7,
+					"questionName": "如何发送帖子？",
+					"questionAnswer": [
+						"点开橘子电竞中的【发现】页面，右下角选择【投稿】并添加自己想要发布的【话题】，进行内容编辑后便可发送。"
+					]
+				},
+				{
+					"index": 8,
+					"questionName": "发送的帖子为什么没有马上显示？",
+					"questionAnswer": [
+						"为了维护发现页社区论坛的安全，发现页的帖子均需要进行审核，请耐心等待。"
+					]
+				}
+			]
+		},
+		{
+			"type": "2",
+			"desc": "赛事",
+			"imgUrl": "http://daily-rs.esportzoo.com/svn/esport-res/mini/images/help/jiangquan.png",
+			"questionList": [
+				{
+					"index": 1,
+					"questionName": "找不到想看的赛事数据？",
+					"questionAnswer": [
+						"目前仅支持【王者荣耀】【英雄联盟】【PUBG】【DOTA2】【CSGO】的各种赛事。若您想看的是其他游戏目前暂不提供。如果确实是支持的游戏，但是没有的赛事或许是版权或者是赛事源的问题。目前正在努力争取中。很抱歉"
+					]
+				},
+				{
+					"index": 2,
+					"questionName": "比赛数据有误？",
+					"questionAnswer": [
+						"比赛数据均为实时更新，如若有误可以及时与橘子官方工作人员进行联系（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 3,
+					"questionName": "战队logo不对？",
+					"questionAnswer": [
+						"很抱歉，如若有战队Logo不对的情况请及时与橘子官方工作人员进行联系修改（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 4,
+					"questionName": "比赛时间错误？",
+					"questionAnswer": [
+						"很抱歉，如若有比赛时间有误请及时与橘子官方工作人员进行联系修改（客服联系微信：Jzdj08）"
+					]
+				}
+			]
+		},
+		{
+			"type": "3",
+			"desc": "工具",
+			"imgUrl": "http://daily-rs.esportzoo.com/svn/esport-res/mini/images/help/pksai.png",
+			"questionList": [
+				{
+					"index": 1,
+					"questionName": "我的赛事是空白？",
+					"questionAnswer": [
+						"赛事-工具-我的赛事页是空白的，是指当前自己没有参加任何赛事，固没有内容展示。"
+					]
+				},
+				{
+					"index": 2,
+					"questionName": "赛事无法报名？",
+					"questionAnswer": [
+						"排除网络原因外，已经结束报名、已经开始的比赛、已经结束的比赛均无法报名。"
+					]
+				},
+				{
+					"index": 3,
+					"questionName": "队伍名字不对？",
+					"questionAnswer": [
+						"如若队伍名称显示不对，可以及时联系橘子官方工作人员进行队伍名的修改。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 4,
+					"questionName": "队伍LOGO不对？",
+					"questionAnswer": [
+						"如若队伍LOGO显示不对，可以及时联系橘子官方工作人员进行队伍LOGO的修改。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 5,
+					"questionName": "队伍队员信息不对？",
+					"questionAnswer": [
+						"如若队伍队员信息显示不对，可以及时联系橘子官方工作人员进行队伍名的修改。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 6,
+					"questionName": "队伍排名不对？",
+					"questionAnswer": [
+						"如若队伍排名显示不对，可以及时联系橘子官方工作人员进行核实并且修改。（客服联系微信：Jzdj08）"
+					]
+				}
+			]
+		},
+		{
+			"type": "4",
+			"desc": "钱包",
+			"imgUrl": "http://daily-rs.esportzoo.com/svn/esport-res/mini/images/help/zhuawawa.png",
+			"questionList": [
+				{
+					"index": 1,
+					"questionName": "充值失败是怎么回事？",
+					"questionAnswer": [
+						"有可能是网络波动原因，可以稍后重试。若稍后还是失败可以及时与橘子官方工作人员联系。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 2,
+					"questionName": "付款成功了但是星星币未到账？",
+					"questionAnswer": [
+						"由于网络原因可以试着刷新页面，如若刷新页面扔未显示到账可以与橘子官方工作人员联系。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 3,
+					"questionName": "星星币和人民币的比例是多少？",
+					"questionAnswer": [
+						"目前是比例是1人民币=1000星星币"
+					]
+				},
+				{
+					"index": 4,
+					"questionName": "星星币可以提现吗？",
+					"questionAnswer": [
+						"很抱歉，星星币不可以提现"
+					]
+				},
+				{
+					"index": 5,
+					"questionName": "星星币可以用来做什么？",
+					"questionAnswer": [
+						"星星币可以用来购买商城中的各类商品，也可以使用星星币进行一些赛事娱乐。"
+					]
+				},
+				{
+					"index": 6,
+					"questionName": "星星币突然减少怎么办？",
+					"questionAnswer": [
+						"星星币照理来说不会突然减少，如若核实订单后仍然发现减少。可以根据购买星星币的付款界面与订单页面跟橘子官方工作人员进行核实。（客服联系微信：Jzdj08）"
+					]
+				},
+				{
+					"index": 7,
+					"questionName": "星星币可以使用支付宝支付吗？",
+					"questionAnswer": [
+						"目前星星币暂时不支持支付宝支付，您可以使用微信官方渠道进行支付购买星星币。"
+					]
+				},
+				{
+					"index": 8,
+					"questionName": "星星币是否可以和别人交易？",
+					"questionAnswer": [
+						"很抱歉，星星币目前仅算作个人资产，无法实现与他人交易。"
+					]
+				}
+			]
+		},
+		{
+			"type": "5",
+			"desc": "热门问题",
+			"imgUrl": "",
+			"questionList": [
+				{
+					"index": 1,
+					"type": 0,
+					"sortNum": 2,
+					"questionName": "商品是否包邮？"
+				},
+				{
+					"index": 2,
+					"type": 0,
+					"sortNum": 3,
+					"questionName": "商城中展示的商品是否都为正品？"
+				},
+				{
+					"index": 3,
+					"type": 0,
+					"sortNum": 6,
+					"questionName": "能否使用支付宝或者微信付款？"
+				},
+				{
+					"index": 4,
+					"type": 0,
+					"sortNum": 11,
+					"questionName": "订单成功付款后，商品多久发货？"
+				},
+				{
+					"index": 5,
+					"type": 0,
+					"sortNum": 12,
+					"questionName": "发货后，商品发什么快递？"
+				},
+				{
+					"index": 6,
+					"type": 0,
+					"sortNum": 16,
+					"questionName": "如何查看订单物流消息？"
+				},
+				{
+					"index": 7,
+					"type": 1,
+					"sortNum": 1,
+					"questionName": "帖子为啥无法发送？"
+				},
+				{
+					"index": 8,
+					"type": 1,
+					"sortNum": 6,
+					"questionName": "发现页删帖规则"
+				},
+				{
+					"index": 9,
+					"type": 4,
+					"sortNum": 8,
+					"questionName": "星星币是否可以和别人交易？"
+				},
+				{
+					"index": 10,
+					"type": 4,
+					"sortNum": 5,
+					"questionName": "星星币可以用来做什么？"
+				}
+			]
+		}
+	]
+}

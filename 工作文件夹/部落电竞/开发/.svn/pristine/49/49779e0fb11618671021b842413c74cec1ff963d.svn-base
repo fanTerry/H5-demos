@@ -1,0 +1,119 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar pageTitle='话题搜索'></navBar>
+    </header>
+    <div class="main">
+      <div class="mod_search">
+        <div class="search_con">
+          <input type="text" placeholder="搜索" v-model="searchVal">
+          <i class="search"></i>
+        </div>
+        <span>取消</span>
+      </div>
+      <!-- 搜索结果 -->
+      <div class="search_result" id='scrollId'>
+        <topic :topicItem="item" v-for="(item,index) in followList" :key=index></topic>
+      </div>
+      <!-- 搜索记录 -->
+      <div class="search_record">
+        <div class="title">
+          <span>我搜过的</span>
+          <span class="delete_icon"></span>
+        </div>
+        <ul class="recode_tag">
+          <li>北美LCS解说</li>
+          <li>北美LCS解说</li>
+          <li>北美LCS解说</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index";
+import topic from "../../components/user_follow/topic";
+
+export default {
+  components: {
+    navBar
+  },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+@import "../../assets/common/_var";
+
+.main {
+  background-color: #fff;
+}
+
+.mod_search {
+  @extend .flex_v_justify;
+  padding: 12px 15px 24px;
+  color: $color_main;
+}
+
+.search_con {
+  position: relative;
+  @extend .flex;
+  width: 84.5%;
+  input {
+    flex: 1;
+    height: 24px;
+    padding-left: 30px;
+    border-radius: 24px;
+    background-color: #eee;
+    border: none;
+  }
+  .search {
+    @extend .g_v_mid;
+    left: 7px;
+    width: 16px;
+    height: 16px;
+    @include getBgImg("../../assets/images/home/search.png");
+  }
+}
+
+.search_record {
+  padding: 0 15px;
+  .title {
+    @extend .flex_v_justify;
+    color: #999;
+    font-size: 14px;
+  }
+  .delete_icon {
+    width: 16px;
+    height: 16px;
+    @include getBgImg("../../assets/images/follow/recycle_icon.png");
+  }
+  .recode_tag {
+    @extend .flex_hc;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    li {
+      margin: 0 8px 8px 0;
+      padding: 0 12px;
+      font-size: 14px;
+      line-height: 28px;
+      color: #333;
+      border-radius: 4px;
+      background-color: #f6f6f6;
+    }
+  }
+}
+
+.search_result {
+  position: relative;
+  padding-left: 10px;
+  background-color: #fff;
+}
+</style>

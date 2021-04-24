@@ -1,0 +1,196 @@
+<template>
+  <div class="user_card">
+    <div class="user_info">
+      <div>
+        <div class="user_img">
+          <img :src="expertInfo.userIcon|getDefaultImg(globalConst.userDefaultIcon)" alt="">
+        </div>
+        <div>
+          <div class="flex_hc">
+            <span class="name">{{expertInfo.userNickName}}</span>
+            <!-- <span class="record">近10中0</span> -->
+          </div>
+          <div class="tips">
+            <!-- <p>
+                                    <span>66%</span>预计回报率</p> -->
+            <p>
+              <span>{{expertInfo.fans}}</span>粉丝</p>
+          </div>
+        </div>
+      </div>
+      <template v-if="!expertInfo.selfFlag">
+        <div class="follow_btn" v-if="!expertInfo.followFlag" @click="updateFollowStatus(expertInfo.userId,1)">+ 关注
+        </div>
+        <div class="followed_btn" @click="updateFollowStatus(expertInfo.userId,0)" v-else>已关注</div>
+      </template>
+      <!-- <div class="followed_btn">+ 关注</div> -->
+    </div>
+    <p class="intro_text">{{expertInfo.expertDesc}}</p>
+  </div>
+</template>
+
+<script>
+export default {
+  props: ["userId"],
+  data() {
+    return {
+      id: Number,
+      expertInfo: Object
+    };
+  },
+  methods: {
+    setExpertInfo(param) {
+      if (!param) {
+        param = this.articlrQueryParam;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/recExpert/baseInfo/" + this.id, param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log(dataResponse.data, "setExpertInfo---请求成功");
+            this.expertInfo = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    updateFollowStatus(userId, status) {
+      let param = { type: status, usrId: userId };
+      let message = "";
+      if (status == 1) {
+        message = "关注成功";
+      } else {
+        message = "取消成功";
+      }
+      console.log("update-关注", param);
+      return this.$post("/api/user/follow", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.$toast(message);
+            this.expertInfo.followFlag = !this.expertInfo.followFlag;
+            if (status == 1) {
+              this.expertInfo.fans += 1;
+            } else {
+              this.expertInfo.fans -= 1;
+            }
+          }
+        })
+        .catch(error => {
+          this.$toast("网络异常，稍后再试");
+          console.log(error);
+          return dataResponse.code;
+        });
+    }
+  },
+  watch: {
+    userId: {
+      immediate: true,
+      handler(newVal) {
+        console.log("专家卡片-userId", newVal);
+        this.id = newVal;
+        this.setExpertInfo();
+      }
+    }
+    // userId(newVal,oldVal){
+    //  console.log("newVal",newVal);
+    // }
+  },
+
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.user_card {
+  margin: 5px;
+  padding: 0 10px;
+  background: linear-gradient(
+    155deg,
+    rgba(253, 158, 1, 1),
+    rgba(255, 130, 1, 1)
+  );
+  box-shadow: 0px 2px 5px 0px #999;
+  border-radius: 8px;
+  .user_info {
+    position: relative;
+    @extend .flex_v_justify;
+    padding: 10px 0;
+    > div {
+      @extend .flex_hc;
+    }
+    .user_img {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      margin-right: 15px;
+      img {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #fff;
+        border-radius: 50%;
+      }
+    }
+    .name {
+      @include t_nowrap(101px);
+      line-height: 1.2;
+      font-size: 16px;
+      padding-bottom: 5px;
+      font-weight: 500;
+      color: #fff;
+    }
+    .tips {
+      @extend .flex_hc;
+      font-size: 10px;
+      p {
+        margin-right: 10px;
+        color: #fff;
+      }
+    }
+    .tips span {
+      padding-right: 5px;
+      font-size: 14px;
+      color: #ffea00;
+    }
+    .record {
+      font-size: 10px;
+      line-height: 14px;
+      padding: 0 8px;
+      border-radius: 12px;
+      color: #fff;
+      background-color: #ff4557;
+    }
+    .follow_btn,
+    .followed_btn {
+      position: absolute;
+      right: 5px;
+      border-radius: 24px;
+      &::before {
+        display: none;
+      }
+    }
+    .follow_btn {
+      color: #ec9805;
+      background-color: #fff;
+    }
+    .followed_btn {
+      color: #575757;
+      background-color: #ddd;
+    }
+  }
+}
+
+.intro_text {
+  padding: 5px 0 15px;
+  font-size: 12px;
+  line-height: 19px;
+  color: #fff151;
+  text-align: justify;
+  @include getBorder(top, #ffb12f);
+}
+</style>

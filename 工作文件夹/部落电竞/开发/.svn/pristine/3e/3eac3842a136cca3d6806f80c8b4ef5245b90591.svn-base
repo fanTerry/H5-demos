@@ -1,0 +1,211 @@
+<template>
+  <div class="ui_pop">
+    <div class="Page rechargePage">
+      <h3>星星充值<a class='close' @click="closePop"></a></h3>
+      <ul class="prize_list">
+        <li v-for="(item,index) in chargeMoneyList" :key="index" :class="{'select':prizeDay[index] == index}">
+          <!-- <p>{{item.sendStar>0?"赠送"+item.sendStar:""}}</p> -->
+          <img :src="require('../../../assets/images/guess/starday0.png')" alt />
+          <span class="cost_star">{{item.starNum}}星星</span>
+          <a class="prize_get_btn" @click="rechargePrize(index)">{{item.money}}元</a>
+        </li>
+      </ul>
+      <div class="exchange_btn">
+        <!-- 加disabled置为不可点击 -->
+        <a>立即支付{{123}}元</a>
+      </div>
+      <!-- <pops :showType='showType' :showFlag='showFlag' :currChargeItem='currChargeItem' @closePop='closePop'></pops> -->
+
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar/index";
+import pops from "./components/pops";
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  components: { navBar, pops },
+  props: [],
+  data() {
+    return {
+      prizeDay: [],
+      showType: 0,
+      showFlag: false,
+      chargeMoneyList: [], //充值金额列表
+      currChargeItem: null //当前选择的充值选项
+      // chargeResParam: null,
+      // walletRec: null //用户星星数量
+    };
+  },
+  computed: {
+    ...mapGetters({
+      // wxuserStarNum: "getstarNum"
+    }),
+    getstarNum() {
+      // return this.wxuserStarNum.state;
+    }
+  },
+  //实时监听用户星星状态
+  watch: {
+    getstarNum(val) {
+      // this.walletRec = val;
+      console.log(val, "rechargePops用户星星");
+    }
+  },
+  mounted() {
+    //屏蔽app处理
+    let clientType = this.$route.query.clientType;
+    if (clientType == 3) {
+      this.$router.push({
+        path: "/home",
+        query: {}
+      });
+    } else if (clientType == 4) {
+      this.$router.push({
+        path: "/iosRecharge",
+        query: {}
+      });
+    }
+    this.openChargerDialog();
+  },
+  methods: {
+    closePop() {
+      this.showFlag = false;
+    },
+    openChargerDialog() {
+      return this.$post("/api/payment/getChargeMoneyList")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.chargeMoneyList = dataResponse.data;
+            this.walletRec = this.walletRec;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    rechargePrize(index) {
+      this.currChargeItem = this.chargeMoneyList[index];
+      this.showFlag = true;
+      this.showType = 1;
+    }
+  }
+};
+</script>
+
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  width: 94.6667vw;
+  height: 84vw;
+  background: #391a1c;
+}
+
+h3 {
+  position: relative;
+  width: 100%;
+  line-height: 8.8vw;
+  font-size: 4.8vw;
+  font-weight: normal;
+  text-align: center;
+  color: #fedcd7;
+  background-color: #482527;
+}
+
+.close {
+  position: absolute;
+  right: 2.67vw;
+  top: 1.6vw;
+  width: 5.33vw;
+  height: 5.33vw;
+  @include getBgImg("../../../assets/images/guess/close.png");
+  background-size: contain;
+}
+
+.pop_tips {
+  @extend .g_v_c_mid;
+  width: 57.33vw;
+  padding: 5.33vw 0;
+  text-align: center;
+  background-color: #34201d;
+  p {
+    font-size: 3.73vw;
+    color: #fff;
+  }
+  span {
+    display: block;
+    padding-top: 5.33vw;
+    font-size: 5.33vw;
+    color: #f6b70d;
+  }
+}
+.prize_list {
+  @extend .flex_v_h;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  padding-top: 2.6667vw;
+}
+li {
+  width: 22.6667vw;
+  height: 25.8667vw;
+  padding-bottom: 2.4vw;
+  margin: 0 0.5333vw 3.2vw;
+  @include getBgImg("../../../assets/images/guess/recharge.png");
+  background-size: auto 100% !important;
+  box-shadow: 0px 6px 8px 0px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  &.select {
+    @include getBgImg("../../../assets/images/guess/recharge.png");
+  }
+  .cost_star {
+    font-size: 2.6667vw;
+    color: #fff;
+  }
+  img {
+    display: block;
+    height: 6.4vw;
+    margin: 2.6667vw auto 3.3333vw;
+    object-fit: contain;
+  }
+}
+.prize_get_btn {
+  display: inline-block;
+  width: 14.9333vw;
+  margin-top: 3.2vw;
+  padding: 2px 0 1px;
+  font-size: 3.4667vw;
+  font-weight: bold;
+  color: #fff300;
+  border: 2px solid #fff300;
+  border-radius: 5.3333vw;
+}
+
+.exchange_btn {
+  margin-top: -1.3333vw;
+  padding: 2.67vw 0 4vw;
+  @include getBgImg("../../../assets/images/guess/shadow.png");
+  background-size: 100% auto;
+  background-position: top center;
+  text-align: center;
+  a {
+    display: inline-block;
+    margin: 0 auto;
+    padding: 0 8.2667vw;
+    border-radius: 3px;
+    line-height: 8.8vw;
+    font-size: 3.73vw;
+    color: #fedcd7;
+    background: linear-gradient(to bottom, #df2f26, #86171a);
+    background: -webkit-linear-gradient(top, #df2f26, #86171a);
+  }
+  .disabled {
+    opacity: 0.2;
+  }
+}
+</style>

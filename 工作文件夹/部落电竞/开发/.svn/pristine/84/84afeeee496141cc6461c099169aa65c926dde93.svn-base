@@ -1,0 +1,70 @@
+/* component/newslist/newsvideoitem/news-video-item.wxss */
+
+@import "/resources/wxss/base/clear.wxss";
+@import "/component/newslist/wxss/news-item.wxss";
+.news-video-item {
+  width: 710rpx;
+  margin: 0 auto;
+}
+
+.news-video {
+  width: 710rpx;
+  height: 410rpx;
+}
+
+.news-video-sub {
+  padding-top: 10rpx;
+}
+
+.controls {
+  position: absolute;
+  z-index: 1;
+  background-color: #fff;
+  height: calc(9 * 750rpx / 16);
+  margin-top: -430rpx;
+}
+
+.play {
+  position: absolute;
+  left: 50%;
+  margin-top: -300rpx;
+  margin-left: -80rpx;
+}
+
+.cover-image-c {
+  margin-top: 49rpx;
+  margin-left: 45rpx;
+  width: 90rpx;
+  height: 90rpx;
+}
+
+
+/*适配新的视频处理方式*/
+.video{
+	/* margin-bottom: 40rpx; */
+	position: relative;
+}
+.model-img{
+	width: 100%;
+	height: 420rpx;
+}
+.model-btn{
+	  position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    right:0;
+    margin:auto;
+    width: 90rpx;
+    height: 90rpx;
+    background-image: url("https://rs.esportzoo.com/svn/esport-res/mini/images/play.png");
+    background-repeat:no-repeat; 
+    background-size:100% 100%;
+    -moz-background-size:100% 100%;
+}
+.play-icon{
+    margin:26rpx 40rpx;
+    border-top:26rpx solid transparent;
+    border-left:36rpx solid #fff;
+    border-bottom:22rpx solid transparent;
+}

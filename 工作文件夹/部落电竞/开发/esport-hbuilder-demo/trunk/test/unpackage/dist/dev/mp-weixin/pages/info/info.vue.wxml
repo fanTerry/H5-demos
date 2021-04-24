@@ -1,0 +1,8 @@
+<template name="1816386e">
+  <view class="_view data-v-7cb902b6 content">
+    <view class="_view data-v-7cb902b6 title">{{title}}...</view>
+    <view class="_view data-v-7cb902b6 art-content">
+      <rich-text class="_rich-text data-v-7cb902b6 richText" nodes="{{strings}}"></rich-text>
+    </view>
+  </view>
+</template>

@@ -1,0 +1,12 @@
+/* modules/expertpage/expertagreepage/expert-agree-page.wxss */
+
+@import "/modules/expertpage/wxss/expert-paragraph.wxss";
+
+.expert-agree-page {
+  width: 690rpx;
+  padding: 20rpx;
+  margin: 20rpx auto;
+
+  background: #fff;
+  border-radius: 15rpx;
+}

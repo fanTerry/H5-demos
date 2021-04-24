@@ -1,0 +1,48 @@
+/* component/popup/ppmy/pp-my.wxss */
+
+@import "/component/popup/wxss/popup.wxss";
+
+.pp-my-recharge {
+  bottom: 50rpx;
+}
+
+.pp-m-r-title {
+  color: #fff;
+}
+
+.m-r-radio-group {
+  margin-top: 30rpx;
+  border-top: 2rpx solid #ddd;
+  border-bottom: 2rpx solid #ddd;
+}
+.m-r-radio {
+  display: block;
+  padding: 10rpx 10rpx 10rpx 0;
+  margin-left: 20rpx;
+
+  border-bottom: 2rpx solid #ddd;
+}
+.m-r-radio:last-child {
+  border-bottom: none;
+}
+
+.my-recharge-btn-text {
+  display: inline-block;
+  font-size: 26rpx;
+  margin: 0 50rpx 0 100rpx;
+}
+.m-r-b-text {
+  color: #aaa;
+}
+.m-r-b-unit {
+  color: #333;
+}
+.m-r-b-money {
+  color: #ffa200; 
+}
+.pp-m-r-btn {
+  line-height: 80rpx;
+  background: linear-gradient(to right, rgba(255,162,0,1) 0%,rgba(255,123,28,1) 100%);
+}
+
+

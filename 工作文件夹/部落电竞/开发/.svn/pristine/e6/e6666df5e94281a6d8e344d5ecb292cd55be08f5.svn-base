@@ -1,0 +1,52 @@
+package com.esportzoo.esport.controller;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.esportzoo.esport.domain.UserConsumer;
+import com.esportzoo.esport.manager.CachedManager;
+import com.esportzoo.esport.vo.MemberSession;
+
+public abstract class BaseController {
+
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+	public CachedManager cachedManager;
+    
+    /**
+	 * 获取memberSession
+	 * @param request
+	 * @return
+	 */
+	public MemberSession getMemberSession(HttpServletRequest request){
+		String sid = request.getParameter("sid");
+		if (StringUtils.isBlank(sid)) {
+			logger.info("当前用户sid为空");
+			return null;
+		}
+		
+		MemberSession memberSession = cachedManager.getCachedMemberSession(sid);
+		if (memberSession != null && memberSession.getMember() != null) {
+			cachedManager.cachedMemberSession(memberSession.getMember(), sid);
+			return memberSession;
+		}
+		return null;
+	}
+	
+	/** 获取登陆用户*/
+	public UserConsumer getLoginUsr(HttpServletRequest request) {
+		UserConsumer userConsumer = null;
+		MemberSession mSession = getMemberSession(request);
+		if (mSession!=null) {
+			userConsumer = mSession.getMember();
+		}else {
+			logger.info("获取用户信息失败，请重新登录");
+		}
+		return userConsumer;
+	}
+}

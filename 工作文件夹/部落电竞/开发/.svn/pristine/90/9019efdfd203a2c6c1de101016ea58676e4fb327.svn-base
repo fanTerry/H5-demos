@@ -1,0 +1,22 @@
+<!--modules/mypage/mywallet/myrecorditem/my-record-item.wxml-->
+<view class='my-record-item'>
+  
+  <!-- <view class='dsp-cell'>
+    <view class='my-record-tag m-r-t-green'  wx:if="{{walletLog.walletOprType==2}}"><text>使用</text></view>
+    <view class='my-record-tag m-r-t-red' wx:if="{{walletLog.walletOprType==1}}" ><text>充值</text></view>
+  </view> -->
+
+  <view class='my-record-detail dsp-cell'>
+    <view class='m-r-d-text'><text>{{walletLog.remark}}</text></view>
+    <view class='m-r-d-time'><text>{{walletLog.createTime}}</text></view>
+  </view>
+
+  <view class='my-record-money dsp-cell clear'>
+    <!--<i class="iconfont icon-xiangyou m-r-m-icon fr"></i>-->
+    <view class='m-r-m-num' wx:if="{{walletLog.walletOprType==2}}"><text>-{{walletLog.recHappenScore}}</text></view>
+    <view class='m-r-m-num' wx:if="{{walletLog.walletOprType==1}}"><text class="c_orange">+{{walletLog.recHappenScore}}</text></view>
+    <view class='m-r-m-money'><text>余额 {{walletLog.recEndAbleScore}}</text></view>
+
+  </view>
+
+</view>

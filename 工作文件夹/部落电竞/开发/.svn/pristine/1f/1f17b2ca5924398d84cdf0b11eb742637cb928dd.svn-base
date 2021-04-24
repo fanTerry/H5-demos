@@ -1,0 +1,91 @@
+<template>
+  <nav class="nav_list">
+    <ul ref="nav" class="list">
+      <li :class="{active:selectedTab==item.contentType}" @click="changeTab(item.contentType,$event)" v-for="(item,index) in dataList" :key="index">{{item.name}}</li>
+    </ul>
+    <slot></slot>
+    <!-- <div class="list_more"></div> -->
+  </nav>
+</template>
+
+<script>
+export default {
+  props: {
+    dataList: Array
+  },
+  data() {
+    return {
+      selectedTab: window.sessionStorage.selectedTab ? window.sessionStorage.selectedTab : 1
+    };
+  },
+  methods: {
+    changeTab(tabId, e) {
+      console.log('切换到tabid=', tabId);
+      if (tabId == this.selectedTab) {
+        return;
+      }
+      this.selectedTab = tabId;
+      this.$emit('changeTab', tabId);
+      this.scrollTarget(e.currentTarget.previousElementSibling);
+    },
+
+    scrollTarget(target) {
+      if (!target) {
+        return;
+      }
+      var thisLeft = target.offsetLeft - 10;
+      $('.list').animate({ scrollLeft: thisLeft }, 500);
+    }
+  },
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../../assets/common/_base.scss';
+@import '../../../assets/common/_mixin.scss';
+.nav_list {
+  position: relative;
+  height: 12.8vw;
+  overflow: hidden;
+  ul {
+    height: calc(100% + 6px);
+    padding-left: 4.2667vw;
+    font-size: 0;
+    white-space: nowrap;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+  li {
+    display: inline-block;
+    padding: 4.2667vw 0;
+    margin-right: 7.7333vw;
+    font-size: 3.7333vw;
+    color: rgba(255, 255, 255, 0.5);
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+  .active {
+    position: relative;
+    color: #fff;
+    &::after {
+      content: '';
+      @extend .g_c_mid;
+      bottom: 1.0667vw;
+      width: 4vw;
+      height: 1.0667vw;
+      background-color: #fff;
+      border-radius: 5px;
+    }
+  }
+  .list_more {
+    @extend .g_v_mid;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    @include getBgImg('../../../assets/images/home/list_more.png');
+    background-size: 16px;
+  }
+}
+</style>

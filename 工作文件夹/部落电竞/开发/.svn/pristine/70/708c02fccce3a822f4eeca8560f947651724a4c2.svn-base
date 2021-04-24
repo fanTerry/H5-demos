@@ -1,0 +1,103 @@
+import utils from './libs/utils';
+
+/** 根据size格式化传入的对象
+ *  @param {string} val 需要格式化的字符串
+ *  @param {num} size 保留多少位
+ */
+exports.subStr = (val, size) => {
+    if (!val || val.length == 0 || val == undefined) {
+        return;
+    }
+    if (val.length > size) {
+        return val.substring(0, size) + '...';
+    } else {
+        return val;
+    }
+};
+
+/** 根据图片地址判断是否取默认图
+ *  @param {string} imgUrl 传入的图片地址
+ *  @param {string} defaultImg 默认显示的图片地址
+ */
+exports.getDefaultImg = (imgUrl, defaultImg) => {
+    if (!imgUrl) {
+        return defaultImg;
+    } else {
+        return imgUrl;
+    }
+};
+
+/** 格式化时间
+ *  @param {string} time 需要格式化的时间
+ *  @param {String} fmt 格式化字符串
+ */
+exports.dateFmt = (time, fmt) => {
+    if (!time) {
+        return;
+    } else {
+        return utils.fmtDate(new Date(time), fmt || 'yyyy-MM-dd hh:mm');
+    }
+};
+
+/** 投注方案 */
+exports.betPlan = (status) => {
+    var statusStr = {
+        '1': '待处理',
+        '2': '申请成功',
+        '3': '申请失败',
+        '4': '投注成功',
+        '5': '投注失败'
+    };
+    return statusStr[status];
+};
+
+/** 开奖状态  0、待开奖，1、已中奖，2、未中奖 */
+exports.openStatus = (winStatus) => {
+    var winStatusStr = {
+        '0': '待开奖',
+        '1': '已中奖+',
+        '2': '未中奖'
+    };
+    return winStatusStr[winStatus];
+};
+
+/** 比赛局数 */
+exports.gameFightNum = (fightNum, flag) => {
+    var gameNum = '';
+    if (flag) {
+        gameNum = fightNum.substring(12, fightNum.length);
+    } else {
+        gameNum = fightNum;
+    }
+    if (gameNum == '0') {
+        return '总场';
+    } else {
+        return '第' + gameNum + '局';
+    }
+};
+
+/** 比赛队名截取6位 */
+exports.subTeamStr = (val, size) => {
+    if (!val || val.length == 0 || val == undefined) {
+        return;
+    }
+    size = size== undefined ? 6 : size;
+    if (val.length > size) {
+        return val.substring(0, size) + '...';
+    } else {
+        return val;
+    }
+};
+
+/** 星星流水事件 */
+exports.getStareEvent = (bizType) => {
+    var bizTypeStr = {
+        '1': '充值获取',
+        '2': '签到领取',
+        '13': '投注消耗',
+        '14': '投注消耗',
+        '16': '投注消耗',
+        '17': '投注消耗'
+    };
+    return bizTypeStr[bizType];
+};

@@ -1,0 +1,65 @@
+<!--modules/mypage/mywallet/my-wallet.wxml-->
+
+<!-- 第一行：钱包基础信息 -->
+<view class='my-wallet-info clear'>
+
+    <navigator url="/modules/mypage/myrecharge/my-recharge?returnUrl=/modules/mypage/mywallet/my-wallet">
+  <view class='m-w-i-btn fr'><text>充值</text></view>
+    </navigator>
+
+  <view class='m-w-i-title'><text style='color:#fff'>拥有星星数量</text></view>
+  <view class='m-w-i-num'><text>{{balance}}</text></view>
+<!--  <view class='m-w-i-title m-w-i-t2'><text>账户余额</text></view>
+  <view class='m-w-i-num'><text>00000000.00</text></view>-->
+</view>
+
+<!-- 第二行：菜单栏  暂时不需要筛选-->
+<!--<view class='my-wallet-section my-wallet-menu-view'>
+
+  &lt;!&ndash; 菜单栏 &ndash;&gt;
+  <view class='my-wallet-menu'>
+    <view class='m-w-m-item'>
+      <text class='m-w-m-text m-w-m-t-act'>金币明细</text>
+      <i class="iconfont icon-xiangxia m-w-m-icon m-w-m-i-act"></i>
+    </view>
+    <view class='m-w-m-item m-w-m-i2'>
+      <text class='m-w-m-text'>限额明细</text>
+      <i class="iconfont icon-xiangxia m-w-m-icon"></i>
+    </view>
+    <view class='m-w-m-item'>
+      <text class='m-w-m-text'>充值明细</text>
+      <i class="iconfont icon-xiangxia m-w-m-icon"></i>
+    </view>
+  </view>
+
+  &lt;!&ndash; 菜单下拉框 &ndash;&gt;
+  <view class='my-wallet-menu-sub'>
+    &lt;!&ndash; 当前状态样式：m-w-m-s-i-act &ndash;&gt;
+    <view class='m-w-m-s-item' wx:for="{{12}}"><text>LOL</text></view>
+  </view>
+
+</view>-->
+
+
+<!-- 第三行：明细数据列表 -->
+<block wx:for="{{listMap}}"  wx:for-item="el" >
+<view class='my-wallet-time'>{{el.time}}</view>
+<view class='my-wallet-section'>
+  <my-record-item wx:for="{{el.dataList}}"  walletLog="{{item}}"></my-record-item>
+</view>
+
+</block>
+<no-data  wx:if="{{noDataFlag}}" ></no-data>
+
+
+<!-- 第四行：明细数据列表 -->
+<!--
+<view class='my-wallet-time'>2019年5月</view>
+<view class='my-wallet-section'>
+  <my-record-item wx:for="123456"></my-record-item>
+</view>
+
+<view class='my-wallet-time'>2019年4月</view>
+<view class='my-wallet-section'>
+    <my-record-item wx:for="123456"></my-record-item>
+</view>-->

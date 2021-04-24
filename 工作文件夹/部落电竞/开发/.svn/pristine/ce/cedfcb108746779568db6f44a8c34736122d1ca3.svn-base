@@ -1,0 +1,114 @@
+
+<template>
+  <div class="Page">
+    <div class="main">
+      <div class="nav">
+        <a class="cur">奖励榜单</a>
+        <a>活动规则</a>
+      </div>
+      <!-- 奖励榜单 -->
+      <div class="award_list">
+        <ul>
+          <li>
+            <img src="" alt="">
+            <span class="user_name">乐毅可爱</span>
+            <span>获得20星星+霸王头槌</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 活动规则 -->
+      <div class="rule_list">
+        <ul>
+          <li>1. 不得恶意刷东西</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer class="mod_footer">
+      <tabs></tabs>
+    </footer>
+  </div>
+</template>
+
+<script>
+import tabs from "./components/tabs";
+
+export default {
+  components: {
+    tabs
+  },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  background-color: rgb(255, 231, 131);
+}
+.main {
+  @include getBgImg("../../../assets/images/hd/hd101/rule_lists_bg.png");
+  background-position: top center;
+  background-size: 100% auto;
+}
+
+.nav {
+  @extend .flex;
+  padding: 4.5vw 5.3vw 0;
+  a {
+    flex: 1;
+    -webkit-flex: 1;
+    font-size: 4.5vw;
+    line-height: 15.2vw;
+    color: #fff;
+    text-align: center;
+    &.cur {
+      position: relative;
+      color: #fcff00;
+      &::after {
+        content: "";
+        @extend .g_c_mid;
+        bottom: 1.1vw;
+        width: 9.9vw;
+        height: 1.1vw;
+        border-radius: 2px;
+        background-color: #fcff00;
+      }
+    }
+  }
+}
+
+.award_list,
+.rule_list {
+  padding: 1.6vw 6.4vw 0;
+  height: 110vw;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  li {
+    @extend .flex_hc;
+    padding-top: 2.7vw;
+    font-size: 4vw;
+    color: #333;
+  }
+  img {
+    width: 6.7vw;
+    height: 6.7vw;
+    margin-right: 3.2vw;
+    border-radius: 50%;
+  }
+  .user_name {
+    margin-right: 1.6vw;
+    color: #e97542;
+  }
+}
+.rule_list {
+  padding-left: 7.7vw;
+}
+</style>

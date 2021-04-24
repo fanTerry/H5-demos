@@ -1,0 +1,345 @@
+<template>
+  <div class='Page guessRankPage'>
+    <header class='mod_header'>
+      <nav-bar>
+        <div class="slot">
+          <ul class="tab">
+            <li :class="{active:tabCheck==index}" @click="tabClick(index)" v-for="(item,index) in rankTab" :key="index">
+              {{item}}</li>
+          </ul>
+          <a class="rules" @click="rules()">规则</a>
+        </div>
+      </nav-bar>
+    </header>
+    <div class="award">
+      <div class="award_info">
+        <img :src="userWinTop.icon|getDefaultImg(globalConst.userDefaultIcon)" alt="">
+        <div>
+          <p class="award_name">{{userWinTop.nickName}}</p>
+          <p class="award_rank">No.{{userWinTop.rownum}}</p>
+        </div>
+      </div>
+      <div class="award_gift">
+        <p class="gift_name" v-if="userWinTop.hd105GiftResponse!=null">{{userWinTop.hd105GiftResponse.hdGiftName}}</p>
+        <p class="award_num" v-if="userWinTop.winPrize!=null"><span>{{userWinTop.winPrize}}</span>星星</p>
+      </div>
+    </div>
+    <div class='main'>
+      <div>
+        <h3>
+          <span class="rank">排名</span>
+          <span class="id">用户ID</span>
+          <span class="num">中奖金额</span>
+          <span class="reward">奖励</span>
+        </h3>
+        <ul class="award_list">
+          <li v-for="(item,index) in winTopList" :key="index">
+            <span class="rank">{{item.rownum}}</span>
+            <p class="users">
+              <img :src="item.icon|getDefaultImg(globalConst.userDefaultIcon)" alt="">
+              <span>{{item.nickName |formatNickName}}</span>
+              <!--只显示名字第一个字符 -->
+            </p>
+            <span class="num">{{item.winPrize}}</span>
+            <span class="gift_name" v-if="item.hd105GiftResponse">{{item.hd105GiftResponse.hdGiftName}}</span>
+            <span v-else>-</span>
+          </li>
+        </ul>
+      </div>
+      <!-- 没有数据时展示 -->
+      <noData v-if="noData" :imgUrl="imgUrl" :text="'暂时还没有排行榜哦'"> </noData>
+    </div>
+
+    <div class="ui_pop" v-if="showRules">
+      <div class="rules">
+        <h3>规则榜单<a class="close" @click="showRules = false"></a></h3>
+        <div class="content">
+          星星兑换椰子分，奖励积分可用于奖励兑换星星
+          兑换椰子分，奖励积分可用于奖励兑换星星兑换
+          椰子分，奖励积分可用于奖励兑换可用于奖励兑
+          星星兑换椰子分，奖励积分可用于奖励兑换星星
+          兑换椰子分，奖励积分可用于奖励兑换星星兑换
+          椰子分，奖励积分可用于奖励兑换可用于奖励兑
+          星星兑换椰子分，奖励积分可用于奖励兑换星星
+          兑换椰子分，奖励积分可用于奖励兑换星星兑换
+          椰子分，奖励积分可用于奖励兑换可用于奖励兑
+          星星兑换椰子分，奖励积分可用于奖励兑换星星
+          星星兑换椰子分，奖励积分可用于奖励兑换星星星星兑换椰子分，奖励积分可用于奖励兑换星星
+          兑换椰子分，奖励积分可用于奖励兑换星星兑换
+          椰子分，奖励积分可用于奖励兑换可用于奖励兑
+          星星兑换椰子分，奖励积分可用于奖励兑换星星
+          兑换椰子分，奖励积分可用于奖励兑换星星兑换
+          椰子分，奖励积分可用于奖励兑换可用于奖励兑
+          星星兑换椰子分，奖励积分可用于奖励兑换星星
+          兑换椰子分，奖励积分可用于奖励兑换星星兑换
+          椰子分，奖励积分可用于奖励兑换可用于奖励兑
+          星星兑换椰子分，奖励积分可用于奖励兑换星星
+          星星兑换椰子分，奖励积分可用于奖励兑换星星
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../../components/header/nav_bar/index.vue";
+import noData from "../../../../components/no_data/index.vue";
+export default {
+  components: {
+    navBar,
+    noData
+  },
+  props: [],
+  data() {
+    return {
+      rankTab: ["实时排行", "上周排行"],
+      tabCheck: 0,
+      noData: false,
+      imgUrl: require("../../../../assets/images/guess/no_data_icon.png"),
+      showRules: false,
+      param: {
+        dateType: 0, //0本周，1上周
+        isOneself: false
+      },
+      winTopList: [],
+      userWinTop: {}
+    };
+  },
+  mounted() {
+    this.queryWinTop(this.param);
+  },
+  methods: {
+    queryWinTop(param) {
+      console.log(param, "参数");
+      return this.$post("/api/quizTop/winTop", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log("查询排行榜");
+            if (dataResponse.data.winTopType) {
+              this.noData = false;
+              this.winTopList = dataResponse.data.winTop;
+              this.userWinTop = dataResponse.data.userWinTop[0];
+              console.log("shuju", this.winTopList, this.userWinTop);
+            } else {
+              this.noData = true;
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    rules() {
+      this.showRules = true;
+    },
+    tabClick(index) {
+      console.log("下标", index);
+      this.tabCheck = index;
+      this.winTopList = [];
+      this.userWinTop = {};
+      this.param.dateType = index;
+      this.queryWinTop(this.param);
+    }
+  }
+};
+</script>
+
+
+<style lang="scss">
+.guessRankPage {
+  .nav_bar .back {
+    &::before,
+    &::after {
+      background-color: #fedcd7;
+    }
+  }
+}
+</style>
+
+<style lang='scss' scoped>
+@import "../../../../assets/common/_base";
+@import "../../../../assets/common/_mixin";
+
+.mod_header {
+  background-color: #321919;
+  .slot {
+    height: 44px;
+  }
+  .tab {
+    @extend .g_v_c_mid;
+    @extend .flex_hc;
+    background-color: #4e2823;
+    border-radius: 1.3333vw;
+    overflow: hidden;
+  }
+  .tab li {
+    padding: 0 8.4vw;
+    font-size: 4vw;
+    line-height: 8.5333vw;
+    color: #fedcd7;
+    &.active {
+      background-color: #ba3129;
+    }
+  }
+  .rules {
+    @extend .g_v_mid;
+    right: 4.6667vw;
+    font-size: 3.7333vw;
+    color: #733633;
+  }
+}
+
+.award {
+  @extend .flex_v_justify;
+  padding: 6.9333vw 4.5333vw 4.8vw 4vw;
+  @include getBgImg("../../../../assets/images/hd/rank/rank_bg.png");
+  color: #fedcd7;
+}
+
+.award_info {
+  @extend .flex_hc;
+  img {
+    width: 17.3333vw;
+    height: 17.3333vw;
+    border-radius: 50%;
+  }
+}
+
+.award_name {
+  padding-left: 4.6667vw;
+  font-size: 4vw;
+}
+
+.award_rank {
+  padding-left: 3.7333vw;
+  padding-top: 1.6vw;
+  font-size: 9.7333vw;
+  font-style: italic;
+}
+
+.award_gift {
+  font-size: 3.4667vw;
+  text-align: right;
+}
+
+.award_num {
+  padding-top: 1.7333vw;
+  span {
+    padding-right: 0.9333vw;
+    font-size: 5.3333vw;
+  }
+}
+
+.main {
+  padding: 0 2.6667vw;
+  background-color: #1f1212;
+  h3 {
+    padding: 3.7333vw 0 2.9333vw 0;
+    font-size: 0;
+    .rank {
+      padding-left: 2vw;
+    }
+    .id {
+      padding-left: 9.8667vw;
+    }
+    .num {
+      padding-left: 18.4vw;
+    }
+    .reward {
+      padding-left: 14.2667vw;
+    }
+  }
+  h3 span {
+    font-size: 4vw;
+    font-weight: normal;
+    color: #733633;
+  }
+}
+
+.award_list li {
+  @extend .flex_hc;
+  position: relative;
+  height: 16vw;
+  margin-bottom: 2.6667vw;
+  border-radius: 1.3333vw;
+  background-color: #321919;
+  &:first-child,
+  &:nth-child(2),
+  &:nth-child(3) {
+    @include getBgLinear(right, #ba3129, #321919);
+    .rank {
+      font-size: 11.2vw;
+      color: #fedcd7;
+    }
+  }
+  .rank {
+    width: 18vw;
+    padding-left: 2.6667vw;
+    font-size: 9.7333vw;
+    font-weight: bold;
+    font-style: italic;
+    color: #733633;
+  }
+  .users {
+    @extend .flex_hc;
+    img {
+      width: 10.6667vw;
+      height: 10.6667vw;
+      border-radius: 50%;
+    }
+    span {
+      padding-left: 2.9333vw;
+      font-size: 4vw;
+      letter-spacing: 2px;
+      color: #fedcd7;
+    }
+  }
+  .num {
+    padding-left: 7.4667vw;
+    font-size: 5.3333vw;
+    font-weight: bold;
+    color: #fedcd7;
+  }
+  .gift_name {
+    @extend .g_v_mid;
+    @include t_nowrap(13vw);
+    right: 4vw;
+    font-size: 4vw;
+    color: #fedcd7;
+  }
+}
+
+.ui_pop {
+  .rules {
+    width: 94.6667vw;
+    padding-bottom: 3.7333vw;
+    background-color: #391a1c;
+  }
+  h3 {
+    position: relative;
+    line-height: 8.8vw;
+    font-size: 4.8vw;
+    color: #fff;
+    text-align: center;
+    background-color: #482527;
+  }
+  .close {
+    @extend .g_v_mid;
+    right: 2.6667vw;
+    width: 5.3333vw;
+    height: 5.3333vw;
+    @include getBgImg("../../../../assets/images/guess/close.png");
+  }
+  .content {
+    height: 68.7333vw;
+    margin-top: 2.7333vw;
+    padding: 0 5.3333vw 0;
+    font-size: 4vw;
+    line-height: 6.6667vw;
+    color: #c08c85;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+</style>

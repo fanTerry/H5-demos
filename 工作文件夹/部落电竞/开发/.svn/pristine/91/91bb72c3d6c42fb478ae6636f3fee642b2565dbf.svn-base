@@ -1,0 +1,68 @@
+<!--modules/expertpage/expertapplypage/expert-apply-page.wxml-->
+<!-- 专家发布文章页 -->
+
+<view class='expert-apply-page'>
+
+  <!-- 第一个模块 -->
+  <view class='expert-apply-section'>
+
+    <view class='expert-apply-note'>
+      <text>请填写开通账号所需资料，同一申请无需填写多次。申请结果喝账号信息将会以邮件方式发送给您。</text>
+    </view>
+
+    <view class='expert-apply-line e-a-l-bb clear'>
+      <view class='fl e-a-title'><text>专家号名称：</text></view>
+      <view class='fl'>
+        <input class='e-a-input' placeholder="不超过8个字v符" placeholder-class="e-a-input-ph" />
+      </view>
+    </view>
+
+    <view class='expert-apply-line e-a-l-bb clear'>
+      <view class='fl e-a-title'><text>专家号名称：</text></view>
+      <view class='fl'>
+        <input class='e-a-input' placeholder="不超过100个字符，请误包含政治，色情，广告等违规信息。" placeholder-class="e-a-input-ph" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 第二个模块 -->
+  <view class='expert-apply-section'>
+    <view class='e-a-s2'>
+      <view class='e-a-title'><text>申请理由：</text></view>
+      <view class='e-a-textarea-v'>
+        <textarea class='e-a-textarea' placeholder-class='e-a-t-ph' placeholder="不超过100个字符，请填写您的辉煌战绩，战绩越好越容易通过。" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 第三个模块 -->
+  <view class='expert-apply-section'>
+
+    <view class='expert-apply-line e-a-l-bb clear'>
+      <view class='fl e-a-title-gray'><text>运营者姓名：</text></view>
+      <view class='fl'>
+        <input class='e-a-input' placeholder="运营者姓名" placeholder-class="e-a-input-ph" />
+      </view>
+    </view>
+        
+    <view class='expert-apply-line e-a-l-bb clear'>
+      <view class='fl e-a-title-gray'><text>身份证号：</text></view>
+      <view class='fl'>
+        <input class='e-a-input' placeholder="运营者身份证号码" placeholder-class="e-a-input-ph" />
+      </view>
+    </view>
+
+    <view class='expert-apply-line clear'>
+      <view class='e-a-title-gray'><text>手持身份证照片：</text></view>
+      <image class="expert-add-image" src="/resources/images/imagefile.jpg" mode="aspectFill" />
+      <view class='e-a-sub-note'>请上传手持身份证正面照，要求图片信息可见，大小不超过5M，<text class='e-a-s-n-green'>点击查看示例照片</text>。</view>
+    </view>
+
+  </view>
+
+  <!-- 第四个模块 -->
+  <view class='expert-apply-section e-a-s3'>
+    <view class='e-a-button'>提交申请</view>
+  </view>
+
+</view>

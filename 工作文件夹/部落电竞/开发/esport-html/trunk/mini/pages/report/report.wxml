@@ -1,0 +1,30 @@
+<!--pages/report/report.wxml-->
+
+<!-- 顶部信息栏 -->
+<userinfo-bar showType="2"></userinfo-bar>
+
+<!-- 导航栏 -->
+<view class='report-sub-menu clear'>
+  <view class='report-sub-menu-item rp-s-m-i-cur'><text>赛程</text></view>
+  <view class='report-sub-menu-item'><text>LIVE</text></view>
+  <view class='report-sub-menu-item'><text>赛果</text></view>
+  <!-- <view class='report-sub-menu-other fr'>
+    <text>联赛</text>
+  </view> -->
+</view>
+
+<view class='report-list'>
+  <view wx:for="ab" wx:key="" class="">
+    <report-list reportType="1"></report-list>
+  </view>
+
+  <view wx:for="ab" wx:key="" class="">
+    <report-list reportType="2"></report-list>
+  </view>
+  
+  <!-- 暂无数据显示 -->
+  <!-- <no-data></no-data> -->
+  
+</view>
+
+<view class='blank'></view>

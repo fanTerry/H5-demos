@@ -1,0 +1,4 @@
+/* component/follow/followexpertlist/follow-expert-list.wxss */
+.follow-start-letter {
+  padding: 10rpx 0;
+}

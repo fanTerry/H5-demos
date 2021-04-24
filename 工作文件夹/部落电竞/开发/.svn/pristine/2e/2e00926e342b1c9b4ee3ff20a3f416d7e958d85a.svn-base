@@ -1,0 +1,66 @@
+<template>
+  <div class="ui_pop">
+    <div class="Page">
+      <a class='close'></a>
+      <p class="txt">预测正确，获得星星</p>
+      <p class="value">2000星星</p>
+      <a class="know">我知道了</a>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.Page {
+  position: relative;
+  @extend .flex_v_h;
+  width: 64vw;
+  height: 50.6667vw;
+  background: linear-gradient(
+    -41deg,
+    rgba(110, 19, 29, 1),
+    rgba(180, 56, 45, 1)
+  );
+}
+.close {
+  position: absolute;
+  right: 2.6667vw;
+  top: 2.6667vw;
+  width: 8vw;
+  height: 8vw;
+  border-radius: 1.3333vw;
+  @include getBgImg("../../assets/images/guess/close.png");
+}
+
+.txt {
+  font-size: 4.5333vw;
+  color: #fff2f0;
+}
+
+.value {
+  padding: 5.3333vw 0 7.3333vw;
+  font-size: 10.6667vw;
+  color: #fff300;
+}
+
+.know {
+  padding: 0 12vw;
+  font-size: 4.5333vw;
+  line-height: 10.4vw;
+  color: #fff;
+  background-color: #3849c4;
+}
+</style>

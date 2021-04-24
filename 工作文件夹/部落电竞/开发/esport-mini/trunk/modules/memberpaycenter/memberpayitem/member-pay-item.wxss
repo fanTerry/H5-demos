@@ -1,0 +1,46 @@
+/* modules/memberpaycenter/memberpayitem/member-pay-item.wxss */
+
+/* @import "/resources/wxss/iconfont/iconfont.wxss"; */
+
+.member-pay-item {
+  width: 190rpx;
+  height: 200rpx;
+  padding-left: 20rpx;
+  border-radius: 15rpx;
+  background: #f5f6f8;
+
+  float: left;
+  margin-left: 25rpx;
+  margin-bottom: 20rpx;
+
+  display: flex;
+  align-items: left;
+  justify-content: center;
+  flex-direction: column;
+}
+.m-p-i-act {
+  width: 208rpx;
+  height: 158rpx;
+  border: solid 2rpx #ffb358;
+  background: #ffe4bf;
+}
+
+.m-p-i-coins {
+  color: #333;
+  font-size: 30rpx;
+  line-height: 40rpx;
+}
+.m-p-i-cost-a {
+  color: #999;
+  font-size: 24rpx;
+  line-height: 24rpx;
+  text-decoration: line-through;
+}
+.m-p-i-cost-b {
+  color: #fc5557;
+  font-size: 34rpx;
+  line-height: 40rpx;
+}
+.m-p-icon {
+  color: #666;
+}

@@ -1,0 +1,182 @@
+<!--modules/expertpage/expertdetailpage/expert-detail-page.wxml-->
+<!--方案详情页-->
+
+<import src="../../../wxParse/wxParse.wxml"/>
+
+<!-- 第一部分：头部公共部分 -->
+<expert-header expertBaseInfo="{{expertBaseInfo}}"></expert-header>
+<!--文章标题和推荐赛事 -->
+<view class='expert-plan'>
+  <!-- 第二部分 -->
+  <view class='report-expert-detail dsp-table' >
+    <view class='report-expert-detail-vs dsp-cell '>
+      <view>
+        <!--<i class='iconfont icon-shoucang r-e-d-logo' style="color: #efc75e;"></i>-->
+          <i wx:if="{{articleInfo.videogameId==1}}" class='iconfont icon-lol1 icon-lol'></i>
+          <i wx:if="{{articleInfo.videogameId==4}}"class='iconfont icon-dota'></i>
+        <text class='r-e-d-tit'>{{articleInfo.title}}</text>
+      </view>
+    </view>
+  </view>
+  <view class='report-expert-sub'>
+      <block wx:if="{{articleInfo.canView}}">
+        <text>{{articleInfo.publishTime}}发布 | 阅读 {{articleInfo.views}}</text>
+      </block>
+  </view>
+</view>
+
+<!--推荐赛事-->
+<expert-recommend matchItem="{{articleInfo.matchList}}"></expert-recommend>
+
+<block wx:if="{{!articleInfo.canView}}">
+
+<!-- 第四部分：方案支付部分显示逻辑 -->
+<!-- 隐藏样式：expert-plan-blur -->
+<view class='expert-plan' style='height:280rpx' wx:if="{{!articleInfo.canView}}">
+  <!--这部分数据不需要渲染,适配样式start  wujing新增-->
+  <view class='report-expert-detail dsp-table'>
+    <view class='report-expert-detail-vs dsp-cell '>
+      <view>
+        <i class='iconfont icon-shoucang r-e-d-logo'></i>
+
+        <text class='r-e-d-tit'>{{articleInfo.title}}</text>
+      </view>
+      <view class='dsp-table'>
+        <view class='dsp-cell'>
+          <image class='r-e-d-img' src='https://rs.esportzoo.com/svn/esport-res/mini/images/image1.png' mode='aspectFill' />
+          <text>DETONA...</text>
+        </view>
+
+        <view class='dsp-cell'>
+          <text class='r-e-d-vs'>VS</text>
+        </view>
+
+        <view class='dsp-cell'>
+          <image class='r-e-d-img' src='https://rs.esportzoo.com/svn/esport-res/mini/images/image1.png' mode='aspectFill' />
+          <text>DETONA...</text>
+        </view>
+      </view>
+    </view>
+
+    <view class='report-expert-detail-money'>
+      <view>
+        <i class='iconfont icon-shoucang r-e-d-i'></i>
+        <text class='r-e-d-money'>{{articleInfo.price}}星星</text>
+      </view>
+      <view>
+        <i class='r-e-d-note'>  </i>
+      </view>
+    </view>
+
+  </view>
+  <view class='report-expert-sub'>
+    <text>1小时前发布 | 阅读 18</text>
+  </view>
+  <!--这部分数据不需要渲染,适配样式end-->
+
+  <!-- 支付浮层状态 -->
+  <view class='expert-plan-hide '></view>
+
+  <view class='expert-plan-buy ' bindtap="goToPay" data-price="{{articleInfo.price}}">
+    <view>
+      <image class='e-p-b-image' style='height:150rpx' src='https://rs.esportzoo.com/svn/esport-res/mini/images/iconimg/pay.png' mode='aspectFit' />
+    </view>
+    <view class='e-p-b-text'><text>请支付后查看推荐结果和理由</text></view>
+  </view>
+</view>
+
+
+
+<!-- 支付逻辑：支付明细 -->
+<view class='expert-pop-pay  '>
+  <view class='expert-pop-pay-info'>
+    <view class='dsp-table'>
+      <view class='dsp-cell'>
+        <view class='e-p-p-gray'>推荐编号：</view>
+        <view class='e-p-p-gray'>发布时间：</view>
+        <view class='e-p-p-gray'>支付星星：</view>
+        <view class='e-p-p-gray'>查看人数：</view>
+      </view>
+      <view class='dsp-cell'>
+        <view class='e-p-p-data'>{{articleInfo.articleNo}}</view>
+        <view class='e-p-p-data'>{{articleInfo.publishTime}}</view>
+        <view class='e-p-p-data'><text class='e-p-p-num'>{{articleInfo.price}}</text>个</view>
+        <view class='e-p-p-data'>{{articleInfo.views}}</view>
+      </view>
+    </view>
+
+
+    <view class='expert-pop-pay-agree'>
+      <label class="e-p-p-label">
+
+        <!-- <i wx:if="{{!agree}}" class='iconfont icon-shoucang e-t-icon' bindtap="agree"></i>
+        <i wx:else class='iconfont icon-shoucang  e-t-icon' style="color: #efc75e;" bindtap="agree"></i> -->
+        <radio color="#fea21b" style='transform:scale(0.7);' bindtap="agree" checked="{{agree}}"/>
+          <text>我已阅读同意</text>
+          <!--<navigator url="/modules/expertpage/expertagreepage/expert-agree-page">-->
+          <text class='e-p-p-deal' bindtap="checkagreePage">《达人解读和推荐服务协议》</text>
+          <!--</navigator>-->
+      </label>
+    </view>
+
+
+  </view>
+  <view class='expert-pop-pay-btn dsp-table'>
+    <view class='dsp-cell e-p-p-c1'>
+      <text>查看推荐需支付：</text><text class='e-p-p-b-num'>{{articleInfo.price}}</text><text class='e-p-p-b-coin'>星星</text>
+    </view>
+    <!--<view class='dsp-cell t-c'  bindtap="payArticle" data-index="{{articleInfo.id}}">-->
+    <view class='dsp-cell t-c'  bindtap="goToPay" data-price="{{articleInfo.price}}">
+      <text class='e-p-p-btn'>立即支付</text>
+    </view>
+  </view>
+</view>
+
+</block>
+
+
+<!-- 支付逻辑：弹框部分 暂时不需要 -->
+ <!--<pp-expert class='' wx:if="{{showPayDialog}}"  payResult="{{payInfo.payResult}}" bindclosedialog="closePayDialog"></pp-expert>-->
+<!-- 状态一：未付费状态：结束 -->
+
+<block wx:if="{{articleInfo.canView}}">
+<!-- 状态二：已付费状态：开始 -->
+<view class='expert-detail-paragraph '><!--隐藏添加 dsp-none-->
+
+  <view class='e-a-v-title-h2'>
+    <text class='e-a-t-title-h2'>推荐内容</text>
+  </view>
+
+  <view class='e-a-v-title-h3'>
+    <text>1.摘要</text>
+  </view>
+  <view class='e-a-v-paragraph' wx:for="{{articleInfo.content.buyPoints}}"  wx:for-item="buypoint" wx:key="">
+    <text>{{buypoint.playType}} </text>
+    <text>{{buypoint.sp==null?'':buypoint.sp}}</text>
+  </view>
+
+  <!-- 
+  <view class='e-a-v-title-h3'>
+    <text>2.正文</text>
+  </view>
+  <view class='e-a-v-paragraph' wx:for="{{articleInfo.content.baseFaceAnalysis}}" wx:for-item="analysis" >
+    <text>{{analysis}}</text>
+  </view>
+  -->
+  
+  <view class='e-a-v-title-h3'>
+    <text>2.正文</text>
+  </view>
+  <view class='e-a-v-paragraph'  >
+    <!-- <text>{{articleInfo.content.viewPoint}}</text>-->
+    <template is="wxParse" data="{{wxParseData:wxViewPoint.nodes}}"/>
+  </view>
+  
+</view>
+<!-- 状态二：已付费状态：结束 -->
+</block>
+
+
+<!-- <pp-my id="dialog" items="{{choosedPayWay}}" payPrice='{{articleInfo.price}}' bind:confirm="handleConfirmDialog"></pp-my> -->
+<popUp id="dialog" price="{{articleInfo.price}}" unit='星星' bind:confirm="handleConfirmDialog">
+</popUp>

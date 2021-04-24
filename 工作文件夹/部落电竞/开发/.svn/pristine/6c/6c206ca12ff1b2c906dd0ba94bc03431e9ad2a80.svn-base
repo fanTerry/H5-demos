@@ -1,0 +1,160 @@
+<template>
+  <ul class="cmt_list detail">
+    <li>
+      <div class="cmt_user">
+        <span class="name">科比布莱恩特</span><b></b><span class="class">用户</span><span class="date">2018-10-12 09:08</span>
+      </div>
+      <div class="cmt_cnt">
+        昨天收到手机，表面质感很好，使用还在摸索中，快递员是晚上好像有九点左右了，在分发货品，很敬业，外面还下着小雨，让我顿时心生敬畏之心，值得尊重，不是因为来给我送，是那份精神，感染着我，所以我也要向他们学习这种不怕吃苦的精神！更相信手机的品质肯定是不错的！加油京东，加油自己！
+      </div>
+      <div class="cmt_att">
+        <span class="img"><img
+            src="https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=638833913,3134162988&fm=179&app=42&f=JPEG?w=121&h=140"></span>
+        <span class="img"><img src=""></span>
+      </div>
+      <div class="cmt_att error">
+        <!--有图，加载失败-->
+        <span class="img"><img src="../../../assets/images/help/icon_noPhoto.png"></span>
+      </div>
+      <div class="cmt_type"><span class="orange">攒豆加油站</span></div>
+      <!-- 用户的个人反馈才有cmt_time -->
+      <div class="cmt_time">
+        <span class="date">2018-10-12 09:08</span>
+        <a class="reply"><span class="num">0</span></a>
+      </div>
+    </li>
+  </ul>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+.cmt_list li {
+  background: #fff;
+  padding: 0.34rem 0.3rem 0;
+  margin-bottom: 0.2rem;
+}
+.cmt_list li:last-child {
+  margin-bottom: 0;
+}
+.cmt_list .cmt_cnt {
+  line-height: 0.36rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.28rem;
+  color: #666;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.cmt_list .cmt_time {
+  margin-top: 0.38rem;
+  padding: 0.15rem 0.06rem 0.12rem 0;
+  font-size: 0.26rem;
+  line-height: 1.2;
+  color: #999;
+  border-top: 0.01rem solid #eaeaea;
+}
+.cmt_list .cmt_time .reply {
+  float: right;
+  padding-left: 0.28rem;
+  color: #999;
+  background: url("../../../assets/images/help/icon_comment.png") no-repeat left
+    0.04rem;
+  background-size: 0.28rem 0.26rem;
+}
+.cmt_list .cmt_time .reply .num {
+  margin-left: 0.1rem;
+}
+.cmt_list .cmt_att {
+  margin-top: 0.18rem;
+  font-size: 0;
+}
+.cmt_list .cmt_att .img {
+  display: inline-block;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin: 0 0.1rem 0.1rem 0;
+  overflow: hidden;
+  text-align: center;
+  background: #d0d0d0;
+}
+.cmt_list .cmt_att .img img {
+  width: auto;
+  display: inline-block;
+  height: auto;
+  min-width: 1.8rem;
+  max-height: 1.8rem;
+}
+.cmt_list .cmt_att.error {
+  margin-top: -0.1rem;
+  margin-bottom: -0.18rem;
+}
+.cmt_list .cmt_att.error .img {
+  width: 0.61rem;
+  height: 0.43rem;
+  background: transparent;
+}
+.cmt_list .cmt_att.error .img img {
+  min-width: 0.61rem;
+  max-height: 0.43rem;
+}
+.cmt_list .cmt_user {
+  height: 0.4rem;
+  line-height: 0.4rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.26rem;
+  color: #999;
+}
+.cmt_list .cmt_user .name {
+  color: #333;
+  vertical-align: middle;
+}
+.cmt_list .cmt_user b {
+  display: inline-block;
+  width: 3px;
+  height: 0.31rem;
+  margin: 0 0.08rem 0 0.08rem;
+  vertical-align: middle;
+  border: 0.01rem solid #e7e7e7;
+  border-left: 0;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  background: #999;
+}
+.cmt_list .cmt_user .date {
+  float: right;
+}
+.cmt_list.detail li {
+  padding-bottom: 0.3rem;
+}
+.cmt_list.detail .cmt_cnt {
+  margin-bottom: 0.3rem;
+  -webkit-line-clamp: inherit;
+}
+.cmt_type {
+  margin-top: 0.18rem;
+}
+.cmt_type span {
+  font-size: 0.24rem;
+  height: 0.34rem;
+  line-height: 0.34rem;
+  padding: 0 0.04rem;
+  margin-right: 0.1rem;
+  border: 0.02rem solid transparent;
+  border-radius: 0.04rem;
+}
+.cmt_type span.orange {
+  border-color: #e47b32;
+  color: #e47b32;
+}
+</style>

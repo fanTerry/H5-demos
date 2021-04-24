@@ -1,0 +1,41 @@
+@import "iconfont.css";
+@import "_base";
+@import "_mixin";
+
+html,body,#app{
+    height: 100%;
+}
+
+// 页面采用弹性盒子布局
+.Page{
+    @extend .flex;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+    height: 100%;
+}
+
+// 内容主体可滑动区域
+.main{
+    flex: 1;
+    -webkit-flex: 1;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+// 公用页面头部栏背景
+.header_nav_list{
+    background: linear-gradient(-15deg,#FFA904,#FF782F);
+}
+
+// iphoneX,iphone Xs max适配
+@media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2){
+    .mod_header{
+        padding-top: constant(safe-area-inset-top) !important;
+        padding-top: env(safe-area-inset-top) !important;
+    }
+    .mod_footer{
+        padding-bottom: constant(safe-area-inset-bottom) !important;
+        padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+}

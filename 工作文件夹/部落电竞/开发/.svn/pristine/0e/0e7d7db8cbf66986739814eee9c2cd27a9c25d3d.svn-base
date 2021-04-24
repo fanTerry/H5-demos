@@ -1,0 +1,61 @@
+package com.esportzoo.esport.connect.request.hd;
+
+import com.esportzoo.esport.connect.request.BaseRequest;
+import lombok.Data;
+
+/**
+ * @description:
+ *
+ * @author: Haitao.Li
+ *
+ * @create: 2019-09-16 17:16
+ **/
+@Data
+public class SubjectRequest extends BaseRequest {
+
+	private Long consumerId;
+
+	/**
+	 * 活动参与ID
+	 */
+	private Long hdUserLogId;
+
+	/**
+	 * 答题ID
+	 */
+	private Long  subjectId;
+
+	/**
+	 * 用户选择答案ID
+	 */
+	private String userOptionIdList;
+
+	/**
+	 * 答题流水ID
+	 */
+	private Long  subjectLogId;
+
+
+	private Long  hdId;
+
+	/**
+	 * 支付订单ID
+	 */
+	private Long thirdOrderId;
+
+	/**
+	 * 参与类型 0.免费 1.付费
+	 */
+	private Integer joinType;
+
+	/**
+	 * 用户礼品流水
+	 */
+	private Long userGiftLogId;
+
+	/**
+	 * 用户是否观看完视频
+	 */
+	private Boolean watchAd;
+
+}

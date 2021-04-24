@@ -1,0 +1,7 @@
+<div class="tab_con">
+	<!-- 选中加cur -->
+	<!-- <a href="/hd/hd101/home" class="tabs rank_record " @click='cur'></a>
+	<a href="/hd/hd101/ruleslist" class="tabs rules_lists"></a>
+	<a href="/hd/hd101/userwallet" class="tabs user_wallet"></a> -->
+	<div wx:for="{{tabList}}" data-index="{{index}}" class="tabs {{item.class}} {{flagNum === index?'cur':''}}" bindtap="gotoAddress" data-url="{{item.link}}"></div>
+</div>

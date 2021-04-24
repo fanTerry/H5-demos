@@ -1,0 +1,346 @@
+<template>
+  <div class="Page goodsDetail_Page">
+    <header class="mod_header">
+      <navBar>
+        <!-- <i class="share_icon"></i> -->
+      </navBar>
+    </header>
+    <div class="main">
+      <section class="goods_list" v-if="bannerList&&bannerList.length>0">
+        <banner ref="banner" :adList="bannerList" :styleObject="styleObject">
+          <div>
+            <i class="rank_first"></i>
+            <div class="goods_title">
+              <span class="goods_name">{{goodsDetail.name}}</span>
+              <!-- <div class="goods_grade">王者</div> -->
+              <!-- <div class="goods_grade" v-if="goodsDetail.labelName">{{goodsDetail.labelName}}</div> -->
+              <i :class="{'goods_recommend':goodsDetail.label==1,'goods_discount':goodsDetail.label==2,'goods_new':goodsDetail.label==3}"
+                v-if="goodsDetail.label>0">{{goodsDetail.labelName}}</i>
+              <i class="no_goods" v-if='goodsDetail.stock==0'>已抢光</i>
+            </div>
+            <div class="goods_detail">
+              <span class="mark">
+                <!--<i class="star_coin"></i>-->￥{{goodsDetail.payScore}}</span>
+              <div>
+                <div class="bought_person" v-if="goodsDetail.icons!=null">
+                  <img v-for="(item,index) in goodsDetail.icons" :key="index" :src="item" alt="">
+                </div>
+                <span class="num">{{goodsDetail.purchases?goodsDetail.purchases:0}}</span>人购买
+              </div>
+            </div>
+          </div>
+        </banner>
+      </section>
+      <section class="goods_info">
+        <template v-if='goodsDetail.description'>
+          <h3>商品详情</h3>
+          <p v-html="goodsDetail.description"></p>
+        </template>
+        <template v-if='goodsDetail.purchaseNote&&goodsDetail.purchaseNote.length>20'>
+          <h3>购买须知</h3>
+          <p v-html="goodsDetail.purchaseNote"></p>
+        </template>
+        <template v-if='goodsDetail.serviceNote&&goodsDetail.serviceNote.length>20'>
+          <h3>售后须知</h3>
+          <p v-html="goodsDetail.serviceNote"></p>
+        </template>
+      </section>
+    </div>
+    <footer class="mod_footer">
+      <div class="goods_exchange">
+        <div @click="showPopFlag=true">
+          <i class="service_icon"></i>
+          客服
+        </div>
+        <a class="exchange_btn" @click="showPop()">立即购买</a>
+      </div>
+    </footer>
+    <storeExchange ref="popSon" :goodsDetail='goodsDetail' v-if='popChangeFlag'></storeExchange>
+    <CustomService :showPop='showPopFlag' @close='showPopFlag=false' type="1">
+      <p>请联系客服QQ：2732470865</p>
+    </CustomService>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar";
+import storeExchange from "../../../components/pop_up/store/exchange";
+import writeAddress from "../../../components/pop_up/store/writeAddress";
+import CustomService from "components/pop_up/pop_alert";
+import banner from "../../../components/header/banner";
+
+export default {
+  components: {
+    navBar,
+    storeExchange,
+    CustomService,
+    banner
+  },
+  data() {
+    return {
+      styleObject: {
+        height: "210px",
+        "border-radius": 0,
+        "background-color": "#ddd"
+      },
+      goodsId: null,
+      goodsDetail: Object,
+      popChangeFlag: false,
+      showPopFlag: false,
+      bannerList: []
+    };
+  },
+  computed: {},
+  created() {},
+  mounted() {
+    this.goodsId = this.$route.params.goodsId;
+    this.getGoodsDetail();
+  },
+  activated() {
+    //keepAlive组件激活才会触发的钩子，用于重新获取数据进而保存更新的缓存
+    if (!this.$route.meta.isBack) {
+      this.goodsId = this.$route.params.goodsId;
+      this.getGoodsDetail();
+      this.showPopFlag = false;
+      this.popChangeFlag = false;
+    }
+    this.$route.meta.isBack = false; //请求完后进行初始化
+  },
+  beforeRouteEnter(to, from, next) {
+    if (from.name == "addressManage") {
+      // 这个name是下一级页面的路由name
+      to.meta.isBack = true; // 设置为true说明你是返回到这个页面，而不是通过跳转从其他页面进入到这个页面
+    }
+    next();
+  },
+  destroyed() {
+    this.goodsDetail = null;
+    this.bannerList = [];
+  },
+  methods: {
+    getGoodsDetail() {
+      this.$post("/api/shop/detail/" + this.goodsId)
+        .then(res => {
+          console.log(res);
+          this.bannerList = [];
+          if ((res.code = "200")) {
+            this.goodsDetail = res.data;
+            if (this.goodsDetail.imageList) {
+              this.goodsDetail.imageList.forEach(item => {
+                var temp = {};
+                temp.location = "";
+                temp.picUrl = item;
+                this.bannerList.push(temp);
+              });
+              console.log(this.bannerList, "this.bannerList");
+              this.$refs.banner.update("更新");
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    showPop() {
+      this.popChangeFlag = true;
+      if (this.$refs.popSon) {
+        this.$refs.popSon.step1Flag = true;
+        this.$refs.popSon.getUserAddress();
+      }
+    }
+  },
+  watch: {}
+};
+</script>
+
+
+<style lang="scss">
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+.goodsDetail_Page {
+  table {
+    tr {
+      @extend .flex_hc;
+      @include getBorder(bottom, #e8e8e8);
+      font-size: 11px;
+      color: rgba(#000000, 0.65);
+      &:first-child {
+        background-color: #fafafa;
+        color: #000;
+      }
+    }
+    th,
+    td {
+      flex: 1;
+      flex-wrap: wrap;
+      -webkit-flex-wrap: wrap;
+      line-height: 27px;
+      text-align: left;
+    }
+  }
+}
+</style>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+.mod_header {
+  position: relative;
+  .nav_bar {
+    position: relative;
+    margin-top: 10px;
+    height: 44px;
+    background-color: transparent;
+  }
+  .share_icon {
+    @extend .g_v_mid;
+    z-index: 1;
+    right: 5px;
+    width: 44px;
+    height: 44px;
+    @include getBgImg("../../../assets/images/store/share_icon.png");
+    background-size: 22px;
+  }
+}
+.main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 100px;
+}
+.goods_list {
+  background-color: #fff;
+  .goods_title {
+    @extend .flex_hc;
+    padding-top: 10px;
+    padding-left: 10px;
+    font-size: 14px;
+    color: #333;
+  }
+  .goods_name {
+    @include t_nowrap(70%);
+  }
+  .goods_grade {
+    margin-left: 4px;
+    padding: 3px 5px;
+    font-size: 11px;
+    color: $color_main;
+    @include getRadiusBorder($color_main, all, 4px);
+  }
+  .goods_detail {
+    @extend .flex_v_justify;
+    padding: 10px;
+    color: #ccc;
+    span,
+    div {
+      @extend .flex_hc;
+    }
+    .bought_person {
+      padding-right: 4px;
+    }
+    img {
+      width: 22px;
+      height: 22px;
+      margin-right: 4px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+  .num {
+    padding-right: 5px;
+  }
+  .star_coin {
+    display: block;
+    width: 14px;
+    height: 14px;
+    margin-right: 3px;
+    @include getBgImg("../../../assets/images/user_center/star_coin.png");
+  }
+  .mark {
+    color: $color_main;
+    font-size: 14px;
+  }
+}
+.goods_info {
+  margin-top: 8px;
+  padding: 0 10px;
+  background-color: #fff;
+  h3 {
+    padding-top: 15px;
+    font-size: 16px;
+    color: #333;
+  }
+  p {
+    padding-top: 10px;
+    font-size: 13px;
+    line-height: 20px;
+    color: #333;
+  }
+  img {
+    margin-top: 4px;
+    width: 100%;
+  }
+}
+.mod_footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+}
+.goods_exchange {
+  @extend .flex_v_justify;
+  padding: 4px 10px;
+  text-align: center;
+  color: #666;
+  box-shadow: 0 1px 2px #000;
+  .service_icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+    margin: 0 auto;
+    @include getBgImg("../../../assets/images/store/service_icon.png");
+    background-size: 24px;
+  }
+  .exchange_btn {
+    font-size: 17px;
+    @include getBtn(147px, 40px, transparent, #fff, 40px);
+    background: linear-gradient(to right, #ffa200, #ff7b1c);
+  }
+}
+.goods_discount,
+.goods_new,
+.goods_recommend,
+.no_goods {
+  display: block;
+  width: 50px;
+  height: 16px;
+  margin-left: 10px;
+  padding-right: 8px;
+  font-size: 11px;
+  line-height: 16px;
+  text-align: right;
+  color: #fff;
+}
+
+.no_goods {
+  text-align: center;
+  padding: 0;
+  border-radius: 8px;
+  background: linear-gradient(to right, #ff7e36, #fe541b);
+  background: -webkit-linear-gradient(to right, #ff7e36, #fe541b);
+}
+
+.goods_discount {
+  @include getBgImg("../../../assets/images/store/goods_discount.png");
+}
+.goods_new {
+  @include getBgImg("../../../assets/images/store/goods_new.png");
+}
+.goods_recommend {
+  @include getBgImg("../../../assets/images/store/goods_recommend.png");
+}
+</style>

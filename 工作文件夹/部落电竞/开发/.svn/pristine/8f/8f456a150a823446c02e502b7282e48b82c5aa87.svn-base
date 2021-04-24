@@ -1,0 +1,29 @@
+/* modules/store/my_exchange/my_exchange.wxss */
+
+.product_group {
+  background-color: #fff;
+}
+
+.product_group .list {
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 20rpx;
+}
+
+.product_group  .item {
+  width: 25%;
+  padding-bottom: 24rpx;
+  text-align: center;
+}
+
+.product_group  .item i {
+  display: block;
+  width: 58rpx;
+  height: 58rpx;
+  margin: 0 auto 4rpx;
+}
+
+.product_group  .item  span {
+  font-size: 26rpx;
+  color: #666;
+}

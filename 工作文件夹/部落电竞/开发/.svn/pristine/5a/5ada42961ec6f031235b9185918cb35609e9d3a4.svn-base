@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-autowire="byName" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
+       xmlns:aop="http://www.springframework.org/schema/aop">
+
+
+    <import resource="classpath*:/spring/spring-env.xml"/>
+
+    <!-- <mvc:default-servlet-handler /> -->
+    <mvc:annotation-driven/>
+    <!-- 扫描包路径 -->
+    <aop:aspectj-autoproxy/>
+    <context:component-scan base-package="com.esportzoo"/>
+    <!--<context:component-scan base-package="com.esportzoo.esport.controller" />-->
+
+    <bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>application/json;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <bean name="loginInterceptor" class="com.esportzoo.esport.interceptor.LoginInterceptor"/>
+    <bean name="userAuthInterceptor" class="com.esportzoo.esport.interceptor.UserAuthInterceptor"/>
+    <mvc:resources mapping="/swagger/**" location="/WEB-INF/swagger/"/>
+    <mvc:resources location="/resources/" mapping="/resources/**"/>
+    <mvc:resources mapping="/*.txt" location="/"/>
+
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/cmsComment/**"/>
+            <mvc:mapping path="/cmsContent/**"/>
+            <mvc:mapping path="/charge/**"/>
+            <mvc:mapping path="/league/userfollow"/>
+            <mvc:mapping path="/user/**"/>
+            <mvc:mapping path="/usercenter/**"/>
+            <mvc:mapping path="/recExpert/**"/>
+            <mvc:mapping path="/league/detail/**"/>
+            <mvc:mapping path="/article/pay/**"/>
+            <mvc:mapping path="/article/detail/**"/>
+            <mvc:mapping path="/article/choosePayWay"/>
+            <mvc:mapping path="/league/data"/>
+            <mvc:mapping path="/league/result"/>
+            <mvc:mapping path="/league/live"/>
+            <mvc:mapping path="/expert/paid/articleList"/>
+            <mvc:mapping path="/expert/articleList"/>
+            <mvc:mapping path="/shop/shopOrder"/>
+            <mvc:mapping path="/shopOrder/**"/>
+            <mvc:mapping path="/shopAddress/**"/>
+            <mvc:mapping path="/payment/**"/>
+            <mvc:mapping path="/h5charge/**"/>
+            <mvc:mapping path="/minicharge/**"/>
+            <mvc:mapping path="/userContent/**"/>
+            <mvc:mapping path="/cmsTopic/**"/>
+            <mvc:mapping path="/subject/**"/>
+            <mvc:mapping path="/hd101/**"/>
+            <mvc:mapping path="/starNum/**"/>
+            <mvc:mapping path="/yeYunUser/**"/>
+            <mvc:mapping path="/yeYunOrder/**"/>
+            <mvc:mapping path="/quiz/bet/**"/>
+            <mvc:mapping path="/matchtool/createMatch/**"/>
+            <mvc:mapping path="/matchtool/**"/>
+            <mvc:mapping path="/regist/bindingPhone"/>
+            <mvc:mapping path="/regist/bindingPhoneGetCode"/>
+            <mvc:mapping path="/userMsg/**"/>
+            <mvc:mapping path="/helpcenter/**"/>
+            <mvc:mapping path="/v2/game/autoLogin"/>
+            <mvc:mapping path="/quizSale/**"/>
+            <mvc:mapping path="/quiz/record/**"/>
+            <mvc:mapping path="/mall/**"/>
+            <mvc:mapping path="/planRecommend/**"/>
+            <mvc:mapping path="/followplan/**"/>
+
+            <!--测试使用-->
+            <mvc:exclude-mapping path="/payment/getChargeMoneyList"/>
+            <mvc:exclude-mapping path="/h5charge/tocharge"/>
+            <mvc:exclude-mapping path="/payment/getThirdPayStatus"/>
+            <mvc:exclude-mapping path="/share/downloadFile"/>
+
+            <mvc:exclude-mapping path="/cmsContent/addViews"/>
+            <mvc:exclude-mapping path="/cmsTopic/listCmsTopic"/>
+            <mvc:exclude-mapping path="/cmsContent/detail/nologin/**"/>
+            <mvc:exclude-mapping path="/cmsComment/list/nologin"/>
+            <mvc:exclude-mapping path="/cmsComment/upTopComment/nologin"/>
+            <mvc:exclude-mapping path="/charge/wxh5pay"/>
+            <mvc:exclude-mapping path="/shopOrder/orderstatus"/>
+            <mvc:exclude-mapping path="/recExpert/baseInfo/nologin/**"/>
+            <mvc:exclude-mapping path="/recExpert/articleList/nologin"/>
+            <mvc:exclude-mapping path="/expert/articleList/nologin"/>
+            <mvc:exclude-mapping path="/article/detail/new/**"/>
+            <mvc:exclude-mapping path="/hd101/testInsert"/>
+            <mvc:exclude-mapping path="/user/sendPhoneCode"/>
+            <mvc:exclude-mapping path="/game/shake/**"/>
+            <mvc:exclude-mapping path="/user/sendPhoneCode"/>
+            <mvc:exclude-mapping path="/charge/thirdPayCallBack/**"/>
+
+
+            <ref bean="loginInterceptor"/>
+        </mvc:interceptor>
+
+        <mvc:interceptor>
+            <mvc:mapping path="/quiz/bet/getPreBetting"/>
+            <mvc:mapping path="/quiz/bet/doSubmit"/>
+            <mvc:mapping path="/charge/pageData"/>
+            <mvc:mapping path="/h5charge/tocharge"/>
+            <mvc:mapping path="/mall/**"/>
+            <ref bean="userAuthInterceptor"/>
+        </mvc:interceptor>
+
+    </mvc:interceptors>
+
+
+
+    <!-- Default ViewResolver -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/"/>
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+    <!-- 文件上传 -->
+    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />-->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- set the max upload size100MB -->
+        <property name="maxUploadSize">
+            <value>314572800</value>
+        </property>
+        <property name="maxInMemorySize">
+            <value>4096</value>
+        </property>
+        <property name="defaultEncoding">
+            <value>UTF-8</value>
+        </property>
+    </bean>
+</beans>
+
+	   

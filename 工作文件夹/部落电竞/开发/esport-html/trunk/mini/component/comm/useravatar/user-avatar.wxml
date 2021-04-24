@@ -1,0 +1,13 @@
+<!--component/comm/useravatar/user-avatar.wxml-->
+
+<!-- avatar100大小 -->
+<view wx:if="{{showSize==100}}" class='dsp-cell user-avatar-view u-a-v100'>
+  <image class="user-avatar u-a100" src="/resources/images/avatar/cat.jpg" mode="aspectFill" />
+  <i wx:if="{{showSignal==true}}" class="user-signal u-s100"></i>
+</view>
+
+<!-- avatar120大小 -->
+<view wx:if="{{showSize==150}}" class='dsp-cell user-avatar-view u-a-v150'>
+  <image class="user-avatar u-a150" src="/resources/images/avatar/cat.jpg" mode="aspectFill" />
+  <i wx:if="{{showSignal==true}}" class="user-signal u-s150"></i>
+</view>

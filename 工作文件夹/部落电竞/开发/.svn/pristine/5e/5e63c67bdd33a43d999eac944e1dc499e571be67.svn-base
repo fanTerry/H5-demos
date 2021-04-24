@@ -1,0 +1,32 @@
+/* component/newslist/news-item.wxss */
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+.news-tag {
+  display: flex;
+	align-items: center;
+	justify-content: space-between;
+  color: #aaa;
+  font-size: 22rpx;
+}
+
+.news-info-item {
+  float: left;
+  font-size: 22rpx;
+  line-height: 30rpx;
+  
+  color: #aaa;
+  padding-left: 30rpx;
+  margin-right: 20rpx;
+  position: relative;
+}
+.n-i-i-last {
+  margin-right: 0;
+}
+.n-i-i-i {
+  font-size: 26rpx;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+}

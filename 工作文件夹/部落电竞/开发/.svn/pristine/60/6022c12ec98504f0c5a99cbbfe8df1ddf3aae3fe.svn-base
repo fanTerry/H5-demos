@@ -1,0 +1,51 @@
+package com.esportzoo.esport.manager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.esportzoo.common.appmodel.domain.result.ModelResult;
+import com.esportzoo.esport.client.service.consumer.UserConsumerServiceClient;
+import com.esportzoo.esport.client.service.consumer.UserThirdLoginServiceClient;
+import com.esportzoo.esport.domain.UserConsumer;
+
+/**
+ * @author tingting.shen
+ * @date 2019/06/10
+ */
+@Component
+public class UserManager {
+	
+	private transient final Logger logger = LoggerFactory.getLogger(getClass());
+	
+	@Autowired
+	private UserConsumerServiceClient userConsumerServiceClient;
+	@Autowired
+	private UserThirdLoginServiceClient userThirdLoginServiceClient;
+	
+	
+	public UserConsumer getUserConsumer(String thirdId, Integer thirdType) {
+		String logPrefix = "根据第三方id和第三方类型查询用户_";
+		try {
+			ModelResult<Long> modelResult = userThirdLoginServiceClient.queryConsumerId(thirdId, thirdType);
+			if (!modelResult.isSuccess()) {
+				return null;
+			}
+			Long userConsumerId = modelResult.getModel();
+			if (userConsumerId == null) {
+				return null;
+			}
+			ModelResult<UserConsumer> modelResult1 = userConsumerServiceClient.queryConsumerById(userConsumerId, null);
+			if (!modelResult1.isSuccess()) {
+				return null;
+			}
+			return modelResult1.getModel();
+		} catch (Exception e) {
+			logger.info(logPrefix + "发生异常，thirdId={}， thirdType={}， exception={}", thirdId, thirdType, e.getMessage(), e);
+			return null;
+		}
+	}
+	
+	
+}

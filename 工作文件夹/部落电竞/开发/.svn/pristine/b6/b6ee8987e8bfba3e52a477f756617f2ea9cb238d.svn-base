@@ -1,0 +1,11 @@
+<!--component/report/reportsubmenu/report-sub-menu.wxml-->
+<view class='report-sub-menu clear'>
+  <!-- <view class='report-sub-menu-item report-s-m-i-cur'><text>全部</text></view> -->
+  
+  <block wx:for="{{gameIdArray}}" wx:key="">
+    <view class='report-sub-menu-item'>
+      <text>{{item}}</text>
+    </view>
+  </block>
+</view>
+

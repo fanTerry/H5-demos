@@ -1,0 +1,27 @@
+    const state = {
+        betData: {
+            toCurBet:null
+        }
+    };
+    const getters = {
+        getBetData: state => state.betData
+    };
+    const mutations = {
+        setBetData(state, object) {
+            state.betData = object;
+        }
+    };
+    const actions = {
+        setBetData({
+            commit
+        }, object) {
+            commit('setBetData', object);
+        }
+    };
+
+    export default {
+        state,
+        getters,
+        actions,
+        mutations
+    };

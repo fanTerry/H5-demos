@@ -1,0 +1,32 @@
+<view class="Page">
+	<view class="main">
+		<view class="count_tips">{{quetionTime}}</view>
+		<view class="rank_title">
+			第<span class="num">{{subjectNum}}</span>题
+		</view>
+		<view class="title">{{currSubject.name}}</view>
+		<view class="option_group">
+			<!-- 答对加active -->
+			<view class="{{index==active?'active':''}}" wx:for="{{currSubject.hdSubjectOptions}}" 
+				bindtap="verigyAswer"  data-id='{{item.id}}' data-index='{{index}}'>
+
+				{{index==0?'A.':index==1?'B.':index==2?'C.':'D.'}} {{item.name}}</view>
+			<!-- <view class="">B. WE</view> -->
+		</view>
+	</view>
+	<!-- 答题倒计时提醒 -->
+	<view class="pop_count_att {{prepareDialog?'none':''}}" >
+		<view class="tips">
+			<p>每题限时10秒</p>
+			<p>每次续命操作限时1分钟</p>
+			<p>准备好了吗?</p>
+		</view>
+		<view class="count">{{prepareTime}}</view>
+	</view>
+	<!-- 弹窗集合组件 -->
+	<pops ref="popRef" :shareCode='shareCode' reStartTimeCountDown="reStartTimeCountDown" payToRestartGame="payToRestartGame"></pops>
+
+	<!-- <footer class="mod_footer">
+		<tabs></tabs>
+	</footer> -->
+</view>

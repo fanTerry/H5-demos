@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>获取内容</title>
+</head>
+<body>
+    <div id="editor">
+        <p>初始化的内容1</p>
+    	<p>初始化的内容2</p>
+    </div>
+    <button onclick="getHtml();">获取html内容</button>
+    <button onclick="getText();">获取text内容</button>
+    <button onclick="getJson();">获取json内容</button>
+    <!-- 注意， 只需要引用 JS，无需引用任何 CSS ！！！-->
+    <script type="text/javascript" src="../wangEditor.min.js"></script>
+    <script type="text/javascript">
+    	//创建一个编辑器-start
+        var E = window.wangEditor
+        var editor = new E('#editor')
+        editor.create()
+        //创建一个编辑器-end
+        
+       var getHtml = function() {
+           console.log('获取html内容')
+           console.log(editor.txt.html())
+       }
+       
+        var getText = function() {
+            console.log('获取text内容')
+            console.log(editor.txt.text())
+        }
+        
+        var getJson = function() {
+        	console.log('获取json内容')
+        	var json = editor.txt.getJSON()  // 获取 JSON 格式的内容
+            var jsonStr = JSON.stringify(json)
+            console.log(json)
+            console.log(jsonStr)
+        }
+        
+        
+    </script>
+</body>
+</html>

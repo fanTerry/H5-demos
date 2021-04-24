@@ -1,0 +1,147 @@
+<template>
+  <section class="tabbar">
+    <ul>
+      <li @click="gotoAddress({path: '/home', query: {}})"
+        :class="{cur:$route.path.indexOf('home')!== -1 || $route.path=='/'}">
+        <i class="home"></i>
+        <span>首页</span>
+      </li>
+      <li @click="gotoAddress({path: '/match', query: {}})" :class="{cur:$route.path.indexOf('match')!== -1}">
+        <i class="match"></i>
+        <span>赛事</span>
+      </li>
+      <li @click="gotoAddress({path: '/community', query: {}})"
+        :class="{cur:$route.path.indexOf('community')!== -1 || topicListFlag == true}">
+        <i class="community"></i>
+        <span>发现</span>
+      </li>
+      <li v-if='showFlag' @click="gotoAddress({path: '/store', query: {}})" :class="{cur:$route.path.indexOf('store')!== -1}">
+        <i class="store"></i>
+        <span>商城</span>
+      </li>
+      <!-- <li @click="gotoAddress({path: '/expert', query: {}})" :class="{cur:$route.path.indexOf('expert')!== -1}">
+        <i class="expert"></i>
+        <span>专家</span>
+      </li> -->
+      <li @click="gotoAddress({path: '/userCenter', query: {}})" :class="{cur:$route.path.indexOf('userCenter')!== -1}">
+        <i class="user_center"></i>
+        <span>我的</span>
+      </li>
+    </ul>
+  </section>
+</template>
+
+<script>
+export default {
+  props: ["topicListFlag"],
+  data() {
+    return {
+      showFlag:true
+    };
+  },
+  mounted(){
+    if(this.$route.query.agentId==1004){
+      this.showFlag=false
+    }
+    
+  },
+  methods: {
+    gotoAddress(path) {
+      this.$router.push(path);
+    }
+  },
+  components: {}
+};
+</script>
+
+<style lang='scss'>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+.tabbar {
+  color: #a4a2a5;
+  ul {
+    @extend .flex_hc;
+    justify-content: space-around;
+    -webkit-justify-content: space-around;
+    padding: 6px 0;
+  }
+  li {
+    flex: 1;
+    -webkit-flex: 1;
+  }
+  i {
+    display: block;
+    width: 21px;
+    height: 21px;
+    margin: 0 auto;
+  }
+  span {
+    display: block;
+    font-size: 10px;
+    padding-top: 2px;
+    text-align: center;
+  }
+}
+
+.cur {
+  color: #ff7e00;
+
+  .home {
+    @include getBgImg("../../assets/images/home/home_cur.png");
+    background-size: 100% auto;
+  }
+  .match {
+    @include getBgImg("../../assets/images/match/match_cur.png");
+    background-size: 100% auto;
+  }
+  .follow {
+    @include getBgImg("../../assets/images/follow/follow_cur.png");
+    background-size: 100% auto;
+  }
+  .community {
+    @include getBgImg("../../assets/images/community/community_cur.png");
+    background-size: 100% auto;
+  }
+  .store {
+    @include getBgImg("../../assets/images/store/store_cur.png");
+    background-size: 100% auto;
+  }
+  .expert {
+    @include getBgImg("../../assets/images/expert/expert_cur.png");
+    background-size: 100% auto;
+  }
+  .user_center {
+    @include getBgImg("../../assets/images/user_center/user_center_cur.png");
+    background-size: 100% auto;
+  }
+}
+
+.home {
+  @include getBgImg("../../assets/images/home/home.png");
+  background-size: 100% auto;
+}
+.match {
+  @include getBgImg("../../assets/images/match/match.png");
+  background-size: 100% auto;
+}
+.follow {
+  @include getBgImg("../../assets/images/follow/follow.png");
+  background-size: 100% auto;
+}
+.community {
+  @include getBgImg("../../assets/images/community/community.png");
+  background-size: 100% auto;
+}
+.store {
+  @include getBgImg("../../assets/images/store/store.png");
+  background-size: 100% auto;
+}
+.expert {
+  @include getBgImg("../../assets/images/expert/expert.png");
+  background-size: 100% auto;
+}
+.user_center {
+  @include getBgImg("../../assets/images/user_center/user_center.png");
+  background-size: 100% auto;
+}
+</style>

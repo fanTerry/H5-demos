@@ -1,0 +1,302 @@
+<!--
+ * @Author: haitao.li
+ * @Date: 2020-04-04 16:10:23
+ * @LastEditTime: 2020-04-09 15:27:34
+ * @LastEditors: Please set LastEditors
+ * @Description: 欢乐摇一摇钱包流水弹窗
+ * @FilePath: /quiz-touch/src/views/game/shake/wallet.vue
+ -->
+<template>
+  <div class='ui_pop'>
+    <div class="wallet">
+      <h3>游戏记录</h3>
+      <a class="close" @click="closePop()"></a>
+      <div class="container">
+        <div class="record_list">
+          <div class="record" v-for="(item,index) in dataMap" :key="index">
+            <p class="title">{{item.time}}</p>
+            <ul class="list" @scroll="onScroll()">
+              <li class="item" v-for="(gameOrder,index) in item.dataList" :key="index">
+                <div>
+                  <div class="top">
+                    <div class="txt">
+                      <div class="flex_hc">
+                        <span>掉落: </span>
+                        <p class="flex_hc" v-for="(award,index) in gameOrder.awardLevelVoList " :key="index">
+                          <img :src="award.awardIcon" alt="">x{{award.awardNum}}
+                        </p>
+                      </div>
+                    </div>
+                    <span class="num">+{{gameOrder.returnScore}}</span>
+                  </div>
+                  <div class="bottom">
+                    <span>{{gameOrder.createTime| dateFmt }}</span>
+                    <span>消耗-{{gameOrder.score}}</span>
+                  </div>
+                </div>
+              </li>
+              <p class="att_tips" v-if="!pageParam.hasNext">暂无更多数据</p>
+            </ul>
+          </div>
+          <p class="no_data" v-if="hasGameRecord">暂无游戏记录</p>
+        </div>
+        <!-- <loading v-if="isLoading" :notext="true"></loading> -->
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import loading from "../../../components/common/loading";
+export default {
+  components: {
+    loading
+  },
+  props: [],
+  data() {
+    return {
+      hasGameRecord: false,
+      dataMap: [],
+      pageParam: {
+        pageNo: 1,
+        pageSize: 10,
+        hasNext: true
+      },
+      isLoading: false,
+      stopReapeat: false, //防止重复翻页
+      innerHeight: 0
+    };
+  },
+  mounted() {
+    this.getPageData();
+  },
+  methods: {
+    closePop() {
+      this.$emit("closeWalletPop");
+    },
+
+    /**
+     * @description: 获取每一页的数据
+     * @param {分页数据}
+     * @return:
+     */
+    getPageData(param) {
+      this.isLoading = true;
+      if (!param) {
+        param = this.pageParam;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/game/shake/getUserWalletLog", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            if (dataResponse.data) {
+              this.pageParam.hasNext = dataResponse.data.hasNext;
+              this.hanldDataLog(dataResponse.data.listMap);
+              console.log("this.dataMap", this.dataMap);
+              this.stopReapeat = false;
+              if (param.pageNo == 1 && this.dataMap.length == 0) {
+                //用户没有任何游戏记录
+                this.hasGameRecord = true;
+              }
+            }
+          } else {
+            this.$toast(dataResponse.message, 1.5);
+          }
+        })
+        .catch(error => {
+          this.$$toast("请求异常", 1.5);
+          console.log(error);
+        });
+    },
+    /**
+     * @description: 将数据转化为按日期分割的条目
+     * @param {array}
+     * @return:
+     */
+    hanldDataLog(data) {
+      let listMap = [];
+      for (var key in data) {
+        var el = {
+          time: key,
+          dataList: data[key]
+        };
+        listMap.push(el);
+      }
+
+      let selfMap = this.dataMap;
+      if (selfMap.length > 0) {
+        var index = selfMap.length - 1;
+        if (selfMap[index].time === listMap[0].time) {
+          selfMap[index].dataList = selfMap[index].dataList.concat(
+            listMap[0].dataList
+          );
+          listMap.shift();
+        }
+      }
+      for (var i = 0; i < listMap.length; i++) {
+        selfMap.push(listMap[i]);
+      }
+      this.dataMap = selfMap;
+    },
+
+    /**
+     * 监控上拉加载翻页
+     */
+    onScroll() {
+      //滚动内容容器的高度
+      let outerHeight = document.querySelector(".list").clientHeight;
+      //滚动内容高度
+      let innerHeight = document.querySelector(".list").scrollHeight;
+      //滚动条距离顶部的大小
+      let scrollTop = document.querySelector(".list").scrollTop;
+
+      console.log(innerHeight, outerHeight, scrollTop);
+      if (innerHeight <= outerHeight + scrollTop + 100) {
+        console.log("44444");
+        //加载更多操作
+        if (!this.pageParam.hasNext) {
+          //没有下一页
+          if (this.pageParam.pageNo >= 1) {
+            // this.$toast("数据到底啦", 1.5);
+          }
+          return;
+        }
+        if (this.stopReapeat) {
+          return;
+        }
+        this.stopReapeat = true;
+        console.log("加载下一页", this.pageParam);
+        this.pageParam.pageNo += 1;
+        this.getPageData().then(() => {
+          // document.querySelector(".list").scrollTo(0, 0);
+          // console.log(document.querySelector(".list").scrollTop);
+        });
+      }
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.wallet {
+  position: relative;
+  width: 80.2667vw;
+  height: 117.2vw;
+  @include getBgImg("../../../assets/images/game/newshake/pop_common.png");
+}
+
+.close {
+  position: absolute;
+  right: 2.1333vw;
+  top: 1.0667vw;
+  width: 16vw;
+  height: 16vw;
+}
+
+h3 {
+  padding-top: 7vw;
+  font-size: 6.9333vw;
+  color: #ff6c24;
+  text-align: center;
+}
+
+.container {
+  height: 80.8vw;
+  margin: 6.1333vw 8vw 0;
+  overflow-y: auto;
+  // -webkit-overflow-scrolling: touch;
+}
+
+.record_list {
+  @extend .flex_v_h;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  height: 100%;
+  .no_data {
+    font-size: 4vw;
+    color: #df6744;
+  }
+}
+
+.record {
+  @extend .flex_hc;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  .title {
+    display: block;
+    line-height: 6.9333vw;
+    font-size: 5.3333vw;
+    font-weight: bold;
+    text-align: center;
+    color: #aa661b;
+  }
+  ul {
+    width: 100%;
+    height: auto;
+    overflow: auto;
+  }
+  .att_tips {
+    font-size: 4vw;
+    color: #cfa863;
+    text-align: center;
+  }
+}
+
+.item {
+  @extend .flex_v_h;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  width: 100%;
+  margin: 1.3333vw 0;
+  padding: 0.8vw;
+  @include getRadiusBorder(#ceb583, all, 30px);
+  &:last-child {
+    margin-bottom: 0;
+  }
+  > div {
+    width: 100%;
+    padding: 1.6vw 2.6667vw;
+    background-color: #f1dd94;
+    border-radius: 10px;
+  }
+  .top,
+  .bottom {
+    @extend .flex_v_justify;
+    width: 100%;
+  }
+}
+
+.top {
+  color: #aa661b;
+  .txt {
+    font-size: 4.2667vw;
+    font-weight: bold;
+    > div {
+      flex-wrap: wrap;
+      -webkit-flex-wrap: wrap;
+    }
+  }
+  .num {
+    font-size: 4.5333vw;
+    font-weight: bold;
+    color: #ec5a13;
+  }
+  img {
+    width: 5.3333vw;
+    height: 5.3333vw;
+    object-fit: contain;
+  }
+}
+
+.bottom {
+  padding-top: 1.0667vw;
+  font-size: 3.7333vw;
+  color: #cfa863;
+}
+</style>

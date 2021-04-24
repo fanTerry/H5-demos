@@ -1,0 +1,134 @@
+<template>
+    <div class="Page">
+        <header class="mod_header">
+            <h2>
+                <div class="back"></div>
+                <a class="meet_problem">遇到问题?</a>
+            </h2>
+        </header>
+
+        <div class="main">
+            <div class="user_num">
+                <input type="text" placeholder="请输入账号">
+            </div>
+            <div class="user_pwd">
+                <input type="text" placeholder="请输入密码">
+                <a>忘记密码</a>
+            </div>
+            <!-- disabled置灰态 -->
+            <a class="login_btn disabled">登录</a>
+            <p class="tar"><a href="" class="register_link">注册账号</a></p>
+        </div>
+
+        <footer class="mod_footer">
+            <div class="third_party">
+                <p>第三方账户登陆</p>
+                <ul>
+                    <li class="wx"></li>
+                    <li class="qq"></li>
+                    <li class="wb"></li>
+                </ul>
+            </div>
+        </footer>
+    </div>
+</template>
+
+<script>
+export default {
+    data() {
+        return {};
+    },
+    methods: {},
+    components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_var";
+
+.Page {
+    @include getBgImg("../../../assets/images/user_center/login_logo.png");
+    background-size: 50%;
+    background-position: top center;
+    background-color: #fff;
+}
+
+.mod_header {
+    h2 {
+        position: relative;
+        height: 40px;
+        background: none;
+    }
+    .meet_problem {
+        @extend .g_v_mid;
+        right: 20px;
+        color: #999;
+        font-size: 13px;
+    }
+}
+
+.main {
+    padding-top: 53vw;
+    .user_num,
+    .user_pwd {
+        @extend .flex_v_justify;
+        margin: 0 20px;
+        padding: 20px 0;
+        @include getBorder(bottom, #e7e7e7);
+        input {
+            border: none;
+            font-size: 15px;
+        }
+        a {
+            font-size: 14px;
+            color: #a1a1a1;
+        }
+    }
+    .login_btn {
+        display: block;
+        margin: 20px 20px 25px;
+        padding: 15px;
+        font-size: 18px;
+        color: #fff;
+        border-radius: 8px;
+        text-align: center;
+        background-color: $color_main;
+        &.disabled {
+            opacity: 0.5;
+        }
+    }
+    .register_link {
+        padding-right: 20px;
+        font-size: 16px;
+        color: $color_main;
+    }
+}
+
+.third_party {
+    p {
+        padding-bottom: 18px;
+        color: #7c7c7c;
+        text-align: center;
+    }
+    ul {
+        @extend .flex_v_h;
+        padding-bottom: 30px;
+        li {
+            width: 50px;
+            height: 50px;
+            margin: 0 15px;
+        }
+        .wx {
+            @include getBgImg("../../../assets/images/user_center/wx_icon.png");
+        }
+        .qq {
+            @include getBgImg("../../../assets/images/user_center/qq_icon.png");
+        }
+        .wb {
+            @include getBgImg("../../../assets/images/user_center/wb_icon.png");
+        }
+    }
+}
+</style>

@@ -1,0 +1,22 @@
+/* modules/reportpage/mdmember/md-member.wxss */
+
+
+.md-member {
+  width: 710rpx;
+  padding: 10rpx;
+  margin: 0 auto;
+
+  background: #fff;
+  border-radius: 15rpx;
+}
+
+.md-member-img-v {
+  width: 710rpx;
+  padding: 10rpx 0; 
+  border-bottom: dashed 2rpx #ddd;
+}
+
+.md-member-img {
+  width: 710rpx;
+  height: 175rpx;
+}

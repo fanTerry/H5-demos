@@ -1,0 +1,55 @@
+/* component/header/navlist/nav_list.wxss */
+
+.nav_list {
+  display: block;
+  position: relative;
+  height: 74rpx;
+	line-height: 1;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+ul {
+  display: block;
+  height: calc(100% + 12rpx);
+  padding-left: 10rpx;
+  font-size: 0;
+  white-space: nowrap;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+li {
+  display: inline-block;
+  padding: 24rpx;
+  margin-right: 20rpx;
+  font-size: 26rpx;
+  color: #818181;
+}
+
+li:last-child {
+  margin-right: 0;
+}
+
+.active {
+  position: relative;
+}
+
+.active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 46rpx;
+  height: 4rpx;
+  color: #ff7e00;
+  background-color: #ff7e00;
+}
+
+
+.follow_navlist{
+	margin-bottom: 16rpx;
+}
+

@@ -1,0 +1,71 @@
+<!-- modules/articlepage/articlediscussitem/article-discuss-item.wxml -->
+<view class='article-discuss-item'>
+  <!-- 评论作者头像部分 -->
+  <view class='dsp-cell v-t'>
+    <image class="article-author-avatar" src="{{dataItem.usrIcon}}" mode="aspectFill" />
+  </view>
+  <view class='dsp-cell'>
+    <!-- 评论作者信息部分 -->
+    <view class='article-author-info-view'>
+      <view class='dsp-cell w400'>
+        <view class='article-author-name'>
+          <text>{{dataItem.usrName}}</text>
+        </view>
+        <view class='article-author-info-v'>
+          <text class='article-author-info'>#{{dataItem.floor}}</text>
+          <text class='article-author-info'>{{dataItem.commentTimeStr}}</text>
+        </view>
+      </view>
+      <view class='dsp-cell' wx-if="{{hotFlag==1}}">
+        <view class='article-author-follow' bindtap="_toFollow">
+            <text wx:if="{{!dataItem.followFlag}}">+ 关注</text>
+            <text wx:else>- 取消</text>
+        </view>
+      </view>
+    </view>
+    <!-- 评论内容部分 -->
+    <view class='article-content'>
+      <text>{{dataItem.content}}</text>
+    </view>
+    <!-- 评论控制条部分 -->
+    <view class='article-control clear'>
+      <view class="article-c-item">
+        <i wx:if="{{dataItem.upFlag}}" class='iconfont icon-dianzan atc-c-i-i' style="color:red" bindtap="_toUp"></i>
+        <i wx:else class='iconfont icon-dianzan atc-c-i-i' bindtap="_toUp"></i>
+        <text>{{dataItem.ups}}</text>
+      </view>
+      <!-- <view class="article-c-item">
+        <i class='iconfont icon-fenxiang atc-c-i-i'></i><text>657823</text>
+      </view> -->
+      <view class="article-c-item" bindtap="_toReply" data-replyFatherCommentId="{{dataItem.commentId}}" data-replyFatherName="{{dataItem.usrName}}">
+        <i class='iconfont icon-pinglun atc-c-i-i'></i>
+        <text>{{dataItem.replies}}</text>
+      </view>
+      <!-- <view class='atc-c-i-i-m-v'>
+        <i class='iconfont icon-gengduo atc-c-i-i-m'></i>
+      </view> -->
+    </view>
+    <!-- 评论的盖楼部分 -->
+    <view class='article-d-discuss' wx:if="{{subCommentListLen>0}}">
+      <!-- 盖楼列表 -->
+      <!-- <scroll-view  scroll-y style="height: 200px;" bindscrolltoupper="upper"bindscrolltolower="lower"  bindscroll="scroll"> -->
+      <view wx:for="{{subCommentList}}" wx:key=""  class='article-d-discuss-item'>
+        <text class='atc-d-d-n'>{{item.usrName}}：</text>
+        <text class='atc-d-d-t'>{{item.content}}</text>
+      </view>
+      <!-- </scroll-view> -->
+      <view  wx:if="{{subCommentListLen>showLen}}">
+        <view class='article-d-d-control' wx:if="{{showMoreFlag}}" bindtap="_showOrHideMore">
+          <text>收起回复</text>
+          <!-- <image class='atc-d-d-c-icon' src='https://rs.esportzoo.com/svn/esport-res/mini/images/icon/up.png' mode='aspectFit' /> -->
+          <icon class='iconfont icon-xiangshang atc-d-d-i'></icon>
+        </view>
+        <view class='article-d-d-control' wx:else bindtap="_showOrHideMore">
+          <text>查看更多回复</text>
+          <!-- <image class='atc-d-d-c-icon' src='https://rs.esportzoo.com/svn/esport-res/mini/images/icon/up.png' mode='aspectFit' /> -->
+          <icon class='iconfont icon-xiangxia atc-d-d-i'></icon>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

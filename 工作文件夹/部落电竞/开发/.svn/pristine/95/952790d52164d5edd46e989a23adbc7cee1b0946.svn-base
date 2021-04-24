@@ -1,0 +1,1491 @@
+<template>
+  <div class="Page">
+    <header class="mod_header"></header>
+    <div class="main">
+      <figure class="mod_banner">
+        <ul>
+          <li>
+            <img src alt />
+          </li>
+        </ul>
+      </figure>
+      <section class="mod_users">
+        <div class="user_info">
+          <div class="user_img">
+            <img v-bind:src="iconImg?iconImg:require('../../assets/images/home/default_img.png')" alt />
+          </div>
+          <div class="login_out" v-if="loginType == 1">
+            <a class="login_btn" @click="login">登录</a>
+            <span class="user_guess">我的竞猜</span>
+            <div class="login_wx" @click="login">
+              <span>微信登录</span>
+            </div>
+          </div>
+          <div class="login_in" v-else>
+            <span class="user_guess">我的竞猜</span>
+            <div class="user_assets">
+              <span class="coin"></span>
+              <span>110000</span>
+            </div>
+            <a class="recharge_btn">金豆充值</a>
+            <a class="signin_btn">签到领豆</a>
+          </div>
+        </div>
+        <div class="broadcast">
+          <div class="swiper-container">
+            <ul class="list swiper-wrapper">
+              <li class="item swiper-slide" v-for="(item,index) in 3" :key="index">
+                <span>DE、yt</span>
+                <span>成功获得</span>
+                <span class="award">iPhone 6s plus</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- 猜MVP，冠军，英雄，五杀 -->
+      <section class="mod_guess">
+        <div class="guess_item"
+          :class="[{'mvp_bg':guessMarkNum==0},{'champion_bg':guessMarkNum==1},{'hero_bg':guessMarkNum==2},{'fivekill_bg':guessMarkNum==3}]">
+          <ul>
+            <li :class="{'active':guessMarkNum == index}" v-for="(item,index) in guessItem" :key="index"
+              @click="guessMarkNum = index">{{item}}</li>
+          </ul>
+        </div>
+        <div class="guess_con">
+          <ul>
+            <li class="mvp_con" v-if="guessMarkNum === 0">
+              <h3>本场比赛的MVP是谁？</h3>
+              <div>
+                <ul class="list">
+                  <li class="item" v-for="(item,index) in 10" :key="index">
+                    <div class="player_img">
+                      <img src alt />
+                    </div>
+                    <div class="info">
+                      <p class="success_tips">VP胜</p>
+                      <p class="ratio_tips">3.85</p>
+                      <p class="support_num">支持率60%</p>
+                    </div>
+                    <div class="progress">
+                      <span class="progress_bar" style="width:40%"></span>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <guessBetVertical></guessBetVertical>
+            </li>
+            <li class="champion_con" v-if="guessMarkNum === 1">
+              <h3>本赛季冠军是那只队伍？</h3>
+              <div>
+                <ul class="list">
+                  <li class="item" v-for="(item,index) in 10" :key="index">
+                    <div class="player_img">
+                      <img src alt />
+                    </div>
+                    <div class="info">
+                      <p class="success_tips">VP胜</p>
+                      <p class="ratio_tips">3.85</p>
+                      <p class="support_num">支持率60%</p>
+                    </div>
+                    <div class="progress">
+                      <span class="progress_bar" style="width:40%"></span>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <guessBetVertical></guessBetVertical>
+            </li>
+            <li class="hero_con" v-if="guessMarkNum === 2">
+              <h3>本场比赛某选手是否使用风暴之怒.迦纳？</h3>
+              <div>
+                <ul class="list">
+                  <li class="item">
+                    <p class="decision">是</p>
+                    <p class="odds">3.85</p>
+                    <p class="rate">支持率60%</p>
+                    <div class="progress">
+                      <span class="progress_bar" style="width:40%"></span>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <p class="decision">否</p>
+                    <p class="odds">3.85</p>
+                    <p class="rate">支持率60%</p>
+                    <div class="progress">
+                      <span class="progress_bar" style="width:40%"></span>
+                    </div>
+                  </li>
+                  <guessBetAcross></guessBetAcross>
+                </ul>
+              </div>
+              <div class="hero_img">
+                <img src="https://rs.esportzoo.com/upload/admin/picAd/秋游登高520(1)_1569640456533.jpg" alt />
+              </div>
+            </li>
+            <li class="fivekill_con" v-if="guessMarkNum === 3">
+              <h3>
+                SHR VS M3
+                <span>截止投注：06月06日 19:00</span>
+              </h3>
+              <p class="tips">本次比赛FY能否获得五杀？</p>
+              <div>
+                <ul class="list">
+                  <li class="item">
+                    <p class="decision">是</p>
+                    <p class="odds">3.85</p>
+                    <p class="rate">支持率60%</p>
+                    <div class="progress">
+                      <span class="progress_bar" style="width:40%"></span>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <p class="decision">否</p>
+                    <p class="odds">3.85</p>
+                    <p class="rate">支持率60%</p>
+                    <div class="progress">
+                      <span class="progress_bar" style="width:40%"></span>
+                    </div>
+                  </li>
+                  <!-- 横向竞猜押注 -->
+                  <guessBetAcross></guessBetAcross>
+                </ul>
+              </div>
+              <img class="player_img" src="http://res.doo8.com/img/player_icon/20181009/64591539048276409.png" alt />
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="mod_illustration">
+        <img src="https://tvax4.sinaimg.cn/large/8856eac7gy1ff13rx933fj2078075q2x.jpg" alt />
+      </section>
+
+      <section class="mod_match_guess">
+        <modTitle :titleTxt="'赛事竞猜'" :showTab='true' :showPageTab='true'></modTitle>
+        <div class="match_con">
+          <ul class="match_screen">
+            <!-- 每一屏只显示一页 -->
+            <li class="match_page">
+              <ul class="match_list">
+                <!-- 每一页插8个数据 -->
+                <li class="match_item" v-for="(item,index) in 8" :key="index">
+                  <div class="top">
+                    <span class="name">中法对抗赛</span>
+                    <div class="score">
+                      <span>3</span>
+                      <i class="colon"></i>
+                      <span>1</span>
+                    </div>
+                    <span class="tag">直播中 LIVE</span>
+                  </div>
+                  <div class="center">
+                    <div class="team">
+                      <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg" alt />
+                      <p>VP</p>
+                    </div>
+                    <div class="vs">
+                      <span>VS</span>
+                      <p>15332人参与</p>
+                    </div>
+                    <div class="team">
+                      <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg" alt />
+                      <p>VG</p>
+                    </div>
+                  </div>
+                  <div class="bottom">
+                    <h3>全场比赛结果是？</h3>
+                    <div class="outcome">
+                      <div>
+                        <p>VP 胜</p>
+                        <span>3.85</span>
+                      </div>
+                      <div>
+                        <p>VP 胜</p>
+                        <span>3.85</span>
+                      </div>
+                    </div>
+                    <a class="more">
+                      更多竞猜
+                      <span></span>
+                    </a>
+                  </div>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <div class="to_left_page"></div>
+          <div class="to_right_page"></div>
+        </div>
+      </section>
+
+      <section class="mod_vote">
+        <modTitle :titleTxt="'人气投票'"></modTitle>
+        <ul class="vote_tab">
+          <li :class="{'active':voteMark == index}" v-for="(item,index) in 10" :key="index" @click="voteMark = index">
+            总榜
+          </li>
+        </ul>
+        <div class="vote_list">
+          <div class="popular_con">
+            <div class="title">
+              <span class="popular_icon"></span><span>最具人气榜</span>
+            </div>
+            <ul class="popular_list">
+              <li class="popular_item" v-for="(item,index) in 10" :key='index'>
+                <div>
+                  <span class="rank" v-if="index == 0 || index == 1 || index == 2"></span>
+                  <span class="rank" v-else>{{index+1}}</span>
+                  <img class="person" src="" alt="">
+                  <span class="name">我去前面探探路，提莫队长</span>
+                  <span class="num">30999900</span>
+                </div>
+                <a class="thumbs_up">
+                  <span class="like_icon"></span>
+                  <span>为他助威</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="contribution_con">
+            <div class="title">
+              <span class="contribution_icon"></span><span>粉丝贡献榜</span>
+              <a class="vote_rules">投票规则<span class="vote_rules_icon"></span></a>
+            </div>
+            <div class="banner"
+              :style="'background:url('+require('../../assets/images/home/banner.png')+') no-repeat center/cover'">
+              <p class="banner_title">2019DOTA2中法对抗赛投票</p>
+              <p class="tips">前10名有奖，第1名将获得限定DOTA雕塑及现场观赛机会</p>
+              <div class="player">
+                <img src="" alt="">
+                <span>鲸鱼为LGD助威200000金豆</span>
+              </div>
+              <span class="sign"></span>
+              <p class="time">
+                助威剩余时间：<span>12</span>天<span>12</span>小时<span>09</span>分钟
+              </p>
+            </div>
+            <p class="rank_title">
+              <span class="tag_1">排名</span>
+              <span class="tag_2">粉丝</span>
+              <span class="tag_3">贡献金豆数</span>
+              <span class="tag_4">获得奖励</span>
+            </p>
+            <ul class="contribution_list">
+              <li class="contribution_item" v-for="(item,index) in 10">
+                <span class="rank">{{index+1}}</span>
+                <img src="" alt="">
+                <span class="name">xiaomanyaoxiaomanyao</span>
+                <span class="num">456465575</span>
+                <span class="award">中法对抗赛旅行套餐中法对抗赛旅行套餐</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="mod_limit_rob">
+        <modTitle :titleTxt="'限量抢抽'" :showTab='true'></modTitle>
+        <div>
+          <ul class="award_list">
+            <li class="award_item" v-for="item in 5">
+              <div class="limit_award">
+                <img src="" alt="">
+              </div>
+              <div class="award_info">
+                <p class="award_name">20元话费券（准点秒杀）</p>
+                <div class="award_price">
+                  <p><span class="cost_price">4388元</span><span class="cost_star">500万星星</span></p>
+                  <span class="remain_num">剩5份</span>
+                </div>
+                <a class='buy_btn'><span>548万星星</span></a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <!-- 弹窗 -->
+    <pops :type="type" :showType="showType" :qrcodeUrl="qrcodeUrl" @closePop="closePop"></pops>
+
+  </div>
+</template>
+
+<script>
+import Swiper from "swiper";
+import guessBetVertical from "../../components/guessbet/guessBetVertical";
+import guessBetAcross from "../../components/guessbet/guessBetAcross";
+import pops from "../../components/pop/pops";
+import modTitle from "../../components/title/title";
+
+export default {
+  components: {
+    guessBetVertical,
+    guessBetAcross,
+    pops,
+    modTitle
+  },
+  props: [],
+  data() {
+    return {
+      userInfo: null,
+      iconImg: null,
+      sceneStr: null,
+      qrcodeUrl: null,
+      websock: null,
+      loginType: 1,
+      type: 0,
+      showType: false,
+      guessMarkNum: 0,
+      guessItem: ["猜MVP", "猜冠军", "猜英雄", "猜五杀"],
+      voteMark: 0
+    };
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.initSwiper();
+    });
+  },
+  methods: {
+    initSwiper() {
+      this.swiper = new Swiper(".swiper-container", {
+        loop: true,
+        speed: 2000,
+        autoplay: true,
+        slidesPerView: "auto",
+        spaceBetween: 20,
+        autoplayDisableOnInteraction: false,
+        observer: true,
+        observeParents: true
+      });
+    },
+    login() {
+      let date = null;
+      this.$axios
+        .get("/api/wxlogin/scanLogin", date)
+        .then(successResponse => {
+          this.qrcodeUrl = successResponse.data.qrcodeUrl;
+          this.sceneStr = successResponse.data.sceneStr;
+          this.initWebSocket();
+          console.log(this.qrcodeUrl);
+          console.log(this.sceneStr);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    initWebSocket() {
+      if ("WebSocket" in window) {
+        const wsuri = "ws://m.esportzoo.com/websocket"; //ws地址
+        this.websock = new WebSocket(wsuri);
+        this.websock.onopen = this.websocketonopen;
+        this.websock.onerror = this.websocketonerror;
+        this.websock.onmessage = this.websocketonmessage;
+        this.websock.onclose = this.websocketclose;
+      } else {
+        alert("当前浏览器无法获取二维码，请更换浏览器");
+      }
+    },
+    websocketonopen() {
+      console.log("WebSocket连接成功");
+      console.log(this.sceneStr);
+      this.websock.send(this.sceneStr);
+      this.type = 2;
+      this.showType = true;
+    },
+    websocketonerror(e) {
+      //错误
+      console.log("WebSocket连接发生错误");
+    },
+    websocketonmessage(e) {
+      //数据接收
+      console.log("数据开始接收");
+      console.log(e.data); // 接收数据
+      this.userInfo = JSON.parse(e.data);
+      this.iconImg = this.userInfo.icon;
+      console.log(this.userInfo.icon);
+      this.loginType = 0;
+      this.type = 0;
+      this.showType = false;
+    },
+
+    websocketclose() {
+      //关闭
+      console.log("WebSocket连接关闭");
+    },
+
+    closePop() {
+      this.showType = false;
+      this.websocketclose();
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_icon";
+
+.Page {
+  position: relative;
+  min-width: 1350px;
+  @include getBgImg("../../assets/images/home/home_bg.png");
+  background-position: top center;
+  background-size: 1915px auto;
+  background-color: #1b111e;
+}
+
+.mod_header {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  &::after {
+    content: "";
+    @extend .g_c_mid;
+    top: 0;
+    width: 100%;
+    height: 409px;
+    @include getBgImg("../../assets/images/home/star_light.png");
+    background-position: top center;
+    background-size: 1915px auto;
+  }
+}
+
+.main {
+  width: 1350px;
+  padding-bottom: 160px;
+  margin: 0 auto;
+}
+
+.mod_banner {
+  height: 228px;
+  margin: 39px auto 0;
+}
+
+.mod_users {
+  position: relative;
+  z-index: 1;
+  @extend .flex_v_justify;
+  width: 1234px;
+  margin: -12px auto 0;
+  padding: 30px 15px 22px;
+  @include getBgImg("../../assets/images/home/users_bg.png");
+}
+
+.user_info {
+  @extend .flex_hc;
+  .login_btn {
+    padding-right: 10px;
+    font-size: 14px;
+    color: #f3d40c;
+    text-decoration: underline;
+  }
+}
+
+.user_img {
+  width: 72px;
+  height: 68px;
+  margin-right: 16px;
+  padding: 14px 13px 8px;
+  @include getBgImg("../../assets/images/home/user_img.png");
+  img {
+    width: 100%;
+    height: 100%;
+    padding: 6px;
+    border: 1px solid #6d4829;
+    border-radius: 50%;
+  }
+}
+
+.user_guess {
+  position: relative;
+  margin-right: 48px;
+  font-size: 14px;
+  color: #ffdcd7;
+  &::after {
+    content: "";
+    @extend .g_v_mid;
+    right: -20px;
+    width: 12px;
+    height: 12px;
+    @include getBgImg("../../assets/images/home/guess_icon.png");
+  }
+}
+
+.user_assets {
+  @extend .flex_hc;
+  font-size: 14px;
+  font-weight: bold;
+  color: #f3d40c;
+  .coin {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+}
+
+.login_wx {
+  width: 126px;
+  height: 28px;
+  text-align: center;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(180deg, #2a2125, #2a2125),
+    linear-gradient(0deg, #0e5f83, #25a3ad);
+  border: 3px transparent solid;
+  span {
+    line-height: 22px;
+    font-size: 18px;
+    font-weight: bold;
+    background: linear-gradient(
+      0deg,
+      rgba(38, 165, 195, 1) 0%,
+      rgba(152, 233, 240, 1) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.login_out,
+.login_in {
+  @extend .flex_hc;
+}
+
+.login_out {
+  .user_guess {
+    margin-right: 25px;
+  }
+  .user_guess::after {
+    display: none;
+  }
+}
+
+.recharge_btn,
+.signin_btn {
+  width: 122px;
+  height: 34px;
+  font-size: 16px;
+  line-height: 30px;
+  border-radius: 2px;
+  color: #fff;
+  text-align: center;
+}
+
+.recharge_btn {
+  margin-left: 37px;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(180deg, #401b20, #401b20),
+    linear-gradient(180deg, #ba9d6e, #89642d);
+  border: 2px transparent solid;
+}
+
+.signin_btn {
+  margin-left: 18px;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(180deg, #37181f, #37181f),
+    linear-gradient(180deg, #115a7b, #115a7b);
+  border: 2px transparent solid;
+}
+
+.broadcast {
+  position: relative;
+  width: 525px;
+  height: 24px;
+  padding-left: 35px;
+  &::before {
+    content: "";
+    @extend .g_v_mid;
+    left: 0;
+    display: block;
+    width: 24px;
+    height: 24px;
+    @include getBgImg("../../assets/images/home/broadcast_icon.png");
+  }
+  .list {
+    width: 490px;
+    font-size: 14px;
+    color: #7f4545;
+  }
+  .item {
+    width: auto;
+    line-height: 24px;
+  }
+  .award {
+    color: #fedcd7;
+  }
+}
+
+.mod_guess {
+  display: table;
+  margin: 32px auto 0;
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+    overflow: hidden;
+  }
+  .fivekill_con {
+    @include getBgImg("../../assets/images/home/fivekill_bg.png");
+  }
+  .hero_con {
+    @include getBgImg("../../assets/images/home/hero_bg.png");
+  }
+  .mvp_bg {
+    @include getBgImg("../../assets/images/home/mvp.png");
+  }
+  .champion_bg {
+    @include getBgImg("../../assets/images/home/champion.png");
+  }
+  .hero_bg {
+    @include getBgImg("../../assets/images/home/guesshero.png");
+  }
+  .fivekill_bg {
+    @include getBgImg("../../assets/images/home/fivekill.png");
+  }
+}
+
+.guess_item {
+  float: left;
+  width: 170px;
+  li {
+    width: 100%;
+    height: 62px;
+    padding-left: 38px;
+    font-size: 18px;
+    line-height: 62px;
+    font-weight: bold;
+    font-style: italic;
+    color: #ffdcd7;
+  }
+  .active {
+    font-size: 24px;
+    color: #f3d40c;
+  }
+}
+.guess_con {
+  float: left;
+  // width: 1040px;
+  margin-left: 30px;
+}
+
+.mvp_con,
+.champion_con,
+.hero_con,
+.fivekill_con {
+  h3 {
+    position: relative;
+    padding-left: 12px;
+    font-size: 14px;
+    font-weight: normal;
+    color: #ffdcd7;
+    &::after {
+      content: "";
+      @extend .g_v_mid;
+      left: 0;
+      width: 4px;
+      height: 14px;
+      background: linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -ms-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -webkit-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+    }
+  }
+}
+
+.mvp_con,
+.champion_con {
+  position: relative;
+  width: 1021px;
+  margin-left: 20px;
+  .list {
+    margin-top: 28px;
+    border-width: 1px 0 0 1px;
+    border-style: solid;
+    border-color: #5e3b23;
+    &::after {
+      content: "";
+      display: table;
+      clear: both;
+      overflow: hidden;
+    }
+  }
+  .item {
+    position: relative;
+    float: left;
+    width: 170px;
+    padding: 16px 0 0 16px;
+    border-width: 0 1px 1px 0;
+    border-style: solid;
+    border-color: #5e3b23;
+    background: linear-gradient(135deg, rgba(176, 72, 64, 0.2), #201217);
+    background: -ms-linear-gradient(135deg, rgba(176, 72, 64, 0.2), #201217);
+    &::after {
+      content: "";
+      display: table;
+      clear: both;
+      overflow: hidden;
+    }
+    &.active {
+      background: linear-gradient(135deg, #f7d064, #8a5a26);
+      background: -ms-linear-gradient(135deg, #f7d064, #8a5a26);
+    }
+  }
+  .info {
+    float: left;
+  }
+  .player_img {
+    float: left;
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+    border: 1px solid #4a3220;
+    border-radius: 50%;
+    img {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+    }
+  }
+  .success_tips {
+    padding-top: 5px;
+    font-size: 18px;
+    color: #ffdcd7;
+  }
+  .ratio_tips {
+    padding-top: 5px;
+    font-size: 14px;
+    color: #ffdcd7;
+  }
+  .support_num {
+    padding: 18px 0 12px;
+    font-size: 14px;
+    color: #51423a;
+  }
+}
+
+.progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+.progress_bar {
+  display: block;
+  height: 3px;
+  background-color: #995226;
+}
+
+.hero_con,
+.fivekill_con {
+  position: relative;
+  width: 1041px;
+  height: 250px;
+  .list {
+    position: relative;
+    display: inline-block;
+    margin-top: 32px;
+    &::after {
+      content: "";
+      display: table;
+      overflow: hidden;
+      clear: both;
+    }
+  }
+  .item {
+    position: relative;
+    float: left;
+    width: 169px;
+    padding-bottom: 16px;
+    text-align: center;
+    border: 1px solid #5e3b23;
+    &:nth-last-of-type(1) {
+      border-left: none;
+    }
+    background: linear-gradient(135deg, rgba(176, 72, 64, 0.2), #201217);
+    background: -ms-linear-gradient(135deg, rgba(176, 72, 64, 0.2), #201217);
+    &.active {
+      background: linear-gradient(135deg, #f7d064, #8a5a26);
+      background: -ms-linear-gradient(135deg, #f7d064, #8a5a26);
+    }
+  }
+  .decision {
+    padding-top: 20px;
+    font-size: 30px;
+    color: #fff;
+  }
+  .odds {
+    padding-top: 8px;
+    font-size: 18px;
+    color: #6e4c47;
+  }
+  .rate {
+    padding-top: 14px;
+    font-size: 14px;
+    color: #3f2d2d;
+  }
+}
+
+.hero_con {
+  padding: 53px 0 0 20px;
+  @include getBgImg("../../assets/images/home/hero_bg.png");
+  .hero_img {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 652px;
+    height: 250px;
+    transform-origin: right bottom;
+    transform: skew(-27deg, 0deg);
+    overflow: hidden;
+    img {
+      width: 100%;
+      height: 100%;
+      transform: skew(27deg, 0deg);
+      transform-origin: right bottom;
+    }
+  }
+}
+
+.fivekill_con {
+  padding: 26px 0 0 20px;
+  @include getBgImg("../../assets/images/home/fivekill_bg.png");
+  h3 {
+    font-size: 18px;
+    span {
+      padding-left: 68px;
+      font-size: 12px;
+      color: #dc9255;
+      font-weight: bold;
+    }
+  }
+  .tips {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #ffdcd7;
+  }
+  .list {
+    margin-top: 25px;
+  }
+  .player_img {
+    position: absolute;
+    right: 193px;
+    bottom: 0;
+    width: 278px;
+    height: 238px;
+    object-fit: cover;
+  }
+}
+
+.mod_illustration {
+  display: table;
+  margin: 30px auto 0;
+  img {
+    width: 1240px;
+    height: 100px;
+    object-fit: cover;
+  }
+}
+
+.mod_match_guess {
+  display: table;
+  margin: 30px auto 0;
+}
+
+.match_con {
+  position: relative;
+  .match_screen {
+    width: 1240px;
+    overflow: hidden;
+  }
+  .to_left_page,
+  .to_right_page {
+    @extend .g_v_mid;
+    width: 54px;
+    height: 134px;
+  }
+  .to_left_page {
+    left: -54px;
+    @include getBgImg("../../assets/images/home/to_left_page.png");
+  }
+  .to_right_page {
+    right: -54px;
+    @include getBgImg("../../assets/images/home/to_right_page.png");
+  }
+  .match_list {
+    width: 1240px;
+    padding-top: 15px;
+    &::after {
+      content: "";
+      clear: both;
+      overflow: hidden;
+      display: table;
+    }
+  }
+  .match_item {
+    float: left;
+    width: 298px;
+    height: 313px;
+    margin-top: 15px;
+    margin-right: 16px;
+    padding: 14px 14px 0;
+    @include getBgImg("../../assets/images/home/match_item_bg.png");
+    &:nth-child(4n) {
+      margin-right: 0;
+    }
+  }
+  .top {
+    position: relative;
+    @extend .flex_v_justify;
+    height: 45px;
+    font-size: 12px;
+  }
+  .name {
+    color: #fedcd7;
+  }
+  .tag {
+    width: 84px;
+    height: 20px;
+    margin-right: -14px;
+    line-height: 20px;
+    color: #e6dbc9;
+    text-align: center;
+    @include getBgImg("../../assets/images/home/match_tag.png");
+  }
+  .score {
+    @extend .g_v_c_mid;
+    @extend .flex_hc;
+    font-size: 42px;
+    line-height: 44px;
+    color: #e6dbc9;
+    font-weight: bold;
+    text-align: center;
+    i {
+      position: relative;
+      width: 18px;
+      height: 42px;
+      &::before,
+      &::after {
+        content: "";
+        @extend .g_c_mid;
+        top: 13px;
+        width: 5px;
+        height: 5px;
+        background-color: #ba6847;
+      }
+      &::after {
+        top: initial;
+        bottom: 13px;
+      }
+    }
+    span {
+      position: relative;
+      width: 35px;
+      background-color: #ba6847;
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 4px;
+        width: 100%;
+        height: 18px;
+        background: linear-gradient(
+          180deg,
+          rgba(99, 56, 47, 0.7),
+          rgba(99, 56, 47, 0.1)
+        );
+      }
+    }
+  }
+  .center {
+    @extend .flex_v_justify;
+    padding: 32px 10px 22px;
+    text-align: center;
+    color: rgba(255, 190, 163, 0.18);
+  }
+  .team {
+    font-size: 12px;
+    img {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 10px;
+      object-fit: contain;
+    }
+  }
+  .vs {
+    span {
+      font-size: 28px;
+      font-style: italic;
+      font-weight: bold;
+    }
+    p {
+      padding-top: 9px;
+      font-size: 12px;
+    }
+  }
+  h3 {
+    position: relative;
+    padding-left: 10px;
+    font-size: 14px;
+    font-weight: normal;
+    color: #ffdcd7;
+    &::after {
+      content: "";
+      @extend .g_v_mid;
+      left: 0;
+      width: 4px;
+      height: 14px;
+      background: linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -ms-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -webkit-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+    }
+  }
+  .outcome {
+    padding-top: 12px;
+    overflow: hidden;
+    text-align: center;
+    > div {
+      float: left;
+      width: 50%;
+      height: 70px;
+      border: 1px solid #463025;
+      background-color: rgba(37, 18, 20, 0.5);
+      &:last-child {
+        border-left: 0;
+      }
+    }
+    p {
+      padding-top: 15px;
+      font-size: 18px;
+      color: #ffdcd7;
+    }
+    span {
+      display: inline-block;
+      padding-top: 6px;
+      font-size: 14px;
+      color: #6e4c47;
+    }
+  }
+  .more {
+    position: relative;
+    display: block;
+    padding-top: 12px;
+    font-size: 12px;
+    color: rgba(255, 190, 163, 0.18);
+    text-align: center;
+    span {
+      display: inline-block;
+      vertical-align: middle;
+      width: 12px;
+      height: 12px;
+      margin-left: 4px;
+      @include getBgImg("../../assets/images/home/triangle.png");
+    }
+  }
+}
+
+.mod_vote {
+  display: table;
+  margin: 30px auto 0;
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+    overflow: hidden;
+  }
+}
+
+.vote_tab {
+  background: linear-gradient(to top, rgba(50, 25, 30, 1), rgba(50, 25, 30, 0));
+  background: -ms-linear-gradient(
+    to top,
+    rgba(50, 25, 30, 1),
+    rgba(50, 25, 30, 0)
+  );
+  li {
+    display: inline-block;
+    padding: 24px 20px 16px 20px;
+    font-size: 14px;
+    color: #fedcd7;
+    &.active {
+      position: relative;
+      color: #f3d40c;
+      &::after {
+        content: "";
+        @extend .g_c_mid;
+        bottom: 0;
+        width: 28px;
+        height: 3px;
+        background-color: #f3d40c;
+      }
+    }
+  }
+}
+
+.vote_list {
+  @extend .flex_justify;
+  align-items: flex-start;
+  -webkit-align-items: flex-start;
+  -ms-align-items: flex-start;
+  margin-top: 30px;
+  &::after {
+    content: "";
+    display: table;
+    overflow: hidden;
+    clear: both;
+  }
+  .title {
+    position: relative;
+    @extend .flex_hc;
+    padding: 13px 16px 12px 20px;
+    @include getBgImg("../../assets/images/home/vote_title_bg.png");
+    span {
+      font-size: 18px;
+      color: #fedcd7;
+      font-weight: bold;
+    }
+  }
+}
+
+.vote_rules {
+  @extend .g_v_mid;
+  right: 16px;
+  @extend .flex_hc;
+  font-size: 14px;
+  color: #754343;
+  .vote_rules_icon {
+    width: 14px;
+    height: 14px;
+    margin-left: 4px;
+    @include getBgImg("../../assets/images/home/vote_rules_icon.png");
+  }
+}
+
+.popular_icon,
+.contribution_icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.popular_con,
+.contribution_con {
+  width: 605px;
+}
+
+.popular_item {
+  @extend .flex_v_justify;
+  height: 80px;
+  border-bottom: 1px solid #381d1f;
+  &:first-child {
+    .rank {
+      @include getBgImg("../../assets/images/home/rank_first.png");
+    }
+    .num {
+      font-weight: bold;
+    }
+  }
+  &:nth-child(2) {
+    .rank {
+      @include getBgImg("../../assets/images/home/rank_second.png");
+    }
+    .num {
+      font-weight: bold;
+    }
+  }
+  &:nth-child(3) {
+    .rank {
+      @include getBgImg("../../assets/images/home/rank_third.png");
+    }
+    .num {
+      font-weight: bold;
+    }
+  }
+  > div {
+    @extend .flex_hc;
+  }
+  .rank {
+    width: 34px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 18px;
+    color: #754343;
+    text-align: center;
+  }
+  .person {
+    width: 50px;
+    height: 50px;
+    margin-left: 30px;
+    object-fit: cover;
+    border-radius: 50%;
+    background-color: #fff;
+  }
+  .name {
+    width: 110px;
+    @include t_nowrap(110px);
+    margin-left: 20px;
+    font-size: 14px;
+    color: #754343;
+  }
+  .num {
+    margin-left: 30px;
+    font-size: 18px;
+    color: #fedcd7;
+  }
+  .thumbs_up {
+    @extend .flex_v_h;
+    width: 100px;
+    height: 40px;
+    color: #f7b54b;
+    border: 1px solid;
+    border-image: linear-gradient(
+        0deg,
+        rgba(91, 49, 27, 1),
+        rgba(140, 84, 38, 1)
+      )
+      1 1;
+    box-shadow: 0px 0px 7px 0px rgba(10, 2, 4, 0.4);
+  }
+  .like_icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 5px;
+    font-size: 14px;
+  }
+}
+
+.contribution_con {
+  .banner {
+    position: relative;
+    height: 150px;
+    margin-top: 20px;
+    background-size: cover;
+    .banner_title {
+      padding: 28px 0 0 30px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fedcd7;
+    }
+    .tips {
+      padding: 15px 0 0 30px;
+      font-size: 12px;
+      color: #e4cdca;
+    }
+  }
+  .player {
+    @extend .flex_hc;
+    width: 60%;
+    height: 38px;
+    margin-top: 15px;
+    padding-left: 30px;
+    background: linear-gradient(
+      to right,
+      rgba(59, 18, 18, 0.2) 0%,
+      rgba(59, 18, 18, 0.8) 20% 45%,
+      rgba(59, 18, 18, 0) 100%
+    );
+    img {
+      width: 30px;
+      height: 30px;
+      margin-right: 13px;
+      border-radius: 50%;
+      background-color: #fff;
+    }
+    span {
+      font-size: 14px;
+      color: #f3d40c;
+    }
+  }
+  .sign {
+    position: absolute;
+    right: 15px;
+    top: 0;
+    width: 47px;
+    height: 50px;
+    @include getBgImg("../../assets/images/home/sign_icon.png");
+    background-position: center -8px;
+  }
+  .time {
+    position: absolute;
+    right: 15px;
+    bottom: 13px;
+    font-size: 14px;
+    color: #fff;
+    span {
+      color: #f3d40c;
+    }
+  }
+  .rank_title {
+    @extend .flex_hc;
+    height: 50px;
+    font-size: 14px;
+    color: #754343;
+    background: linear-gradient(
+      to top,
+      rgba(36, 24, 27, 0.8),
+      rgba(36, 24, 27, 0.4)
+    );
+    .tag_1 {
+      padding-left: 33px;
+    }
+    .tag_2 {
+      padding-left: 76px;
+    }
+    .tag_3 {
+      padding-left: 120px;
+    }
+    .tag_4 {
+      padding-left: 120px;
+    }
+  }
+}
+
+.contribution_item {
+  @extend .flex_hc;
+  height: 58px;
+  padding-left: 33px;
+  border-bottom: 1px solid #381d1f;
+  .rank {
+    width: 27px;
+    margin-right: 23px;
+    font-size: 14px;
+    color: #754343;
+    text-align: center;
+  }
+  img {
+    width: 30px;
+    height: 30px;
+    margin-right: 23px;
+    border-radius: 50%;
+    background-color: #fff;
+  }
+  .name {
+    width: 115px;
+    @include t_nowrap(115px);
+    margin-right: 30px;
+    font-size: 14px;
+    text-align: center;
+    color: #754343;
+  }
+  .num {
+    width: 77px;
+    margin-right: 83px;
+    font-size: 14px;
+    color: #754343;
+    text-align: center;
+  }
+  .award {
+    width: 126px;
+    font-size: 14px;
+    color: #fedcd7;
+    @include t_nowrap(126px);
+    text-align: center;
+  }
+}
+
+.mod_limit_rob {
+  display: table;
+  margin: 30px auto 0;
+  .limit_award {
+    @extend .flex_v_h;
+    padding: 0 40px;
+    height: 235px;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+  .award_list {
+    padding-top: 30px;
+    &::after {
+      content: "";
+      display: table;
+      overflow: hidden;
+      clear: both;
+    }
+  }
+  .award_item {
+    float: left;
+    width: 235px;
+    height: 367px;
+    margin-right: 16px;
+    @include getBgImg("../../assets/images/home/limit_award_bg.jpg");
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+  .award_info {
+    padding: 14px 10px 0;
+  }
+  .award_name {
+    font-size: 14px;
+    color: #fedcd7;
+  }
+  .award_price {
+    @extend .flex_v_justify;
+    padding-top: 10px;
+    font-size: 14px;
+    color: rgba(255, 190, 163, 0.18);
+  }
+  .cost_price,
+  .cost_star {
+    margin-right: 10px;
+    text-decoration: line-through;
+  }
+  .buy_btn {
+    @extend .flex_v_h;
+    width: 213px;
+    height: 50px;
+    margin-top: 15px;
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    background-image: linear-gradient(180deg, #2f1c20, #2f1c20),
+      linear-gradient(0deg, #0e5f83, #25a3ad);
+    border: 3px transparent solid;
+    span {
+      font-size: 18px;
+      font-weight: bold;
+      background: linear-gradient(
+        0deg,
+        rgba(38, 165, 195, 1) 0%,
+        rgba(152, 233, 240, 1) 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+}
+
+.swiper-wrapper {
+  transition-timing-function: linear !important;
+  -webkit-transition-timing-function: linear !important;
+}
+</style>

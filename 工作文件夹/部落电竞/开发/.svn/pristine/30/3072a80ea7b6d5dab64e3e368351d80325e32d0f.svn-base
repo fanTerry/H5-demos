@@ -1,0 +1,486 @@
+<template>
+  <div class="Page follow_Page">
+    <header class="mod_header">
+      <!-- <navBar pageTitle="发现"></navBar> -->
+      <div class="tab">
+        <div class="active">推荐</div>
+        <div @click="gotoCommunity()">关注</div>
+        <div @click="gotoTopic()">话题</div>
+      </div>
+    </header>
+
+    <div class="main" id='mainId' :class="{'blur':filterFlag}">
+      <!-- <scroll ref="scroll" :scrollbar="scrollbar" :pullDownRefresh="pullDownRefresh" :pullUpLoad="pullUpLoad"
+        :startY="0" @pullingDown="onPullingDown" @pullingUp="onPullingUp"> -->
+      <mescroll ref="mescroll" @downCallback="downCallback" @upCallback="upCallback" :isShowEmpty="false"
+        @mescrollInit="mescrollInit">
+        <section class="mod_follow">
+          <!-- 文章列表组件 -->
+          <articleTab :showType='showType' :cmsContentList='cmsContentList' :topCmsContentList='topCmsContentList'>
+          </articleTab>
+        </section>
+        <!-- </scroll> -->
+
+        <loading v-if="loading"></loading>
+        <!-- </scroll> -->
+      </mescroll>
+      <noData v-if="noData"> </noData>
+    </div>
+    <publishIcon @filterBlur=filterBlur :topicId="'recommend'"></publishIcon>
+    <footer class="mod_footer">
+      <tabbar></tabbar>
+    </footer>
+  </div>
+</template>
+<script>
+import navBar from "components/header/nav_bar/index.vue";
+import topic from "components/user_follow/topic.vue";
+import publishIcon from "../../components/user_follow/publishIcon.vue";
+import Scroll from "components/common/scroll";
+import localStorage from "../../libs/storages/localStorage";
+import fixScroll from "../../libs/common/fix-scroll-ios";
+import noData from "components/no_data/index.vue";
+import loading from "components/common/loading";
+import articleTab from "../../components/follow/articleTab.vue";
+import tabbar from "components/tabbar/index.vue";
+import globalConst from "../../globalConst";
+import mescroll from "../../components/common/mescroll.vue";
+import { getUrlCommonParam } from "../../libs/utils";
+export default {
+  components: {
+    navBar,
+    topic,
+    Scroll,
+    noData,
+    loading,
+    articleTab,
+    publishIcon,
+    tabbar,
+    mescroll
+  },
+  data() {
+    return {
+      currTab: 1,
+      userFollowTopics: [],
+      showType: 100,
+      noData: false,
+      loading: false,
+      showPublish: false,
+      topCmsContentList: [],
+      cmsContentList: [],
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "没有更多数据了" }
+      },
+      pageNo: 1,
+      pageSize: 10,
+      mescroll: null,
+      filterFlag: false,
+      lastUpdateTime: null
+    };
+  },
+  created() {
+    window.sessionStorage.selectedTab = 1;
+  },
+  mounted() {
+    // wxApi.wxRegister(this.wxRegCallback())
+    // var href = location.href.split('#')[0];
+    // if (!window.sessionStorage.getItem("href")) {
+    //   //将入口地址保存下来 ios分享会使用
+    //   window.sessionStorage.setItem("href", href);
+    // }
+    // this.getMyFollowList();
+    // this.getPageContenList();
+    // this.weixinShare();
+  },
+  activated() {
+    this.weixinShare();
+  },
+  methods: {
+    weixinShare() {
+      console.log(getUrlCommonParam());
+      let commonParam = getUrlCommonParam();
+      this.$wxApi.wxRegister({
+        title: "枫叶电竞-发现",
+        desc: "发现兴趣话题，找到志同道合的小伙伴~",
+        imgUrl:
+          "http://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg",
+        link: "https://m.esportzoo.com/community?" + commonParam
+      });
+    },
+    downCallback() {
+      console.log("下拉刷新");
+      this.cmsContentList = [];
+      this.pageNo = 1;
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      this.getPageContenList(param);
+      this.$nextTick(() => {
+        this.mescroll.endSuccess(this.currPageSize);
+      });
+    },
+    upCallback() {
+      console.log("加载更多");
+      this.loadMore();
+    },
+    mescrollInit(mescroll) {
+      this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
+    },
+    gotoDetailTopic(topicId) {
+      this.$router.push({
+        // path: "/detailTopic",
+        // query: {
+        //   id: topicId
+        // }
+        name: "detailTopic",
+        params: {
+          id: topicId
+        }
+      });
+    },
+    gotoTopic() {
+      this.$router.push({
+        path: "/topic",
+        query: {}
+      });
+    },
+    gotoCommunity() {
+      this.$router.push({
+        path: "/community",
+        query: {}
+      });
+    },
+    getPageContenList(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+
+        param.contentType = this.contentType;
+      }
+      param.id = this.topicId;
+      //第一页查询置顶内容，翻页不需要
+      if (this.pageNo == 1) {
+        param.showTop = true;
+      }
+      if (this.lastUpdateTime && this.pageNo != 1) {
+        param.lastUpdateTime = this.lastUpdateTime + "";
+      }
+      console.log(param);
+      // return this.$post("/api/cmsTopic/showCmsTopicContent", param)
+      return this.$post("/api/follow/recommendList", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse.data.cmsContentList);
+          if (dataResponse.code == "200") {
+            this.topCmsContentList = dataResponse.data.topCmsContentList;
+            this.currPageSize = dataResponse.data.cmsContentList.length;
+
+            if (this.pageNo == 1) {
+              //第一页，配置置顶内容
+              this.cmsContentList = this.topCmsContentList;
+            }
+
+            if (dataResponse.data.cmsContentList.length > 0) {
+              this.cmsContentList = this.cmsContentList.concat(
+                dataResponse.data.cmsContentList
+              );
+            }
+
+            if (this.pageNo == 1 && this.cmsContentList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+            //更新最后一条数据的updateTime
+            this.lastUpdateTime = this.cmsContentList[
+              this.cmsContentList.length - 1
+            ].updateTime;
+            return this.cmsContentList;
+          } else if (dataResponse.code == "9999") {
+            this.$toast(dataResponse.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    toPublish(type) {
+      this.showPublish = false;
+      this.$router.push({
+        name: "publishEssays",
+        query: {
+          type: type
+        }
+      });
+    },
+    onPullingDown() {
+      console.log("you are onPullingDown");
+      if (this._isDestroyed) {
+        return;
+      }
+
+      this.cmsContentList = [];
+      this.userFollowTopics = [];
+      this.getMyFollowList();
+      this.getPageContenList().then(data => {
+        this.$refs.scroll.forceUpdate();
+      });
+    },
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+
+      if (this.currPageSize < this.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+    /** 上拉加载*/
+    loadMore() {
+      this.pageNo = this.pageNo + 1;
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      if (this.showType < 10) {
+        param.contentType = this.showType;
+      }
+      /**
+       * 关注列表
+       */
+
+      this.getPageContenList(param).then(data => {
+        // this.$refs.scroll.forceUpdate();
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize);
+        });
+      });
+    },
+    filterBlur(param) {
+      this.filterFlag = param;
+      console.log(this.filterFlag);
+    }
+  },
+  computed: {}
+};
+</script>
+
+
+<style lang='scss'>
+.follow_Page {
+  .back {
+    display: none;
+  }
+  .nav_bar {
+    color: #ff7e00 !important;
+    font-weight: 500;
+  }
+}
+</style>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+@import "../../assets/common/_var.scss";
+@import "../../assets/common/iconfont.css";
+
+.mod_footer {
+  background-color: #fff;
+}
+
+.no_data {
+  @extend .g_v_c_mid;
+}
+
+.icon-tianxie {
+  @extend .g_v_mid;
+  right: 10px;
+  font-size: 20px;
+  color: #818181;
+}
+
+.mod_header {
+  .tab {
+    @extend .flex;
+    padding: 0 9.3333vw;
+    // margin-bottom: 10px;
+    background-color: #fff;
+    div {
+      position: relative;
+      flex: 1;
+      -webkit-flex: 1;
+      padding: 10px 0;
+      font-size: 16px;
+      color: #333;
+      text-align: center;
+      &.active {
+        color: #ff7e00;
+        &::after {
+          content: "";
+          @extend .g_c_mid;
+          bottom: 0;
+          width: 20px;
+          height: 3px;
+          background-color: $color_main;
+          border-radius: 2px;
+        }
+      }
+    }
+  }
+}
+
+.main {
+  position: relative;
+  .nav_list {
+    margin-bottom: 7px;
+  }
+  &.blur {
+    filter: blur(10px);
+  }
+}
+
+.mod_follow {
+  .my_follow_topic {
+    padding: 0 10px;
+    background-color: #fff;
+    ul {
+      @extend .flex;
+      flex-wrap: wrap;
+      -webkit-flex-wrap: wrap;
+    }
+    li {
+      position: relative;
+      width: 21.7%;
+      padding-top: 21.7%;
+      margin-right: 4.4%;
+      margin-bottom: 14px;
+      box-shadow: 0 0 4px rgba(#000000, 0.1);
+      &:nth-child(4n) {
+        margin-right: 0;
+      }
+    }
+  }
+  .team {
+    @extend .g_v_c_mid;
+    @extend .flex_v_h;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    &.active::after {
+      content: "";
+      position: absolute;
+      right: 3px;
+      top: 3px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: $color_main;
+    }
+    img {
+      width: 65%;
+      height: 65%;
+      object-fit: contain;
+    }
+    p {
+      @include t_nowrap(100%);
+      padding-top: 5px;
+      font-size: 12px;
+      color: #333;
+    }
+  }
+  h3 {
+    @extend .flex_v_justify;
+    padding: 12px 0 18px;
+    font-size: 14px;
+    font-weight: normal;
+    color: #000;
+    a {
+      @extend .flex_hc;
+      font-size: 12px;
+      color: #999;
+      span {
+        position: relative;
+        width: 14px;
+        height: 14px;
+        @include getArrow(7px, #999, right);
+      }
+    }
+  }
+}
+
+// .myfollow_tab {
+//   .user_list,
+//   .search_result {
+//     padding-left: 10px;
+//     background-color: #fff;
+//   }
+
+//   .search_result {
+//     position: relative;
+//     padding-left: 0;
+//     .user_info:last-child:after {
+//       content: "";
+//       @extend .g_c_mid;
+//       bottom: 0;
+//       width: 80%;
+//       height: 1px;
+//       background-color: #ddd;
+//     }
+//   }
+
+//   .user_list {
+//     border-radius: 8px;
+//     h2 {
+//       padding-top: 3px;
+//     }
+//   }
+//   .search_con {
+//     position: relative;
+//     @extend .flex;
+//     padding: 7px 45px 7px;
+//     input {
+//       flex: 1;
+//       height: 24px;
+//       padding-left: 30px;
+//       border-radius: 24px;
+//       background-color: #fff;
+//       border: none;
+//     }
+//     .search {
+//       @extend .g_v_mid;
+//       left: 52px;
+//       width: 16px;
+//       height: 16px;
+//       @include getBgImg("../../assets/images/home/search.png");
+//     }
+//   }
+// }
+
+.sidebar {
+  position: fixed;
+  z-index: 99;
+  bottom: 95px;
+  right: 15px;
+  color: #c2c2c2;
+  text-align: center;
+  .icon-sousuo {
+    font-size: 12px;
+    color: currentColor;
+  }
+  a {
+    display: block;
+    padding-top: 8px;
+    color: currentColor;
+  }
+}
+</style>
+

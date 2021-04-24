@@ -1,0 +1,178 @@
+package com.esportzoo.esport.manager;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.alibaba.fastjson.JSON;
+import com.esportzoo.common.appmodel.domain.result.ModelResult;
+import com.esportzoo.common.util.DateUtil;
+import com.esportzoo.esport.client.service.consumer.UserConsumerServiceClient;
+import com.esportzoo.esport.connect.request.BaseRequest;
+import com.esportzoo.esport.connect.request.LoginRequest;
+import com.esportzoo.esport.constant.ResponseConstant;
+import com.esportzoo.esport.constants.BizSystem;
+import com.esportzoo.esport.constants.RegisterType;
+import com.esportzoo.esport.constants.ThirdType;
+import com.esportzoo.esport.constants.UserConsumerStatus;
+import com.esportzoo.esport.constants.UserOperationParam;
+import com.esportzoo.esport.domain.UserConsumer;
+import com.esportzoo.esport.domain.UserThirdLogin;
+import com.esportzoo.esport.service.exception.BusinessException;
+import com.esportzoo.esport.util.HttpUtil;
+import com.esportzoo.esport.util.RequestUtil;
+import com.esportzoo.esport.vo.ThirdLoginVo;
+import com.esportzoo.esport.vo.ubox.UboxLoginResponse;
+import com.esportzoo.esport.vo.ubox.UboxUserInfo;
+import com.esportzoo.esport.vo.ubox.UboxUserInfoResponse;
+
+/**
+ * @author tingting.shen
+ * @date 2019/06/10
+ */
+@Component
+public class UboxManager {
+	
+	private transient final Logger logger = LoggerFactory.getLogger(getClass());
+	
+	@Value("${ubox.url}")
+    private String uboxUrl;
+	@Autowired
+	private UserManager userManager;
+	@Autowired
+	private UserConsumerServiceClient userConsumerServiceClient;
+	
+	public UserConsumer synchronizeUserInfo(LoginRequest loginRequest, BaseRequest baseRequest, HttpServletRequest request) {
+		String logPrefix = "友宝用户同步用户信息_";
+		try {
+			UboxUserInfo uboxUserInfo = getUboxUser(loginRequest);
+			if (uboxUserInfo == null) {
+				logger.info(logPrefix + "获取友宝用户信息为空");
+				return null;
+			}
+			Long uboxUserId = uboxUserInfo.getUid();
+			UserConsumer userConsumer = userManager.getUserConsumer(uboxUserId+"", ThirdType.UBOX.getIndex());
+			if (userConsumer != null) {
+				boolean modifyFlag = false;
+				if (StringUtils.isNotBlank(uboxUserInfo.getNickName()) && !uboxUserInfo.getNickName().equals(userConsumer.getNickName())) {
+					userConsumer.setNickName(uboxUserInfo.getNickName());
+					modifyFlag = true;
+				}
+				if (StringUtils.isNotBlank(uboxUserInfo.getAvatarUrl()) && !uboxUserInfo.getAvatarUrl().equals(userConsumer.getIcon())) {
+					userConsumer.setIcon(uboxUserInfo.getAvatarUrl());
+					modifyFlag = true;
+				}
+				if (modifyFlag) {
+					userConsumerServiceClient.updateConsumerInfo(userConsumer, null);
+				}
+				return userConsumer;
+			}
+			
+			UserOperationParam usrOperationParm = new UserOperationParam(RequestUtil.getClientIp(request), baseRequest.getDefaultClientType().getIndex(),
+					baseRequest.getAgentId(), baseRequest.getVersion());
+			if (StringUtils.isBlank(uboxUserInfo.getNickName())) {
+				uboxUserInfo.setNickName("mini" + DateUtil.dateToString(new Date(), "yyyyMMdd") + RandomStringUtils.random(6, false, true));
+			}
+			UserConsumer reqMember = new UserConsumer();
+			Date now = new Date();
+			reqMember.setNickName(uboxUserInfo.getNickName());
+			reqMember.setIcon(uboxUserInfo.getAvatarUrl());
+			reqMember.setStatus(UserConsumerStatus.VALID.getIndex());
+			reqMember.setRegisterTime(now);
+			reqMember.setLastLoginTime(now);
+			reqMember.setCity(uboxUserInfo.getCity());
+			reqMember.setProvince(uboxUserInfo.getProvince());
+			reqMember.setGender(uboxUserInfo.getGender());
+			reqMember.setRegisterType(RegisterType.third_register.getIndex());
+			reqMember.setBizSystem(BizSystem.UBOX.getIndex());
+			ModelResult<UserConsumer> modelResult = userConsumerServiceClient.register(reqMember, usrOperationParm);
+			if (!modelResult.isSuccess()) {
+				logger.info(logPrefix + "注册失败,失败信息={}", modelResult.getErrorMsg());
+				throw new BusinessException(ResponseConstant.RESP_PARAM_ERROR_CODE, modelResult.getErrorMsg());
+			}
+			UserConsumer member = modelResult.getModel();
+			ThirdLoginVo thirdLoginVo = new ThirdLoginVo(uboxUserId+"", ThirdType.UBOX.getIndex());
+			ModelResult<UserThirdLogin> thirdLogin = userConsumerServiceClient.insertUserThirdLogin(thirdLoginVo, member.getId());
+			if (!thirdLogin.isSuccess()) {
+				logger.info(logPrefix + "绑定关系失败,原因={},userId={},uboxUserId={}", thirdLogin.getErrorMsg(), member.getId(), uboxUserInfo.getUid());
+				throw new BusinessException(ResponseConstant.SYSTEM_ERROR_CODE, thirdLogin.getErrorMsg());
+			}
+			logger.info(logPrefix + "绑定关系车成功,userId={},uboxUserId={}", member.getId(), uboxUserInfo.getUid());
+			return member;
+		} catch (Exception e) {
+			logger.info(logPrefix + "发生异常exception={}", e.getMessage(), e);
+			return null;
+		}
+	}
+	
+	public UboxUserInfo getUboxUser(LoginRequest loginRequest) {
+		String logPrefix = "获取友宝用户信息_";
+		logger.info(logPrefix + "接收到的参数loginRequest={}", JSON.toJSONString(loginRequest));
+		UboxUserInfo uboxUserInfo = null;
+		try {
+			UboxLoginResponse uboxLoginResponse = uboxUserLogin(loginRequest.getCode());
+			uboxUserInfo = uboxLoginResponse.getUserinfo();
+			if (uboxUserInfo!=null) {
+				logger.info(logPrefix + "调用友宝登陆接口获得用户信息uboxUserInfo={}", JSON.toJSONString(uboxUserInfo));
+				return uboxUserInfo;
+			}
+			UboxUserInfoResponse uboxUserInfoResponse = getUboxUserInfo(uboxLoginResponse.getUbox_session(), loginRequest.getEncrypteData(), loginRequest.getIv());
+			uboxUserInfo = uboxUserInfoResponse.getData();
+			logger.info(logPrefix + "调用友宝信息接口获得用户信息uboxUserInfo={}", JSON.toJSONString(uboxUserInfo));
+			return uboxUserInfo;
+		} catch (Exception e) {
+			logger.info(logPrefix + "发生异常， loginRequest={}, exception={}", JSON.toJSONString(loginRequest), e.getMessage(), e);
+			return null;
+		}
+	}
+	
+	public UboxLoginResponse uboxUserLogin(String code) {
+		String logPrefix = "友宝用户登陆接口_";
+		logger.info(logPrefix + "接收到的参数code={}", code);
+		try {
+			String interfaceUrl = uboxUrl + "/app/login_esports?code=" + code;
+			logger.info(logPrefix + "调用的接口地址interfaceUrl={}", interfaceUrl);
+			String responseStr = HttpUtil.httpSSLGet(interfaceUrl, "utf-8");
+			logger.info(logPrefix + "接口响应字符串responseStr={}", responseStr);
+			UboxLoginResponse uboxLoginResponse = JSON.parseObject(responseStr, UboxLoginResponse.class);
+			logger.info(logPrefix + "uboxLoginResponse={}", JSON.toJSONString(uboxLoginResponse));
+			return uboxLoginResponse;
+		} catch (Exception e) {
+			logger.info(logPrefix + "发生异常， code={}, exception={}", code, e.getMessage(), e);
+			return null;
+		}
+	}
+	
+	public UboxUserInfoResponse getUboxUserInfo(String uboxSession, String encryptedData, String iv) {
+		String logPrefix = "友宝用户信息接口_";
+		logger.info(logPrefix + "接收到的参数 uboxSession={}, encryptedData={}, iv={}", uboxSession,  encryptedData, iv);
+		try {
+			String interfaceUrl = uboxUrl + "/app/userinfo_esports";
+			Map<String, String> paramMap = new HashMap<String, String>();
+			paramMap.put("uboxSession", uboxSession);
+			paramMap.put("encryptedData", encryptedData);
+			paramMap.put("iv", iv);
+			logger.info(logPrefix + "调用的接口地址interfaceUrl={},paramMap={}", interfaceUrl, JSON.toJSONString(paramMap));
+			String responseStr = HttpUtil.httpSSLClientPost(interfaceUrl, paramMap, "utf-8");
+			logger.info(logPrefix + "接口响应字符串responseStr={}", responseStr);
+			UboxUserInfoResponse uboxUserInfoResponse = JSON.parseObject(responseStr, UboxUserInfoResponse.class);
+			logger.info(logPrefix + "uboxUserInfoResponse={}", JSON.toJSONString(uboxUserInfoResponse));
+			return uboxUserInfoResponse;
+		} catch (Exception e) {
+			logger.info(logPrefix + "发生异常， uboxSession={}, encryptedData={}, iv={}, exception={}", 
+					uboxSession,  encryptedData, iv, e.getMessage(), e);
+			return null;
+		}
+	}
+
+}

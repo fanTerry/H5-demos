@@ -1,0 +1,35 @@
+package com.esportzoo.esport.connect.request.charge;
+
+import java.io.Serializable;
+
+/**
+ * @author tingting.shen
+ * @date 2019/05/18
+ */
+public class ChargeRequst implements Serializable {
+	
+	private static final long serialVersionUID = -6138304073665998121L;
+	
+	private String chargeAmount;
+	
+	private int agentId;
+
+	public String getChargeAmount() {
+		return chargeAmount;
+	}
+
+	public int getAgentId() {
+		return agentId;
+	}
+
+	public void setChargeAmount(String chargeAmount) {
+		this.chargeAmount = chargeAmount;
+	}
+
+	public void setAgentId(int agentId) {
+		this.agentId = agentId;
+	}
+
+	
+	
+}

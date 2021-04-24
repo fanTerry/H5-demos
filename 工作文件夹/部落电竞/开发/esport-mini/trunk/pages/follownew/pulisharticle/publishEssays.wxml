@@ -1,0 +1,71 @@
+<!--pages/follownew/pulisharticle/publishEssays.wxml-->
+<view class="main">
+  <view class="mod_publish">
+    <!-- 发布短文 -->
+    <view :class="type==3?'publish_essays':'publish_img'">
+      <view class="publish_txt">
+        <view class="essays_con" :class="switchTabType==1?'active':''" v-html="contentHtml">
+        </view>
+        <textarea class="essays" v-model="content" input="handleInput" name="" id="" maxlength="200" placeholder="#添加话题(适合的话题会被更多人看到)200字以内" ref="focusTextarea"></textarea>
+      </view>
+      <view class="add_container" v-if="type==3">
+        <!--发布短文-->
+        <view class="add_item" style="display:none">
+          <image :src="test"></image>
+        </view>
+        <template v-if='imgs.length>0'>
+          <view class="add_item" v-for="(item, i) in imgs" :key='i'>
+            <image :src="item"></image>
+            <span class="close" bingtap="del(i)"></span>
+            <span class="edit">编辑</span>
+            <input style="position:absolute;opacity:0;" type="file" change="fileUpdate(i,$event)" accept="image/*"></input>
+          </view>
+        </template>
+        <view class="add_item" v-if="imgs.length<maxSize">
+          <span class="add_icon"></span>
+          <image src="" alt="" ref="img"></image>
+          <input style="position:absolute;opacity:0;" type="file" id='files' change="fileChange($event)" ref="input" accept="image/*"></input>
+        </view>
+      </view>
+      <view class="add_container" v-if="type==5">
+        <!--发布视频-->
+        <view class="add_item">
+          <span class="add_icon"></span>
+          <image src="" alt="" ref="img"></image>
+          <video id="videoId" autoplay controls v-show="showVideo" />
+          <input style="position:absolute;opacity:0;" type="file" id='pop_video' change="uploadVideo($event)" ref="file" accept="video/*" v-if='!showVideo'></input>
+          <!--capture="camcorder" -->
+        </view>
+        <!-- <textarea class="note_txt" placeholder="在此输入图片注释"></textarea> -->
+      </view>
+    </view>
+  </view>
+  <view class="mod_project">
+    <view class="project_tab">
+      <view>
+        <li class="keyboard_icon" :class="switchTabType==1?'active':''" bindtap="switchType(1)"></li>
+        <li class="topic_icon" :class="switchTabType==2?'active':''" bindtap="switchType(2)"></li>
+      </view>
+      <a bindtap="publishEssay">确定</a>
+    </view>
+    <view class="project_con" v-if="switchTabType==2">
+      <view>
+        <li class="topic_talk">
+          <view class="search">
+            <span class="search_icon"></span>
+            <input type="text" name="" id="" v-model="searchVal" placeholder="搜索话题"></input>
+            <span class="close"></span>
+          </view>
+          <template v-if="searchVal!=''">
+            <p v-for="(item,index) in searchList" :key="index" bindtap="selectTopic(item.name)">
+              {{item.name |formatTopic}}</p>
+          </template>
+          <template v-else>
+            <p v-for="(item,index) in topicList" :key="index" bindtap="selectTopic(item.name)">
+              {{item.name |formatTopic}}</p>
+          </template>
+        </li>
+      </view>
+    </view>
+  </view>
+</view>

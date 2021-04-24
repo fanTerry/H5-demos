@@ -1,0 +1,253 @@
+<template>
+  <section class="mod_guess">
+    <div class="guess_item"
+      :class="[{'mvp_bg':guessMarkNum==0},{'champion_bg':guessMarkNum==1},{'hero_bg':guessMarkNum==2},{'fivekill_bg':guessMarkNum==3}]">
+      <ul>
+        <li :class="{'active':guessMarkNum == index}" v-for="(item,index) in matchList.slice(0,4)" :key="index"
+          @click="chooseTab(index)">{{item[0].playName.substring(0,3)}}</li>
+      </ul>
+    </div>
+    <div class="guess_con">
+      <ul>
+        <template v-for="(item,index) in matchList.slice(0,4)">
+          <!-- <li class="mvp_con" v-if="guessMarkNum === 0">
+            <h3>{{item[0].subjectName}}</h3>
+            <guess-list :type=1 :guessOptionVos="item[0].quizOptions"></guess-list>
+          </li>
+          <li class="champion_con" v-if="guessMarkNum === 1">
+            <h3>{{item[0].subjectName}}</h3>
+            <guess-list :type=1 :guessOptionVos="item[0].quizOptions"></guess-list>
+          </li>-->
+          <li class="hero_con" :key="index" v-if="index===guessMarkNum">
+            <h3>{{item[0].subjectName}}</h3>
+            <!-- <guess-list :type=2  :quizGame="item[0]"></guess-list> -->
+            <bet-item :quizMatchGame="item[0]" :showStyle='hot_personal'></bet-item>
+            <div class="hero_img">
+              <img v-if="item[0].backImg" :src="item[0].backImg" alt />
+            </div>
+          </li>
+          <!-- <li class="fivekill_con" :key="index" v-if="index===guessMarkNum">
+            <h3>
+              {{item[0].subjectName}}
+              <span>截止投注：{{item[0].deadLine}}</span>
+            </h3> -->
+          <!-- <p class="tips">{{item[0].matchSubjectName}}</p> -->
+          <!-- <guess-list :type=2  :quizGame="item[0]"></guess-list>
+            <img class="player_img" v-if="item[0].backImg" :src="item[0].backImg" alt />
+          </li> -->
+        </template>
+      </ul>
+    </div>
+  </section>
+</template>
+
+<script>
+import guessList from "./components/guess_list.vue";
+import betItem from "components/guessbet/bet_item.vue";
+
+export default {
+  components: { guessList, betItem },
+  props: [],
+  data() {
+    return {
+      guessItem: ["猜MVP", "猜冠军", "猜英雄", "猜五杀"],
+      guessMarkNum: 0,
+      matchList: [],
+      // currItem: null,
+      showBet: false
+    };
+  },
+
+  mounted() {
+    this.getMatchData();
+  },
+  methods: {
+    //弹出投注窗口
+    goBet(index, openFlag) {
+      console.log("打开投注", index);
+      this.showBet = openFlag;
+    },
+    //切换tab
+    chooseTab(index) {
+      this.guessMarkNum = index;
+      // this.$refs.guessItem.currIndex=null
+      // this.getMatchData();
+    },
+
+    //获取赛事数据
+    getMatchData() {
+      let param = {};
+      //查询首页特殊玩法
+      param.recommend = 1;
+      return this.$post("/api/quiz/match/gameList", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.matchList = dataResponse.data;
+            console.log(this.matchList);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.mod_guess {
+  display: table;
+  margin: 32px auto 0;
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+    overflow: hidden;
+  }
+  .fivekill_con {
+    @include getBgImg("../../assets/images/home/fivekill_bg.png");
+  }
+  .hero_con {
+    @include getBgImg("../../assets/images/home/hero_bg.png");
+  }
+  .mvp_bg {
+    @include getBgImg("../../assets/images/home/mvp.png");
+  }
+  .champion_bg {
+    @include getBgImg("../../assets/images/home/champion.png");
+  }
+  .hero_bg {
+    @include getBgImg("../../assets/images/home/guesshero.png");
+  }
+  .fivekill_bg {
+    @include getBgImg("../../assets/images/home/fivekill.png");
+  }
+}
+
+.guess_item {
+  float: left;
+  width: 170px;
+  li {
+    width: 100%;
+    height: 62px;
+    padding-left: 38px;
+    font-size: 18px;
+    line-height: 62px;
+    font-weight: bold;
+    font-style: italic;
+    color: #ffdcd7;
+  }
+  .active {
+    font-size: 24px;
+    color: #f3d40c;
+  }
+}
+.guess_con {
+  float: left;
+  // width: 1040px;
+  margin-left: 30px;
+}
+
+.mvp_con,
+.champion_con,
+.hero_con,
+.fivekill_con {
+  width: 1040px;
+  min-height: 248px;
+  h3 {
+    position: relative;
+    padding-left: 12px;
+    font-size: 14px;
+    font-weight: normal;
+    color: #ffdcd7;
+    &::after {
+      content: "";
+      @extend .g_v_mid;
+      left: 0;
+      width: 4px;
+      height: 14px;
+      background: linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -ms-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -webkit-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+    }
+  }
+}
+
+.mvp_con,
+.champion_con {
+  position: relative;
+  // width: 1021px;
+  margin-left: 20px;
+}
+
+.hero_con,
+.fivekill_con {
+  position: relative;
+  // width: 1041px;
+  // height: 250px;
+  @include getBgImg("../../assets/images/home/hero_bg.png");
+}
+
+.hero_con {
+  padding: 53px 0 0 20px;
+  .hero_img {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 652px;
+    height: 250px;
+    transform-origin: right bottom;
+    transform: skew(-27deg, 0deg);
+    overflow: hidden;
+    img {
+      width: 100%;
+      height: 100%;
+      transform: skew(27deg, 0deg);
+      transform-origin: right bottom;
+    }
+  }
+}
+
+.fivekill_con {
+  padding: 26px 0 0 20px;
+  h3 {
+    font-size: 18px;
+    span {
+      padding-left: 68px;
+      font-size: 12px;
+      color: #dc9255;
+      font-weight: bold;
+    }
+  }
+  .tips {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #ffdcd7;
+  }
+  .player_img {
+    position: absolute;
+    right: 193px;
+    bottom: 0;
+    width: 278px;
+    height: 238px;
+    object-fit: cover;
+  }
+}
+</style>
+

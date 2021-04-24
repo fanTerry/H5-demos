@@ -1,0 +1,150 @@
+<template>
+  <div class="Page">
+    <div class="main">
+      <div class="count_tips">10</div>
+      <div class="rank_title">
+        第<span class="num">1</span>题
+      </div>
+      <div class="title">英雄联盟S1冠军队伍是英雄联盟S1冠军队伍是英雄联盟S1冠军队伍是军队伍是？</div>
+      <div class="option_group">
+        <!-- 答对加active -->
+        <div class="active">A. FNC</div>
+        <div class="">B. WE</div>
+      </div>
+    </div>
+    <!-- 答题倒计时提醒 -->
+    <div class="pop_count_att none">
+      <div class="tips">
+        <p>每题限时10秒</p>
+        <p>每次续命操作限时1分钟</p>
+        <p>准备好了吗?</p>
+      </div>
+      <div class="count">3</div>
+    </div>
+    <!-- 弹窗集合组件 -->
+    <pops type="7"></pops>
+
+    <!-- <footer class="mod_footer">
+      <tabs></tabs>
+    </footer> -->
+  </div>
+</template>
+
+<script>
+import tabs from "./components/tabs";
+import pops from "./components/pops";
+import wxApi from "../../../libs/weixinShare";
+
+export default {
+  components: { tabs, pops },
+  props: [],
+  data() {
+    return {};
+  },
+  mounted() {
+   // this.wxShare();
+  },
+  methods: {
+    wxShare() {
+      let option = {
+        title: "我在参加答题活动,赢大奖,快帮帮我鸭鸭鸭", // 分享标题, 请自行替换
+        desc: "一站到底答题活动", // 分享描述
+        imgUrl:
+          "https://rs.esportzoo.com/svn/esport-res/mini/images/game/dlq.jpg" // 分享图标, 请自行替换，需要绝对路径
+      };
+      console.log(option);
+      wxApi.wxRegister(option);
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  background-color: rgb(255, 231, 131);
+}
+
+.main {
+  @include getBgImg("../../../assets/images/hd/hd101/answering_bg.png");
+  background-size: 100% auto;
+  background-position: top center;
+}
+
+.count_tips {
+  padding-top: 8.7vw;
+  font-size: 12vw;
+  font-family: "PangMenZhengDao";
+  color: #ffe783;
+  text-align: center;
+}
+
+.rank_title {
+  padding-top: 7.9vw;
+  font-size: 4.5vw;
+  color: #fff;
+  text-align: center;
+  .num {
+    padding: 0 5px;
+    color: #fcff00;
+  }
+}
+
+.title {
+  padding: 10vw 10.7vw 0;
+  font-size: 4.3vw;
+  line-height: 7.4vw;
+}
+
+.option_group {
+  padding-top: 1.3vw;
+  > div {
+    width: 82.4vw;
+    margin: 3.2vw auto 0;
+    padding: 4.5vw 0 5.6vw 5.9vw;
+    font-size: 4.5vw;
+    line-height: 3.5vw;
+    color: #fff;
+    @include getBgImg("../../../assets/images/hd/hd101/option_bg.png");
+    background-size: 100% 100%;
+    &.active {
+      @include getBgImg("../../../assets/images/hd/hd101/option_active.png");
+      background-size: 100% 100%;
+    }
+  }
+}
+
+.pop_count_att {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  background: rgb(255, 231, 131);
+}
+
+.tips {
+  padding-top: 138px;
+  text-align: center;
+  p {
+    padding-top: 10px;
+    font-size: 18px;
+    color: #333;
+  }
+}
+
+.count {
+  width: 164px;
+  margin: 48px auto 0;
+  border-radius: 50%;
+  font-size: 112px;
+  line-height: 164px;
+  font-family: "PangMenZhengDao";
+  text-align: center;
+  color: #ffe783;
+  background-color: #e97542;
+}
+</style>

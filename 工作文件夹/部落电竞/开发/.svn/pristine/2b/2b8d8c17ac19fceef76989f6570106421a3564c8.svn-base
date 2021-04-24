@@ -1,0 +1,67 @@
+/* component/report/chartchatitem/chart-chat-item.wxss */
+@import "/resources/wxss/base/clear.wxss";
+
+.chart-chat-item {
+  vertical-align: top;
+  margin-bottom: 20rpx;
+}
+.userinfo-avatar {
+  float: left;
+  margin-right: 20rpx;
+
+  width: 50rpx;
+  height: 50rpx;
+
+  border-radius: 50%;
+}
+
+.chart-chat-box {
+  position: relative;
+  padding: 10rpx 20rpx;
+  margin-top: 10rpx;
+
+  font-size: 24rpx;
+  line-height: 50rpx;
+  background: #fff;
+  border-radius: 15rpx;
+
+  min-width: 350rpx;
+  max-width: 500rpx;
+}
+
+.c-c-b-i{
+  position: absolute;
+  top: 15rpx;
+  left: -12rpx;
+
+  width: 0;
+  height: 0;
+  border-top: 15rpx solid transparent;
+  border-bottom: 15rpx solid transparent;
+  border-right: 15rpx solid #fff;
+
+}
+
+.c-c-name {
+  font-size: 24rpx;
+  color: #333;
+}
+.c-c-time {
+  font-size: 20rpx;
+  color: #aaa;
+  margin-left: 10rpx;
+}
+.c-t-gray {
+  color: #666;
+}
+.c-t-blue {
+  color: #0f87ff;
+  padding: 0 5rpx;
+}
+.c-t-black {
+  color: #000;
+}
+.c-t-red {
+  color: #e10914;
+  padding: 0 5rpx;
+}

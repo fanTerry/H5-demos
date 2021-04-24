@@ -1,0 +1,42 @@
+<view class="ui_pop">
+
+  <!-- 填写收货地址 -->
+  <view class="receive_adress">
+    <a class="close"></a>
+    <view class="title">请添加一个收货地址</view>
+    <view>
+      <label for="receive_user">收货人</label>
+      <input type="text" id="receive_user" placeholder=""></input>
+    </view>
+    <view>
+      <label for="phone_num">手机号码</label>
+      <input type="text" id="phone_num" placeholder=""></input>
+    </view>
+    <view>
+      <label>所在地区</label>
+			<p class="location_address"><span>广东省</span><span>深圳市</span><span>福田区</span></p>
+      <span class="choose">请选择
+        <i></i>
+      </span>
+    </view>
+		<storeExchange></storeExchange>
+    <view class="detail_adress">
+      <span>详细地址：</span>
+      <textarea name="" id="" cols="30" rows="10" placeholder="详细地址：如道路、门牌号、小区、楼栋号、单元室等">
+      </textarea>
+    </view>
+    <view class="set_address">
+      <span>
+        <i class="select"></i>设置为默认地址</span>
+    </view>
+    <a class="exchange_btn">确定</a>
+		<view class="confirm_con">
+			<view>
+				<span class="num">共1件，</span>
+				<span>合计：</span>
+				<span class="money"><i class="star_coin"></i>399</span>
+				<a class="confirm_btn">确定</a>
+			</view>
+		</view>
+  </view>
+</view>

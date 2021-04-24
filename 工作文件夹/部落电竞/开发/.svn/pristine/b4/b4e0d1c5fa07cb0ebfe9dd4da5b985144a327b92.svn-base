@@ -1,0 +1,250 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <nav-bar :pageTitle="'创建赛事'"></nav-bar>
+    </header>
+    <div class="main">
+      <div class="create_match">
+        <div class="item select_game">
+          <div class="flex_v_justify">
+            <label>选择游戏</label>
+            <div class="flex_hc">和平精英
+              <img class="game_img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg"
+                alt="">
+              <i class="toggle_icon"></i>
+            </div>
+          </div>
+          <div class="game_list">
+            <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg" alt="">
+          </div>
+        </div>
+        <div class="item">
+          <label for="match_name">赛事名称</label>
+          <div><input type="text" id="match_name"><i class="edit_icon"></i><span class="confirm_btn">确定</span></div>
+        </div>
+        <div class="item">
+          <label for="join_team">参赛队伍</label>
+          <div><input type="text" id="join_team"><i class="edit_icon"></i><span class="confirm_btn">确定</span></div>
+        </div>
+        <div class="item">
+          <label for="team_person">每队人数</label>
+          <div><input type="text" id="team_person"><i class="edit_icon"></i><span class="confirm_btn">确定</span></div>
+        </div>
+        <div class="item match_model">
+          <label>赛事模式</label>
+          <div>淘汰制</div>
+        </div>
+        <div class="item">
+          <label for="regist_time">报名时间</label>
+          <div><input type="text" id="regist_time"><i class="edit_icon"></i><span class="confirm_btn">确定</span></div>
+        </div>
+        <div class="item">
+          <label for="game_time">比赛时间</label>
+          <div><input type="text" id="game_time"><i class="edit_icon"></i><span class="confirm_btn">确定</span></div>
+        </div>
+        <div class="item race_round">
+          <div class="flex_v_justify">
+            <label>赛程轮次</label>
+            <div class="flex_hc">3<i class="toggle_icon"></i></div>
+          </div>
+          <div class="item">
+            <label>第1轮</label>
+            <div><input type="text"><i class="edit_icon"></i><span class="confirm_btn">确定</span></div>
+          </div>
+        </div>
+        <div class="item award_tips">
+          <label for="award_tips">奖励说明</label>
+          <textarea name="" id="award_tips" cols="30" rows="10" placeholder="请填写奖励机制"></textarea>
+        </div>
+
+        <a class="next_btn">下一步</a>
+      </div>
+    </div>
+    <div class="ui_pop">
+      <match-info></match-info>
+    </div>
+    <footer class="mod_footer">
+
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "components/header/nav_bar/index.vue";
+import matchInfo from "./components/matchinfo";
+
+export default {
+  components: {
+    navBar,
+    matchInfo
+  },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.main {
+  padding: 28vw 4vw 8.6667vw;
+  background-color: #090709;
+}
+
+.match_info {
+  margin-top: 0 !important;
+}
+
+.edit_icon {
+  @extend .g_v_mid;
+  right: 0;
+  width: 5.3333vw;
+  height: 5.3333vw;
+  @include getBgImg("../../assets/images/matchtool/edit_icon.png");
+  background-size: contain;
+}
+
+.toggle_icon {
+  width: 5.3333vw;
+  height: 5.3333vw;
+  @include getBgImg("../../assets/images/matchtool/toggle_icon.png");
+}
+
+.confirm_btn {
+  @extend .flex_v_h;
+  flex: none;
+  width: 16.5333vw;
+  height: 7.4667vw;
+  color: #ee701d;
+  border: 0.4vw solid currentColor;
+  border-radius: 3.7333vw;
+}
+
+.create_match {
+  padding-bottom: 8.5333vw;
+  background-color: #fff;
+  border-radius: 1.0667vw;
+}
+
+.game_img {
+  width: 8vw;
+  height: 8vw;
+  margin: 0 3.6vw 0 1.3333vw;
+  object-fit: contain;
+}
+
+.item {
+  position: relative;
+  @extend .flex_v_justify;
+  height: 14.6667vw;
+  padding: 0 4.5333vw 0 3.2vw;
+  font-size: 3.7333vw;
+  color: #333;
+  > div {
+    position: relative;
+    @extend .flex_hc;
+    flex: 1;
+    -webkit-flex: 1;
+    height: 100%;
+  }
+  label {
+    flex: none;
+    -webkit-flex: none;
+    height: 100%;
+    font-size: 4.2667vw;
+    line-height: 14.6667vw;
+  }
+  input {
+    position: relative;
+    z-index: 1;
+    width: 26.6667vw;
+    flex: 1;
+    -webkit-flex: 1;
+    height: 100%;
+    padding-right: 8.8vw;
+    font-size: 3.7333vw;
+    text-align: right;
+    color: #333;
+  }
+}
+
+.match_model > div {
+  padding-right: 8.8vw;
+  justify-content: flex-end;
+  -webkit-justify-content: flex-end;
+}
+
+.race_round {
+  display: block;
+  height: initial;
+  padding: 0;
+  > div {
+    height: 14.6667vw;
+    padding: 0 4.5333vw 0 3.2vw;
+  }
+  .toggle_icon {
+    margin-left: 3.6vw;
+  }
+  .item {
+    padding-left: 7.2vw;
+    background-color: #f4f4f4;
+  }
+}
+
+.select_game {
+  display: block;
+  padding: 0;
+  height: initial;
+  > div {
+    height: 14.6667vw;
+    padding: 0 4.5333vw 0 3.2vw;
+    label {
+      font-size: 4vw;
+    }
+  }
+  .game_list {
+    @extend .flex_hc;
+    background-color: #f4f4f4;
+    img {
+      width: 8vw;
+      height: 8vw;
+      margin-left: 4vw;
+      object-fit: contain;
+    }
+  }
+}
+
+.award_tips {
+  display: block;
+  height: initial;
+  padding: 0;
+  label {
+    padding-left: 3.2vw;
+  }
+  textarea {
+    width: 100%;
+    height: 29.8667vw;
+    padding: 3.2vw;
+    line-height: 6vw;
+    background-color: #f4f4f4;
+    &::placeholder {
+      color: #ccc;
+    }
+  }
+}
+
+.next_btn {
+  display: block;
+  margin: 8.5333vw 4vw 0;
+  line-height: 11.7333vw;
+  font-size: 4.5333vw;
+  color: #fff;
+  text-align: center;
+  border-radius: 11.7333vw;
+  @include getBgLinear(right, #ee701d, #f5951d);
+}
+</style>

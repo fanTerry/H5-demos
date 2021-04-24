@@ -1,0 +1,22 @@
+#memcached
+memcached_serverlist=daily-middle:11211 daily-middle:21211
+
+#redis
+redis.server.address=192.168.9.231:7000,192.168.9.231:7001,192.168.9.231:7002
+
+redis.host1=192.168.9.231
+redis.port1=7000
+redis.host2=192.168.9.231
+redis.port2=7001
+redis.host3=192.168.9.231
+redis.port3=7002
+
+redis.maxRedirects=3
+redis.maxIdle=30
+redis.maxTotal=100
+redis.minIdle=5
+redis.maxWaitMillis=30000 
+redis.testOnBorrow=true
+redis.testOnReturn=true 
+redis.testWhileIdle=true
+redis.timeout=3000

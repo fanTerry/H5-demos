@@ -1,0 +1,19 @@
+const home = () => import('./views/home/index.vue');
+const match = () => import('./views/match/index.vue');
+const infor_details = () => import('./views/home/infor_details');
+
+const routers = [{
+    path: '/',
+    component: home
+}, {
+    path: '/home',
+    component: home
+}, {
+    path: '/match',
+    component: match
+}, {
+    path: '/infor-details',
+    component: infor_details 
+}];
+
+export default routers;

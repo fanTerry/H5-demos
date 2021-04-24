@@ -1,0 +1,75 @@
+/* component/store/address/address.wxss */
+
+.location_address {
+  position: relative;
+  display: flex;
+	align-items: center;
+  justify-content: flex-start !important;
+  padding: 34rpx 0;
+}
+
+.location_icon {
+  width: 44rpx;
+  height: 44rpx;
+  margin-right: 16rpx;
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/store/location_icon.png') no-repeat center;
+	background-size: cover;
+}
+
+.name {
+  font-size: 30rpx;
+	max-width: 200rpx;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.phone_num {
+  color: #999;
+  padding-left: 24rpx;
+}
+
+p {
+  display: flex;
+	align-items: center;
+  color: #333;
+  font-size: 24rpx;
+}
+
+.address {
+  display: block;
+  padding-top: 10rpx;
+  max-width: 480rpx;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.link_icon {
+  position: absolute;
+  right: 0;
+  width: 40rpx;
+  height: 40rpx;
+	transform: rotate(-90deg);
+}
+
+.location_address .link_icon:before, .location_address .link_icon:after {
+    content: " ";
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1rpx;
+    height: 24rpx;
+    background-color: #999;
+    -webkit-transform-origin: bottom;
+    transform-origin: bottom;
+}
+
+.location_address .link_icon:before {
+    transform: translate3d(-50%, -50%, 0) rotate(45deg);
+}
+
+.location_address .link_icon:after {
+    transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+}

@@ -1,0 +1,222 @@
+<!--modules/expertpage/expertpage/expert-page.wxml-->
+<!-- 专家主页 -->
+
+<!-- 第一部分：头部公共部分 -->
+<expert-header></expert-header>
+
+<!-- 第二部分：推荐选项-胜负 -->
+<expert-recommend></expert-recommend>
+
+<!-- 第二部分：战绩走势 -->
+<view class='expert-info-title expert-info-title-trend clear'>
+  <view class='expert-title'><i class='iconfont icon-shoucang e-t-icon'></i>战绩走势</view>
+  <view class='fr expert-menu clear'>
+    <view class='e-m-item e-m-l'><text>全部时间</text></view>
+    <view class='e-m-item e-m-item-cur'><text>近7日</text></view>
+    <view class='e-m-item e-m-r'><text>近30日</text></view>
+  </view>
+</view>
+<view class='expert-report-trend'>
+  <view class='e-r-box t1'><view>500</view><view>总推荐数</view></view>
+  <view class='e-r-box t2'><view class='t-red'>57%</view><view>命中率</view></view>
+  <view class='e-r-box t3'><view class='t-red'>57%</view><view>命中率</view></view>
+  <view class='e-r-box t4'><view class='t-red'>5</view><view>连红</view></view>
+  <view class='e-r-box t5'><view class='t-red'>5</view><view>连红</view></view>
+</view>
+
+<!-- 第三部分：在售方案 -->
+<view class='expert-info-title'>
+  <view class='expert-title'><i class='iconfont icon-shoucang e-t-icon'></i>在售方案</view>
+</view>
+<view class='expert-plan'>
+  <view class='expert-no-plan'>
+    <view>暂无在售方案</view>
+    <view>关注专家可第一时间收到新发布方案通知</view>
+  </view>
+  <view class='expert-plan-button'>
+    <text class='expert-follow'>+关注</text>
+  </view>
+</view>
+
+<!-- 第四部分：在售方案 -->
+<view class='expert-info-title'>
+  <view class='expert-title'><i class='iconfont icon-shoucang e-t-icon'></i>在售方案</view>
+</view>
+<view class='expert-plan'>
+  <view class='report-expert-info-note'>
+    <text>推荐买点：</text>
+    <view class='r-e-high'>
+      <text class='r-e-h-text'>胜负让分</text>
+      <text class='r-e-h-text'>大小分</text>
+      <text class='r-e-h-text'>十二杀</text>
+    </view>
+  </view>
+
+  <!-- 第二部分 -->
+  <view class='report-expert-detail dsp-table'>
+    
+    <view class='report-expert-detail-vs dsp-cell '>
+      <view class='r-e-d-tit-view'>
+        <i class='iconfont icon-shoucang r-e-d-logo'></i>
+        <text class='r-e-d-tit'>MDL 巴黎迪士尼Major预选赛巴黎迪士尼Major预选赛巴黎迪士尼Major预选赛 BO3</text>
+      </view>
+
+      <view class='dsp-table'>
+        <view class='dsp-cell'>
+          <image class='r-e-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+          <text>DETONA...</text>
+        </view>
+
+        <view class='dsp-cell'>
+          <text class='r-e-d-vs'>VS</text>
+        </view>
+
+        <view class='dsp-cell'>
+          <image class='r-e-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+          <text>DETONA...</text>
+        </view>
+
+      </view>
+    </view>
+
+    <view class='report-expert-detail-money'>
+      <view>
+        <i class='iconfont icon-shoucang r-e-d-i'></i>
+        <text class='r-e-d-money'>800.00竞彩币</text>
+      </view>
+      <view>
+        <i class='r-e-d-note'>不中全退</i>
+      </view>
+    </view>
+
+  </view>
+
+  <view class='report-expert-sub'>
+    <text>1小时前发布 | 阅读 18</text>
+  </view>
+  
+</view>
+
+<!-- 第五部分：历史方案 -->
+<view class='expert-info-title'>
+  <view class='expert-title'><i class='iconfont icon-shoucang e-t-icon'></i>历史方案</view>
+</view>
+
+<view class='expert-plan'>
+  
+  <!-- 第一部分 -->
+  <view class='expert-plan-expert-info'>
+    <view class='dsp-cell e-p-e-c1'>
+      <view class='e-p-name-view'>
+        <i class='iconfont icon-shoucang r-e-d-logo'></i>
+        <text class='e-p-name'>老毛精算</text>
+      </view>
+      <view class='report-expert-info-note'>
+        <text>推荐买点：</text>
+        <view class='r-e-high'>
+          <text class='r-e-h-text'>胜负让分</text>
+          <text class='r-e-h-text'>大小分</text>
+          <text class='r-e-h-text'>十二杀</text>
+        </view>
+      </view>
+    </view>
+    <view class='dsp-cell t-r'>
+      <view class='e-p-block block-gray'><text>黑</text></view>
+    </view>
+
+  </view>
+
+  <!-- 第二部分 -->
+  <view class='report-expert-detail dsp-table'>
+    
+    <view class='report-expert-detail-vs dsp-cell '>
+      <view class='r-e-d-tit-view'>
+        <i class='iconfont icon-shoucang r-e-d-logo'></i>
+        <text class='r-e-d-tit'>MDL 巴黎迪士尼Major预选赛 BO3</text>
+      </view>
+
+      <view class='dsp-table'>
+        <view class='dsp-cell'>
+          <image class='r-e-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+          <text>DETONA...</text>
+        </view>
+
+        <view class='dsp-cell'>
+          <text class='r-e-d-vs'>VS</text>
+        </view>
+
+        <view class='dsp-cell'>
+          <image class='r-e-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+          <text>DETONA...</text>
+        </view>
+
+      </view>
+    </view>
+
+  </view>
+
+  <view class='report-expert-sub'>
+    <text>1小时前发布 | 阅读 18</text>
+  </view>
+
+</view>
+
+<view class='expert-plan'>
+  
+  <!-- 第一部分 -->
+  <view class='expert-plan-expert-info'>
+    <view class='dsp-cell e-p-e-c1'>
+      <view class='e-p-name-view'>
+        <i class='iconfont icon-shoucang r-e-d-logo'></i>
+        <text class='e-p-name'>老毛精算</text>
+      </view>
+      <view class='report-expert-info-note'>
+        <text>推荐买点：</text>
+        <view class='r-e-high'>
+          <text class='r-e-h-text'>胜负让分</text>
+          <text class='r-e-h-text'>大小分</text>
+          <text class='r-e-h-text'>十二杀</text>
+        </view>
+      </view>
+    </view>
+    <view class='dsp-cell t-r'>
+      <view class='e-p-block block-red'><text>红</text></view>
+    </view>
+
+  </view>
+
+  <!-- 第二部分 -->
+  <view class='report-expert-detail dsp-table'>
+    
+    <view class='report-expert-detail-vs dsp-cell '>
+      <view>
+        <i class='iconfont icon-shoucang r-e-d-logo'></i>
+        <text class='r-e-d-tit'>MDL 巴黎迪士尼Major预选赛 BO3</text>
+      </view>
+
+      <view class='dsp-table'>
+        <view class='dsp-cell'>
+          <image class='r-e-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+          <text>DETONA...</text>
+        </view>
+
+        <view class='dsp-cell'>
+          <text class='r-e-d-vs'>VS</text>
+        </view>
+
+        <view class='dsp-cell'>
+          <image class='r-e-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+          <text>DETONA...</text>
+        </view>
+
+      </view>
+    </view>
+
+  </view>
+
+  <view class='report-expert-sub'>
+    <text>1小时前发布 | 阅读 18</text>
+  </view>
+
+</view>
+

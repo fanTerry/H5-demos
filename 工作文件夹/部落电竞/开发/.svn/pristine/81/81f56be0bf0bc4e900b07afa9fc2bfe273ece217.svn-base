@@ -1,0 +1,247 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar>
+        <!-- <i class="share_icon"></i> -->
+      </navBar>
+    </header>
+    <div class="main">
+      <section class="goods_list">
+        <slot></slot>
+        <ul>
+          <li class="goods_item">
+            <div class="goods_img" v-if="goodsDetail.imageList&&goodsDetail.imageList.length>0">
+              <img :src="goodsDetail.imageList[0]" alt="">
+            </div>
+            <div>
+              <i class="rank_first"></i>
+              <div class="goods_title">
+                <span class="goods_name">{{goodsDetail.name}}</span>
+                <!-- <div class="goods_grade">王者</div> -->
+              </div>
+
+              <div class="goods_detail">
+                <span class="mark"><i class="star_coin"></i>{{goodsDetail.payScore}}</span>
+                <div>
+                  <div class="bought_person" v-if="goodsDetail.Icons!=null">
+                    <img v-for="(item,index) in goodsDetail.Icons" :key="index" :src="item" alt="">
+                  </div>
+                  <span class="num">{{goodsDetail.purchases?goodsDetail.purchases:0}}</span>人兑换
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </section>
+      <section class="goods_info" v-if='goodsDetail.description!=""'>
+        <h3>商品详情</h3>
+        <p v-html="goodsDetail.description"></p>
+      </section>
+    </div>
+    <footer class="mod_footer">
+      <div class="goods_exchange">
+        <div @click="showPopFlag=true">
+          <i class="service_icon"></i>
+          客服
+        </div>
+        <a class="exchange_btn" @click="showPop()">立即兑换</a>
+      </div>
+    </footer>
+    <storeExchange ref="popSon" :goodsDetail='goodsDetail' v-if='popChangeFlag'></storeExchange>
+    <CustomService :showPop='showPopFlag' @close='showPopFlag=false' type="1">
+      <p>请联系客服QQ：2732470865</p>
+    </CustomService>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar";
+import storeExchange from "../../../components/pop_up/store/exchange";
+import writeAddress from "../../../components/pop_up/store/writeAddress";
+import CustomService from "components/pop_up/pop_alert";
+export default {
+  components: {
+    navBar,
+    storeExchange,
+    CustomService
+  },
+  data() {
+    return {
+      goodsId: null,
+      goodsDetail: Object,
+      popChangeFlag: false,
+      showPopFlag: false
+    };
+  },
+  computed: {},
+  created() {},
+  mounted() {
+    this.goodsId = this.$route.params.goodsId;
+    this.getGoodsDetail();
+  },
+  methods: {
+    getGoodsDetail() {
+      this.$post("/api/shop/detail/" + this.goodsId)
+        .then(res => {
+          console.log(res);
+          if ((res.code = "200")) {
+            this.goodsDetail = res.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    showPop() {
+      this.popChangeFlag = true;
+      if (this.$refs.popSon) {
+        this.$refs.popSon.step1Flag = true;
+      }
+    }
+  },
+  watch: {}
+};
+</script>
+
+
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+.mod_header {
+  position: relative;
+  .nav_bar {
+    position: relative;
+    margin-top: 10px;
+    height: 44px;
+    background-color: transparent;
+  }
+  .share_icon {
+    @extend .g_v_mid;
+    z-index: 1;
+    right: 5px;
+    width: 44px;
+    height: 44px;
+    @include getBgImg("../../../assets/images/store/share_icon.png");
+    background-size: 22px;
+  }
+}
+.main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 100px;
+}
+.goods_list {
+  background-color: #fff;
+  .goods_img {
+    position: relative;
+    width: 100%;
+    padding-top: 56.5%;
+    img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  .goods_title {
+    @extend .flex_hc;
+    padding-top: 10px;
+    padding-left: 10px;
+    font-size: 14px;
+    color: #333;
+  }
+  .goods_grade {
+    margin-left: 4px;
+    padding: 3px 5px;
+    font-size: 11px;
+    color: $color_main;
+    @include getRadiusBorder($color_main, all, 4px);
+  }
+  .goods_detail {
+    @extend .flex_v_justify;
+    padding: 10px;
+    color: #ccc;
+    span,
+    div {
+      @extend .flex_hc;
+    }
+    .bought_person {
+      padding-right: 4px;
+    }
+    img {
+      width: 22px;
+      height: 22px;
+      margin-right: 4px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+  .num {
+    padding-right: 5px;
+  }
+  .star_coin {
+    display: block;
+    width: 14px;
+    height: 14px;
+    margin-right: 3px;
+    @include getBgImg("../../../assets/images/user_center/star_coin.png");
+  }
+  .mark {
+    color: $color_main;
+    font-size: 14px;
+  }
+}
+.goods_info {
+  margin-top: 8px;
+  padding: 0 10px;
+  h3 {
+    padding-top: 15px;
+    font-size: 16px;
+    color: #333;
+  }
+  p {
+    padding-top: 10px;
+    font-size: 13px;
+    line-height: 20px;
+    color: #333;
+  }
+  img {
+    margin-top: 4px;
+    width: 100%;
+  }
+}
+.mod_footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+}
+.goods_exchange {
+  @extend .flex_v_justify;
+  padding: 4px 10px;
+  text-align: center;
+  color: #666;
+  box-shadow: 0 1px 2px #000;
+  .service_icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+    margin: 0 auto;
+    @include getBgImg("../../../assets/images/store/service_icon.png");
+    background-size: 24px;
+  }
+  .exchange_btn {
+    font-size: 17px;
+    @include getBtn(147px, 40px, transparent, #fff, 40px);
+    background: linear-gradient(to right, #ffa200, #ff7b1c);
+  }
+}
+</style>

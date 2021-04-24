@@ -1,0 +1,372 @@
+/* modules/mypage/myrecharge/my-recharge.wxss */
+
+@import "/resources/wxss/base/clear.wxss";
+@import "/modules/mypage/wxss/my-comm.wxss";
+
+page{
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.main{
+	padding: 18rpx 10rpx 0;
+	line-height: 1;
+	background-color: #f0efee;
+}
+
+.user_card{
+	position: relative;
+	z-index: 0;
+
+	padding: 30rpx 0 34rpx 20rpx;
+}
+
+.user_card{
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/my/my-info-bg.png') no-repeat center;
+	background-size: cover;
+}
+
+.user_infor{
+	display: flex;
+	align-items: center;
+	padding-left: 20rpx;
+}
+
+.user_infor image{
+	width: 84rpx;
+	height: 84rpx;
+	margin-right: 16rpx;
+	border: 1rpx solid #fff;
+	border-radius: 50%;
+}
+
+.user_infor .name{
+	font-size: 42rpx;
+	color: #fff;
+	font-weight: bold;
+}
+
+.user_infor .tips{
+	padding-top: 14rpx;
+	font-size: 22rpx;
+	color: #FFFE93;
+}
+
+.super_vip_icon{
+	position: absolute;
+	right: 20rpx;
+	top: 16rpx;
+
+	display: flex;
+	align-items: center;
+
+	font-size: 26rpx;
+	color: #fff;
+	font-weight: middle;
+}
+
+.super_vip_icon image{
+	width: 48rpx;
+	height: 48rpx;
+	margin-right: 10rpx;
+	border-radius: 50%;
+}
+
+
+.user_card .star_coin{
+	display: flex;
+	align-items: center;
+
+	padding-top: 28rpx;
+	padding-left: 10rpx;
+	font-size: 28rpx;
+	color: #FFFE93;
+}
+
+.money_num image{
+	width: 48rpx;
+	height: 48rpx;
+	padding-left: 6rpx;
+	padding-right: 8rpx;
+
+}
+
+.money_num{
+	display: flex;
+	align-items: center;
+	font-size: 0;
+	padding-top: 12rpx;
+	color: #fff;
+}
+
+.money_num text{
+	font-size: 36rpx;
+}
+
+.title{
+	color: #7B7B7B;
+}
+
+
+.recharge_list .title{
+	display: flex;
+	align-items: center;
+
+	padding: 20rpx 0 14rpx 20rpx;
+	font-size: 26rpx;
+}
+
+.recharge_list .adver{
+	margin-left: 13rpx;
+	padding: 2rpx 13rpx 2rpx 22rpx;
+	font-size: 22rpx;
+	color: #fff;
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/my/adver.png') no-repeat center;
+	background-size: cover;
+}
+
+
+.recharge_list .list{
+	border-radius: 11rpx;
+	background-color: #fff;
+}
+
+
+.recharge_list .item{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	padding: 38rpx 38rpx  30rpx 20rpx;
+	border-bottom: 1rpx solid rgba(0, 0, 0, .1);
+
+	position: relative;
+}
+
+.recharge_list .item.active{
+	border-radius: 8rpx;
+	background: linear-gradient(to right, rgba(255,162,0,1) 0%,rgba(255,123,28,1) 100%);
+}
+
+.recharge_list .item:last-child{
+	border-bottom: none;
+}
+
+.recharge_list .item >view{
+	display: flex;
+	align-items: center;
+}
+
+.most_worthy,.give_more{
+	width: 62rpx;
+	height: 36rpx;
+
+	padding-top: 4rpx;
+	text-align: center;
+	font-size: 20rpx;
+	color: #fff;
+	box-sizing: border-box;
+
+	position: absolute;
+	left: 15rpx;
+	top: 0;
+}
+
+.most_worthy{
+	background: url(https://rs.esportzoo.com/svn/esport-res/mini/images/my/most_worthy.png) no-repeat center;
+	background-size: cover;
+}
+
+.give_more{
+	background: url(https://rs.esportzoo.com/svn/esport-res/mini/images/my/give_more.png) no-repeat center;
+	background-size: cover;
+}
+
+.recharge_list .star_coin{
+	width: 52rpx;
+	height: 52rpx;
+	margin-right: 10rpx;
+	border-radius: 50%;
+}
+
+.recharge_list .num{
+	font-size: 36rpx;
+	color: #6D6D6D;
+}
+
+.recharge_list .price{
+	font-size: 30rpx;
+}
+
+.recharge_list  .original{
+	text-decoration: line-through;
+	color: #C6C6C6;
+}
+
+.recharge_list  .discount{
+	padding-left: 30rpx;
+	color: #777;
+}
+
+.amount{
+	width: 80rpx;
+	margin-right: 10rpx;
+}
+
+.rules,.question{
+	padding: 34rpx 34rpx 44rpx;
+	font-size: 26rpx;
+}
+
+.rules .title{
+	padding-bottom: 30rpx;
+}
+
+.rules .txt{
+	position: relative;
+	padding-left: 38rpx;
+	padding-bottom: 4rpx;
+	line-height: 38rpx;
+	color: #9b9b9b;
+}
+
+.rules .txt >text{
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.rules .a{
+	padding-left: 4rpx;
+	color: #ff9501;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.question .title{
+	font-size: 24rpx;
+	padding-bottom: 10rpx;
+}
+
+.question .p{
+	font-size: 22rpx;
+	text-indent: 38rpx;
+	line-height: 32rpx;
+	color: #9b9b9b;
+}
+
+.confirm_pay{
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+
+	padding: 10rpx 20rpx 10rpx 0;
+	line-height: 1;
+	font-size: 24rpx;
+	color: #CFCFCF;
+	background-color: #fff;
+}
+
+.confirm_pay text{
+	font-size: 28rpx;
+}
+
+
+.confirm_pay .confirm{
+	margin-left: 34rpx;
+	padding: 20rpx 80rpx;
+	font-size: 34rpx;
+	border-radius: 80rpx;
+	color: #fff;
+	background: linear-gradient(to right, rgba(255,162,0,1) 0%,rgba(255,123,28,1) 100%);
+}
+
+
+
+
+
+
+
+.my-recharge-item {
+  height: 110rpx;
+  line-height: 110rpx;
+  border-bottom: solid 2rpx #ddd;
+}
+.my-recharge-item:last-child {
+  border-bottom: none;
+}
+.m-r-i-unit {
+  font-size: 50rpx;
+  font-weight: bold;
+  color: #efc75e;
+  margin: 0 10rpx 0 20rpx;
+}
+.m-r-i-money {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+.m-r-i-act {
+  border-radius: 15rpx;
+  border-bottom: none;
+  /* background: linear-gradient(to right, rgba(104,160,255,1) 0%,rgba(255,255,255,1) 100%); */
+  background: linear-gradient(to right, rgba(255,142,0,1) 0%,rgba(255,255,255,1) 100%);
+}
+.m-r-i-act .m-r-i-money {
+  color: #fff;
+}
+
+.my-faq-line {
+  font-size: 28rpx;
+
+  padding: 20rpx 0;
+  margin: 10rpx 20rpx;
+  border-bottom: dashed 2rpx #ddd;
+}
+.m-f-l-title {
+  color: #999;
+}
+.m-f-l-subt {
+  color: #666;
+}
+.m-f-l-answer {
+  color: #999;
+  text-indent: 50rpx;
+}
+
+.my-recharge-btn-view {
+  width: 710rpx;
+  padding: 10rpx 20rpx;
+  height: 80rpx;
+  overflow: hidden;
+  background: #fff;
+}
+.my-recharge-btn-text {
+  display: inline-block;
+  font-size: 26rpx;
+  margin: 0 50rpx 0 100rpx;
+}
+.m-r-b-text {
+  color: #aaa;
+}
+.m-r-b-unit {
+  color: #333;
+}
+.m-r-b-money {
+  color: #ffa200; 
+  font-size: 30rpx;
+}
+.my-recharge-btn {
+  display: inline-block;
+  width: 280rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+
+  text-align: center;
+  font-size: 36rpx;
+  color: #fff;
+  border-radius: 40rpx;
+
+  background: linear-gradient(to right, rgba(255,162,0,1) 0%,rgba(255,123,28,1) 100%);
+}

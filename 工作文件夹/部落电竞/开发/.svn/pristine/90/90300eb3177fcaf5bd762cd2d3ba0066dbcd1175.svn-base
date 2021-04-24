@@ -1,0 +1,52 @@
+/* pages/expert/paid-article-page.wxss */
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+.hot-expert-list {
+  width: 750rpx;
+}
+.expert-title-view {
+  margin: 20rpx 0;
+}
+.expert-title {
+  display: inline-block;
+  padding-left: 20rpx;
+  line-height: 32rpx;
+
+  font-size: 30rpx;
+  font-weight: bold;
+  border-left: solid 8rpx #fea21b;
+}
+.expert-more {
+  float: right;
+  padding-right: 20rpx;
+
+  font-size: 24rpx;
+  line-height: 32rpx;
+  color: #fea21b;
+}
+.e-m-i {
+  font-size: 24rpx;
+  padding-left: 15rpx;
+}
+
+.hot-expert-list {
+  width: 700rpx;
+  height: 170rpx;
+  padding: 0 15rpx;
+
+  background: #fff;
+  border-radius: 20rpx;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.hot-expert-mov-area {
+  width: 700rpx;
+  height: 170rpx;
+}
+
+.hot-expert-mov-view {
+  width: 130%;
+  height: 170rpx;
+}

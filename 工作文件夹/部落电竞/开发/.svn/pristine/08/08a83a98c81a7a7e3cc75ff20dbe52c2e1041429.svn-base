@@ -1,0 +1,125 @@
+// pages/help/myFeedBack/myFeedBack.js
+
+const app = getApp();
+const api = require('../../../libs/http');
+const baseUrl = api.baseUrl;
+
+Page({
+
+	/**
+	 * 页面的初始数据
+	 */
+	data: {
+		myFeedbackList: [],
+		pageParam: {
+			pageNo: 1,
+			pageSize: 10
+		},
+		currPageSize: 10,
+		hasNextPage: true
+	},
+
+	/**
+	 * 生命周期函数--监听页面加载
+	 */
+	onLoad: function (options) {
+		this.getMyFeedBack(this.data.pageParam);
+	},
+
+	/**
+	 * 生命周期函数--监听页面初次渲染完成
+	 */
+	onReady: function () {
+
+	},
+
+	/**
+	 * 生命周期函数--监听页面显示
+	 */
+	onShow: function () {
+
+	},
+
+	/**
+	 * 生命周期函数--监听页面隐藏
+	 */
+	onHide: function () {
+
+	},
+
+	/**
+	 * 生命周期函数--监听页面卸载
+	 */
+	onUnload: function () {
+
+	},
+
+	/**
+	 * 页面相关事件处理函数--监听用户下拉动作
+	 */
+	onPullDownRefresh: function () {
+		this.data.myFeedbackList = [];
+		this.getMyFeedBack(this.data.pageParam);
+	},
+
+	/**
+	 * 页面上拉触底事件的处理函数
+	 */
+	onReachBottom: function () {
+		this.data.pageParam.pageNo = this.data.pageParam.pageNo + 1;
+		this.getMyFeedBack(this.pageParam);
+	},
+
+	/**
+	 * 用户点击右上角分享
+	 */
+	onShareAppMessage: function () {
+
+	},
+	getMyFeedBack(param) {
+		if (param) {
+			param = this.pageParam;
+		}
+		var that = this;
+		var sid = wx.getStorageSync('sid');
+		var agentId = app.globalData.agentId;
+		var clientType = app.globalData.clientType;
+		var requestUrl =  baseUrl+ "/helpcenter/myFeedbackList?sid="+sid+"&agentId="+agentId+"&clientType="+clientType;
+		api._postAuth(requestUrl, param)
+			.then(rsp => {
+				const dataResponse = rsp;
+				if (dataResponse.code == "200") {
+					let dataList = dataResponse.data.dataList;
+					// this.data.currPageSize = dataList.length;
+					if (dataList && dataList.length > 0) {
+						dataList.forEach(element => {
+							if (element.imageUrl) {
+								element.imgList = element.imageUrl.split(",");
+							}
+						});
+					}
+					// this.data.hasNextPage = dataResponse.data.hasNext;
+					// this.data.myFeedbackList = this.data.myFeedbackList.concat(dataList);
+					this.setData({
+						currPageSize:dataList.length,
+						hasNextPage:dataResponse.data.hasNext,
+						myFeedbackList:that.data.myFeedbackList.concat(dataList)
+					})
+					console.log(dataResponse,that.data.myFeedbackList);
+					return dataList;
+				} else if (dataResponse.code == "9999") {
+					wx.showToast({                           
+						title:dataResponse.message,  //标题                            
+						icon:"none"  
+					 })  
+				}
+			})
+			.catch(error => {
+				wx.showToast({                           
+					title:"网络异常，稍后再试",  //标题                            
+					icon:"none"  
+				 }) 
+				console.log(error);
+			});
+	}
+})

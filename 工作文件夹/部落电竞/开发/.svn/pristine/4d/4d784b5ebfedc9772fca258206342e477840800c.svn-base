@@ -1,0 +1,61 @@
+<template>
+  <div class="Page peaceElitePage">
+    <!-- 和平精英peaceElitePage -->
+    <!-- 王者荣耀kingGloryPage -->
+    <header>
+      <nav-bar :pageTitle="'更多队伍'"></nav-bar>
+    </header>
+    <div class="main">
+      <team-list @deletePlayer='deletePlayer()'></team-list>
+    </div>
+
+    <pops :popTitle="popTitle" v-show="showPop" @cancel='showPop = false'></pops>
+
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index.vue";
+import teamList from "./components/teamlist";
+import pops from "./components/pops.vue";
+
+export default {
+  components: { teamList, navBar, pops },
+  props: [],
+  data() {
+    return {
+      showPop: false,
+      popTitle: ""
+    };
+  },
+  methods: {
+    deletePlayer() {
+      this.showPop = true;
+      this.popTitle = "您确定要移除改名参赛用户吗?";
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_mixin";
+@import "../../assets/common/_base";
+
+.main {
+  padding-top: 4vw;
+}
+
+.peaceElitePage {
+  .main {
+    background: url("../../assets/images/matchtool/peace_elite_bg.png") top
+      center no-repeat;
+  }
+}
+
+.kingGloryPage {
+  .main {
+    background: url("../../assets/images/matchtool/king_glory_bg.png") top
+      center no-repeat;
+  }
+}
+</style>

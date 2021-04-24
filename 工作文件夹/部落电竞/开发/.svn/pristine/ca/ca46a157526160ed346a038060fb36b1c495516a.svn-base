@@ -1,0 +1,100 @@
+<template>
+<div>
+  <footer>
+    <nuxt-link :to="{ path:'/home'}">
+      <span class="tab-icon icon-wuzi"></span>
+      <span>首页</span>
+    </nuxt-link>
+
+    <nuxt-link :to="{ path:'/match'}">
+      <span class="tab-icon icon-jiangbei"></span>
+      <span>赛事</span>
+    </nuxt-link>
+
+    <nuxt-link :to="{ path:'/attention'}">
+      <span class="tab-icon icon-xinhejiahao"></span>
+      <span>关注</span>
+    </nuxt-link>
+
+    <nuxt-link :to="{ path:'/article'}">
+      <span class="tab-icon icon-zhuanjiaboshi"></span>
+      <span>文章</span>
+    </nuxt-link>
+
+    <nuxt-link :to="{ path:'/mine'}">
+      <span class="tab-icon icon-wode">
+        <i></i>
+      </span>
+      <span>我的</span>
+    </nuxt-link>
+  </footer>
+</div>
+
+
+</template>
+
+<script>
+  export default {
+    props: {
+    },
+    created () {
+
+    },
+    methods: {
+
+    },
+    data () {
+      return {
+
+      }
+    }
+  }
+</script>
+<style lang="less" scoped>
+div{
+  height: 89px;
+}
+footer{
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  display: flex;
+  text-align: center;
+  height: 89px;
+  font-family: SourceHanSansSC-Normal;
+  font-size: 19px;
+  font-weight: normal;
+  font-stretch: normal;
+  letter-spacing: 0px;
+  background-color: #fff;
+  border-top:4px solid #f0efee;
+  a{
+    color: #a4a2a5;
+    flex: 1;
+    &.nuxt-link-active{
+      color: #ff7e00;
+    }
+    span{
+      display: block;
+      &.tab-icon{
+        font-size: 42px;
+        margin-top: 6px;
+      }
+      &.icon-wode{
+        position:relative;
+      }
+      &.icon-wode i{
+        position: absolute;
+        right: 32%;
+        display:inline-block;
+        content:'';
+        width: 12px;
+        height: 12px;
+        border-radius: 100%;
+        background-color: #ff0000;
+        border: solid 1px #ffffff;
+      }
+    }
+  }
+}
+</style>

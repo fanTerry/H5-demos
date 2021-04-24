@@ -1,0 +1,568 @@
+<template>
+  <div class="ui_pop" v-if="showGuessType">
+    <!-- 竞猜记录 -->
+    <div class="guessRecord" v-if="type == 1">
+      <a class="close" @click="closePop"></a>
+      <h2>竞猜记录</h2>
+      <div class="guessRecord_con">
+        <h3>
+          <span class="time">竞猜时间</span>
+          <span class="content">竞猜内容</span>
+          <!-- <span class="all" :class="{active:foldFlag}" @click="foldFlag=!foldFlag">
+            全部竞猜<span></span>
+            <ul v-if="foldFlag">
+              <li class="current" @click="queryRecord()">全部竞猜</li>
+              <li @click="queryRecord(0)">待开奖</li>
+              <li @click="queryRecord(1)">已中奖</li>
+              <li @click="queryRecord(2)">未中奖</li>
+            </ul>
+          </span> -->
+          <span class="all" :class="{active:foldFlag}" @click="foldFlag=!foldFlag">
+            {{firstFont}}<span></span>
+            <ul v-if="foldFlag">
+             <li :class="{active:foldFlag == index}" @click="queryRecord(index)" v-for="(item,index) in foldFlagList" :key="index" >
+          {{item}}</li>
+            </ul>
+          </span>
+          <span class="detail">详情</span>
+        </h3>
+        <ul class="guessRecord_list">
+          <scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" @pullingUp="onPullingUp">
+            <li class="guessRecord_item" v-for="(item,index) in recordList" :key="index">
+              <div class="flex_hc">
+                <!-- 竞猜时间 -->
+                <span class="time">{{item.createTime | getQuizRecordTime}}</span>
+                <!-- 竞猜内容 主队、客队、局数、玩法、投注选项、赔率-->
+                <span class="content">{{item.homeTeamName}} VS {{item.awayTeamName}} [{{item.matchNo | gameFightNum}}
+                  {{item.playName}}？]|{{item.option}}({{item.betSp}})</span>
+                <!-- 全部竞猜 -->
+                <p class="all">
+                  <span>{{item.winStatus | openStatus}} </span>
+                  <span v-if="item.winStatus==1">{{item.prize}}星星</span>
+                </p>
+                <!-- <span class="all" >{{item.winStatus | openStatus}}</span>
+                 <span class="all" v-if="item.winStatus==2">{{item.prize}}星星</span>-->
+                <a class="detail" :class="{'up':index == RecordMark}"
+                  @click='guessRecordClick(index)'>{{index == RecordMark?"收起详情":"展开详情"}}</a>
+              </div>
+              <div class="guessRecord_detail" v-if="RecordMark == index">
+                <p class="result">比赛结果：
+                  <span v-if="item.answer==null">——</span>
+                  <span v-else>{{item.answer}}</span>
+                </p>
+                <p class="money">竞猜金额 X 奖励倍数：<span>{{item.cost}} X {{item.betSp}}</span></p>
+                <p class="number">方案编号：<span>{{item.planNo}}</span></p>
+                <p class="number">方案状态：<span>{{item.status |betPlan}}</span></p>
+              </div>
+            </li>
+          </scroll>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 兑奖记录 -->
+    <div class="exchangeRecord" v-if="type == 2">
+      <a class="close" @click="closePop"></a>
+      <h2>兑奖记录</h2>
+      <div class="exchangeRecord_con">
+        <h3>
+          <span class="order_time">订单时间</span>
+          <span class="order_num">订单号</span>
+          <span class="goods_name">商品名称</span>
+          <span class="order_status">订单状态</span>
+          <span class="order_detail">详情</span>
+        </h3>
+        <ul class="exchangeRecord_list">
+          <li class="exchangeRecord_item" v-for="(item,index) in 10" :key="index">
+            <div class="flex_hc">
+              <span class="order_time">2018-06-07 18:12</span>
+              <span class="order_num">P18****************</span>
+              <span class="goods_name">苹果电脑 48G 玫瑰金色埃里克角度来看</span>
+              <span class="order_status">发放中</span>
+              <a class="order_detail" @click="showOrderDetails = true">查看详情</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 在兑奖记录里触发 订单详情 -->
+    <div class="orderDetails" v-if="showOrderDetails">
+      <h2>订单详情</h2>
+      <div class="orderDetails_con">
+        <img src="" alt="">
+        <div>
+          <p>商品名称：X XX</p>
+          <p>奖品说明：</p>
+          <p>奖品状态：发送中</p>
+          <p>订单号码：P18****************</p>
+          <p>订单时间：2018-06-22 18:00</p>
+          <p>充值面额：</p>
+          <p>充值号码：</p>
+        </div>
+      </div>
+      <a class="close_btn" @click="showOrderDetails = false">关闭</a>
+    </div>
+  </div>
+</template>
+
+<script>
+import { getQuizRecordTime } from "../../../libs/utils";
+import Scroll from "../../../components/common/scroll";
+import { betPlan, openStatus, gameFightNum } from "../../../filters";
+export default {
+  components: { Scroll },
+  props: ["type", "showGuessType"],
+  filters: {
+    getQuizRecordTime(time) {
+      return getQuizRecordTime(time, false);
+    },
+    //投注方案-->在filters.js中
+    betPlan(status) {
+      return betPlan(status);
+    },
+    //开奖状态
+    openStatus(winStatus) {
+      return openStatus(winStatus);
+    },
+    //比赛场数
+    gameFightNum(fightNum) {
+      return gameFightNum(fightNum);
+    }
+  },
+  data() {
+    return {
+      foldFlag: false,
+      RecordMark: Number,
+      showOrderDetails: false,
+      recordList: [], //查询用户竞猜记录
+      currPageSize: 0,
+      recordQueryParam: {
+        pageNo: 1,
+        pageSize: 10,
+        winStatus: "" //初始加载全部竞猜记录
+      },
+      firstFont:'全部竞猜',
+      foldFlagList:['全部竞猜','待开奖','已中奖','未中奖'],
+      // 下拉组件相关
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "到底啦~" }
+      }
+    };
+  },
+  methods: {
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+      if (this.currPageSize < this.recordQueryParam.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+
+    closePop() {
+      this.$emit("closePop");
+    },
+    guessRecordClick(index) {
+      if (this.RecordMark == index) {
+        this.RecordMark = -1;
+      } else {
+        this.RecordMark = index;
+      }
+    },
+
+    queryRecord(index) {
+      this.recordList = [];
+      this.firstFont=this.foldFlagList[index];
+      if(index==0){
+        index=null;
+      }else{
+         index=index-1;
+      }
+      this.recordQueryParam.pageNo = 1;
+      this.recordQueryParam.pageSize = 10;
+      this.recordQueryParam.winStatus = index;
+      this.quizzesPopRecord(this.recordQueryParam);
+    },
+
+    //查询兑奖记录
+    quizzesPopRecord(param) {     
+      return this.$post("/api/quiz/record/recordPage", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse, "查询兑奖记录成功");
+            if (dataResponse.data.length > 0) {
+              this.currPageSize = dataResponse.data.length;
+              console.log(this.currPageSize, "当前页");
+              this.recordList = this.recordList.concat(dataResponse.data);
+              console.log(this.recordList);
+            }
+            return this.recordList;
+          }
+        })
+        .catch(error => {
+          console.log(error, "查询兑奖记录失败");
+        });
+    },
+    /** 上拉加载*/
+    loadMore() {
+      this.recordQueryParam.pageNo += 1;
+      let param = {};
+      param.pageNo = this.recordQueryParam.pageNo;
+      param.pageSize = this.recordQueryParam.pageSize;
+      param.winStatus = this.recordQueryParam.winStatus;
+      console.log(param, "加载更多");
+      this.quizzesPopRecord(param).then(data => {
+        this.$refs.scroll.forceUpdate();
+      });
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.guessRecord {
+  .bscroll-indicator {
+    border-radius: 3px !important;
+    border: 3px solid #453130 !important;
+  }
+  .bscroll-vertical-scrollbar {
+    width: 6px !important;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.ui_pop > div {
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translate(25%, -25%);
+  -webkit-transform: translate(25%, -25%);
+  width: 40px;
+  height: 40px;
+}
+
+.pop_tips {
+  @extend .g_v_c_mid;
+  width: 215px;
+  padding: 20px 0;
+  text-align: center;
+  p {
+    font-size: 14px;
+    color: #fff;
+  }
+  span {
+    display: block;
+    padding-top: 20px;
+    font-size: 20px;
+    color: #f6b70d;
+  }
+}
+
+.guessRecord,
+.exchangeRecord {
+  width: 914px;
+  background-color: #311e1d;
+  h2 {
+    line-height: 90px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff6ea;
+    text-align: center;
+  }
+  h3 {
+    @extend .flex;
+    font-size: 0;
+    .all {
+      position: relative;
+      @extend .flex_v_h;
+      &.active {
+        span {
+          transform: translateY(-2px) rotate(180deg);
+          -webkit-transform: translateY(-2px) rotate(180deg);
+        }
+      }
+      span {
+        margin-left: 4px;
+        border: 6px solid transparent;
+        border-top-color: currentColor;
+        transform: translateY(4px);
+        -webkit-transform: translateY(4px);
+      }
+      ul {
+        @extend .g_c_mid;
+        top: 40px;
+        z-index: 2;
+        border: 1px solid #5e3b23;
+        background-color: #221518;
+      }
+      li {
+        width: 150px;
+        font-size: 14px;
+        line-height: 30px;
+        color: #ffbea3;
+        border-top: 1px solid #3b211f;
+        text-align: center;
+        &:first-child {
+          border: none;
+        }
+      }
+      .current {
+        background-color: #3b211f;
+      }
+    }
+    .detail,
+    .order_detail {
+      width: 190px;
+    }
+  }
+  .time,
+  .content,
+  .all,
+  .detail,
+  .order_time,
+  .order_num,
+  .goods_name,
+  .order_status,
+  .order_detail {
+    display: inline-block;
+    margin-right: 1px;
+    padding-left: 20px;
+    font-size: 14px;
+    color: #7f5c51;
+    line-height: 40px;
+    background-color: #221518;
+  }
+  .time,
+  .result {
+    width: 180px;
+    padding-left: 40px;
+  }
+  .content {
+    width: 391px;
+    padding: 0 20px;
+    @include t_nowrap(100%);
+  }
+  .all {
+    width: 150px;
+  }
+  .detail {
+    width: 166px;
+    margin-right: 0;
+  }
+  .money {
+    padding-left: 20px;
+  }
+  .number {
+    padding-left: 73px;
+  }
+  .order_time {
+    width: 180px;
+    padding-left: 40px;
+  }
+  .order_num {
+    width: 190px;
+  }
+  .goods_name {
+    width: 200px;
+    padding: 0 20px;
+    @include t_nowrap(100%);
+  }
+  .order_status {
+    width: 150px;
+  }
+  .order_detail {
+    width: 166px;
+    text-decoration: underline;
+  }
+}
+
+.guessRecord_con,
+.exchangeRecord_con {
+  background-color: #130c0e;
+}
+
+.guessRecord_list,
+.exchangeRecord_list {
+  height: 340px;
+  margin-right: 4px;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    margin-right: 4px;
+  }
+
+  .time,
+  .content,
+  .all,
+  .detail,
+  .order_time,
+  .order_num,
+  .goods_name,
+  .order_status,
+  .order_detail {
+    margin-top: 1px;
+    line-height: 50px;
+    color: #ffdcd7;
+    background-color: #311e1d;
+  }
+  .detail {
+    color: #f3d40c;
+    &.up {
+      color: #ffdcd7;
+      &::after {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-width: 1px 0 0 1px;
+        border-style: solid;
+        border-color: #ffdcd7;
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform-origin: bottom;
+        -webkit-transform-origin: bottom;
+        -ms-transform-origin: bottom;
+        margin-left: 4px;
+        vertical-align: middle;
+      }
+    }
+  }
+  .order_num,
+  .order_detail {
+    color: #f3d40c;
+  }
+}
+
+.guessRecord_item,
+.exchangeRecord_item {
+  position: relative;
+}
+
+.guessRecord_detail {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 1;
+  width: 890px;
+  font-size: 0;
+  color: #ffdcd7;
+  background-color: #221518;
+  p {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 51px;
+  }
+  span {
+    color: #f3d40c;
+  }
+}
+
+.orderDetails {
+  @extend .g_v_c_mid;
+  position: absolute !important;
+  width: 908px;
+  height: 465px;
+
+  h2 {
+    line-height: 90px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff6ea;
+    text-align: center;
+    &::after {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        rgba(103, 62, 61, 0),
+        rgba(103, 62, 61, 1),
+        rgba(103, 62, 61, 0)
+      );
+      background: -webkit-linear-gradient(
+        90deg,
+        rgba(103, 62, 61, 0),
+        rgba(103, 62, 61, 1),
+        rgba(103, 62, 61, 0)
+      );
+      background: -ms-linear-gradient(
+        90deg,
+        rgba(103, 62, 61, 0),
+        rgba(103, 62, 61, 1),
+        rgba(103, 62, 61, 0)
+      );
+    }
+  }
+  .close_btn {
+    @extend .flex_v_h;
+    margin: 68px auto 0;
+    width: 460px;
+    height: 50px;
+    font-size: 18px;
+    color: #f5b457;
+    border: 3px solid #f5b457;
+  }
+}
+
+.orderDetails_con {
+  @extend .flex_v_h;
+  margin-top: 38px;
+  img {
+    width: 260px;
+    height: 190px;
+    margin-right: 30px;
+    object-fit: contain;
+  }
+  p {
+    padding: 4px 0 10px;
+    font-size: 14px;
+    color: #ffdcd7;
+    &:last-child {
+      padding-bottom: 4px;
+    }
+  }
+}
+
+.confirm_pay,
+.orderDetails,
+.recharge,
+.prize,
+.qrCodePay,
+.payStatus,
+.pointsExchange,
+.pop_tips {
+  background: linear-gradient(-16deg, rgba(42, 24, 28, 1), rgba(52, 32, 29, 1));
+  background: -webkit-linear-gradient(
+    -16deg,
+    rgba(42, 24, 28, 1),
+    rgba(52, 32, 29, 1)
+  );
+  background: -ms-linear-gradient(
+    -16deg,
+    rgba(42, 24, 28, 1),
+    rgba(52, 32, 29, 1)
+  );
+  box-shadow: 0px 0px 15px 0px rgba(10, 2, 4, 0.5);
+}
+</style>

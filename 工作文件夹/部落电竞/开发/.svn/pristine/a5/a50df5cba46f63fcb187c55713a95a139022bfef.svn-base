@@ -1,0 +1,327 @@
+<template>
+  <li class="match_item">
+    <div class="top">
+      <span class="name">中法对抗赛</span>
+      <div class="score">
+        <span>3</span>
+        <i class="colon"></i>
+        <span>1</span>
+      </div>
+      <span class="live" v-if="1">直播中 LIVE</span>
+      <span class="tag" v-else>6月60 19:00</span>
+    </div>
+    <div class="center">
+      <div class="team">
+        <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg" alt />
+        <p>VP</p>
+      </div>
+      <div class="vs">
+        <span>VS</span>
+        <p>15332人参与</p>
+      </div>
+      <div class="team">
+        <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg" alt />
+        <p>VG</p>
+      </div>
+    </div>
+    <div class="bottom">
+      <h3>全场比赛结果是？</h3>
+      <div class="outcome">
+        <div class="item" :class="{active:toCurBet==item.matchGameId+'_'+index}" v-for="(item,index) in optionList"
+          :key="index" @click="selectItem(item,index,$event)">
+          <p>{{item.name}}</p>
+          <span>{{item.odds}}</span>
+          <!-- 竞猜下注 -->
+          <bet :ref="'childBet'+item.matchGameId+'_'+index" :selectItem="userSelectItem"
+            v-if="toCurBet==item.matchGameId+'_'+index"></bet>
+        </div>
+      </div>
+      <a class="more" :class="{'active':showFlag == index}" @click="openMore(index)">
+        更多竞猜
+        <span></span>
+      </a>
+    </div>
+  </li>
+</template>
+
+<script>
+import bet from "../../../components/guessbet/bet";
+
+export default {
+  components: { bet },
+  props: ["index"],
+  data() {
+    return {
+      showFlag: -1,
+      toCurBet: 0, //选择当前的选项
+      optionList: [
+        { matchGameId: 1, name: "edgm 胜", odds: 2.8 },
+        { matchGameId: 1, name: "qghappy 胜", odds: 2.98 }
+      ],
+      userSelectItem: null
+    };
+  },
+  methods: {
+    openMore(index) {
+      console.log(index);
+      this.$emit("openMore", index);
+      if (this.showFlag == index) {
+        this.showFlag = -1;
+      } else {
+        this.showFlag = index;
+      }
+      console.log(this.showFlag);
+    },
+    selectItem(item, index, e) {
+      e.stopPropagation();
+      this.toCurBet = item.matchGameId + "_" + index;
+      this.userSelectItem = item;
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.match_item {
+  position: relative;
+  float: left;
+  width: 298px;
+  height: 313px;
+  margin-top: 15px;
+  margin-right: 16px;
+  padding: 14px 14px 0;
+  @include getBgImg("../../../assets/images/home/match_item_bg.png");
+  &:nth-child(4n) {
+    margin-right: 0;
+  }
+}
+// .win {
+//   position: absolute;
+//   right: 0;
+//   top: 0;
+//   transform: translate(34%, -20%);
+//   -webkit-transform: translate(34%, -20%);
+//   -ms-transform: translate(34%, -20%);
+//   width: 128px;
+//   height: 128px;
+//   @include getBgImg("../../../assets/images/home/win.png");
+// }
+.top {
+  position: relative;
+  @extend .flex_v_justify;
+  height: 45px;
+  font-size: 12px;
+}
+.name {
+  color: #fedcd7;
+}
+.live {
+  width: 84px;
+  height: 20px;
+  margin-right: -14px;
+  line-height: 20px;
+  color: #e6dbc9;
+  text-align: center;
+  @include getBgImg("../../../assets/images/home/match_tag.png");
+}
+.tag {
+  font-size: 18px;
+  color: #fedcd7;
+  font-weight: bold;
+}
+.score {
+  @extend .g_v_c_mid;
+  @extend .flex_hc;
+  font-size: 42px;
+  line-height: 44px;
+  color: #e6dbc9;
+  font-weight: bold;
+  text-align: center;
+  i {
+    position: relative;
+    width: 18px;
+    height: 42px;
+    &::before,
+    &::after {
+      content: "";
+      @extend .g_c_mid;
+      top: 13px;
+      width: 5px;
+      height: 5px;
+      background-color: #ba6847;
+    }
+    &::after {
+      top: initial;
+      bottom: 13px;
+    }
+  }
+  span {
+    position: relative;
+    width: 35px;
+    background-color: #ba6847;
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 4px;
+      width: 100%;
+      height: 18px;
+      background: linear-gradient(
+        180deg,
+        rgba(99, 56, 47, 0.7),
+        rgba(99, 56, 47, 0.1)
+      );
+    }
+  }
+}
+.center {
+  @extend .flex_v_justify;
+  padding: 32px 10px 22px;
+  text-align: center;
+  color: rgba(255, 190, 163, 0.18);
+}
+.team {
+  font-size: 12px;
+  img {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 10px;
+    object-fit: contain;
+  }
+}
+.vs {
+  span {
+    font-size: 28px;
+    font-style: italic;
+    font-weight: bold;
+  }
+  p {
+    padding-top: 9px;
+    font-size: 12px;
+  }
+}
+h3 {
+  position: relative;
+  padding-left: 10px;
+  font-size: 14px;
+  font-weight: normal;
+  color: #ffdcd7;
+  &::after {
+    content: "";
+    @extend .g_v_mid;
+    left: 0;
+    width: 4px;
+    height: 14px;
+    background: linear-gradient(
+      to bottom,
+      rgba(246, 215, 75, 1),
+      rgba(197, 69, 4, 1)
+    );
+    background: -ms-linear-gradient(
+      to bottom,
+      rgba(246, 215, 75, 1),
+      rgba(197, 69, 4, 1)
+    );
+    background: -webkit-linear-gradient(
+      to bottom,
+      rgba(246, 215, 75, 1),
+      rgba(197, 69, 4, 1)
+    );
+  }
+}
+.outcome {
+  position: relative;
+  margin-top: 12px;
+  text-align: center;
+  border-width: 0 1px 1px 0;
+  border-style: solid;
+  border-color: #463025;
+  &::after {
+    content: "";
+    display: table;
+    overflow: hidden;
+    clear: both;
+  }
+  .item {
+    float: left;
+    width: 50%;
+    height: 70px;
+    border-width: 1px 0 0 1px;
+    border-style: solid;
+    border-color: #463025;
+    background-color: rgba(37, 18, 20, 0.5);
+    &.active {
+      background: linear-gradient(135deg, #f7d064, #8a5a26);
+      background: -ms-linear-gradient(135deg, #f7d064, #8a5a26);
+      span {
+        color: #fff;
+      }
+    }
+  }
+  p {
+    padding-top: 15px;
+    font-size: 18px;
+    color: #ffdcd7;
+  }
+  span {
+    display: inline-block;
+    padding-top: 6px;
+    font-size: 14px;
+    color: #6e4c47;
+  }
+}
+.more {
+  position: absolute;
+  left: 0;
+  display: block;
+  width: 100%;
+  line-height: 33px;
+  font-size: 12px;
+  color: rgba(255, 190, 163, 0.18);
+  text-align: center;
+  &.active {
+    &::after {
+      content: "";
+      display: block;
+      @extend .g_c_mid;
+      z-index: 10;
+      top: 33px;
+      border: 8px solid transparent;
+      border-bottom-color: #482922;
+    }
+    color: #f7b54b;
+    background: linear-gradient(
+      90deg,
+      rgba(218, 177, 84, 1),
+      rgba(138, 90, 38, 1)
+    );
+    background: -webkit-linear-gradient(
+      0deg,
+      rgba(218, 177, 84, 1),
+      rgba(138, 90, 38, 1)
+    );
+    background: -ms-linear-gradient(
+      90deg,
+      rgba(218, 177, 84, 1),
+      rgba(138, 90, 38, 1)
+    );
+    span {
+      transform: rotate(0deg);
+      -webkit-transform: rotate(0deg);
+      -ms-transform: rotate(0deg);
+      @include getBgImg("../../../assets/images/home/triangle_active.png");
+    }
+  }
+  span {
+    display: inline-block;
+    vertical-align: middle;
+    width: 12px;
+    height: 12px;
+    margin-left: 4px;
+    @include getBgImg("../../../assets/images/home/triangle.png");
+  }
+}
+</style>

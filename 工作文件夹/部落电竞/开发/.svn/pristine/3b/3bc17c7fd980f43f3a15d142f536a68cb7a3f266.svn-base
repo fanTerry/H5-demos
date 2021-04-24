@@ -1,0 +1,20 @@
+<template>
+  <!-- 本页面放置竞猜记录，兑奖记录，我的反馈等弹窗 -->
+  <div>
+
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+</style>

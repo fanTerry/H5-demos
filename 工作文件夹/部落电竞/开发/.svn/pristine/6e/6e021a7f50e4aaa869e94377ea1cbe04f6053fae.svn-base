@@ -1,0 +1,6 @@
+<!--pages/help/myFeedBack/myFeedBack.wxml-->
+<div class="Page myFkPage">
+	<div class="main" id="mainId">
+		<feedback-list myFeedbackList="{{myFeedbackList}}" type="{{showType}}"></feedback-list>
+	</div>
+</div>

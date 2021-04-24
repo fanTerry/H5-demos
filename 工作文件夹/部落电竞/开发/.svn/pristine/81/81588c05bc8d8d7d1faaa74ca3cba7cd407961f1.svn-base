@@ -1,0 +1,825 @@
+<template>
+  <div class="iframe" style="background:rgb(29,18,27)">
+    <div class="iframe_header">
+      <!-- <div class="left">
+        <p>我的余额<span class="num">4000</span>星星</p>
+        <a class="recharge">充值</a>
+        <a class="sign">签到领取</a>
+      </div> -->
+      <div class="user_info">
+        <div class="user_img">
+          <img v-bind:src="iconImg?iconImg:require('assets/images/home/default_img.png')" alt />
+          <!-- <img v-bind:src="userInfo.icon|getDefaultImg(globalConst.wxUserDefaultIcon)" alt=""/> -->
+        </div>
+        <div class="login_out" v-if="loginType == 1">
+          <a class="login_btn" @click="login">登录</a>
+          <div class="login_wx" @click="login">
+            <span>微信登录</span>
+          </div>
+        </div>
+        <div class="login_in" v-else>
+          <div class="user_assets">
+            <span class="coin"></span>
+            <span>{{walletRec}}</span>
+          </div>
+          <a class="recharge_btn" @click="openChargerDialog">金豆充值</a>
+          <a class="signin_btn" v-if="isUserSignToday==0">明日再来</a>
+          <a class="signin_btn" v-else @click="openSignPop()">签到领豆</a>
+        </div>
+      </div>
+      <div class="right">
+        <div class="broadcast">
+          <div class="swiper-container">
+            <ul class="list swiper-wrapper">
+              <li class="item swiper-slide" v-for="(item,index) in 4" :key="index">
+                <!-- <span>DE、yt</span>
+              <span>成功获得</span>
+              <span class="award">iPhone 6s plus</span> -->
+                恭喜K**获得佳能相机 EOS700D
+              </li>
+            </ul>
+          </div>
+        </div>
+        <template v-if="showType == 0">
+          <a class="exchange_btn" @click="showType = 1 ">积分兑换</a>
+          <a class="more_btn" @click="showType = 2">更多竞猜</a>
+          <a class="rules_btn" @click="showType = 3">竞猜规则</a>
+          <a class="record_btn" @click="showType = 4">竞猜记录</a>
+        </template>
+        <a v-else class="return_btn" @click="showType = 0">返回竞猜</a>
+      </div>
+    </div>
+    <div class="iframe_con">
+      <!-- 默认界面 -->
+      <div class="home" v-if="showType == 0">
+        <div class="to_left_page"></div>
+        <ul class="home_list">
+          <guessLi :list='list' :res='res' v-for="(item,index) in res" :key="index">
+          </guessLi>
+        </ul>
+        <div class="to_right_page"></div>
+      </div>
+      <!-- 积分兑换 -->
+      <div class="exchange" v-if="showType == 1"></div>
+      <!-- 更多竞猜 -->
+      <div class="more" v-if="showType == 2"></div>
+      <!-- 竞猜规则 -->
+      <div class="rules" v-if="showType == 3">
+
+      </div>
+      <!-- 竞猜记录 -->
+      <div class="record" v-if="showType == 4">
+        <!-- 数据加载出来前 -->
+        <div class="loading" v-if="0">
+          <div class="loading_icon"></div>
+          <p>正在加载中...</p>
+        </div>
+        <div class="" v-else>
+          <p class="record_title">
+            <span class="time">竞猜时间</span>
+            <span class="con">竞猜内容</span>
+            <span class="all" :class="{active:foldFlag}" @click="foldFlag = !foldFlag">
+              全部竞猜<span></span>
+              <ul v-if="foldFlag">
+                <li class="current">全部竞猜</li>
+                <li>待开奖</li>
+                <li>已中奖</li>
+                <li>未中奖</li>
+              </ul>
+            </span>
+            <span class="detail">详情</span>
+          </p>
+          <ul>
+            <li class="record_list" v-for="(item,index) in 10" :key="index">
+              <span class="time">06-21 23:11</span>
+              <span class="con"><span>SKTvsEDG谁会获胜？</span>| SKT胜 3.85</span>
+              <span class="status bingo">未猜中</span>
+              <span class="detail">查看详情</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <pops :type=1 :showPop='false'></pops>
+
+    <login-pops ref="loginPop"></login-pops>
+
+    <sign-pops ref="props" :showSignType="showSignType" @closePop="showSignType = false" @updateSign="updateSign">
+    </sign-pops>
+
+    <guess-pops :type="type" :showGuessType="showGuessType" @closePop="showGuessType = false"></guess-pops>
+
+    <recharge-pops ref="props" :showRechargeType="showRechargeType" @closePop="showRechargeType = false"
+      @updateUserScore="updateUserScore">
+    </recharge-pops>
+  </div>
+</template>
+
+<script>
+import loginPops from "../users/components/login_pops.vue";
+import signPops from "../users/components/sign_pops.vue";
+import guessPops from "../users/components/guess_pops.vue";
+import rechargePops from "../users/components/recharge_pops.vue";
+import guessLi from "./components/guess.vue";
+import pops from "./components/pops.vue";
+
+import Swiper from "swiper";
+import localStorage from "../../libs/storages/localStorage";
+import cookie from "../../libs/common/cookie";
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  components: { guessLi, pops, loginPops, signPops, guessPops, rechargePops },
+  props: [],
+  data() {
+    return {
+      foldFlag: false,
+      showSignType: false,
+      showGuessType: false,
+      showRechargeType: false,
+      commonMark: Number,
+      userInfo: null,
+      iconImg: null,
+      sceneStr: null,
+      walletRec: null,
+      // exchangeStarNum: null,
+      loginType: 1,
+      type: null,
+      popGuessMark: false,
+      isUserSignToday: 1,
+      loginType: 1,
+      showFlag: 0,
+      showType: 0,
+      myData: [],
+      list: ["胜负", "比分", "小龙"],
+      res: [
+        {
+          title: "本场比赛谁获胜？",
+          endtime: "10-25 14:00",
+          team: [
+            {
+              name: "vg",
+              odds: 2
+            },
+            {
+              name: "ig",
+              odds: 3
+            }
+          ]
+        },
+        {
+          title: "本场比赛比分为多少？",
+          endtime: "10-25 14:00",
+          team: [
+            {
+              name: "3:2",
+              odds: 2
+            },
+            {
+              name: "2:3",
+              odds: 3
+            },
+            {
+              name: "3:0",
+              odds: 3
+            },
+            {
+              name: "1:3",
+              odds: 3
+            }
+          ]
+        },
+        {
+          title: "本场比赛首条小龙属性？",
+          endtime: "10-25 14:00",
+          team: [
+            {
+              name: "风",
+              odds: 2
+            },
+            {
+              name: "水",
+              odds: 3
+            },
+            {
+              name: "土",
+              odds: 4
+            },
+            {
+              name: "火",
+              odds: 5
+            },
+            {
+              name: "一条龙",
+              odds: 6
+            }
+          ]
+        }
+      ]
+    };
+  },
+  computed: {
+    ...mapGetters({
+      loginInfo: "getLoginPop",
+      userLoginType: "getLoginType",
+      wxuserInfo: "getUserInfo",
+      wxuserStarNum: "getstarNum"
+    }),
+    getstarNum() {
+      return this.wxuserStarNum.state;
+    },
+    getLoginType() {
+      return this.userLoginType.state;
+    },
+    getUserInfo() {
+      return this.wxuserInfo.state;
+    }
+  },
+  //实时监听用户状态
+  watch: {
+    getstarNum(val) {
+      this.walletRec = val;
+      console.log(val, "H用户星星");
+    },
+    getLoginType(val) {
+      this.loginType = val;
+      console.log(val, "H用户登录状态");
+    },
+    getUserInfo(val) {
+      this.userInfo = val;
+      this.iconImg = this.userInfo.icon;
+      console.log(this.userInfo, "H已获得用户信息");
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.initSwiper();
+    });
+    //查询用户登录状态
+    this.getLoginInfo();
+    this.checkUserSignStatus();
+  },
+  methods: {
+    updateUserScore(wallet) {
+      console.log("刷新钱包");
+      console.log(wallet);
+      this.walletRec = wallet;
+      //刷新钱包余额
+    },
+
+    updateSign(wallet) {
+      console.log("刷新钱包");
+      console.log(wallet);
+      this.walletRec = wallet;
+      this.isUserSignToday = 0;
+      //刷新钱包余额
+    },
+
+    // swiper组件初始化
+    initSwiper() {
+      this.swiper = new Swiper(".swiper-container", {
+        loop: true,
+        speed: 2000,
+        autoplay: true,
+        slidesPerView: "auto",
+        spaceBetween: 20,
+        autoplayDisableOnInteraction: false,
+        observer: true,
+        observeParents: true
+      });
+    },
+    //用户登录
+    login() {
+      //调用登录子组件的方法
+      this.$refs.loginPop.wxCodeLogin();
+    },
+
+    //获取用户信息登录
+    getLoginInfo() {
+      console.log("初始化1");
+      this.userInfo = localStorage.get("user");
+      console.log("已获得用户信息", this.userInfo);
+      if (this.userInfo != null) {
+        return this.$post("/api/hdsign/querySignStatus")
+          .then(rsp => {
+            const dataResponse = rsp;
+            if (dataResponse.code == 200) {
+              console.log(dataResponse.data);
+              console.log(this.loginInfo.state, "h用户登录标志");
+              //用户成功登录后改登录标志位true
+              this.$store.dispatch("setLoginPop", { state: true });
+              this.$store.dispatch("setLoginType", { state: 0 });
+              this.iconImg = this.userInfo.icon;
+              this.queryYeYunPoints();
+              this.creditsExchangeShow();
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            this.login();
+          });
+      }
+    },
+
+    //用户退出
+    singout() {
+      this.$axios
+        .post("/api/wxlogin/wxLoginout")
+        .then(dataResponse => {
+          console.log(dataResponse.data);
+          if (dataResponse.data.code != "200") {
+            console.log("系统异常");
+            return;
+          }
+          this.wxLoginout();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //确认用户成功退出
+    wxLoginout() {
+      this.popGuessMark = false;
+      this.iconImg = null;
+      this.userInfo = null;
+      this.loginType = 1;
+      console.log(this.userInfo);
+      localStorage.remove("user");
+      cookie.delCookie("wx_account_login_cookie_sid");
+      //用户退出登录后改登录标志位false
+      this.$store.dispatch("setLoginPop", { state: false });
+      this.$store.dispatch("setLoginShowType", { state: false });
+      this.$store.dispatch("setCodeType", { state: 0 });
+      this.$store.dispatch("setLoginType", { state: 1 });
+      this.$store.dispatch("setYeYunPoints", { state: null });
+      console.log("退出成功");
+    },
+    //竞猜记录
+    quizzesRecord() {
+      this.type = 1;
+      this.showGuessType = true;
+    },
+    //显示兑奖记录
+    exchangeRecord() {
+      this.queryExchangeRecord();
+      this.type = 2;
+      this.showGuessType = true;
+    },
+
+    //兑奖记录
+    queryExchangeRecord() {
+      return this.$post("/api/yeYunOrder/listYeYunOrder")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse, "查询兑奖记录成功");
+          }
+        })
+        .catch(error => {
+          console.log(error, "查询兑奖记录失败");
+        });
+    },
+
+    //签到领取
+    //去签到
+    openSignPop() {
+      this.showSignType = true;
+      return this.$post("/api/hdsign/queryHdGiftInfo")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.$refs.props.signGiftList = dataResponse.data.signGift;
+            console.log(this.$refs.props.signGiftList);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //检查是否今天已签到，没有显示签到
+    checkUserSignStatus() {
+      console.log("检查是否今天已签到，没有显示签到");
+      return this.$post("/api/hdsign/querySignStatus")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            if (dataResponse.data.signStatus == 0) {
+              this.isUserSignToday = 0;
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //充值
+    openChargerDialog() {
+      this.showRechargeType = true;
+      console.log(this.showRechargeType);
+      return this.$post("/api/payment/getChargeMoneyList")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.$refs.props.chargeMoneyList = dataResponse.data;
+            this.$refs.props.walletRec = this.walletRec;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    //查询可兑换积分和用户星星余额
+    creditsExchangeShow() {
+      return this.$post("/api/starNum/queryStarNum")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.$store.dispatch("setstarNum", {
+              state: dataResponse.data.ableRecScore
+            });
+
+            // console.log(dataResponse.data.recScore, "获取用户可以兑换的星星");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //查询椰云积分
+    queryYeYunPoints() {
+      return this.$post("/api/yeYunUser/yeYunUserInfo")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse.data, "获得用户椰云积分");
+            this.$store.dispatch("setYeYunPoints", {
+              state: dataResponse.data.score
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error, "调用椰云出现错误");
+        });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_icon";
+
+.iframe {
+  width: 1200px;
+  margin: 0 auto;
+  border: 1px solid #5e3b23;
+}
+.iframe_header {
+  @extend .flex_v_justify;
+  height: 60px;
+  padding: 0 30px 0 20px;
+  background-color: #32191e;
+  .left {
+    @extend .flex_hc;
+    font-size: 14px;
+    color: #fff;
+  }
+  .num,
+  .recharge {
+    color: #f9994c;
+  }
+  .sign {
+    color: #2496a1;
+  }
+  .sign,
+  .recharge {
+    margin-left: 22px;
+  }
+  .right {
+    @extend .flex_hc;
+    .broadcast {
+      @extend .flex_hc;
+      width: 293px;
+      margin-right: -60px;
+      border: 1px solid #4e2823;
+      background-color: #1d1012;
+      &::before {
+        content: "";
+        flex: none;
+        -webkit-flex: none;
+        -ms-flex: none;
+        width: 16px;
+        height: 16px;
+        margin: 0 14px 0 12px;
+        @include getBgImg("../../assets/images/iframe/horn_icon.png");
+      }
+    }
+
+    .list {
+      @extend .flex_hc;
+    }
+    .item {
+      width: auto;
+      font-size: 12px;
+      line-height: 33px;
+      color: #673933;
+    }
+  }
+  .exchange_btn,
+  .more_btn,
+  .rules_btn,
+  .record_btn,
+  .return_btn {
+    position: relative;
+    z-index: 1;
+    width: 93px;
+    line-height: 35px;
+    margin-left: 10px;
+    font-size: 16px;
+    text-align: center;
+    color: #8d5f56;
+    background-color: #4e2823;
+    &:active {
+      color: #db9790;
+      background-color: #7d2e26;
+    }
+  }
+}
+
+.user_info {
+  @extend .flex_hc;
+  .login_btn {
+    padding-right: 10px;
+    font-size: 14px;
+    color: #f3d40c;
+    text-decoration: underline;
+  }
+}
+
+.user_img {
+  width: 54px;
+  height: 51px;
+  margin-right: 16px;
+  padding: 11px 11px 8px;
+  @include getBgImg("../../assets/images/home/user_img.png");
+  img {
+    width: 100%;
+    height: 100%;
+    padding: 6px;
+    border: 1px solid #6d4829;
+    border-radius: 50%;
+  }
+}
+
+.user_assets {
+  @extend .flex_hc;
+  font-size: 14px;
+  font-weight: bold;
+  color: #f3d40c;
+  .coin {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+}
+
+.login_wx {
+  width: 126px;
+  height: 28px;
+  cursor: pointer;
+  text-align: center;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(180deg, #2a2125, #2a2125),
+    linear-gradient(0deg, #0e5f83, #25a3ad);
+  border: 3px transparent solid;
+  span {
+    line-height: 22px;
+    font-size: 18px;
+    font-weight: bold;
+    background: linear-gradient(
+      0deg,
+      rgba(38, 165, 195, 1) 0%,
+      rgba(152, 233, 240, 1) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.login_out,
+.login_in {
+  @extend .flex_hc;
+}
+
+.login_in {
+  position: relative;
+  .pop_guess {
+    position: absolute;
+    left: -14px;
+    top: 35px;
+    width: 457px;
+    height: 246px;
+    padding: 44px 40px 0;
+    @include getBgImg("../../assets/images/pop/guess_bg.png");
+  }
+
+  .guess_info {
+    font-size: 14px;
+    @extend .flex_v_justify;
+    p {
+      color: #6e4c47;
+    }
+    a {
+      color: #f3d40c;
+      text-decoration: underline;
+    }
+  }
+
+  .guess_list {
+    @extend .flex_v_justify;
+    margin-top: 57px;
+    text-align: center;
+    li {
+      cursor: pointer;
+    }
+    img {
+      width: 38px;
+      height: 38px;
+    }
+    p {
+      padding-top: 27px;
+      font-size: 14px;
+      color: #ffdcd7;
+    }
+  }
+}
+
+.recharge_btn,
+.signin_btn {
+  width: 100px;
+  height: 34px;
+  font-size: 16px;
+  line-height: 30px;
+  border-radius: 2px;
+  color: #fff;
+  text-align: center;
+}
+
+.recharge_btn {
+  margin-left: 37px;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(180deg, #401b20, #401b20),
+    linear-gradient(180deg, #ba9d6e, #89642d);
+  border: 2px transparent solid;
+}
+
+.signin_btn {
+  margin-left: 18px;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(180deg, #37181f, #37181f),
+    linear-gradient(180deg, #115a7b, #115a7b);
+  border: 2px transparent solid;
+}
+
+.iframe_con {
+  height: 400px;
+  background-color: rgba($color: #180d14, $alpha: 0.7);
+  border-top: 1px solid #5e3b23;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #4e2823;
+  }
+  .home {
+    position: relative;
+    padding: 20px 65px;
+  }
+  .to_left_page,
+  .to_right_page {
+    @extend .g_v_mid;
+    width: 54px;
+    height: 134px;
+  }
+  .to_left_page {
+    left: 11px;
+    @include getBgImg("../../assets/images/home/to_left_page.png");
+  }
+  .to_right_page {
+    right: 11px;
+    @include getBgImg("../../assets/images/home/to_right_page.png");
+  }
+  .home_list {
+    width: 100%;
+    height: 360px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
+.loading {
+  @extend .g_v_c_mid;
+  font-size: 24px;
+  color: #ffdcd7;
+  .loading_icon {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto 14px;
+  }
+}
+
+.record {
+  .record_title,
+  .record_list {
+    @extend .flex_hc;
+    font-size: 18px;
+    text-align: center;
+    color: #ffbea3;
+    span {
+      line-height: 60px;
+    }
+  }
+  .record_list {
+    &:nth-child(2n-1) {
+      background-color: rgb(34, 21, 24);
+    }
+    .time {
+      color: #ffdcd7;
+    }
+  }
+  .time {
+    flex: 2;
+    -webkit-flex: 2;
+    -ms-flex: 2;
+  }
+  .con {
+    flex: 3;
+    -webkit-flex: 3;
+    -ms-flex: 3;
+    span {
+      color: #ffdcd7;
+    }
+  }
+  .all,
+  .status,
+  .detail {
+    flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+  }
+  .bingo {
+    color: #f9994c;
+  }
+  .all {
+    position: relative;
+    @extend .flex_v_h;
+    &.active {
+      span {
+        transform: translateY(-2px) rotate(180deg);
+        -webkit-transform: translateY(-2px) rotate(180deg);
+      }
+    }
+    span {
+      margin-left: 7px;
+      border: 8px solid transparent;
+      border-top-color: currentColor;
+      transform: translateY(6px);
+      -webkit-transform: translateY(6px);
+      -ms-transform: translateY(6px);
+    }
+    ul {
+      @extend .g_c_mid;
+      top: 53px;
+      z-index: 1;
+      border: 1px solid #5e3b23;
+      background-color: #190e17;
+    }
+    li {
+      width: 170px;
+      font-size: 16px;
+      line-height: 30px;
+      color: #ffbea3;
+      border-top: 1px solid #3b211f;
+      text-align: center;
+      &:first-child {
+        border: none;
+      }
+    }
+    .current {
+      background-color: #3b211f;
+    }
+  }
+}
+
+.swiper-wrapper {
+  transition-timing-function: linear !important;
+  -webkit-transition-timing-function: linear !important;
+  -ms-transition-timing-function: linear !important;
+}
+</style>

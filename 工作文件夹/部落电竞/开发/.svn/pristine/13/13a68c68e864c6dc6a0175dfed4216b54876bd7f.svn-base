@@ -1,0 +1,600 @@
+<template>
+  <div :class="isJuzi?'juziPage':'Page'" class="userCenterPage">
+    <header class="mod_header">
+      <navBar :type="'1'"></navBar>
+    </header>
+    <div class="main">
+      <div class="container">
+        <!--手机号密码登录-->
+        <template v-if='loginType==1'>
+          <div class="user_num">
+            <input type="text" placeholder="请输入手机号" v-model="account" @blur='scrollToTop' />
+          </div>
+          <div class="user_pwd">
+            <input type="password" placeholder="请输入密码" v-model="password" @blur='scrollToTop' />
+            <router-link v-if="!isJuzi" to="/resetPassword">忘记密码</router-link>
+          </div>
+          <p class="att_tips" v-if='!cookieFlag'>您的手机浏览器不支持或已经禁止使用cookie,无法正常登录,请开启或更换其他浏览器</p>
+          <a class="login_btn" :class="{'disabled':!activeFlag}" @click="login">登录</a>
+        </template>
+
+        <!--手机号验证码登录-->
+        <template v-if='loginType==2'>
+          <phone-send-code ref='phoneSend' :cookieUseFlag='cookieFlag' :time="60" :btnTxt="'验证码登录'" @doConfirm="login" @getSendPhoneCode="getSendPhoneCode">
+          </phone-send-code>
+        </template>
+
+        <div class="agreement" v-if="!isJuzi">
+          <span class="select" :class="{active:selected}" @click="selected = !selected"></span>
+          <p>同意枫叶电竞<a @click="goUrlPage('/login/agreement')">用户协议</a>和 <a @click="goUrlPage('/login/pravicy')">隐私政策</a>
+          </p>
+        </div>
+        <p class="tar">
+          <a class="register_link" @click="changeLoginType()"> {{getLoginTypeStr()}}</a>
+          <router-link to="/register" v-if='!isJuzi&&canRegister'>
+            <a class="register_link">注册账号</a>
+          </router-link>
+        </p>
+        <!-- <div class="third_party" v-if="qqLoginType">
+        <p>第三方账户登陆</p>
+        <ul>
+          <li class="wx" @click="wxLoginClick()"></li>
+          <li class="qq" @click="qqLoginClick('qq')"></li>
+          <li class="wb"></li>
+        </ul>
+      </div> -->
+      </div>
+    </div>
+
+    <!-- 引导浏览器登录弹窗 -->
+
+    <!-- <div class="ui_pop to_browser_pop" v-show="isBrowserOpen">
+      <img src="../../../assets/images/guess/to_browser.png" alt="">
+    </div> -->
+    <!-- <footer class="mod_footer" > -->
+
+    <!-- </footer> -->
+    <pop-agreement :agreementType=agreementType></pop-agreement>
+  </div>
+</template>
+
+<script>
+import navBar from '../../../components/header/nav_bar/index';
+import jsencrypt from '../../../libs/jsencrypt-rsa.js';
+import popAgreement from '../../../components/pop_up/pop_agreement.vue';
+import localStorage from '../../../libs/storages/localStorage';
+import phoneSendCode from '../../../components/user_info/phoneSendCode.vue';
+import { getCookie, delCookie } from '../../../libs/utils';
+//下单状态弹窗
+const loginTypeJson = {
+  ACCOUNT: 1, //1:账号密码登录
+  PHONECODE: 2 //2:手机号验证码登录
+};
+export default {
+  components: {
+    navBar,
+    popAgreement,
+    localStorage,
+    phoneSendCode
+  },
+  data() {
+    return {
+      account: '',
+      password: '',
+      selected: true,
+      agreementType: Boolean, //是否展示用户协议,
+      loginType: 2, //默认账号密码登录
+      qqLoginType: false,
+      isBrowserOpen: false, //是否是浏览器打开
+      cookieFlag: true,
+      canRegister: false, //是否可以注册
+      isJuzi: false
+    };
+  },
+  computed: {
+    activeFlag() {
+      let input1 = this.account;
+      let input2 = this.password;
+      if (input1 && input2) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
+  created() {
+    this.judeIsJuzi();
+    if (!this.cookieEnable()) {
+      this.cookieFlag = false;
+    }
+    this.judgeIsLogin();
+    if (this.checkOpenH5InWx()) {
+      // this.$toast("为保障服务体验，请点击右上角，用手机浏览器打开", 5);
+      this.isBrowserOpen = true;
+    }
+    console.log(this.agreementType, 1111);
+    this.agreementType = localStorage.get('agreementType');
+    if (this.agreementType == null) {
+      this.agreementType = true;
+    }
+    if (this.$route.query.clientType == 6) {
+      this.qqLoginType = true;
+    }
+  },
+  methods: {
+    //处理已经登录的直接跳需要回跳的页面
+    judgeIsLogin() {
+      this.$post('/api/judgeIsLogin')
+        .then(rsp => {
+          console.log(rsp, 'judgeIsLogin');
+          if (rsp.code == '200' && rsp.data) {
+            let redirect = decodeURIComponent(this.$route.query.redirect || '/');
+            console.log(redirect, 'redirect');
+            this.$router.push({
+              path: redirect,
+              replace: true
+            });
+          } else {
+            this.judgeCanRegister();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    judgeCanRegister() {
+      this.$post('/api/judgeCanRegister')
+        .then(rsp => {
+          console.log(rsp, 'judgeCanRegister');
+          if (rsp.code == '200' && rsp.data) {
+            this.canRegister = rsp.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //微信登录
+    // wxLoginClick(){
+    // },
+
+    // QQ 第三方登录
+    qqLoginClick(value) {
+      //删除H5cookie
+      delCookie('h5_login_cookie_sid');
+      var url = window.localStorage.getItem('toRedirectUrl');
+      var agentId = this.$route.query.agentId;
+      var clientType = this.$route.query.clientType;
+      var biz = this.$route.query.biz;
+      var ADTAG = this.$route.query.ADTAG;
+      var decodeUrl = decodeURIComponent(url);
+      if (url == null) {
+        var toHomeUrl = window.location.origin + '/?clientType=' + clientType + '&agentId=' + agentId + '&biz=' + biz + '&ADTAG=' + ADTAG;
+        console.log(toHomeUrl, '无URL缓存0');
+        url = encodeURIComponent(toHomeUrl);
+        console.log(url, '无URL缓存');
+      } else {
+        var toUrl = decodeUrl.substring(0, decodeUrl.indexOf('?'));
+        console.log(toUrl, '截取后');
+        var toqqUrl = toUrl + '/?clientType=' + clientType + '&agentId=' + agentId + '&biz=' + biz + '&ADTAG=' + ADTAG;
+        console.log(toqqUrl, '拼接后');
+        url = encodeURIComponent(toqqUrl);
+      }
+      console.log(url, '传给后台的redirect');
+      window.location.href = '/api/qqlogin/toqqlogin?redirect=' + url;
+    },
+
+    //统一登录方法
+    login(phone, phoneSendCode) {
+      if (!this.selected) {
+        this.$toast('请先同意用户协议');
+        return;
+      }
+      if (!this.cookieFlag) {
+        this.$toast('您的手机浏览器不支持或已经禁止使用cookie，无法正常登录，请开启或更换其他浏览器', 5);
+        return;
+      }
+      console.log(phone, phoneSendCode);
+      if (localStorage.get('agreementType') != false) {
+        this.agreementType = true;
+        return;
+      }
+      let curLoginType = this.loginType;
+      if (curLoginType == loginTypeJson.ACCOUNT) {
+        this.accountLogin();
+      } else if (curLoginType == loginTypeJson.PHONECODE) {
+        this.phoneSendCodeLogin(phone, phoneSendCode);
+      }
+    },
+    //账号/手机号,密码登录
+    accountLogin() {
+      if (this.account == '') {
+        this.$toast('请输入账号');
+        return;
+      }
+      if (this.password == '') {
+        this.$toast('请输入密码');
+        return;
+      }
+      let encryPassword = jsencrypt.encryptPwd(this.password);
+      let param = {
+        accountOrPhone: this.account,
+        password: encryPassword
+      };
+      if (!this.selected) {
+        this.$toast('请先同意用户协议');
+        return;
+      }
+      this.$post('/api/phonelogin/', param)
+        .then(dataResponse => {
+          if (dataResponse.code != '200') {
+            this.$toast(dataResponse.message);
+            return;
+          }
+          delCookie('h5_login_cookie_sid');
+          this.afterLoginSuccess(dataResponse.data);
+        })
+        .catch(error => {
+          this.$toast('登录失败,请稍后重试');
+          console.log(error);
+        });
+    },
+    //手机号验证码登录
+    phoneSendCodeLogin(phone, phoneSendCode) {
+      console.log(phone, phoneSendCode, '验证码登录');
+      if (!this.phoneSendCodeLoginCheck(phone, phoneSendCode)) {
+        return;
+      }
+      let param = {
+        phone: phone,
+        code: phoneSendCode,
+        inviteCode: this.$route.query.inviteCode
+      };
+      this.$post('/api/phoneCodeLogin', param)
+        .then(dataResponse => {
+          console.warn(dataResponse, 'phoneSendCodeLogin');
+          if (dataResponse.code != '200') {
+            this.$toast(dataResponse.message);
+            return;
+          }
+          delCookie('h5_login_cookie_sid');
+          this.afterLoginSuccess(dataResponse.data);
+        })
+        .catch(error => {
+          this.$toast('登录失败,请稍后重试');
+          console.log(error);
+        });
+    },
+    //手机号验证码登录校验
+    phoneSendCodeLoginCheck(phone, phoneSendCode) {
+      if (!phone) {
+        this.$toast('请先输入手机号');
+        return false;
+      }
+      if (!this.checkPhone(phone)) {
+        this.$toast('手机号码有误，请重填');
+        return false;
+      }
+      if (!phoneSendCode) {
+        this.$toast('请先输入验证码');
+        return false;
+      }
+      return true;
+    },
+    //调用登录接口成功后处理逻辑
+    afterLoginSuccess(member) {
+      if (/^1(3|4|5|6|7|8|9)\d{9}$/.test(member.nickName)) {
+        member.nickName = member.nickName.substring(0, 7) + 'XXXX';
+      }
+      let user = {
+        nickName: member.nickName,
+        icon: member.icon ? member.icon : this.globalConst.userDefaultIcon,
+        userId: member.id,
+        phone: member.phone
+      };
+      //window.sessionStorage.user = JSON.stringify(user);
+      window.localStorage.setItem('user', JSON.stringify(user));
+      window.localStorage.user = JSON.stringify(user);
+      var acookie = member.token;
+      // console.log("acookie",acookie);
+      // window.localStorage.setItem("token", acookie);
+      window.localStorage.token = acookie;
+      console.log('更新本地cookie', window.localStorage.token);
+      this.$store.dispatch('setUserInfo', user);
+      let redirect = decodeURIComponent(this.$route.query.redirect || '/');
+      console.log(redirect, 'redirect');
+      this.$router.push({
+        path: redirect,
+        replace: true
+      });
+      setTimeout(() => {
+        window.localStorage.removeItem('toRedirectUrl');
+      }, 1000);
+    },
+    //链接跳转
+    goUrlPage(path) {
+      this.$router.push({
+        path: path,
+        query: {}
+      });
+    },
+    //切换登录方式
+    changeLoginType() {
+      if (this.loginType == 1) {
+        this.loginType = 2;
+      } else {
+        this.loginType = 1;
+      }
+    },
+    getLoginTypeStr() {
+      var descStr = {
+        '1': '验证码登录',
+        '2': '账号登录'
+      };
+      return descStr[this.loginType];
+    },
+    //验证码登录获取手机验证码
+    getSendPhoneCode(phone) {
+      if (!this.cookieFlag) {
+        this.$toast('您的手机浏览器不支持或已经禁止使用cookie，无法正常登录，请开启或更换其他浏览器', 5);
+        return;
+      }
+      console.log('获取验证码', 'getSendPhoneCode');
+      if (phone == '') {
+        this.$toast('请先输入手机号');
+        return;
+      }
+      if (!this.checkPhone(phone)) {
+        this.$toast('手机号码有误，请重填');
+        return;
+      }
+      let param = {
+        phone: phone,
+        smsType: 1,
+        inviteCode: this.$route.query.inviteCode
+      };
+      this.$post('/api/user/sendPhoneCode', param)
+        .then(dataResponse => {
+          console.log(dataResponse, 'phoneLoginGetCode');
+          if (dataResponse.code == 200 && dataResponse.data) {
+            this.$toast('发送成功,请注意查收~');
+          } else {
+            this.$toast(dataResponse.message);
+            this.$refs.phoneSend.setClickFlag(false);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //验证输入的手机号
+    checkPhone(phone) {
+      if (!/^1(3|4|5|6|7|8|9)\d{9}$/.test(phone)) {
+        return false;
+      }
+      return true;
+    },
+    //键盘顶起后处理
+    scrollToTop: function() {
+      setTimeout(function() {
+        window.scrollTo(0, 200);
+      }, 100);
+    },
+    changeType() {
+      this.agreementType = false;
+    },
+    checkOpenH5InWx() {
+      //是否在微信中打开账号密码登录的H5
+      var clientType = this.$route.query.clientType;
+      var biz = this.$route.query.biz;
+      if (clientType == 6 && biz == 1) {
+        let u = navigator.userAgent;
+        if (u.toLowerCase().match(/MicroMessenger/i) != 'micromessenger') {
+          //不是微信打开
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    },
+    cookieEnable() {
+      var result = false;
+      if (navigator.cookiesEnabled) return true;
+      document.cookie = 'testcookie=yes;';
+      var cookieSet = document.cookie;
+      if (cookieSet.indexOf('testcookie=yes') > -1) result = true;
+      document.cookie = '';
+      return result;
+    },
+    judeIsJuzi() {
+      if (location.toString().indexOf('.esportzoo.com') > -1) {
+        this.isJuzi = true;
+      }
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.userCenterPage {
+  .back {
+    &::before,
+    &::after {
+      background-color: #dbaeae !important;
+    }
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import '../../../assets/common/_mixin';
+@import '../../../assets/common/_base';
+@import '../../../assets/common/_var';
+
+.Page {
+  background-image: url('../../../assets/images/user_center/logo.png'), url('../../../assets/images/user_center/login_logo.png');
+  background-position: center 8.9333vw, center top;
+  background-repeat: no-repeat, no-repeat;
+  background-size: 42.9333vw, 100% auto;
+}
+.juziPage {
+  background-image: url('../../../assets/images/user_center/juzi_login_logo.png');
+  background-position: center 8.9333vw, center top;
+  background-repeat: no-repeat, no-repeat;
+  background-size: 42.9333vw, 100% auto;
+}
+
+.tar {
+  @extend .flex_v_justify;
+  padding: 39px 23px 0;
+}
+
+.mod_header {
+  background: none;
+  h2 {
+    position: relative;
+    min-height: 44px;
+  }
+}
+
+.main {
+  position: relative;
+  padding: 54vw 2.6667vw 5.3333vw;
+  .container {
+    padding-top: 26px;
+    padding-bottom: 22px;
+    background-color: #fff;
+    box-shadow: 0px 3px 12px 0px rgba(0, 0, 0, 0.07);
+    border-radius: 20px;
+  }
+  .user_num,
+  .user_pwd {
+    @extend .flex_v_justify;
+    margin: 0 23px;
+    padding-left: 15px;
+    background-color: transparent;
+    border-radius: 3px;
+    border: 1px solid #e0e0e0;
+    input {
+      width: 120px; //改变input默认宽度大小
+      flex: 1;
+      -webkit-flex: 1;
+      height: 55px;
+      font-size: 15px;
+      border: none;
+      color: #333;
+      background-color: transparent;
+    }
+    input:-webkit-input-placeholder {
+      color: #999;
+    }
+
+    a {
+      @extend .flex_v_h;
+      height: 39px;
+      padding: 0 8px;
+      margin-right: 7px;
+      font-size: 14px;
+      border-radius: 4px;
+      background-color: #da3a40;
+      border: none;
+      color: #fff;
+    }
+  }
+  .user_pwd {
+    margin-top: 11px;
+  }
+  .login_btn {
+    display: block;
+    margin: 35px 23px 20px;
+    padding: 15px;
+    font-size: 18px;
+    color: #fff;
+    border-radius: 46px;
+    text-align: center;
+    background-color: #da3a40;
+    &.disabled {
+      opacity: 0.5;
+    }
+  }
+  .register_link {
+    font-size: 16px;
+    color: #333;
+  }
+}
+
+.agreement {
+  @extend .flex_v_h;
+  margin-top: 20px;
+  width: 100%;
+  color: #999;
+  .select {
+    @extend .flex_v_h;
+    width: 14px;
+    height: 14px;
+    margin-right: 5px;
+    background-color: #c9c9c9;
+    &.active {
+      &::before {
+        content: '';
+        width: 7px;
+        height: 3px;
+        border-left: 1px solid #fff;
+        border-bottom: 1px solid #fff;
+        transform: rotate(-47deg) translate(1px, -1px);
+        -webkit-transform: rotate(-47deg) translate(1px, -1px);
+      }
+    }
+  }
+  a {
+    padding: 0 4px;
+    color: #e61c3a;
+  }
+}
+
+.third_party {
+  margin-top: 20px;
+  p {
+    padding-bottom: 18px;
+    color: #fff;
+    text-align: center;
+  }
+  ul {
+    @extend .flex_v_h;
+    padding-bottom: 30px;
+    li {
+      width: 50px;
+      height: 50px;
+      margin: 0 15px;
+    }
+    .wx {
+      @include getBgImg('../../../assets/images/user_center/wx_icon.png');
+    }
+    .qq {
+      @include getBgImg('../../../assets/images/user_center/qq_icon.png');
+    }
+    .wb {
+      @include getBgImg('../../../assets/images/user_center/wb_icon.png');
+    }
+  }
+}
+
+.to_browser_pop {
+  img {
+    position: absolute;
+    top: 0.6667vw;
+    right: 2.6667vw;
+    width: 92.8vw;
+  }
+}
+
+.att_tips {
+  margin: 10px 20px 0;
+  line-height: 20px;
+  font-size: 15px;
+  color: red;
+}
+</style>

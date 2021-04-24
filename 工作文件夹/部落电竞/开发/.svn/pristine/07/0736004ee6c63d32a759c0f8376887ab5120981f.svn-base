@@ -1,0 +1,522 @@
+<template>
+    <div class="Page" v-if="cmsDetail != null">
+        <header class="mod_header"> 
+            <div class="back"></div>
+            <h2>资讯详情<span class="more"></span></h2>
+            <!-- <figure class="figure_film">
+              <video src=""></video>
+              <span class="more"></span>
+              <div class="film_handle">
+                <span class="close_barrage active"></span>
+                <span class="open_barrage"></span>
+                <div class="comment_input">
+                  <span class="comment_btn"></span>
+                  <input type="text" placeholder="说一说">
+                  <span class="clean"></span>
+                </div>
+                <a href="">发送</a>
+              </div>
+            </figure> -->
+        </header>
+        <div class="main">
+            <section class="mod_userInfo">
+                <div class="user_infor">
+                    <div>
+                        <img :src="cmsDetail.authorIcon" alt="">
+                        <div>
+                            <div class="name">{{cmsDetail.authorName==null?'橘子电竞':cmsDetail.authorName}}</div>
+                            <p class="tips"><span>{{cmsDetail.authorFans}}粉丝</span><span>{{cmsDetail.authorViews}}阅读</span></p>
+                        </div>
+                    </div>
+                    <div class="follow_btn">+ 关注</div>
+                </div>
+                <div class="infor_title">
+                    <h2>{{cmsDetail.title}}</h2>
+                    <p class="tips"><span>{{cmsDetail.channelName}}</span><span>{{cmsDetail.publishTimeStr}}</span></p>
+                </div>
+                <div class="feedback_item">
+                    <div :class="{'active':cmsDetail.upFlag}">
+                        <i class="good_icon"></i>
+                        <span>{{cmsDetail.ups}}</span>
+                    </div>
+                    <div>
+                        <i class="comment_icon"></i>
+                        <span>{{cmsDetail.comments}}</span>
+                    </div>
+                    <div :class="{'active':cmsDetail.favoritesFlag}">
+                        <i class="collect_icon"></i>
+                        <span>{{cmsDetail.favorites}}</span>
+                    </div>
+                    <!-- <div>
+                        <i class="share_icon"></i>
+                        <span>65652</span>
+                    </div>
+                    <div>
+                        <i class="reward_icon"></i>
+                        <span>65652</span>
+                    </div> -->
+                </div>
+                <div class="game_items">
+                  <span class="bg_blue">LOL</span>
+                  <span class="bg_pink">CS</span>
+                  <span class="bg_orange">刺激战场</span>
+                </div>
+            </section>
+            
+            <section  class="parag_message">
+              <article v-html="cmsDetail.content">
+                <!-- <p>由於《In These Words言之罪》有前傳有番外，其世界觀還延伸至我們其他的作品，不少人對故事的時間順序感到困惑，在此提供《言》的簡介與時間指南，後續更會有中文站支。</p>
+                <figure class="figure_img">
+                    <img src="http://img2.imgtn.bdimg.com/it/u=215489180,4292999584&fm=26&gp=0.jpg" alt="">
+                    <figcaption>直播时拍摄</figcaption>
+                </figure>
+                <p>由於《In These Words言之罪》有前傳有番外，其世界觀還延伸至我們其他的作品，不少人對故事的時間順序感到困惑，在此提供《言》的簡介與時間指南，後續更會有中文站支持購買。各位小伙伴們有其他問題的話可以在下面留言，我們會把相關資訊彙整起來做補充。有前傳有番外，其世界觀還延伸至我們其他的作品，不少人對故事的時間順序感到困惑，在此提供《言》的簡介與時間指南，後續更會有中文站支持購買。各位小伙伴們有其他問題的話可以在下面留言，我們會把相關資訊彙整起來做補充。</p> -->
+                {{cmsDetail.content}}
+              </article> 
+              <div class="c_black_50">本文禁止转载或摘编</div>             
+            </section>
+            
+            <section class="parag_comments">
+              <h2>评论<span>#{{cmsDetail.comments}}</span></h2>
+              <div class="item" v-for="(dataItem,index) in commentList" :key="index">
+                <div class="user_infor">
+                  <div>
+                      <img :src="dataItem.usrIcon" alt="">
+                      <div>
+                          <div class="name">{{dataItem.usrName}}</div>
+                          <p class="tips"><span>#{{dataItem.floor}}</span><span>{{dataItem.commentTimeStr}}</span></p>
+                      </div>
+                  </div>
+                  <div class="follow_btn">+ 关注</div>
+                </div>
+                <div class="con">
+                  <p class="txt">{{dataItem.content}}</p>
+                  <div class="feedback_item">
+                      <div :class="{'active':dataItem.upFlag}">
+                          <i class="good_icon"></i>
+                          <span>{{dataItem.ups}}</span>
+                      </div>
+                      <div>
+                          <i class="comment_icon"></i>
+                          <span>{{dataItem.replies}}</span>
+                      </div>
+                      <!-- <div :class="{'active':cmsDetail.favoritesFlag}">
+                          <i class="collect_icon"></i>
+                          <span>{{cmsDetail.favorites}}</span>
+                      </div> -->
+                  </div>
+                  <div class="follow_comment" v-if="dataItem.subCommentList.length>0">
+                    <p v-for="(item,index) in dataItem.subCommentList" :key="index">{{item.usrName}}：<span>{{item.content}}</span></p>
+                    <!-- <p>共12条回复></p> -->
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="more_hot_comments">更多热门评论>></div> -->
+            </section>
+        </div>
+        <footer class="mod_footer">
+            <div class="comment_footer">
+              <div class="comment_input">
+                <span class="comment_btn"></span>
+                <input type="text" placeholder="说一说">
+                <span class="clean"></span>
+              </div>
+              <div class="feedback_item">
+                  <div :class="{'active':cmsDetail.upFlag}">
+                      <i class="good_icon"></i>
+                      <span>{{cmsDetail.ups}}</span>
+                  </div>
+                  <div>
+                      <i class="comment_icon"></i>
+                      <span>{{cmsDetail.comments}}</span>
+                  </div>
+                  <div :class="{'active':cmsDetail.favoritesFlag}">
+                      <i class="collect_icon"></i>
+                      <span>{{cmsDetail.favorites}}</span>
+                  </div>
+              </div>
+            </div>
+        </footer>
+    </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  data() {
+    return {
+      cmsDetail:null,
+      pageNo: 1,
+      pageSize: 10,
+      totalPages: 1,
+      id:null,
+      sid:'7bc386c9-6b93-4c32-a982-c5f77cfed00d',
+      commentList:[]
+    };
+  },
+  computed: {},
+  created() {},
+  mounted() {
+    this.id = this.$route.params.id;
+    this.getCmsDetail();
+    this.getCommentPage(this);
+    console.log(this.$route.params.id,'this.id');
+  },
+  methods: {
+    getCmsDetail(){
+      let param={}
+      console.log(this.sid)
+      param.sid = this.sid;
+      this.$axios.post("/api/cmsContent/detail/"+this.id,this.$qs.stringify(param)).then(rsp=>{
+        const dataResponse = rsp.data
+        if(dataResponse.code='200'){
+          this.cmsDetail =dataResponse.data;
+        }
+      })
+      .catch(error=>{
+        console.log(error)
+      })
+    },
+    getCommentPage(_self) {
+      var pageNo = _self.pageNo;
+      var pageSize = _self.pageSize;
+      if (pageNo > _self.totalPages) {
+          console.log("已经最后一页了,pageNo="+pageNo+",pageSize="+pageSize);
+          return;
+      }
+      let param={
+          pageNo: pageNo,
+          pageSize: pageSize,
+          contentId: _self.id,  //当前资讯id
+          sid:_self.sid
+      }
+      this.$axios.post("/api/cmsComment/list", this.$qs.stringify(param)).then(resp => {
+          var res=resp.data;
+          if (res.code == "200") {
+              var resData= res.data.commentList;
+              if (resData.length > 0) {
+                _self.commentList = _self.commentList.concat(resData);
+              }
+          }
+      }).catch(e => { })
+    }
+  },
+  watch: {}
+};
+</script>
+
+<style lang='scss'>
+@import "../../../assets/common/_base.scss";
+@import "../../../assets/common/_mixin.scss";
+@import "../../../assets/common/_var.scss";
+img{
+  width: 350px;
+  height: 250px;
+}
+.mod_header {
+  background-color: #fff;
+  h2 {
+    position: relative;
+    padding: 0 40px;
+    font-size: 14px;
+    line-height: 40px;
+    color: #000;
+    font-weight: medium;
+    @include getBorder(bottom, #ddd);
+    @include t_nowrap(100%);
+  }
+  .figure_film {
+    position: relative;
+    a {
+      @extend .flex_v_h;
+      width: 48px;
+      height: 24px;
+      font-size: 13px;
+      color: #fff;
+      border-radius: 24px;
+      background-color: $color_main;
+    }
+  }
+  video {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+  }
+  .more {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 40px;
+    height: 40px;
+    @include getBgImg("../../../assets/images/home/more.png");
+  }
+  .film_handle {
+    @extend .flex_hc;
+    height: 34px;
+    padding: 0 10px 0 5px;
+  }
+  .comment_input {
+    margin: 0 3px;
+  }
+  .close_barrage,
+  .open_barrage {
+    width: 17px;
+    height: 17px;
+    margin: 0 10px;
+  }
+  .close_barrage {
+    @include getBgImg("../../../assets/images/home/ba_close.png");
+    &.active {
+      @include getBgImg("../../../assets/images/home/ba_close_active.png");
+    }
+  }
+  .open_barrage {
+    @include getBgImg("../../../assets/images/home/ba_open.png");
+    &.active {
+      @include getBgImg("../../../assets/images/home/ba_open_active.png");
+    }
+  }
+}
+.feedback_item {
+  @extend .flex_h_avg;
+  padding: 15px 0;
+  color: $black_50;
+  .active {
+    color: $color_main;
+    .good_icon {
+      @include getBgImg("../../../assets/images/home/good_active.png");
+    }
+    .comment_icon {
+      @include getBgImg("../../../assets/images/home/comment_active.png");
+    }
+    .collect_icon {
+      @include getBgImg("../../../assets/images/home/collect_active.png");
+    }
+    .share_icon {
+      @include getBgImg("../../../assets/images/home/share_active.png");
+    }
+    .reward_icon {
+      @include getBgImg("../../../assets/images/home/reward_active.png");
+    }
+  }
+  i {
+    display: block;
+    margin: 0 auto;
+    width: 25px;
+    height: 25px;
+  }
+  .good_icon {
+    @include getBgImg("../../../assets/images/home/good_icon.png");
+  }
+  .comment_icon {
+    @include getBgImg("../../../assets/images/home/comment_icon.png");
+  }
+  .collect_icon {
+    @include getBgImg("../../../assets/images/home/collect_icon.png");
+  }
+  .share_icon {
+    @include getBgImg("../../../assets/images/home/share_icon.png");
+  }
+  .reward_icon {
+    @include getBgImg("../../../assets/images/home/reward_icon.png");
+  }
+}
+
+.comment_input {
+  flex: 1;
+  -webkit-flex: 1;
+  position: relative;
+  height: 24px;
+  input {
+    width: 100%;
+    height: 100%;
+    padding: 0 30px;
+    color: #aeaeae;
+    border: none;
+    border-radius: 24px;
+    background-color: #f0efee;
+  }
+  input::-webkit-input-placeholder {
+    color: #aeaeae;
+  }
+  .comment_btn {
+    @extend .g_v_mid;
+    left: 10px;
+
+    width: 16px;
+    height: 16px;
+    @include getBgImg("../../../assets/images/home/comment.png");
+  }
+  .clean {
+    @extend .g_v_mid;
+    right: 10px;
+    @include getClose(8px, #999);
+    border: 1px solid #999;
+    border-radius: 50%;
+  }
+}
+
+.main {
+  margin: 5px;
+  border-radius: 8px;
+  section {
+    padding: 0 5px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: #fff;
+  }
+  .infor_title {
+    position: relative;
+    padding: 10px 0 15px;
+    h2 {
+      padding-bottom: 6px;
+      font-size: 14px;
+      color: #000;
+      @include t_nowrap(80%);
+    }
+    .tips span {
+      padding-right: 35px;
+    }
+  }
+  .mod_userInfo {
+    // @include getBorder(bottom, #ddd);
+  }
+  .user_infor {
+    @extend .flex_v_justify;
+    padding: 14px 20px 14px 0;
+    > div {
+      @extend .flex_hc;
+    }
+    img {
+      width: 28px;
+      height: 28px;
+      margin-right: 10px;
+      border-radius: 50%;
+    }
+    .name {
+      font-size: 13px;
+      padding-bottom: 5px;
+      font-weight: bold;
+      color: #000;
+    }
+    .tips span {
+      padding-right: 10px;
+      font-size: 10px;
+      color: $black_50;
+      // color: #ec9805;
+    }
+  }
+
+  .game_items {
+    padding: 8px 0;
+    font-size: 0;
+    @include getBorder(top, #ddd);
+    span {
+      display: inline-block;
+      padding: 4px 8px;
+      margin-right: 8px;
+      color: #fff;
+      font-size: 10px;
+      border-radius: 4px;
+    }
+  }
+  .parag_message {
+    padding-bottom: 20px;
+    p {
+      padding: 15px 0;
+      font-size: 14px;
+      line-height: 24px;
+      color: #000;
+    }
+    .figure_img {
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.5);
+      text-align: center;
+      img {
+        height: 200px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        object-fit: cover;
+      }
+    }
+  }
+  .parag_comments {
+    padding: 20px 5px;
+    h2 {
+      font-size: 14px;
+      color: #000;
+      span {
+        padding-left: 10px;
+        font-size: 10px;
+        color: $black_50;
+      }
+    }
+    .item {
+      padding: 15px 0;
+    }
+    .con {
+      padding: 0 20px 0 38px;
+      .txt {
+        color: #3b3b3b;
+        line-height: 16px;
+      }
+    }
+    .feedback_item {
+      justify-content: flex-start;
+      padding: 6px 0;
+      > div {
+        @extend .flex_hc;
+        margin-right: 24px;
+      }
+      i {
+        width: 14px;
+        height: 14px;
+      }
+    }
+    .follow_comment {
+      padding: 5px 0 5px 14px;
+      background-color: #efefef;
+      border-radius: 8px;
+      p {
+        color: $color_main;
+        line-height: 19px;
+        span {
+          color: #999;
+        }
+      }
+    }
+    .more_hot_comments {
+      @extend .flex_hc;
+      color: $color_main;
+      &::after,
+      &::before {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background-color: #ddd;
+        transform: scaleY(0.5);
+      }
+    }
+  }
+}
+
+.mod_footer {
+  background-color: #fff;
+}
+
+.comment_footer {
+  @extend .flex_v_justify;
+  height: 44px;
+  padding: 0 10px;
+
+  .feedback_item {
+    padding: 0;
+    > div {
+      padding: 0 8px;
+    }
+  }
+  .comment_input {
+    margin-right: 10px;
+  }
+}
+</style>

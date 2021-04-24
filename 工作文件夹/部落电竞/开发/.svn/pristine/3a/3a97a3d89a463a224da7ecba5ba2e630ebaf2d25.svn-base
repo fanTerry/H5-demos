@@ -1,0 +1,252 @@
+<template>
+  <div class="Page">
+    <div class="main">
+      <div class="header">
+        <img class="user_img" :src="userInfo.icon" alt="">
+        <span class="user_name">{{userInfo.nickName}}</span>
+        <a @click="toRecordList">营收与提现记录</a>
+      </div>
+      <div class="user_account">
+        <div>
+          <p class="account_num">{{userInfo.historyIncome}}</p>
+          <p>历史总额</p>
+        </div>
+        <div class="account_detail">
+          <div>
+            <p class="num">{{userInfo.todayGetMoney}}</p>
+            <p>可提现金</p>
+          </div>
+          <div>
+            <p class="num">{{userInfo.todayIncome}}</p>
+            <p>今日营收</p>
+          </div>
+        </div>
+        <a class="withdraw_btn" @click="getMoney()"></a>
+      </div>
+      <div class="answer_record">
+        <h3>顶上战绩</h3>
+        <ul>
+          <li v-for="(item,index) in answerRecord" :key="index">
+            <span>{{toDateMD(item.hdUserGift.createTime)}}</span>
+            <span>连续答对{{item.num}}道题获得</span>
+            <span class="num"> {{item.hdUserGift.amount}} 星星</span>
+            <span>
+              ,{{firstGiftStatus.subjectFristPrize == 'true'?'已申请':'已派奖'}}
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <footer class="mod_footer">
+      <tabs></tabs>
+    </footer>
+
+     <!-- 弹窗集合组件 -->
+    <pops ref="propRef" @joinHdSubject="joinHdSubject"></pops>
+  </div>
+</template>
+
+<script>
+import tabs from "./components/tabs";
+import pops from "./components/pops";
+
+export default {
+  components: { tabs ,pops},
+  props: [],
+  data() {
+    return {
+      userInfo: {},
+      answerRecord: {},
+      firstGiftStatus: {}
+    };
+  },
+  mounted() {
+    this.getAnswerRecord();
+    this.getUserInfo();
+  },
+  methods: {
+    getMoney() {
+
+      this.$post("/api/hd101/userWithdraw")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+             this.$refs.propRef.openDialog(3);
+          }else if(dataResponse.code == 1999){
+              this.$toast("每天只可以提现一次")
+          }
+          else{
+            this.$toast("提现失败")
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getAnswerRecord() {
+      let param = {};
+      param.showUser = true;
+      param.hdId = 2;
+      this.$post("/api/hd101/listUserGift", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(rsp, "---答题记录", param);
+            this.answerRecord = dataResponse.data;
+            this.firstGiftStatus = JSON.parse(
+              this.answerRecord.hdUserGift.giftProp
+            );
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getUserInfo() {
+      let param = {};
+      param.hdId = 2;
+      this.$post("/api/hd101/showUserWallet", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(rsp, "-----用户信息", param);
+            this.userInfo = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    toDateMD(date) {
+      let month = new Date(date).getMonth() + 1;
+      let day = new Date(date).getDate();
+      if (month < 10) {
+        month = "0" + month;
+      }
+      if (day < 10) {
+        day = "0" + day;
+      }
+      return month + "月" + day + "日";
+    },
+    toRecordList() {
+      this.$router.push({
+        name: "hd101Record",
+        query: {}
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.Page {
+  background-color: rgb(255, 231, 131);
+  @include getBgImg("../../../assets/images/hd/hd101/wallet_bg.png");
+  background-position: top center;
+  background-size: 100% auto;
+}
+
+.main {
+  padding: 15px 8px 0;
+}
+
+.header {
+  position: relative;
+  @extend .flex_hc;
+  a {
+    @extend .g_v_mid;
+    right: 1.9vw;
+    font-size: 3.7vw;
+    color: #fee680;
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 100%;
+      height: 1px;
+      background-color: #fee680;
+    }
+  }
+}
+.user_img {
+  width: 15.7vw;
+  height: 15.7vw;
+  margin-right: 4vw;
+  border-radius: 50%;
+  border: 3px solid #333;
+  box-shadow: 0 4px 0 0 rgba($color: #000000, $alpha: 0.12);
+}
+
+.user_name {
+  width: 140px;
+  @include t_nowrap(140px);
+  font-size: 4.5vw;
+  line-height: 1.2;
+}
+
+.user_account {
+  margin-top: -2.1vw;
+  padding: 5.3vw 0 2.7vw;
+  border: 3px solid #333;
+  border-radius: 30px;
+  background-color: #fff;
+  font-size: 3.5vw;
+  text-align: center;
+}
+.account_num {
+  padding-bottom: 1.9vw;
+  font-size: 10.7vw;
+  font-weight: 500;
+}
+.account_detail {
+  @extend .flex_v_justify;
+  padding: 6.7vw 13.3vw 0;
+  .num {
+    padding-bottom: 1.9vw;
+    font-size: 6.7vw;
+  }
+}
+.withdraw_btn {
+  display: block;
+  width: 87.5vw;
+  height: 19.7vw;
+  margin: 4.5vw auto 0;
+  @include getBgImg("../../../assets/images/hd/hd101/withdraw_btn.png");
+}
+
+.answer_record {
+  margin-top: 2.7vw;
+  border: 3px solid #333;
+  border-radius: 30px;
+  background-color: #fff;
+  overflow: hidden;
+  h3 {
+    font-size: 4.5vw;
+    line-height: 9.9vw;
+    font-weight: normal;
+    color: #fff;
+    text-align: center;
+    background-color: #333;
+  }
+  ul {
+    height: 40.3vw;
+    margin: 4.3vw;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+  li {
+    padding-bottom: 5.3vw;
+    font-size: 4vw;
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
+  .num {
+    color: #e97542;
+  }
+}
+</style>

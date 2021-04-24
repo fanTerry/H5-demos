@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+		"goods-list":"/component/store/goodsList",
+		"commonBanner": "/component/bigimageswiper/bigimage-swiper",
+		"submenu-bar":"/component/submenubar/submenu-bar"
+	},
+	"navigationBarTitleText": "商城",
+	"enablePullDownRefresh": true
+}

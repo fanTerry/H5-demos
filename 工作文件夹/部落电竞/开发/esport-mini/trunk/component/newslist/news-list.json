@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "news-image-item": "newsimageitem/news-image-item",
+    "news-video-item": "newsvideoitem/news-video-item"
+  }
+}

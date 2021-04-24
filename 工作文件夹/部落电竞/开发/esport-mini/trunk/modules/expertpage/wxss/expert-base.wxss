@@ -1,0 +1,39 @@
+/* modules/expertpage/wxss/expert-base.wxss */
+
+.expert-follow {
+  display: inline-block;
+  width: 130rpx;
+  height: 50rpx;
+  line-height: 50rpx;
+
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: bold;
+  text-align: center;
+  
+  background: #ffa200;
+  border-radius: 30rpx;
+}
+
+.expert-detail {
+  padding: 10rpx;
+  font-size: 28rpx;
+  color: #fff;
+}
+
+.expert-title {
+  display: inline-block;
+  padding-left: 20rpx;
+  line-height: 32rpx;
+
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+  border-left: solid 8rpx #fea21b;
+  margin: 20rpx auto;
+}
+.e-t-icon {
+  font-size: 30rpx;
+  font-weight: normal;
+  padding-right: 10rpx;
+}

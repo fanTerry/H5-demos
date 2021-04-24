@@ -1,0 +1,17 @@
+
+<view class="ui_pop">
+  <view class="pop_pay">
+    <view class="order">充值方式选择
+      <a class="close" click="close()"></a>
+    </view>
+    <view class="pay_method" v-for="item in chargeWayList " click="choose(item.index, item.balance)">
+      <view>
+        <image :src="item.icon" alt=""></image>{{item.name}}
+        <span>(余额:{{item.balance}})</span>
+      </view>
+      <i class="select_icon" :class="choosedPayWay.index==item.index?'selected':''"></i>
+    </view>
+    <a class="exchange_btn" click="confirm()">{{buttonText}}</a>
+    <view class="att_tips">温馨提示:1元友宝余额价值与1星星价值一致</view>
+  </view>
+</view>

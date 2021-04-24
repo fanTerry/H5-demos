@@ -1,0 +1,30 @@
+<template>
+  <div class="no_data">
+    <img src="../../assets/images/no_data/no_data.png" alt="">
+    <p>暂无内容</p>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {};
+  },
+  methods: {},
+  components: {}
+};
+</script>
+
+<style lang='scss'>
+.no_data {
+  text-align: center;
+  img {
+    width: 193px;
+  }
+  p {
+    padding-top: 20px;
+    font-size: 14px;
+    color: #999;
+  }
+}
+</style>

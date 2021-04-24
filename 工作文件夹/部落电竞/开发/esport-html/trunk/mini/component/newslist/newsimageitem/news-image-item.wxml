@@ -1,0 +1,23 @@
+<!--component/newslist/newsimageitem/news-image-item.wxml-->
+<!-- 最后一个元素添加border-none -->
+<view class='news-image-item'>
+  <view class='dsp-cell'>
+    <image class='news-image' src="{{newsData.imageSrc}}" mode='' />
+  </view>
+  <view class='dsp-cell news-paragraph'>
+    <text class='news-tag'>#{{newsData.tag}}</text>
+    <navigator url="/modules/articlepage/article-page">
+      <view class='news-title'>
+        <text>{{newsData.detail}}</text>
+      </view>
+    </navigator>
+    <view class='news-info'>
+      <view class="news-info-item">
+        <i class='iconfont icon-icon_yulan n-i-i-i'></i><text>{{newsData.seeNum}}</text>
+      </view>
+      <view class="news-info-item">
+        <i class='iconfont icon-xiaoxi n-i-i-i'></i><text>{{newsData.discussNum}}</text>
+      </view>
+    </view>
+  </view>
+</view>

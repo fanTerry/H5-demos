@@ -1,0 +1,9 @@
+{
+	"component": true,
+	"usingComponents": {
+		"storeExchange": "/component/store/address/address",
+    "popUp": "/component/popup/pay/pay",
+    "locationAddress": "/component/store/address/address",
+    "writeAddress": "/component/popup/store/writeAddress"
+	}
+}

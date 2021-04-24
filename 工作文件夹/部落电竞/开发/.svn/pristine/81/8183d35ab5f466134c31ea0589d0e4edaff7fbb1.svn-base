@@ -1,0 +1,184 @@
+<template>
+  <ul class="schedule_list">
+    <li class="schedule_item" v-for="(item,index) in 2" :key="index">
+      <div class="flex_hc">
+        <div class="match_date">
+          <p>1/4决赛</p>
+          <p>第1场</p>
+        </div>
+        <div class="team_pk">
+          <div class="flex_hc">
+            <span class="team_num">23</span>
+            <p class="team_name">队伍36</p>
+            <!-- <div class="match_result">请选择<i></i>
+            <ul>
+              <li>请选择</li>
+              <li class="win">胜</li>
+              <li class="lose">负</li>
+            </ul>
+          </div> -->
+            <!-- 对战结果赢了加上win,输了加上lose -->
+            <i class="join_icon"></i>
+          </div>
+          <div class="flex_hc">
+            <span class="team_num">36</span>
+            <p class="team_name">队伍36</p>
+            <div class="match_result">请选择<i></i>
+              <ul>
+                <li>请选择</li>
+                <li class="win">胜</li>
+                <li class="lose">负</li>
+              </ul>
+            </div>
+            <!-- <i class="join_icon"></i> -->
+          </div>
+        </div>
+      </div>
+      <div class="flex_hc">
+        <div class="match_time">
+          <p>10月30日</p>
+          <p>17:00</p>
+        </div>
+        <div class="match_status">
+          <span class="finish">已结束</span>
+          <!-- <span class="gaming">比赛中</span> -->
+          <!-- <i class="time_icon"></i> -->
+        </div>
+      </div>
+    </li>
+  </ul>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.schedule_item {
+  @extend .flex_v_justify;
+  height: 17.6vw;
+  margin-bottom: 1.3333vw;
+  font-size: 3.7333vw;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.match_date {
+  width: 21.0667vw;
+  line-height: 4.2667vw;
+  text-align: center;
+}
+
+.match_time {
+  width: 16vw;
+  line-height: 4.2667vw;
+  text-align: center;
+}
+
+.team_pk {
+  > div {
+    padding: 0.6667vw 0;
+  }
+  .team_num {
+    width: 5.4667vw;
+    line-height: 6vw;
+    margin-right: 1.8667vw;
+    text-align: center;
+    @include getBgImg("../../../assets/images/matchtool/team_logo.png");
+    background-size: contain;
+  }
+}
+
+.team_name {
+  width: 17.3333vw;
+}
+
+.match_result {
+  position: relative;
+  @extend .flex_hc;
+  width: 15.2vw;
+  text-align: center;
+  color: #00b4ff;
+  i {
+    width: 1.6vw;
+    height: 1.6vw;
+    margin-left: 2.1333vw;
+    transform: translateY(50%);
+    @include getTriangle(0.9333vw, #00b4ff, down);
+  }
+
+  ul {
+    position: absolute;
+    z-index: 1;
+    top: 4.2667vw;
+    width: 100%;
+    border-radius: 0.6667vw;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: #000;
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 1.8667vw;
+      transform: translateY(-100%);
+      @include getTriangle(0.8vw, #000, up);
+    }
+    li {
+      line-height: 6.6667vw;
+      @include getBorder(bottom, rgba(255, 255, 255, 0.2));
+      &:last-child {
+        background: none;
+      }
+    }
+  }
+}
+
+.win,
+.lose {
+  color: #ff7e00;
+  i {
+    display: none;
+  }
+}
+.lose {
+  color: #8aca00;
+}
+
+.match_status {
+  width: 17.8667vw;
+  margin-left: 1.0667vw;
+  text-align: center;
+}
+
+.finish {
+  color: #999;
+}
+
+.gaming {
+  color: #00b4ff;
+}
+
+.time_icon {
+  display: inline-block;
+  width: 5.6vw;
+  height: 5.6vw;
+  @include getBgImg("../../../assets/images/matchtool/time_icon.png");
+}
+
+.join_icon {
+  width: 4.5333vw;
+  height: 4.5333vw;
+  margin-left: 10.6667vw;
+  @include getBgImg("../../../assets/images/matchtool/enter_icon.png");
+}
+</style>

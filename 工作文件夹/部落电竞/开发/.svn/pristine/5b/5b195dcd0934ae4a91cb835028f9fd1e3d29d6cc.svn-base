@@ -1,0 +1,64 @@
+<!--component/reportlist/reportprocessitem/report-process-item.wxml-->
+<wxs src="../../../utils/tools.wxs" module="tools" />
+<view class='report-item-detail pr'>
+
+  <!-- 状态标签层 -->
+  <view class='r-p-i-info clear'>
+    <view class='fl' wx:if="{{matchResult.status==1}}">
+      <image class='r-p-i-icon-live' src='https://rs.esportzoo.com/svn/esport-res/mini/images/image3.png' mode='aspectFill' />
+    </view>
+    <!-- <view class='fr r-p-i-i-num'>
+      <text>90</text><i class='iconfont icon-dianzan'></i>
+    </view> -->
+  </view>
+
+  <!-- 第一格 -->
+  <view class='dsp-cell r-p-i-r1'>
+    <view class='r-p-i-title'><text>{{matchResult.formatBeginDate}}</text></view>
+    <view class='r-p-i-title'><text>BO{{matchResult.numberOfGames==null?'':matchResult.numberOfGames}}</text></view>
+  </view>
+
+  <!-- 第二格 -->
+  <view class='dsp-cell r-p-i-r2'>
+    <view class='fr'>
+      <image class='r-p-i-d-img' src='{{matchResult.homeTeamLogo?matchResult.homeTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFill' />
+    </view>
+    <view class='fr r-p-i-d-text'>
+      <text>{{tools.sub(matchResult.homeTeamName)}}</text>
+    </view>
+  </view>
+
+  <!-- 第三格 -->
+  <view class='dsp-cell r-p-i-r3'>
+    <view class='dsp-cell r-p-i-score r-p-i-s-win'><text>{{matchResult.homeScore}}</text></view>
+    <view class='dsp-cell r-p-i-score'><text>-</text></view>
+    <view class='dsp-cell r-p-i-score'><text>{{matchResult.awayScore}}</text></view>
+  </view>
+
+  <!-- 第四格 -->
+  <view class='dsp-cell r-p-i-r4'>
+    <view class='fl'>
+      <image class='r-p-i-d-img' src='{{matchResult.awayTeamLogo?matchResult.awayTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFill' />
+    </view>
+    <view class='fl r-p-i-d-text'>
+      <text>{{tools.sub(matchResult.awayTeamName)}}</text>
+    </view>
+  </view>
+
+  <!-- 第五格 -->
+  <view class='dsp-cell r-p-i-r5'>
+    <!--<image class='r-p-i-d-img-gift' src='https://rs.esportzoo.com/svn/esport-res/mini/images/image2.png' mode='aspectFill' />-->
+    <!--<image class='r-p-i-d-img-gift' src='https://rs.esportzoo.com/svn/esport-res/mini/images/image2.png' mode='aspectFill' />-->
+  </view>
+
+  <!-- 第六格 -->
+  <view class='dsp-cell r-p-i-r6'>
+    <i class='iconfont icon-icon_tianjia r-p-i-i r-p-i-i-cur'></i>
+  </view>
+
+  <view class='r-p-i-status-view'>
+    <view class='r-p-i-d-s-status r-p-i-d-s-s-ing'>
+      <text>{{matchResult.status==0?'未开赛':matchResult.status==1?'比赛中':'结束'}}</text>
+    </view>
+  </view>
+</view>

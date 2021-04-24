@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:amq="http://activemq.apache.org/schema/core"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://activemq.apache.org/schema/core
+		http://activemq.apache.org/schema/core/activemq-core-5.4.2.xsd">
+
+	<description>Netty-JMS相关配置</description>
+
+	<!-- 加载JMS相关的配置 -->
+	 <!-- 发送消息的目的地（一个主题） -->  
+<!--
+    <bean id="notifyMsgTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        &lt;!&ndash; 设置消息主题的名字 &ndash;&gt;
+        <constructor-arg index="0" value="Online.Notice.Topic" />  
+    </bean>  
+-->
+
+	<bean id="loginWebTopic" class="org.apache.activemq.command.ActiveMQTopic">
+		<!--设置消息主题的名字-->
+		<constructor-arg index="0" value="Online.Notice.loginWeb" />
+	</bean>
+
+
+	<!-- ActiveMQ 连接工厂 -->
+	<amq:connectionFactory id="majorConnectionFactory" brokerURL="${jms.majorCluster.send.brokerUrl}" />
+
+	<!-- 连接工厂 -->
+	<bean name="majorCachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+		<property name="targetConnectionFactory" ref="majorConnectionFactory" />
+		<property name="sessionCacheSize" value="10" />
+	</bean>
+
+	<!-- JMS Template 订阅发布模式-->
+	<bean name="majorJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="majorCachingConnectionFactory" />
+        <property name="pubSubDomain" value="true" />
+		<property name="deliveryPersistent" value="true" /><!-- 设置PERSISTENT模式 -->
+	</bean>
+	
+	<!-- JMS Template 队列模式-->
+	<bean name="queueJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="majorCachingConnectionFactory" />
+		<property name="deliveryPersistent" value="true" /><!-- 设置PERSISTENT模式 -->
+	</bean>
+
+
+	<bean id="loginWebPublisher" class="com.esportzoo.esport.controller.ws.jms.LoginWebPublisher">
+		<property name="jmsTemplate" ref="majorJmsTemplate"></property>
+		<property name="queue" ref="loginWebTopic"></property>
+	</bean>
+
+
+
+</beans>

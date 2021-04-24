@@ -1,0 +1,101 @@
+<template>
+  <div class="login-container">
+    <!--    <span>QQ第三方登录 - 回调页面</span>-->
+  </div>
+</template>
+
+<script>
+import loading from "components/common/loading";
+import QC from "../../../libs/qqLogin.js";
+import { delCookie } from "../../../libs/utils";
+export default {
+  components: {
+    loading,
+    QC
+  },
+  name: "qqLogin",
+  data() {
+    return {
+      redirect: undefined
+    };
+  },
+  watch: {
+    $route: {
+      handler: function(route) {
+        this.redirect = route.query && route.query.redirect;
+      },
+      immediate: true
+    }
+  },
+  created() {
+    this.qqLogin();
+  },
+  methods: {
+    // QQ第三方登录
+    qqLogin() {
+      var that = this; // 先将vue这个对象保存在_self对象中
+      console.log("进入QQ回调处理页面");
+      //检查是否登录
+      if (QC.Login.check()) {
+        //该处的openId，accessToken就是后台需要的参数了，后台通过这些参数拿取临时登录凭证，然后就是自己的逻辑了
+        QC.Login.getMe(function(openId, accessToken) {
+          // 传参给后台进行登录验证
+          console.log("获得的openid，accessToken", openId, accessToken);
+        //   let redirect = window.sessionStorage.getItem("toRedirectUrl") || "/";
+        //   console.log("跳转的页面",redirect);
+        that.toLogin(openId,accessToken);        
+        });
+        console.log("已登录!");
+      } else {
+        console.log("未登录!");
+      }
+    },
+
+    //传参给后台进行登录验证
+    toLogin(openId, accessToken) {
+      console.log("传openId，accessToken到后台");
+      this.$post("/api/qqlogin/login", {
+        openId: openId,
+        accessToken: accessToken
+      })
+        .then(dataResponse => {
+          if (dataResponse.code != "200") {
+            this.$toast(dataResponse.message);
+            return;
+          }
+          delCookie("h5_login_cookie_sid");
+          this.afterLoginSuccess(dataResponse.data);
+        })
+        .catch(error => {
+          this.$toast("登录失败,请稍后重试");
+          console.log(error);
+        });
+    },
+
+    //调用登录接口成功后处理逻辑
+    afterLoginSuccess(member) {
+      if (/^1(3|4|5|6|7|8|9)\d{9}$/.test(member.nickName)) {
+        member.nickName = member.nickName.substring(0, 7) + "XXXX";
+      }
+      let user = {
+        nickName: member.nickName,
+        icon: member.icon ? member.icon : this.globalConst.userDefaultIcon,
+        userId: member.id,
+        phone: member.phone
+      };     
+      window.localStorage.setItem("user", JSON.stringify(user));
+      window.localStorage.user = JSON.stringify(user);
+      var acookie = member.token;     
+      window.localStorage.token = acookie;
+      console.log("更新本地cookie", window.localStorage.token);
+      this.$store.dispatch("setUserInfo", user);
+      let redirect = window.sessionStorage.getItem("toRedirectUrl") || "/";
+      console.log(redirect, "redirect");
+      this.$router.push({
+        path: redirect
+      });
+    }
+  }
+};
+</script>
+<style rel="stylesheet/scss" lang="scss"></style>

@@ -1,0 +1,29 @@
+/* component/bigimageswiper/bigimage-swiper.wxss */
+
+
+.bigimage-swiper {
+  width: 710rpx;
+  height: 430rpx;
+  margin: 0 auto;
+}
+
+.bigimage-swiper-swiper {
+  width: 710rpx;
+  height: 410rpx;
+  text-align: center;
+}
+
+.swiper-image {
+  width: 710rpx;
+  height: 410rpx;
+  border-radius: 15rpx;
+}
+.bigimage-note{
+  height: 60rpx;
+  line-height: 60rpx;
+  overflow: hidden;
+}
+.bigimage-text{
+  font-size: 26rpx;
+  white-space: nowrap; 
+}

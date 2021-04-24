@@ -1,0 +1,68 @@
+<nav-list dataList='{{menuArr}}' myClass='{{myClass}}'>
+  <i class="iconfont icon-tianxie"></i>
+</nav-list>
+<view class="main">
+  <!-- 搜索结果 -->
+  <scroll-view>
+    <!-- 关注的人tab -->
+    <view class="myfollow_tab">
+      <view class="search_con">
+        <input type="text" placeholder="搜索关注用户" v-model="searchVal"></input>
+        <i class="search"></i>
+      </view>
+      <view class="search_result" id='scrollId'>
+        <user-info></user-info>
+      </view>
+      <!-- 关注列表 -->
+      <view class="user_list">
+        <!-- <h2>A</h2> -->
+        <user-info></user-info>
+      </view>
+    </view>
+
+    <!-- 全部，文章，视频 -->
+    <view class="article_tab">
+      <user-info></user-info>
+      <!-- 分享和转发的动态 转发的动态加上dynamic_repeat-->
+      <view class="dynamic_share dynamic_repeat">
+        <view class="to_someone">
+          <span>@欧阳长臂猿</span>
+        </view>
+        <view class="to_someone">
+          <span>#欧阳长臂猿#</span>快来批一下哈~~皮皮皮!</view>
+        <image class="adver_img" mode="aspectFill" src="https://static.wanplus.com/data/event/banner/block/114072.png?v=0&imageView2/1/w/308/h/208"></image>
+        <!-- <video class="adver_video" mode="aspectFill" src=""></video> -->
+        <!-- 九宫格插图 -->
+        <view class="nine_place_img">
+          <image mode="aspectFill" src="https://daily-rs.esportzoo.com/upload/interface/avatar/dccf8c6f23_145630.jpg" alt=""></image>
+        </view>
+        <p class="adver_title">北美LCS解说Zirene从拳头公司离职</p>
+      </view>
+
+      <!-- 底部发布动态时间 点赞和评论 -->
+      <view class="dynamic_num">
+        <span class="time">10分钟前</span>
+        <view>
+          <view class="item active">
+            <i class="good_icon"></i>
+            <span>65652</span>
+          </view>
+          <view class="item">
+            <i class="comment_icon"></i>
+            <span>65652</span>
+          </view>
+          <view class="item">
+            <i class="iconfont icon-gengduo"></i>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+  <!-- 侧边栏 -->
+  <!-- <aside class="sidebar">
+        <i class="iconfont icon-sousuo"></i>
+        <a>A</a>
+        <a>B</a>
+        <a>C</a>
+      </aside> -->
+</view>

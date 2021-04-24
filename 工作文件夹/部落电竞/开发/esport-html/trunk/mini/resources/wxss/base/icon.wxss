@@ -1,0 +1,77 @@
+
+/* resources/wxss/base/icon.wxss */
+/* 注意：引用的时候要放在iconfont.wxss后面 */
+
+/* report-header */
+.icon-bell {
+  color: #fff;
+  font-size: 42rpx;
+}
+.icon-bell-act {
+  color: #f97500;
+}
+
+/* report-item */
+.icon-circle {
+  font-size: 26rpx;
+  color: #333;
+}
+.icon-bell-a {
+  color: #aaa;
+  font-size: 42rpx;
+}
+.icon-bell-a-act {
+  color: #f97500;
+}
+.icon-pic {
+  font-size: 24rpx;
+}
+.icon-play {
+  font-size: 24rpx;
+}
+
+/* md-data */
+.icon-kill {
+  color: #f3ab41;
+  font-size: 26rpx;
+}
+.icon-blood {
+  color: #ed5e46;
+  font-size: 28rpx;
+}
+.icon-win {
+  font-size: 38rpx;
+  color: #fb161d;
+  vertical-align: middle;
+}
+
+/* report-expert-item */
+.icon-dollar {
+  font-size: 26rpx;
+  color: #ec9805;
+}
+
+/* odd-lock-item */
+.icon-clock {
+  font-size: 30rpx;
+  color: #aaa;
+}
+
+
+/* report-list */
+.icon-lol {
+  font-size: 30rpx;
+  color: #2c545f;
+}
+.icon-kpl {
+  font-size: 30rpx;
+  color: #21265d;
+}
+.icon-king {
+  font-size: 30rpx;
+  color: #b6a385;
+}
+.icon-dota {
+  font-size: 30rpx;
+  color: #e43900;
+}

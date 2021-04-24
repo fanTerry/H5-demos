@@ -1,0 +1,64 @@
+<!--component/reportlist/reportprocessitem/report-process-item.wxml-->
+
+<view class='report-item-detail pr'>
+
+  <!-- 状态标签层 -->
+  <view class='r-p-i-info clear'>
+    <view class='fl'>
+      <image class='r-p-i-icon-live' src='/resources/images/image3.png' mode='aspectFill' />
+    </view>
+    <view class='fr r-p-i-i-num'>
+      <text>90</text><i class='iconfont icon-dianzan'></i>
+    </view>
+  </view>
+
+  <!-- 第一格 -->
+  <view class='dsp-cell r-p-i-r1'>
+    <view class='r-p-i-title'><text>07:00</text></view>
+    <view class='r-p-i-title'><text>BO1</text></view>
+  </view>
+
+  <!-- 第二格 -->
+  <view class='dsp-cell r-p-i-r2'>
+    <view class='fr'>
+      <image class='r-p-i-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+    </view>
+    <view class='fr r-p-i-d-text'>
+      <text>DETONA...</text>
+    </view>
+  </view>
+
+  <!-- 第三格 -->
+  <view class='dsp-cell r-p-i-r3'>
+    <view class='dsp-cell r-p-i-score r-p-i-s-win'><text>3</text></view>
+    <view class='dsp-cell r-p-i-score'><text>-</text></view>
+    <view class='dsp-cell r-p-i-score'><text>2</text></view>
+  </view>
+
+  <!-- 第四格 -->
+  <view class='dsp-cell r-p-i-r4'>
+    <view class='fl'>
+      <image class='r-p-i-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+    </view>
+    <view class='fl r-p-i-d-text'>
+      <text>DETONA...</text>
+    </view>
+  </view>
+
+  <!-- 第五格 -->
+  <view class='dsp-cell r-p-i-r5'>
+    <image class='r-p-i-d-img-gift' src='/resources/images/image2.png' mode='aspectFill' />
+    <image class='r-p-i-d-img-gift' src='/resources/images/image2.png' mode='aspectFill' />
+  </view>
+
+  <!-- 第六格 -->
+  <view class='dsp-cell r-p-i-r6'>
+    <i class='iconfont icon-icon_tianjia r-p-i-i r-p-i-i-cur'></i>
+  </view>
+
+  <view class='r-p-i-status-view'>
+    <view class='r-p-i-d-s-status r-p-i-d-s-s-ing'>
+      <text>比赛中</text>
+    </view>
+  </view>
+</view>

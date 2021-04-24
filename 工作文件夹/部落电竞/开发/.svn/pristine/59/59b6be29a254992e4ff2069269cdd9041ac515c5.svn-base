@@ -1,0 +1,289 @@
+<template>
+  <ul class="schedule_list">
+    <li class="schedule_item" v-for="(item,index) in scheduleList" :key="index">
+      <div class="flex_hc">
+        <div class="match_date">
+          <p>{{item.name}} </p>
+          <p v-if="item.gameNum">第{{item.gameNum}}场</p>
+        </div>
+        <div class="team_pk">
+          <div class="flex_hc">
+            <span class="team_num">{{item.homeTeamName.replace(/[^\d]/g, '')}}</span>
+            <p class="team_name" :class="{'joined':item.joinTeamId&&item.joinTeamId==item.homeTeamId}">{{item.homeTeamName}}</p>
+            <!-- 主辦方 -->
+            <div class="match_result owner"
+              :class="{'win':item.winnerId&&item.winnerId==item.homeTeamId,'lose':item.winnerId&&item.winnerId!=item.homeTeamId}"
+              @click="currEditTeamResult(item.id,item.homeTeamId,item.status)" v-if="creatorFlag">
+              {{item.winnerId==null?boxContent[0]:item.winnerId==item.homeTeamId?boxContent[1]:boxContent[2]}}<i></i>
+              <ul v-show="currEdit==(item.id +'_'+item.homeTeamId)">
+                <li class="adj" @click="updateSatus(item,matchId,0,$event)">请选择</li>
+                <li class="win" @click="updateSatus(item,matchId,1,$event)">胜</li>
+                <li class="lose" @click="updateSatus(item,matchId,2,$event)">负</li>
+              </ul>
+            </div>
+            <!-- 參賽者 -->
+            <div class="match_result "
+              :class="{'win':item.winnerId&&item.winnerId==item.homeTeamId,'lose':item.winnerId&&item.winnerId!=item.homeTeamId}"
+              v-else>
+              {{item.winnerId==null?"":item.winnerId==item.homeTeamId?boxContent[1]:boxContent[2]}}
+            </div>
+            <!-- 对战结果赢了加上win,输了加上lose -->
+            <i class="join_icon" v-if="item.joinTeamId&&item.joinTeamId==item.homeTeamId"></i>
+          </div>
+          <div class="flex_hc">
+            <span class="team_num">{{item.awayTeamName.replace(/[^\d]/g, '')}}</span>
+            <p class="team_name" :class="{'joined':item.joinTeamId&&item.joinTeamId==item.awayTeamId}">{{item.awayTeamName}}</p>
+            <!-- 主辦方 -->
+            <div class="match_result owner"
+              :class="{'win':item.winnerId&&item.winnerId==item.awayTeamId,'lose':item.winnerId&&item.winnerId!=item.awayTeamId}"
+              @click="currEditTeamResult(item.id,item.awayTeamId,item.status)" v-if="creatorFlag">
+              {{item.winnerId==null?boxContent[0]:item.winnerId==item.awayTeamId?boxContent[1]:boxContent[2]}}<i></i>
+              <ul v-show="currEdit==(item.id +'_'+item.awayTeamId)">
+                <li class="adj" @click="updateSatus(item,matchId,0,$event)">请选择</li>
+                <li class="win" @click="updateSatus(item,matchId,2,$event)">胜</li>
+                <li class="lose" @click="updateSatus(item,matchId,1,$event)">负</li>
+              </ul>
+            </div>
+            <!-- 參賽者 -->
+            <div class="match_result"
+              :class="{'win':item.winnerId&&item.winnerId==item.awayTeamId,'lose':item.winnerId&&item.winnerId!=item.awayTeamId}"
+              v-else>
+              {{item.winnerId==null?"":item.winnerId==item.awayTeamId?boxContent[1]:boxContent[2]}}
+            </div>
+
+            <!-- <i class="join_icon" v-if="item.joinTeamId&&item.joinTeamId==item.awayTeamId"></i> -->
+          </div>
+        </div>
+      </div>
+      <div class="flex_hc">
+        <div class="match_time">
+          <p>{{item.startTime|toChineseDate}}</p>
+          <p>{{item.startTime|toHour}}</p>
+        </div>
+        <div class="match_status">
+          <span class="finish" v-if="item.status==2">{{scheduleStatus[item.status]}}</span>
+          <span class="gaming" v-else-if="item.status==1">{{scheduleStatus[item.status]}}</span>
+          <i class="time_icon" v-else></i>
+        </div>
+      </div>
+    </li>
+  </ul>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: ["matchId", "scheduleList", "creatorFlag"],
+  data() {
+    return {
+      showResultList: false,
+      currTeamId: null,
+      scheduleStatus: {
+        0: "未开赛",
+        1: "比赛中",
+        2: "已结束"
+      },
+      matchStatus: Number,
+      boxContent: { 0: "请选择", 1: "胜", 2: "负" },
+      currEdit: ""
+    };
+  },
+  mounted() {},
+  methods: {
+    // currEditTeamResult(item.id,currTeamId) {
+    //   console.log(this.showResultList, this.currTeamId);
+    //   if (this.showResultList && this.currTeamId == currTeamId) {
+    //     this.currTeamId = null;
+    //     this.showResultList = false;
+    //   } else {
+    //     this.currTeamId = currTeamId;
+    //     this.showResultList = true;
+    //   }
+    // },
+    currEditTeamResult(id, teamId, status) {
+      console.log([1, 2].includes(status));
+      console.log(this.matchStatus);
+      if ([1, 2].includes(status) && [3].includes(this.matchStatus)) {
+        let currEdit = id + "_" + teamId;
+        console.log(currEdit, "currEdit");
+        if (this.currEdit == currEdit) {
+          this.currEdit = "";
+        }
+        this.currEdit = currEdit;
+      } else {
+        this.$toast("暂不可修改");
+      }
+    },
+    updateSatus(item, matchId, index, event) {
+      event.stopPropagation();
+      let winId = null;
+      if (index == 1) {
+        winId = item.homeTeamId;
+      } else if (index == 2) {
+        winId = item.awayTeamId;
+      }
+      let param = {};
+      param.scheduleId = item.id;
+      param.matchId = matchId;
+      if (winId) {
+        param.winnerId = winId;
+      }
+      return this.$post("/api/matchtool/teamInfo/updateResult", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log(winId, "winId");
+            item.winnerId = winId;
+            item.status = 2; // 修改为比赛结束
+            this.currEdit = "";
+          } else if (dataResponse.code == "4444") {
+            this.$toast("请选择比赛结果");
+          } else {
+            this.$toast("修改赛果异常");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.schedule_item {
+  @extend .flex_v_justify;
+  height: 17.6vw;
+  margin-bottom: 1.3333vw;
+  font-size: 3.7333vw;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.match_date {
+  width: 21.0667vw;
+  line-height: 4.2667vw;
+  text-align: center;
+}
+
+.match_time {
+  width: 16vw;
+  line-height: 4.2667vw;
+  text-align: center;
+}
+
+.team_pk {
+  > div {
+    padding: 0.6667vw 0;
+  }
+  .team_num {
+    width: 5.4667vw;
+    line-height: 6vw;
+    margin-right: 1.8667vw;
+    text-align: center;
+    @include getBgImg("../../../assets/images/matchtool/team_logo.png");
+    background-size: contain;
+  }
+}
+
+.team_name {
+  width: 17.3333vw;
+  &.joined {
+    color: #ff7e00;
+  }
+}
+
+.match_result {
+  position: relative;
+  @extend .flex_hc;
+  width: 15.2vw;
+  text-align: center;
+  color: #00b4ff;
+  i {
+    width: 1.6vw;
+    height: 1.6vw;
+    margin-left: 2.1333vw;
+    transform: translateY(50%);
+    @include getTriangle(0.9333vw, currentColor, down);
+  }
+
+  ul {
+    position: absolute;
+    z-index: 1;
+    top: 4.2667vw;
+    width: 100%;
+    border-radius: 0.6667vw;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: #000;
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 1.8667vw;
+      transform: translateY(-100%);
+      @include getTriangle(0.8vw, #000, up);
+    }
+    li {
+      line-height: 6.6667vw;
+      @include getBorder(bottom, rgba(255, 255, 255, 0.2));
+      &:last-child {
+        background: none;
+      }
+    }
+  }
+}
+
+.owner {
+  i {
+    display: block !important;
+  }
+}
+
+.adj {
+  color: #00b4ff;
+}
+
+.win,
+.lose {
+  color: #ff7e00;
+  i {
+    display: none;
+  }
+}
+.lose {
+  color: #8aca00;
+}
+
+.match_status {
+  width: 17.8667vw;
+  margin-left: 1.0667vw;
+  text-align: center;
+}
+
+.finish {
+  color: #999;
+}
+
+.gaming {
+  color: #00b4ff;
+}
+
+.time_icon {
+  display: inline-block;
+  width: 5.6vw;
+  height: 5.6vw;
+  @include getBgImg("../../../assets/images/matchtool/time_icon.png");
+  background-size: 100% 100%;
+}
+
+.join_icon {
+  width: 4.5333vw;
+  height: 4.5333vw;
+  margin-left: 10.6667vw;
+  @include getBgImg("../../../assets/images/matchtool/enter_icon.png");
+  background-size: 100% 100%;
+}
+</style>

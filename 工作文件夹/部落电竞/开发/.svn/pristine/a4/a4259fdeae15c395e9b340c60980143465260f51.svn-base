@@ -1,0 +1,24 @@
+/* component/newslist/news-list.wxss */
+
+.news-list {
+	position: relative;
+
+  width: 100%;
+  margin: 0 auto;
+}
+
+.news-list::after{
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	transform: scaleY(.5);
+
+	width: 100%;
+	height: 1px;
+	background-color: #ddd;
+}
+
+.news-list:last-child::after {
+  display: none;
+}

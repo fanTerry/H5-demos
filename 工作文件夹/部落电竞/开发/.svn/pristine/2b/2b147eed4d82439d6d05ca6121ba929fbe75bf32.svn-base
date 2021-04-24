@@ -1,0 +1,35 @@
+/* component/submenubar/submenu-bar.wxss */
+.sub-menu {
+    background: #fcfcfc;
+    border-bottom: solid 1rpx #ddd;
+  }
+  .sub-menu-mov-area {
+    width: 710rpx;
+    height: 76rpx;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  .sub-menu-mov-view {
+    width: 150%;
+    height: 76rpx;
+  }
+  .sub-menu-item {
+    float: left;
+    padding: 0 10rpx;
+    margin-right: 20rpx;
+      
+    font-size: 28rpx;
+    line-height: 72rpx;
+  }
+  
+  .sub-menu-item-act{
+    color: #fea21b;
+    border-bottom: solid 5rpx #fea21b;
+  }
+  
+  .sub-menu-icon {
+    float: right;
+    width: 40rpx;
+    height: 40rpx;
+    margin: 15rpx 15rpx 0 0;
+  }

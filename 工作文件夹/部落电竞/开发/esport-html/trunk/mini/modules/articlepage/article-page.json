@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "article-discuss-item": "/modules/articlepage/articlediscussitem/article-discuss-item"
+  }
+}

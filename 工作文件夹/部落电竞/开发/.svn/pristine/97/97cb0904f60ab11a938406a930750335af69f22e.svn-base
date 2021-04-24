@@ -1,0 +1,10 @@
+{
+  "component": true,
+  "usingComponents": {
+    "tabs": "./components/tabs",
+    "pops": "./components/pops"
+  },
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
+  "navigationBarTitleText": "答题"
+}

@@ -1,0 +1,189 @@
+package com.esportzoo.esport.controller.charge;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.esportzoo.common.appmodel.domain.result.ModelResult;
+import com.esportzoo.esport.client.service.charge.UserChargeOrderServiceClient;
+import com.esportzoo.esport.client.service.common.SysConfigPropertyServiceClient;
+import com.esportzoo.esport.client.service.wallet.UserWalletRecServiceClient;
+import com.esportzoo.esport.connect.request.charge.ChargeRequst;
+import com.esportzoo.esport.connect.response.CommonResponse;
+import com.esportzoo.esport.connect.response.charge.ChargePageResponse;
+import com.esportzoo.esport.connect.response.charge.ChargeResponse;
+import com.esportzoo.esport.constants.BizSystem;
+import com.esportzoo.esport.constants.ClientType;
+import com.esportzoo.esport.constants.SysConfigPropertyKey;
+import com.esportzoo.esport.constants.UserOperationParam;
+import com.esportzoo.esport.controller.BaseController;
+import com.esportzoo.esport.domain.SysConfigProperty;
+import com.esportzoo.esport.domain.UserConsumer;
+import com.esportzoo.esport.domain.UserWalletRec;
+import com.esportzoo.esport.domain.charge.UserThirdOrder;
+import com.esportzoo.esport.util.RequestUtil;
+import com.esportzoo.esport.util.WxpayUtil;
+import com.esportzoo.esport.vo.ChargePayRequest;
+
+/**
+ * @author tingting.shen
+ * @date 2019/05/18
+ */
+@Controller
+@RequestMapping("charge")
+@Api(value = "充值相关接口", tags = { "充值相关接口" })
+public class ChargeController extends BaseController {
+	
+	@Autowired
+	private UserChargeOrderServiceClient userChargeOrderServiceClient;
+	@Autowired
+	private UserWalletRecServiceClient userWalletServiceClient;
+	@Autowired
+	private SysConfigPropertyServiceClient sysConfigPropertyServiceClient;
+	@Value("${appId}")
+    private String appId;
+	@Value("${signKey}")
+    private String signKey;
+	
+	@RequestMapping(value = "/pageData", produces = "application/json; charset=utf-8", method = RequestMethod.POST)
+	@ApiOperation(value = "充值页所需数据", httpMethod = "POST", consumes = "application/x-www-form-urlencoded", produces = "application/json")
+	@ApiResponse(code = 200, message = "充值页所需数据", response = CommonResponse.class)
+	@ResponseBody
+	public CommonResponse<ChargePageResponse> getChargePageData(HttpServletRequest request) {
+		try {
+			UserConsumer userConsumer = getLoginUsr(request);
+			if (userConsumer == null) {
+				logger.info("充值页所需数据,未获取到登录用户信息");
+				return CommonResponse.withErrorResp("未获取到登录用户信息");
+			}
+			ModelResult<UserWalletRec> modelResult = userWalletServiceClient.queryWalletByUserId(userConsumer.getId());
+			if (!modelResult.isSuccess()) {
+				logger.info("充值页所需数据,调用接口返回错误,errorMsg={}", modelResult.getErrorMsg());
+				return CommonResponse.withErrorResp("调用接口返回错误,errorMsg=" + modelResult.getErrorMsg());
+			}
+			UserWalletRec userWallet = modelResult.getModel();
+			if (userWallet==null ) {
+				logger.info("充值页所需数据,userWallet为空");
+				return CommonResponse.withErrorResp("充值页所需数据,userWallet为空");
+			}
+			ChargePageResponse chargePageResponse = new ChargePageResponse();
+			chargePageResponse.setAbleRecScore(userWallet.getAbleRecScore().toString());
+			
+			SysConfigProperty sysConfigProperty = sysConfigPropertyServiceClient.getSysConfigPropertyByKey(SysConfigPropertyKey.WXXCY_CHARGE_AMOUNT_LIST);
+			chargePageResponse.setChargeAmountList(sysConfigProperty.getValue().split(";"));
+			
+			return CommonResponse.withSuccessResp(chargePageResponse);
+		} catch (Exception e) {
+			logger.info("充值页所需数据,发生异常,exception={}", e.getMessage(), e);
+			return CommonResponse.withErrorResp(e.getMessage());
+		}
+	}
+	
+	
+	
+	@RequestMapping(value = "/chargeRecScore", produces = "application/json; charset=utf-8", method = RequestMethod.POST)
+	@ApiOperation(value = "充值推荐币", httpMethod = "POST", consumes = "application/x-www-form-urlencoded", produces = "application/json")
+	@ApiResponse(code = 200, message = "充值推荐币", response = CommonResponse.class)
+	@ResponseBody
+	public CommonResponse<ChargeResponse> chargeRecScore(ChargeRequst chargeRequst, HttpServletRequest request) {
+		try {
+			logger.info("充值推荐币,接收到的参数chargeRequst={}", JSON.toJSONString(chargeRequst));
+			String chargeAmountStr = chargeRequst.getChargeAmount();
+			if (chargeAmountStr.isEmpty()) {
+				return CommonResponse.withErrorResp("充值金额不能为空");
+			}
+			SysConfigProperty sysConfigProperty = sysConfigPropertyServiceClient.getSysConfigPropertyByKey(SysConfigPropertyKey.WXXCY_CHARGE_AMOUNT_LIST);
+			List<String> chargeAmountList = Arrays.asList(sysConfigProperty.getValue().split(";"));
+			if (!chargeAmountList.contains(chargeAmountStr)) {
+				return CommonResponse.withErrorResp("充值金额不在充值列表项");
+			}
+			UserConsumer userConsumer = getLoginUsr(request);
+			if (userConsumer == null) {
+				logger.info("充值推荐币,未获取到登录用户信息");
+				return CommonResponse.withErrorResp("未获取到登录用户信息");
+			}
+			UserThirdOrder order = new UserThirdOrder();
+			order.setUserId(userConsumer.getId());
+			order.setUserName(userConsumer.getNickName());
+			order.setupFeature("propName", "充值" + chargeAmountStr + "元");
+			order.setAmount(new BigDecimal(chargeAmountStr).multiply(new BigDecimal(100)).intValue());
+			order.setBizSystem(BizSystem.LOCAL.getIndex());
+			logger.info("充值推荐币,调用接口参数param={}", JSON.toJSONString(order));
+			UserOperationParam userOperationParm = new UserOperationParam();
+			userOperationParm.setSellChannel(new Long(chargeRequst.getAgentId()));
+			userOperationParm.setClientType(ClientType.WXXCY.getIndex());
+			userOperationParm.setOperIp(RequestUtil.getClientIp(request));
+			ModelResult<ChargePayRequest> modelResult = userChargeOrderServiceClient.insertUsrChargeOrder(order, userOperationParm);
+			if (!modelResult.isSuccess()) {
+				logger.info("充值推荐币,调用接口返回错误,errorMsg={},param={}", modelResult.getErrorMsg(), JSON.toJSONString(order));
+				return CommonResponse.withErrorResp("调用接口返回错误,errorMsg=" + modelResult.getErrorMsg());
+			}
+			ChargePayRequest chargePayRequest = modelResult.getModel();
+			if (chargePayRequest == null) {
+				logger.info("充值推荐币,调用接口返回错误,chargePayRequest == null");
+				return CommonResponse.withErrorResp("调用接口返回错误,chargePayRequest == null");
+			}
+			logger.info("充值推荐币,调用接口返回值chargePayRequest={}", JSON.toJSONString(chargePayRequest));
+			String prepayId = chargePayRequest.getPrepayId();
+			if (StringUtils.isBlank(prepayId)) {
+				logger.info("充值推荐币,调用接口返回错误,prepayId == null");
+				return CommonResponse.withErrorResp("调用接口返回错误,prepayId == null");
+			}
+			
+			String timeStamp = WxpayUtil.getTimeStampStr();
+			String nonceStr = WxpayUtil.getRandomNonceStr(32);
+			ChargeResponse chargeResponse = new ChargeResponse();
+			chargeResponse.setTimeStamp(timeStamp);
+			chargeResponse.setNonceStr(nonceStr);
+			chargeResponse.setPrepayId(prepayId);
+			chargeResponse.setPaySign(getSign(timeStamp, nonceStr, prepayId));
+			return CommonResponse.withSuccessResp(chargeResponse);
+		} catch (Exception e) {
+			logger.info("充值推荐币,发生异常,exception={}", e.getMessage(), e);
+			return CommonResponse.withErrorResp(e.getMessage());
+		}
+	}
+	
+	private String getSign(String timeStamp, String nonceStr, String prepayId) {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("appId", appId);
+		params.put("timeStamp", timeStamp);
+		params.put("nonceStr", nonceStr);
+		params.put("package", "prepay_id=" + prepayId);
+		params.put("signType", "MD5");
+		String sign = WxpayUtil.createMd5Sign(params, signKey);
+		logger.info("唤起微信支付参数timeStamp={},nonceStr={},prepayId={},appId={},signKey={},sign={}",
+				timeStamp, nonceStr, prepayId, appId, signKey, sign);
+		return sign;
+	}
+	
+	public static void main(String[] args) {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("appId", "wxd678efh567hg6787");
+		params.put("timeStamp", "1490840662");
+		params.put("nonceStr", "5K8264ILTKCH16CQ2502SI8ZNMTM67VS");
+		params.put("package", "prepay_id=wx2017033010242291fcfe0db70013231072");
+		params.put("signType", "MD5");
+		String s1 =  WxpayUtil.createMd5Sign(params, "qazwsxedcrfvtgbyhnujmikolp111111");
+		System.out.println(s1);
+		System.out.println(s1.equals("22D9B4E54AB1950F51E0649E8810ACD6"));
+	}
+	
+}

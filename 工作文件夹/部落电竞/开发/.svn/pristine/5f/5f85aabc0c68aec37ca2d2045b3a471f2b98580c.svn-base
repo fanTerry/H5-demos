@@ -1,0 +1,11 @@
+<!--component/expert/expertbanner/expert-banner.wxml-->
+<view class='expert-banner'>
+  <swiper class="expert-banner-swiper"
+    indicator-dots="true" autoplay="true" circular="true" indicator-color="#fff" indicator-active-color="#075fe7"  bindchange="onSwiperChange">
+    <block wx:for="abc" wx:key="">
+      <swiper-item>
+        <image class="e-b-swiper-image" src="/resources/images/image2.jpg" mode="scaleToFill" />
+      </swiper-item>
+    </block>
+  </swiper>
+</view>

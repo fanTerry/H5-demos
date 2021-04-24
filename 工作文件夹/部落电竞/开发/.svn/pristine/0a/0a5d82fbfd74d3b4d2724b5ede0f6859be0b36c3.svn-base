@@ -1,0 +1,319 @@
+const home = () => import('./views/home/index.vue');
+const match = () => import('./views/match/index.vue');
+const community = () => import('./views/community/index.vue');
+const expert = () => import('./views/expert/index.vue');
+const userCenter = () => import('./views/user_center/index.vue');
+const wallet = () => import('./views/user_center/wallet/myWallet.vue');
+const recharge = () => import('./views/user_center/recharge/myRecharge.vue');
+const login = () => import('./views/user_center/login/myLogin.vue');
+const register = () => import('./views/user_center/register/myRegister.vue');
+const registerUserinfo = () => import('./views/user_center/register/userInfo/myRegisterUserinfo.vue');
+const userInfo = () => import('./views/user_center/user_info/userInfo.vue');
+const homeDetail = () => import('./views/home/detail/homeDetail.vue');
+const matchDetail = () => import('./views/match/detail/matchDetail.vue');
+const expertHome = () => import('./views/expert/home/expertHome.vue');
+const expertApply = () => import('./views/expert/apply/expertApply.vue');
+const expertAgreement = () => import('./views/expert/agreement/expertAgreement.vue');
+const userArticle = () => import('./views/user_center/article/myArticle.vue');
+const articleDetail = () => import('./views/expert/articleDetail/expertArticledetail.vue');
+const resetPasswordValidCode = () => import('./views/user_center/resetPassword/validCode.vue');
+const resetPasswordConfirm = () => import('./views/user_center/resetPassword/confirm.vue');
+const store = () => import('./views/store/index.vue');
+const goodsList = () => import('./views/store/list/goodsList.vue');
+const goodsDetail = () => import('./views/store/detail/goodsDetail.vue');
+const orderDetails = () => import('./views/store/order/orderDetails.vue');
+const addressManage = () => import('./views/store/address/manage.vue');
+const addressEdit = () => import('./views/store/address/edit.vue');
+const myExchange = () => import('./views/store/my_exchange/my_exchange.vue');
+const orderList = () => import('./views/store/my_exchange/orderList.vue');
+const writeInfo = () => import('./views/user_center/user_info/writeInfo.vue');
+const publishEssays = () => import('./views/community/publishArticle/publishEssays.vue');
+const detailTopic = () => import('./views/community/topic/gameTopic.vue');
+const topic = () => import('./views/community/topicList.vue');
+const searchTopic = () => import('./views/community/searchTopic.vue');
+
+// 竞猜
+const guessHome = () => import('./views/guess/home/home.vue');
+const guessRules = () => import('./views/guess/rules.vue');
+const allGuess = () => import('./views/guess/allGuess.vue');
+const guessRecord = () => import('./views/guess/record.vue');
+const guessSign = () => import('./views/guess/sign.vue');
+const guessRecharge = () => import('./views/guess/recharge/recharge.vue');
+
+// 活动101
+const hd101Home = () => import('./views/hd/hd101/home.vue');
+const hd101Answering = () => import('./views/hd/hd101/answering.vue');
+
+const hd101Ruleslist = () => import('./views/hd/hd101/ruleslist.vue');
+const hd101Userwallet = () => import('./views/hd/hd101/userwallet.vue');
+const hd101Record = () => import('./views/hd/hd101/record.vue');
+
+const routers = [{
+    path: '/',
+    component: home
+}, {
+    path: '/home',
+    name: 'home',
+    component: home,
+    meta: {
+        keepAlive: true
+    }
+},
+{
+    path: '/match',
+    name: 'match',
+    component: match,
+    meta: {
+        keepAlive: true
+    }
+}, {
+    path: '/homeDetail/:id',
+    name: 'homeDetail',
+    component: homeDetail
+}, {
+    path: '/topic',
+    name: 'topic',
+    component: topic,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/community',
+    name: 'community',
+    component: community
+}, {
+    path: '/expert',
+    name: 'expert',
+    component: expert,
+    meta: {
+        keepAlive: true
+    }
+}, {
+    path: '/userCenter',
+    name: 'userCenter',
+    component: userCenter
+    // meta: { requiresAuth: true }
+}, {
+    path: '/wallet',
+    name: 'wallet',
+    component: wallet,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/recharge',
+    component: recharge,
+    name: 'recharge',
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/login',
+    name: 'login',
+    component: login
+}, {
+    path: '/register',
+    name: 'register',
+    component: register
+}, {
+    path: '/registerUserinfo',
+    name: 'registerUserinfo',
+    component: registerUserinfo
+}, {
+    path: '/userInfo',
+    name: 'userInfo',
+    component: userInfo
+}, {
+    path: '/matchDetail/:matchId',
+    name: 'matchDetail',
+    meta: {
+        requiresAuth: true
+    },
+    component: matchDetail
+}, {
+    path: '/expertHome',
+    name: 'expertHome',
+    component: expertHome,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/expertApply',
+    name: 'expertApply',
+    component: expertApply,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/expertAgreement',
+    name: 'expertAgreement',
+    component: expertAgreement
+}, {
+    path: '/userArticle',
+    name: 'userArticle',
+    component: userArticle,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/writeInfo',
+    name: 'writeInfo',
+    component: writeInfo
+}, {
+    path: '/articleDetail',
+    name: 'articleDetail',
+    component: articleDetail,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/resetPassword',
+    name: 'resetPassword',
+    component: resetPasswordValidCode
+}, {
+    path: '/resetPasswordConfirm',
+    name: 'resetPasswordConfirm',
+    component: resetPasswordConfirm
+}, {
+    path: '/store',
+    name: 'store',
+    component: store,
+    meta: {
+        keepAlive: true
+    }
+},
+{
+    path: '/goodsList',
+    name: 'goodsList',
+    component: goodsList
+}, {
+    path: '/goodsDetail/:goodsId',
+    name: 'goodsDetail',
+    component: goodsDetail,
+    meta: {
+        requiresAuth: true, // 是否授权
+        keepAlive: true, // 该字段表示该页面需要缓存
+        isBack: false, // 用于判断上一个页面是哪个
+        title: '商品详情'
+    }
+}, {
+    path: '/orderDetails/:orderId',
+    name: 'orderDetails',
+    component: orderDetails,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/addressManage',
+    name: 'addressManage',
+    component: addressManage
+}, {
+    path: '/addressEdit',
+    name: 'addressEdit',
+    component: addressEdit,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/myExchange',
+    name: 'myExchange',
+    component: myExchange,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/orderList',
+    name: 'orderList',
+    component: orderList,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/article/publishEssays',
+    name: 'publishEssays',
+    component: publishEssays,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/detailTopic',
+    name: 'detailTopic',
+    component: detailTopic,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/community/searchTopic',
+    name: 'searchTopic',
+    component: searchTopic,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/hd/hd101/home',
+    name: 'hd101Home',
+    component: hd101Home,
+    meta: {
+        requiresAuth: true,
+        title: '一站到底答题赢大奖'
+    }
+}, {
+    path: '/hd/hd101/answering',
+    name: 'hd101Answering',
+    component: hd101Answering,
+    meta: {
+        requiresAuth: true,
+        pageShare: true
+    }
+}, {
+    path: '/hd/hd101/ruleslist',
+    name: 'hd101Ruleslist',
+    component: hd101Ruleslist,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/hd/hd101/userwallet',
+    name: 'hd101Userwallet',
+    component: hd101Userwallet,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/hd/hd101/record',
+    name: 'hd101Record',
+    component: hd101Record,
+    meta: {
+        requiresAuth: true
+    }
+}, {
+    path: '/guess/home',
+    name: 'guessHome',
+    component: guessHome
+}, {
+    path: '/guess/rules',
+    name: 'guessRules',
+    component: guessRules
+}, {
+    path: '/guess/allGuess',
+    name: 'allGuess',
+    component: allGuess
+}, {
+    path: '/guess/record',
+    name: 'guessRecord',
+    component: guessRecord
+}, {
+    path: '/guess/sign',
+    name: 'guessSign',
+    component: guessSign
+}, {
+    path: '/guess/recharge',
+    name: 'guessRecharge',
+    component: guessRecharge
+}, {
+    path: '*',
+    component: home
+}
+];
+
+export default routers;

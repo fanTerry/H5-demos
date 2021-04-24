@@ -1,0 +1,188 @@
+<template>
+  <div class="Page userAuthPage">
+    <!-- <header class="mod_header">
+      <h2 class="nav_bar">支付中..</h2>
+    </header> -->
+    <div class="main">
+      <!-- <div class="exchange_btn" @click="confirmCharge(12,0.01)">支付</div> -->
+    </div>
+    <pop-Alert :showPop="showFuiouPop" @close="showFuiouPop=false" @confirm="confirmFuiou" btnTxt1="取消" btnTxt2="去授权" type="2">
+      <p>是否授权富友-支付宝支付</p>
+    </pop-Alert>
+  </div>
+</template>
+
+<script>
+import popAlert from '../../../components/pop_up/pop_alert.vue';
+
+export default {
+  components: {
+    popAlert
+  },
+  data() {
+    return {
+      showFuiouPop: false, //富友授权弹窗
+      showFuiouAuthUrl: '', //富友授权url
+      userId:null,
+      amount:'',
+      payIndex:''
+    };
+  },
+  mounted() {
+    this.userId = this.$route.query.userId;
+    this.amount = this.$route.query.amount;
+    this.payIndex = this.$route.query.payIndex;
+    this.confirmCharge(parseInt(this.payIndex), parseFloat(this.amount));
+  },
+  methods: {
+    goback() {
+      this.$router.go(-2);
+    },
+    /**充值 */
+    confirmCharge: function(chooseChargeWay, chargeWayBalance) {
+      let u = navigator.userAgent;
+      let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+      var wxRedirectUrl = encodeURIComponent(window.location.href); //微信H5支付 回跳地址
+      // let thirdPayRedirect = this.getThirdReturnUrl(); //第三方支付(支付宝,易宝等) 回跳地址
+      let param = {
+        chargeAmount: chargeWayBalance,
+        chargeWay: chooseChargeWay
+      };
+      if (chooseChargeWay == this.globalConst.payIndexMap.get('FUIOU_ALI_PAY')) {
+        this.fuiouAliPayAuth();
+      }
+      console.log(param, "充值传递的参数");
+      var _self = this;
+      this.$post('/api/h5charge/tocharge', param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse, '充值返回数据');
+          if (dataResponse.code == '200' && dataResponse.data.successFlag) {
+            if (chooseChargeWay == this.globalConst.payIndexMap.get('FUIOU_ALI_PAY')) {
+              this.fuiouAlipayReady(this.fuiouToPay(dataResponse.data.prepayId));
+            } 
+          } else if (dataResponse.code == '600') {
+            this.$toast('余额不足');
+          } else if (dataResponse.code == '602') {
+            //风控提示
+            this.$toast(dataResponse.message);
+          } else {
+            if (chooseChargeWay != this.globalConst.payIndexMap.get('FUIOU_ALI_PAY')) {
+              this.$toast('服务器繁忙,稍后再试~');
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //授权支付
+    fuiouAliPayAuth() {
+      this.$post('/api/oauth2/authorize/alipay')
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse, '富友支付宝-h5充值方式返回');
+          if (dataResponse.code == '200') {
+            // this.$toast('支付宝服务窗为用户buyer_id=' + dataResponse.data, 4);
+            if (dataResponse.data && dataResponse.data.length > 50) {
+              //弹窗 去授权
+              // this.showFuiouPop = true;
+              // this.showFuiouAuthUrl = dataResponse.data;
+              window.location.href = dataResponse.data;
+            }
+            // this.fuiouAlipayReady(this.fuiouToPay(dataResponse.data));
+          } else {
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    fuiouAlipayReady(callback) {
+      // 如果jsbridge已经注入则直接调用
+      if (window.AlipayJSBridge) {
+        callback && callback();
+      } else {
+        // 如果没有注入则监听注入的事件
+        document.addEventListener('AlipayJSBridgeReady', callback, false);
+      }
+    },
+    fuiouToPay(tradeNO) {
+      console.log(window.AlipayJSBridge, 'window.AlipayJSBridge');
+      console.log(window.AlipayJSBridge, 'in');
+      if (window.AlipayJSBridge) {
+        console.log('in  AlipayJSBridge');
+      }
+      AlipayJSBridge.call(
+        'tradePay',
+        {
+          tradeNO: tradeNO
+        },
+        function(result) {
+          let res = JSON.stringify(result);
+          if(res.resultCode=='6001'){
+            alert(res.memo);
+          }
+          console.log(res,'支付宝返回结果');
+        }
+      );
+    },
+    confirmFuiou() {
+      window.location.href = this.showFuiouAuthUrl;
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+@import '../../../assets/common/_base';
+@import '../../../assets/common/_mixin';
+.userAuthPage {
+  background-color: #fff !important;
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import '../../../assets/common/_base';
+@import '../../../assets/common/_mixin';
+.nav_bar {
+  position: relative;
+  @include t_nowrap(100%);
+  padding: 0 40px;
+  font-size: 18px !important;
+  line-height: 44px;
+  font-weight: normal;
+  color: #333;
+  text-align: center;
+  .meet_problem {
+    @extend .g_v_mid;
+    right: 20px;
+    color: #999;
+    font-size: 13px;
+  }
+}
+.main {
+  padding: 0 4.2667vw;
+}
+
+.tips {
+  padding: 4.2667vw 0;
+  font-size: 3.4667vw;
+  line-height: 5.8667vw;
+}
+
+.exchange_btn {
+  display: block;
+  margin-top: 3.4667vw;
+  line-height: 9.6vw;
+  font-size: 4vw;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  background-color: $color_btn;
+  &.disabled {
+    opacity: 0.3;
+  }
+}
+</style>

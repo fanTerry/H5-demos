@@ -1,0 +1,7 @@
+<!--component/follow/followexpertlist/follow-expert-list.wxml-->
+<view class='follow-start-letter'>
+  <text>A</text>
+</view>
+<view class='follow-expert-list'>
+  <expert-item wx:for="list"></expert-item>
+</view>

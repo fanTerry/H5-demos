@@ -1,0 +1,514 @@
+<template>
+  <div class="Page gameTopicPage">
+    <header class="mod_header"
+      :style="topicHeaderInfo.imageUrl!=null?'background-image:url('+topicHeaderInfo.imageUrl+')':'background-image:url('+globalConst.topicDefaultImgUrl+')'">
+      <navBar>
+        <!-- <span class="more_action"></span> -->
+      </navBar>
+    </header>
+    <div class="main" id="mainId" :class="{'flex_v_h':noData}">
+      <!-- <scroll v-if="!noData" ref="scroll" :scrollbar="scrollbar" :pullDownRefresh="pullDownRefresh"
+        :pullUpLoad="pullUpLoad" :startY="0" @pullingDown="onPullingDown" @pullingUp="onPullingUp"> -->
+      <mescroll v-if="!noData" id="mescroll" ref="mescroll" :downLoadAuto="false"  @downCallback="downCallback"  @upCallback="upCallback" @mescrollInit="mescrollInit">
+        <div class="topic_header"
+          :style="topicHeaderInfo.imageUrl!=null?'background-image:url('+topicHeaderInfo.imageUrl+')':'background-image:url('+globalConst.topicDefaultImgUrl+')'">
+
+          <div class="topic_title">
+            <h2>{{topicHeaderInfo.name}}</h2>
+            <p class="tag">
+              <span>{{topicHeaderInfo.fans}}人已关注</span>
+              <span>{{topicHeaderInfo.views}}阅读</span>
+              <span>{{topicHeaderInfo.comments}}评论</span>
+            </p>
+            <p class="intro">{{topicHeaderInfo.description}}</p>
+            <!-- followed 已关注 -->
+            <span @click="followTopic(topicHeaderInfo.id)"
+              :class="{'follow':!topicHeaderInfo.attention,'followed':topicHeaderInfo.attention}">{{topicHeaderInfo.attention?'- 已关注':'+ 关注'}}</span>
+          </div>
+          <div class="active_user">
+            <p>
+              <img v-for="(item,index) in topicHeaderInfo.icons" :key="index" :src="item" alt="">
+            </p>
+            <!-- <p>
+          更多活跃用户<span></span>
+        </p> -->
+          </div>
+          <navList :dataList='dataList' @changeTab="relodDataByTab"></navList>
+        </div>
+        <articleTab :showType='showType' :cmsContentList='cmsContentList'></articleTab>
+      </mescroll>
+      <!-- </scroll> -->
+      <noData v-else> </noData>
+    </div>
+    <publishIcon :topicName="topicHeaderInfo.name"></publishIcon>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar";
+import navList from "../../../components/header/nav_list";
+import articleTab from "../../../components/follow/articleTab";
+import Scroll from "components/common/scroll";
+import noData from "components/no_data/index";
+import publishIcon from "components/user_follow/publishIcon";
+import mescroll from "../../../components/common/mescroll";
+import { getQueryString } from "../../../libs/utils";
+export default {
+  components: {
+    navBar,
+    navList,
+    articleTab,
+    Scroll,
+    noData,
+    publishIcon,
+    mescroll
+  },
+  props: [],
+  data() {
+    return {
+      dataList: [
+        { name: "全部", contentType: 100 },
+        // { name: "文章", contentType: 1 },
+        { name: "短文", contentType: 3 },
+        { name: "视频", contentType: 5 }
+      ],
+      topicId: Number,
+      topicHeaderInfo: {},
+      followList: [],
+      cmsContentList: [],
+      searchVal: "", //默认输入为空
+      pageNo: 1,
+      pageSize: 10,
+      currPageSize: 0,
+      contentType: 100,
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "没有更多数据了" }
+      },
+      index: 1,
+      turnToPrev: false,
+      turnToNext: false,
+      showType: 3,
+      noData: false,
+      loading: false
+    };
+  },
+  created() {
+    window.sessionStorage.selectedTab = 100;
+    //设置话题ID
+    this.topicId = this.$route.query.id;
+  },
+  mounted() {
+    // this.getHeaderCardInfo();
+    // this.getPageContenList();
+    // this.getPageData();
+    // fixScroll.tofix();
+    // this.weiXinSahare();
+  },
+  activated() {
+    console.log("activated");
+    if (this.$route.meta.isBack) {
+      this.topicId = getQueryString("id");
+      this.getHeaderCardInfo();
+      this.contentType = 100;
+      this.currPageSize = 10;
+      this.showType = 3;
+      this.downCallback();
+      this.weiXinSahare();
+    }
+    this.$route.meta.isBack = true;
+  },
+
+  beforeRouteEnter(to, from, next) {
+    if (from.name == "homeDetail") {
+      // 这个name是下一级页面的路由name
+      to.meta.isBack = false; // 设置为true说明你是返回到这个页面，而不是通过跳转从其他页面进入到这个页面
+    }
+    console.log("from.name", from.name);
+    next();
+  },
+  methods: {
+    weiXinSahare() {
+      this.$wxApi.wxRegister({
+        title: "橘子电竞-发现",
+        desc: "发现兴趣话题，找到志同道合的小伙伴~",
+        imgUrl:
+          "http://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg"
+      });
+    },
+    downCallback() {
+      console.log("11111");
+      let param = {};
+      this.pageNo = 1;
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      if (this.contentType < 10) {
+        param.contentType = this.showType;
+      }
+      this.cmsContentList = [];
+      this.getPageContenList(param).then(data => {
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize);
+        });
+      });
+    },
+    upCallback() {
+      console.log("加载更多");
+      this.loadMore();
+    },
+    mescrollInit(mescroll) {
+      this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
+    },
+    followTopic(topicId) {
+      let param = {};
+      if (!this.topicHeaderInfo.attention) {
+        param.status = 1;
+      } else {
+        param.status = 0;
+      }
+      return this.$post("/api/cmsTopic/followCmsTopic/" + topicId, param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.$toast(dataResponse.message);
+            this.topicHeaderInfo.attention = !this.topicHeaderInfo.attention;
+
+            // let param = {};
+            // param.followStatus = !this.topicHeaderInfo.attention;
+            // param.topicId = topicId;
+            // this.$bus.$emit("detailTopicFollowEvent", param);
+
+            return dataResponse.code;
+          } else if (dataResponse.code == "9999") {
+            this.$toast(dataResponse.message);
+          }
+        })
+        .catch(error => {
+          this.$toast("网络异常，稍后再试");
+          console.log(error);
+          // return dataResponse.code;
+        });
+    },
+    relodDataByTab(tabId) {
+      this.showType = tabId;
+      this.contentType = tabId;
+      this.pageNo = 1;
+      this.currPageSize = 0;
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      if (tabId < 10) {
+        param.contentType = tabId;
+      }
+      this.loading = true;
+      this.cmsContentList = [];
+      this.getPageContenList(param).then(res => {
+        this.loading = false;
+      });
+    },
+
+    /**
+     * 获取话题头部卡片信息
+     */
+    getHeaderCardInfo() {
+      return this.$post("/api/cmsTopic/showCmsTopicDetails/" + this.topicId)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.topicHeaderInfo = dataResponse.data.cmsTopicVo;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    getPageContenList(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+        if (this.contentType < 10) {
+          param.contentType = this.contentType;
+        }
+      }
+      param.id = this.topicId;
+      console.log(param);
+      return this.$post("/api/cmsTopic/showCmsTopicContent", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.currPageSize = dataResponse.data.length;
+            if (dataResponse.data.length > 0) {
+              this.cmsContentList = this.cmsContentList.concat(
+                dataResponse.data
+              );
+            }
+            if (this.cmsContentList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+            return this.cmsContentList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getPageData(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/user/pageFollowedUser", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log(dataResponse, "关注首页--getPageData--请求成功");
+            this.currPageSize = dataResponse.data.followedUserList.length;
+            if (dataResponse.data.followedUserList.length > 0) {
+              this.followList = this.followList.concat(
+                dataResponse.data.followedUserList
+              );
+            }
+            if (this.followList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+            return this.followList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    follow(val) {
+      console.log(val);
+      for (var i = 0; i < this.followList.length; i++) {
+        if (this.followList[i].userId == val.userId) {
+          let folloewer = this.followList[i];
+          this.updateFollowStatus(val.userId, val.followStatus).then(res => {
+            if (res == "200") {
+              console.log("res", res);
+              folloewer.followStatus = val.followStatus;
+            }
+          });
+        }
+      }
+    },
+    updateFollowStatus(userId, status) {
+      let param = { type: status, usrId: userId };
+      let message = "";
+      if (status == 1) {
+        message = "关注成功";
+        localStorage.set("comment_follow_" + userId, true); //新增关注的usrId
+      } else {
+        message = "取消成功";
+        localStorage.remove("comment_follow_" + userId); //删除取消关注的usrId
+      }
+      console.log("update-关注", param);
+      return this.$post("/api/user/follow", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.$toast(message);
+            return dataResponse.code;
+          }
+        })
+        .catch(error => {
+          this.$toast("网络异常，稍后再试");
+          console.log(error);
+          return dataResponse.code;
+        });
+    },
+
+    onPullingDown() {
+      console.log("you are onPullingDown");
+      if (this._isDestroyed) {
+        return;
+      }
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      if (this.contentType < 10) {
+        param.contentType = this.showType;
+      }
+      this.cmsContentList = [];
+      this.getPageContenList(param).then(data => {
+        this.$refs.scroll.forceUpdate();
+      });
+    },
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+
+      if (this.currPageSize < this.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+    /** 上拉加载*/
+    loadMore() {
+      this.pageNo = this.pageNo + 1;
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      if (this.contentType < 10) {
+        param.contentType = this.showType;
+      }
+      /**
+       * 关注列表
+       */
+      this.getPageContenList(param).then(data => {
+        // this.$refs.scroll.forceUpdate();
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize);
+        });
+      });
+    }
+  }
+};
+</script>
+
+
+<style lang="scss">
+.gameTopicPage {
+  .back::before,
+  .back::after {
+    background-color: #fff !important;
+  }
+  .user_info {
+    padding-top: 14px;
+    padding-bottom: 4px !important;
+  }
+  .article_tab {
+    &:first-child {
+      margin-top: 0 !important;
+    }
+  }
+}
+</style>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+
+.mod_header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: 100% 157px;
+  @media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+    only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+    background-position: center 44px;
+  }
+}
+
+.main {
+  margin-top: 44px;
+  @media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+    only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+    margin-top: 88px;
+  }
+}
+
+.topic_header {
+  margin-bottom: 10px;
+  background-repeat: no-repeat;
+  background-position: center -44px;
+  background-size: 100% 157px;
+}
+.nav_bar {
+  height: 44px;
+  background: none !important;
+}
+.more_action {
+  @extend .g_v_mid;
+  right: 0;
+  width: 45px;
+  height: 45px;
+  @include getBgImg("../../../assets/images/home/more.png");
+  background-size: 70%;
+}
+.topic_title {
+  position: relative;
+  @extend .flex;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  justify-content: center;
+  min-height: 113px;
+  padding-left: 27px;
+  padding-bottom: 18px;
+  color: #fff;
+  h2 {
+    @include t_nowrap(80%);
+    line-height: 1.2;
+    font-size: 28px;
+  }
+  .tag {
+    font-size: 11px;
+    padding-top: 5px;
+    span {
+      padding-right: 15px;
+    }
+  }
+  .intro {
+    @include line_clamp(2);
+    width: 180px;
+    padding-top: 18px;
+    font-size: 11px;
+    line-height: 14px;
+  }
+  .follow,
+  .followed {
+    position: absolute;
+    right: 5px;
+    bottom: 18px;
+    @include getBtn(auto, 23px, $color_main, #fff, 23px);
+    padding: 0 10px;
+    background: $color_main;
+  }
+  .followed {
+    background: #fff;
+    color: #afafaf;
+  }
+}
+.active_user {
+  @extend .flex_v_justify;
+  height: 42px;
+  padding: 0 10px;
+  background-color: #fff;
+  img {
+    width: 28px;
+    height: 28px;
+    margin-right: 3px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  p {
+    @extend .flex_hc;
+    font-size: 12px;
+    color: #818181;
+    span {
+      position: relative;
+      width: 14px;
+      height: 14px;
+      @include getArrow(7px, #999, right);
+    }
+  }
+}
+</style>

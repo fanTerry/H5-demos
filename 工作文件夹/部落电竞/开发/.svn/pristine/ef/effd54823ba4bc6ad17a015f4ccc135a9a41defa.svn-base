@@ -1,0 +1,90 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar pageTitle="填写个人信息"></navBar>
+    </header>
+    <div class="main">
+      <section>
+        <span>账户名</span>
+        <input type="text" placeholder="4-14位汉字、字母和数字的组合">
+      </section>
+      <section>
+        <span>昵称</span>
+        <input type="text" placeholder="4-14位汉字、字母和数字的组合">
+      </section>
+      <section class="personal_sign">
+        <span>个性签名</span>
+        <textarea name="" id="" cols="30" rows="10" placeholder="不得含虚假内容或联系方式，违者将禁止使用该产品"></textarea>
+      </section>
+      <section>
+        <span>真实姓名</span>
+        <input type="text" placeholder="4-14位汉字、字母和数字的组合">
+      </section>
+      <section>
+        <span>身份证号</span>
+        <input type="text" placeholder="17位字母和数字的组合">
+      </section>
+
+      <a class="submit_btn">提交</a>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar/index";
+export default {
+  data() {
+    return {};
+  },
+  methods: {},
+  components: {
+    navBar
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+
+section {
+  position: relative;
+  @extend .flex_hc;
+  @include getBorder(bottom, rgba(0, 0, 0, 0.1));
+  // height: 44px;
+  margin-top: 10px;
+  padding: 15px 20px;
+  font-size: 14px;
+  background-color: #fff;
+  span {
+    width: 65px;
+  }
+  input {
+    flex: 1;
+    -webkit-flex: 1;
+    border: none;
+  }
+}
+.personal_sign {
+  align-items: flex-start;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  textarea {
+    margin-top: 10px;
+    width: 100%;
+    padding-top: 5px;
+    line-height: 16px;
+  }
+}
+.submit_btn {
+  display: block;
+  margin: 20px 20px 25px;
+  padding: 15px;
+  font-size: 18px;
+  color: #fff;
+  border-radius: 8px;
+  text-align: center;
+  background-color: $color_main;
+}
+</style>

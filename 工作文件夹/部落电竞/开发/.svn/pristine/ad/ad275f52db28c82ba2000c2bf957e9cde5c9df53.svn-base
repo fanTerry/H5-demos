@@ -1,0 +1,28 @@
+<!--pages/report/report.wxml-->
+
+<view>
+  <!-- 赛事信息栏 -->
+  <!-- <userinfo-bar showType="2" gamesList="{{gamesList}}" bindmymatch="onMyMatchEvent" ></userinfo-bar> -->
+ <!-- <submenu-bar titleArray="{{subMenuList}}" selectedTag="{{selectedTag}}" bindmyevent="onMyEvent"></submenu-bar> -->
+  
+  <!-- 导航栏 -->
+  <!-- <view class='report-sub-menu clear'> -->
+    <!-- <view class="report-sub-menu-item {{staustType==3?'rp-s-m-i-cur':''}}" bindtap="selectStatus" data-index="3"><text>赛程</text></view>
+    <view class="report-sub-menu-item {{staustType==1?'rp-s-m-i-cur':''}}" bindtap="selectStatus" data-index="1"><text>LIVE</text></view>
+    <view class="report-sub-menu-item {{staustType==2?'rp-s-m-i-cur':''}}" bindtap="selectStatus" data-index="2"><text>赛果</text></view> -->
+    <!-- <view class='report-sub-menu-other fr'>
+      <text>联赛</text>
+    </view> -->
+  <!-- </view> -->
+
+  <view class='report-list'  wx:if="{{matchResultList.length>0}}">
+
+	<view wx:for="{{matchResultList}}" wx:key="">
+      <report-list reportType="{{reportType}}"  detailResponse="{{item}}" ></report-list>
+    </view>
+  </view>
+   <no-data  wx:if="{{noDataFlag}}" ></no-data>
+</view>
+
+<view class='blank'></view>
+<view class="refresh_btn {{reflushFlag?'active':''}}" bindtap="onClickRefresh"></view>

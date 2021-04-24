@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project default="main" basedir=".">
+    <filterset id="filterSet" begintoken="${" endtoken="}">
+		<filtersfile file="./src/main/resources/filter/daily_filter_pages.properties" />
+	</filterset>
+    
+	<target name="main">
+		<copy todir="F:\www\esport-interface\ROOT\" preservelastmodified="true" filtering="yes" encoding="utf-8">
+			<fileset dir="./src/main/webapp/">
+				<exclude name="**/*.jar"/>
+				<exclude name="**/*.java"/>
+				<include name="**/*.jsp"/>
+				<include name="**/*.js"/>
+			</fileset>
+			<filterset refid="filterSet" />
+		</copy>
+		
+		<copy todir="F:\www\esport-interface\ROOT\WEB-INF\classes\" preservelastmodified="true" filtering="yes" encoding="utf-8">
+			<fileset dir="./target/classes/">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	</target>
+</project>

@@ -1,0 +1,396 @@
+<template>
+    <div class="Page">
+        <header class="mod_header header_nav_list">
+            <!-- <userHeader :num="isIf"></userHeader>
+      <navList></navList>-->
+        </header>
+        <div class="main">
+            <template v-if="!isLoading">
+                <scroll ref="scroll" :scrollbar="scrollbar" :pullDownRefresh="pullDownRefresh" :pullUpLoad="pullUpLoad"
+                    :startY="0" @pullingDown="onPullingDown" @pullingUp="onPullingUp">
+                    <section class="list_content" v-for="(item ,index) in dataList" :key="index">
+                        <h2>{{item.sortMatchDate}}</h2>
+                        <div class="list">
+                            <div class="title">
+                                <div>
+                                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1562671724161&di=e1f0a7a5c8ecb42e4f9007eda15e2b91&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F031096455ea5aca000001cbb0ee8e30.jpg"
+                                        alt v-if="item.gameType==1" />
+                                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1562671781275&di=2b41fd4370a413a504b28101c8704de5&imgtype=0&src=http%3A%2F%2Fp2.so.qhmsg.com%2Ft013599c658b4887137.png"
+                                        alt v-if="item.gameType==4" /> {{item.legueName}}
+                                </div>
+                                <!-- <span>小组赛</span> -->
+                            </div>
+                            <div class="item" v-for="(match ,index) in item.matchResultList" :key="index"
+                                @click="toMatchDetail(match.matchId)">
+                                <div class="left">
+                                    <div>
+                                        <p class="time">{{match.formatBeginDate}}</p>
+                                        <p class="round">BO{{match.numberOfGames}}</p>
+                                    </div>
+                                    <div class="team_pk">
+                                        <div class="team">
+                                            <img :src="match.homeTeamLogo" alt />
+                                            <span class="name">{{match.homeTeamName}}</span>
+                                            <span class="score">{{match.status==0?"-":match.homeScore}}</span>
+                                        </div>
+                                        <div class="team">
+                                            <img :src="match.awayTeamLogo" alt />
+                                            <span class="name">{{match.awayTeamName}}</span>
+                                            <span class="score">{{match.status==0?"-":match.awayScore}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="right">
+                                    <!-- <div class="red_bag"></div> -->
+                                    <!-- 设置提醒 -->
+                                    <template v-if="match.status==0">
+                                        <i class="iconfont icon-naozhong" v-if="match.followType==0"></i>
+                                        <i class="iconfont icon-naozhong-active" v-if="match.followType==1"></i>
+                                    </template>
+                                    <!-- 图文直播 -->
+                                    <div class="live" v-if="match.status==1">
+                                        <p>
+                                            <i class="iconfont icon-tupian1"></i>图文直播
+                                        </p>
+                                        <p>进行中</p>
+                                    </div>
+                                    <!-- 集锦，回放 -->
+                                    <div class="replay" v-if="match.status==2">
+                                        <i class="iconfont icon-bofang"></i>集锦,回放
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </scroll>
+            </template>
+            <loading v-if="isLoading"> </loading>
+        </div>
+        <footer class="mod_footer">
+            <tabbar></tabbar>
+        </footer>
+
+        <!-- 点击加上active -->
+        <a class="refresh_btn"></a>
+    </div>
+</template>
+
+<script>
+import tabbar from "../../components/tabbar/index";
+import navList from "../../components/header/nav_list/index";
+import userHeader from "../../components/header/user_header/index";
+import Scroll from "components/common/scroll";
+import loading from "components/common/loading";
+export default {
+    data() {
+        return {
+            scrollbar: { fade: true },
+            pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+            pullUpLoad: {
+                threshold: 10,
+                txt: { more: "加载更多", noMore: "没有更多数据了" }
+            },
+            index: 1,
+            turnToPrev: false,
+            turnToNext: false,
+
+            isLoading: true,
+            isIf: false,
+            showType: 1,
+            pageNo: 1,
+            pageSize: 10,
+            dataList: [],
+            gamesList: [], //游戏列表
+            statusList: [],
+            gameType: 1, //游戏类型
+            staustType: 3, //默认选赛程
+            reportType: 1, //列表展示样式
+            loadType: 2, //拼接数据类型，下拉加载 0，上拉加载1,初始化加载 2 当天
+            loadDayRange: 7, //加载数据步长，天单位
+            pullPageNo: 0, //记录下拉刷新页码
+            bottomPageNo: 0, //记录上啦刷新页码
+            noDataFlag: false,
+
+            preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
+            showBackStatus: false, //显示返回顶部按钮
+            showLoading: true, //显示加载动画
+            touchend: false //没有更多数据
+        };
+    },
+
+    mounted() {
+        this.getPageData();
+    },
+    methods: {
+        /**获取分页赛事数据 */
+        getPageData(param) {
+            if (!param) {
+                param = {};
+                param.videogameId = this.gameType; //游戏类型
+                param.status = this.staustType;
+                param.loadType = this.loadType;
+                param.loadDayRange = 2;
+                param.pullPageNo = this.pullPageNo;
+                param.bottomPageNo = 1;
+                this.bottomPageNo = param.bottomPageNo;
+            }
+            console.log("赛事分页参数---", param);
+            return this.$post("/api/league/leagueIndexdata", param)
+                .then(rsp => {
+                    const dataResponse = rsp;
+                    this.isLoading = false;
+                    console.log("赛事数据", dataResponse);
+                    if (dataResponse.code == "200") {
+                        if (param.loadType == 0) {
+                            this.dataList = dataResponse.data.matchResultList.concat(
+                                this.dataList
+                            );
+                        } else {
+                            this.dataList = this.dataList.concat(
+                                dataResponse.data.matchResultList
+                            );
+                        }
+                        return dataResponse.data.matchResultList;
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+
+        onPullingDown() {
+            console.log("you are onPullingDown");
+            if (this._isDestroyed) {
+                return;
+            }
+            this.refresh(true);
+        },
+        onPullingUp() {
+            console.log("you are onPullingUp");
+            if (this._isDestroyed) {
+                return;
+            }
+
+            if (this.currPageSize < this.pageSize) {
+                console.log("currPageSize", this.currPageSize);
+                this.$refs.scroll.forceUpdate();
+            } else {
+                this.loadMore();
+            }
+        },
+
+        /**下拉刷新 */
+        refresh(loaded) {
+            console.log("you are refresh");
+            let param = {};
+            param.videogameId = this.gameType; //游戏类型
+            param.status = this.staustType;
+            param.loadType = 0;
+            param.loadDayRange = 7;
+            this.pullPageNo += 1;
+            param.pullPageNo = this.pullPageNo;
+            param.bottomPageNo = this.bottomPageNo;
+            this.getPageData(param).then(() => {
+                this.$refs.scroll.forceUpdate();
+            });
+        },
+
+        /** 上拉加载*/
+        loadMore() {
+            console.log("you are loadMore");
+            let param = {};
+            param.videogameId = this.gameType; //游戏类型
+            param.status = this.staustType;
+            param.loadType = 1;
+            param.loadDayRange = 7;
+            param.pullPageNo = this.pullPageNo;
+            this.bottomPageNo += 1;
+            param.bottomPageNo = this.bottomPageNo;
+            this.getPageData(param).then(data => {
+                this.currPageSize = data.length;
+                this.$refs.scroll.forceUpdate();
+            });
+        },
+        toMatchDetail(matchId) {
+            this.$router.push({
+                name: "matchDetail",
+                params: {
+                    matchId: matchId
+                }
+            });
+        }
+    },
+
+    components: {
+        tabbar,
+        userHeader,
+        navList,
+        Scroll,
+        loading
+    }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+@import "../../assets/common/_var.scss";
+@import "../../assets/common/iconfont.css";
+
+.main {
+    padding: 0 5px;
+}
+
+.list_content {
+    h2 {
+        color: #666;
+        padding: 15px 0 5px 10px;
+    }
+    .list {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 0 5px;
+        > div {
+            @include getBorder(bottom, #ddd);
+            &:last-child {
+                background: none;
+            }
+        }
+    }
+    .title {
+        @extend .flex_v_justify;
+        height: 24px;
+        padding-left: 5px;
+        padding-right: 15px;
+        color: #666;
+        > div {
+            font-size: 14px;
+        }
+        img {
+            width: 14px;
+            height: 14px;
+            object-fit: cover;
+        }
+    }
+    .item {
+        @extend .flex_v_justify;
+        height: 70px;
+        padding: 0 5px;
+    }
+    .left,
+    .right {
+        @extend .flex_hc;
+    }
+    .time {
+        font-size: 14px;
+        color: #000;
+        font-weight: 500;
+        text-align: center;
+    }
+    .round {
+        padding-top: 12px;
+        color: #9f9f9f;
+        text-align: center;
+    }
+    .team_pk {
+        margin-left: 13vw;
+        .team {
+            @extend .flex_hc;
+            padding-bottom: 10px;
+            &:last-child {
+                padding: 0;
+            }
+        }
+        img {
+            width: 16px;
+            height: 16px;
+            margin-right: 10px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .name {
+            width: 54px;
+            margin-right: 20px;
+            font-size: 14px;
+            color: #000;
+            @include t_nowrap(54px);
+            line-height: 1.2;
+        }
+    }
+    .red_bag {
+        width: 19px;
+        height: 23px;
+        @include getBgImg("../../assets/images/match/red_bag.png");
+    }
+    .icon-naozhong,
+    .icon-naozhong-act {
+        font-size: 20px;
+        margin-left: 30px;
+        margin-right: 20px;
+    }
+    .live {
+        color: $color_main;
+        text-align: center;
+        white-space: nowrap;
+        margin-left: 8vw;
+        @media (max-width: 320px) {
+            margin-left: 10px;
+        }
+
+        .iconfont {
+            font-size: 12px;
+            margin-right: 2px;
+        }
+        p {
+            line-height: 20px;
+        }
+        p:last-child {
+            text-indent: 14px;
+        }
+    }
+    .replay {
+        font-size: 12px;
+        color: #bbb;
+        .icon-bofang {
+            font-size: 12px;
+            margin-right: 2px;
+            color: currentColor;
+        }
+    }
+}
+
+.refresh_btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    @include getBgImg("../../assets/images/match/refresh_btn.png");
+
+    position: fixed;
+    z-index: 10;
+    right: 20px;
+    bottom: 90px;
+}
+
+.refresh_btn.active {
+    animation: rotate 0.5s;
+}
+
+@keyframes rotate {
+    form {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes rotate {
+    form {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+</style>

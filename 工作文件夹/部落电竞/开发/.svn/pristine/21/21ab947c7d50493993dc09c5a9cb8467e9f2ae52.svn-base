@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util 
+    	http://www.springframework.org/schema/util/spring-util.xsd
+    	http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<!-- 环境和线上环境一定要设appHome -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+			<property name="locations">
+				<list>
+					<value>file:${appHome}/memcached_env.properties</value>
+					<value>file:${appHome}/env.properties</value>
+					<value>file:${appHome}/activemq.properties</value>
+				</list>
+			</property>
+			<property name="ignoreResourceNotFound" value="true" />
+			<property name="ignoreUnresolvablePlaceholders" value="true" />
+			<property name="properties" ref="localEnvProperties" />
+	</bean>
+	<bean name="localEnvProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+			<property name="locations">
+				<list>
+					<value>classpath:/config/memcached_env.properties</value>  
+					<value>classpath:/config/env.properties</value> 
+					<value>classpath:/config/activemq.properties</value>  
+				</list>
+			</property>
+	</bean>
+
+	<bean id="sensitiveWordUtil" class="com.esportzoo.esport.util.SensitiveWordUtil">
+		<constructor-arg index="0" value="${keywordFilePath}" type="java.lang.String" />
+		<constructor-arg index="1" type="com.esportzoo.common.redisclient.RedisClient" ref="redisClusterClient" />
+	</bean>
+	
+	<bean id="webSocketServerHandler" class="com.esportzoo.esport.controller.ws.server.WebSocketServerHandler" scope="prototype">  
+        <constructor-arg index="0">  
+        	<value>${ws_port}</value>
+         </constructor-arg>  
+         <constructor-arg index="1"> 
+             <ref bean="redisClusterClient"/>
+        </constructor-arg> 
+    </bean>
+    
+    <!-- 通用线程池 -->
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<!-- 线程最少数量 -->
+		<property name="corePoolSize" value="20" />
+		<!-- 线程最大数量 -->
+		<property name="maxPoolSize" value="50" />
+		<!-- 缓冲队列 -->
+		<property name="queueCapacity" value="1000" />
+	</bean>
+	<bean id="usrConsumerCacheManager" class="com.esportzoo.esport.controller.ws.server.UsrConsumerCacheManager"></bean>
+	<bean id="matchServiceClient" class="com.esportzoo.leaguelib.client.service.prematch.MatchServiceClient"></bean>
+
+	
+	
+	<util:map id="sceneSelector" key-type="java.lang.Integer">
+			<entry key="#{T(com.esportzoo.esport.controller.ws.constants.SceneType).ROOM.index}"
+			value-ref="roomSceneHandler" />
+			<entry key="#{T(com.esportzoo.esport.controller.ws.constants.SceneType).MATCHING.index}"
+			value-ref="commonSceneHandler" />
+	</util:map>
+	
+	<bean id="serverUri" class="java.net.URI">
+		<constructor-arg index="0" type="java.lang.String" value="${matching_ws}"></constructor-arg>
+	</bean>
+	<bean id="matchingDataWebSocketClient" class="com.esportzoo.esport.controller.ws.client.MatchingDataWebSocketClient" destroy-method="resetStartFlag">
+		<constructor-arg index="0" type="java.net.URI" ref="serverUri"></constructor-arg>	
+	</bean>
+</beans>

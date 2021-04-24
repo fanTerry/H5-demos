@@ -1,0 +1,143 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar pageTitle='订单详情'></navBar>
+    </header>
+    <div class="main">
+      <section>
+        <locationAddress></locationAddress>
+      </section>
+      <section class="order_details">
+        <div class="order_name">
+          <div class="goods_img">
+            <img src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1860037186,2129045815&fm=26&gp=0.jpg"
+              alt="">
+          </div>
+          <div class="goods_info">
+            <p class="goods_name"><span class="name">妲己电玩皮肤妲己电玩皮肤</span><span><i class="star_coin"></i>399.0</span></p>
+            <p><span></span><span class="num">X 1件</span></p>
+          </div>
+        </div>
+        <div class="order_info">
+          <span>发货状态</span>
+          <span>已发货</span>
+        </div>
+        <div class="order_info">
+          <span>快递单号</span>
+          <span class="express_bill"><span class="copy">复制</span><span>45677538947</span></span>
+        </div>
+        <div class="order_info">
+          <span>创建时间</span>
+          <span><span>2018-7-28</span> <span>16:40</span></span>
+        </div>
+        <div class="order_info">
+          <span>订单编号</span>
+          <span>12585856984</span>
+        </div>
+        <div class="order_info">
+          <span class="pay_title">实付款</span>
+          <span class="pay_money"><i class="star_coin"></i><span>399.00</span></span>
+        </div>
+      </section>
+    </div>
+  </div>
+</template>
+
+<script>
+import locationAddress from "../../../components/store/address";
+import navBar from "../../../components/header/nav_bar/index";
+export default {
+  data() {
+    return {};
+  },
+  methods: {},
+  components: {
+    navBar,
+    locationAddress
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+section {
+  padding-left: 10px;
+  padding-right: 10px;
+  background-color: #fff;
+}
+.order_details {
+  margin-top: 8px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  font-size: 14px;
+  color: #333;
+}
+.order_name {
+  @extend .flex;
+  padding-bottom: 6px;
+  .goods_img {
+    width: 85px;
+    height: 85px;
+    margin-right: 15px;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+  }
+  .goods_info {
+    flex: 1;
+    -webkit-flex: 1;
+    padding-top: 10px;
+    p {
+      @extend .flex_v_justify;
+      padding-bottom: 5px;
+    }
+    .num {
+      color: #999;
+    }
+  }
+  .goods_name {
+    span {
+      display: inline-flex;
+      display: -webkit-inline-flex;
+      align-items: center;
+      -webkit-align-items: center;
+    }
+    .name {
+      display: inline-block;
+      @include t_nowrap(100px);
+    }
+  }
+}
+.order_info {
+  @extend .flex_v_justify;
+  padding-top: 14px;
+  .express_bill {
+  }
+  .copy {
+    display: inline-block;
+    padding: 4px 10px;
+    margin-right: 12px;
+    color: $color_main;
+    @include getRadiusBorder($color_main, all, 24px);
+  }
+}
+.pay_title,
+.pay_money {
+  display: inline-flex;
+  display: -webkit-inline-flex;
+  align-items: center;
+  -webkit-align-items: center;
+  font-size: 16px;
+}
+.star_coin {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+</style>

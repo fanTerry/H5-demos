@@ -1,0 +1,46 @@
+<view class="Page">
+	<view class="main">
+		<view class="nav">
+			<a wx:for="{{tablist}}" class="{cur:mark === index}"
+				bindtap="changeTab(index)">{{item}}</a>
+		</view>
+
+		<!-- <scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" pullingUp="onPullingUp"> -->
+		<!-- 营收记录 -->
+		<view class="sales_record" v-if="mark==0">
+			<scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" pullingUp="onPullingUp">
+				<ul>
+					<li wx:for="{{recordList}}">
+						<view>
+							<p class="txt">收入</p>
+							<p class="time">{{item.createTime | getLastTimeStr}}</p>
+						</view>
+						<view class="num">+{{item.amount}}</view>
+					</li>
+				</ul>
+			</scroll>
+		</view>
+
+		<!-- 提现记录 -->
+		<view class="withdraw_record" v-else>
+			<scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" pullingUp="onPullingUp">
+
+				<ul>
+					<li wx:for="{{recordList}}">
+						<view>
+							<p class="txt">提现</p>
+							<p class="time">{{item.createTime | getLastTimeStr}}</p>
+						</view>
+						<view class="tac">
+							<p class="num">{{item.amount}}</p>
+							<p class="status" v-if="item.status==1">审核中</p>
+							<p class="status" v-else-if="item.status==2">提现成功</p>
+							<p class="status" v-else-if="item.status==3">提现失败</p>
+						</view>
+					</li>
+				</ul>
+			</scroll>
+		</view>
+
+	</view>
+</view>

@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "my-record-item" : "/modules/mypage/mywallet/myrecorditem/my-record-item"
+  }
+}

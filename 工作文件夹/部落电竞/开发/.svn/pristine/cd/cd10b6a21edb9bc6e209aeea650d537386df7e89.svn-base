@@ -1,0 +1,78 @@
+<template>
+  <ul class="team_list">
+    <li class="team_item" v-for="(item,index) in 3" :key="index">
+      <p class="team_name">队伍{{index+1}}</p>
+      <!-- 和平精英只有4个，王者荣耀有5个 -->
+      <div class="player" v-for="(item,index) in 5" :key="index">
+        <!-- 主办方在更多队伍页面中才显示这个删除按钮 -->
+        <a class="delete_player"></a>
+        <img src="../../../assets/images/matchtool/default.png" alt="">
+        <p class="player_name">用户名字</p>
+      </div>
+    </li>
+  </ul>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.team_item {
+  position: relative;
+  @extend .flex_justify;
+  width: 94.6667vw;
+  height: 23.6vw;
+  margin: 0 auto;
+  padding: 5.6vw 4vw 0;
+  margin-bottom: 1.3333vw;
+  @include getBgImg("../../../assets/images/matchtool/team_bg.png");
+}
+.team_name {
+  position: absolute;
+  top: 1.0667vw;
+  left: 1.4667vw;
+  font-size: 2.4vw;
+  color: #00b4ff;
+}
+.player {
+  position: relative;
+  width: 15.7333vw;
+  height: 15.7333vw;
+  padding: 0.2667vw;
+  @include getBgImg("../../../assets/images/matchtool/player_bg.png");
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+.delete_player {
+  position: absolute;
+  right: 0.2667vw;
+  top: 0.2667vw;
+  width: 4.5333vw;
+  height: 4.5333vw;
+  @include getBgImg("../../../assets/images/matchtool/delete_player.png");
+}
+.player_name {
+  position: absolute;
+  bottom: 0.2667vw;
+  left: 0.2667vw;
+  width: 15.2vw;
+  padding: 0.5333vw 0;
+  font-size: 1.3333vw;
+  color: #fff;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+</style>

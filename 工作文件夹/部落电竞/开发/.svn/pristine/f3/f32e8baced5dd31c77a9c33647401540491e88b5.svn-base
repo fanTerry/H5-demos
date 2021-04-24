@@ -1,0 +1,207 @@
+<template>
+  <div class="ui_pop" :class="{fadeToTop:showProp == 1}" v-if="showProp">
+    <div class="bet" v-if="showType == 1">
+      <a class="close" @click="closePop()"></a>
+      <div class="title">
+        <p class="tips">投注100,可得123猜币</p>
+        <div class="flex_hc">
+          <span class="coin"></span>
+          <span class="balance">余额 12004</span>
+        </div>
+      </div>
+      <div class="bet_num">
+        <ul>
+          <li :class="{select:selectType == index}" v-for="(item,index) in betNum" :key="index"
+            @click="getValue($event,index)">{{item}}</li>
+        </ul>
+      </div>
+      <a class="confirm_btn" @click="checkOut()">确认投注</a>
+      <div class="mod_footer"></div>
+    </div>
+
+    <div class="betSuccess" v-if="showType == 2">
+      <a class="close" @click="closePop()"></a>
+      <div>
+        <div class="flex_v_h">
+          <span class="happy_icon"></span>
+          投注成功
+        </div>
+        <p class="tips">投注结果见邮件通知</p>
+      </div>
+    </div>
+
+    <div class="betFailed" v-if="showType == 3">
+      <a class="close" @click="showType = 1"></a>
+      <div>
+        <div class="flex_v_h">
+          <span class="sad_icon"></span>
+          余额不足
+        </div>
+        <a class="go_recharge">去充值</a>
+      </div>
+    </div>
+  </div>
+
+</template>
+
+<script>
+export default {
+  components: {},
+  props: ["showProp"],
+  data() {
+    return {
+      betNum: [100, 500, 1000, 5000],
+      showType: 1,
+      selectType: Number,
+      betValue: Number
+    };
+  },
+  methods: {
+    getValue(e, index) {
+      this.selectType = index;
+      this.betValue = e.target.innerText;
+      console.log(e.target.innerText);
+    },
+    checkOut() {
+      if (this.betValue > 500) {
+        // 投注大于用户剩余金额弹出余额不足
+        this.showType = 2;
+      } else {
+        // 弹出投注成功
+        this.showType = 3;
+      }
+    },
+    closePop() {
+      this.showType = 1;
+      this.$emit("closePop");
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../../assets/common/_base";
+@import "../../../../assets/common/_mixin";
+
+.close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  @include getBgImg("../../../../assets/images/guess/close.png");
+}
+
+.bet {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding-bottom: 20px;
+  background-color: #261314;
+  .title {
+    @extend .flex_v_justify;
+    height: 40px;
+    padding: 0 46px 0 10px;
+    background-color: #2e1a1b;
+  }
+  .tips {
+    font-size: 14px;
+    color: #fedcd7;
+  }
+  .coin {
+    width: 18px;
+    height: 18px;
+    @include getBgImg("../../../../assets/images/guess/coin.png");
+  }
+  .balance {
+    margin-left: 10px;
+    font-size: 11px;
+    color: #86564e;
+  }
+
+  .confirm_btn {
+    display: block;
+    margin: 0 10px;
+    line-height: 42px;
+    font-size: 14px;
+    color: #fedcd7;
+    text-align: center;
+    background: linear-gradient(to bottom, #dc2f26, #8c191a);
+    background: -webkit-linear-gradient(top, #dc2f26, #8c191a);
+  }
+}
+
+.bet_num {
+  padding: 15px 5px;
+  ul {
+    @extend .flex_hc;
+    text-align: center;
+  }
+  li {
+    flex: 1;
+    -webkit-flex: 1;
+    margin: 0 5px;
+    font-size: 18px;
+    line-height: 40px;
+    color: #cd948d;
+    border-radius: 3px;
+    background-color: #4e2823;
+    &.select {
+      @include getRadiusBorder(#bb3129, all, 6px);
+      &:after {
+        content: "";
+        position: absolute;
+        right: -5px;
+        top: -5px;
+        width: 14px;
+        height: 14px;
+        @include getBgImg("../../../../assets/images/guess/select.png");
+      }
+    }
+  }
+}
+
+.betSuccess,
+.betFailed {
+  position: relative;
+  @extend .flex_v_h;
+  width: 320px;
+  height: 190px;
+  font-size: 18px;
+  color: #f58079;
+  text-align: center;
+  background-color: #261314;
+  .tips {
+    margin-top: 18px;
+    font-size: 12px;
+    color: #cd948d;
+  }
+}
+
+.happy_icon,
+.sad_icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
+}
+
+.go_recharge {
+  display: inline-block;
+  width: 145px;
+  margin-top: 18px;
+  border-radius: 3px;
+  line-height: 40px;
+  font-size: 14px;
+  color: #fff2f0;
+  background: linear-gradient(to bottom, #dc2f26, #8c191a);
+  background: -webkit-linear-gradient(top, #dc2f26, #8c191a);
+}
+
+.happy_icon {
+  @include getBgImg("../../../../assets/images/guess/happy_icon.png");
+}
+
+.sad_icon {
+  @include getBgImg("../../../../assets/images/guess/sad_icon.png");
+}
+</style>

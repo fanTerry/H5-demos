@@ -1,0 +1,218 @@
+<template>
+  <section class="mod_points_exchange">
+    <modTitle :titleTxt="'积分兑换'"></modTitle>
+    <div class="points_exchange">
+      <img src="../../assets/images/pop/coco_icon.png" alt="">
+      <span>{{getYeYunPoints}} 椰子分</span>
+      <a @click="creditsExchange">兑换椰子分</a>
+    </div>
+    <p class="exchange_tips">椰子分为官方唯一竞猜兑奖货币，玩家可通过竞猜星星等值兑换，一经兑换不可回退，请玩家根据兑换所需椰子分合理兑换</p>
+    <div class="exchange_con">
+      <ul>
+        <li @click="goUrlPage(goodsUrl[0])">
+          <img src="../../assets/images/home/exchange_gold.png" alt="">
+          <p>黄金兑换</p>
+        </li>
+        <li @click="goUrlPage(goodsUrl[1])">
+          <img src="../../assets/images/home/exchange_fee.png" alt="">
+          <p>话费充值</p>
+        </li>
+        <li @click="goUrlPage(goodsUrl[2])">
+          <img src="../../assets/images/home/exchange_oil.png" alt="">
+          <p>加油卡充值</p>
+        </li>
+        <li @click="goUrlPage(goodsUrl[3])">
+          <img src="../../assets/images/home/exchange_supermarket.png" alt="">
+          <p>小椰超市</p>
+        </li>
+        <li @click="goUrlPage(goodsUrl[4])">
+          <img src="../../assets/images/home/exchange_livecost.png" alt="">
+          <p>生活缴费</p>
+        </li>
+        <li @click="goUrlPage(goodsUrl[5])">
+          <img src="../../assets/images/home/exchange_vip.png" alt="">
+          <p>会员卡券</p>
+        </li>
+        <li @click="goUrlPage(goodsUrl[6])">
+          <img src="../../assets/images/home/exchange_travel.png" alt="">
+          <p>海南旅游</p>
+        </li>
+        <li @click="goUrlPage(goodsUrl[7])">
+          <img src="../../assets/images/home/exchange__special.png" alt="">
+          <p>海南特产</p>
+        </li>
+      </ul>
+    </div>
+
+    <exchangePops :showType="showType" @closePop="showType = false" :exchangeStarNum="exchangeStarNum">
+    </exchangePops>
+  </section>
+</template>
+
+<script>
+import modTitle from "../../components/title/title";
+import exchangePops from "./components/exchangePops";
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  components: { modTitle, exchangePops },
+  props: [],
+  data() {
+    return {
+      goodsUrl: [],
+      exchangeStarNum: null,
+      showType: false
+    };
+    return {
+      yeYunPoints: null
+    };
+  },
+  mounted() {
+    this.getGoodsUrl();
+  },
+  computed: {
+    ...mapGetters({
+      loginInfo: "getLoginPop",
+      userYeYunPoints: "getYeYunPoints"
+    }),
+    getYeYunPoints() {
+      return this.userYeYunPoints.state;
+    }
+  },
+
+  // 实时监听用户积分状态
+  watch: {
+    getYeYunPoints(val) {
+      this.yeYunPoints = val;
+      console.log(val, "E用户椰云积分");
+    }
+  },
+  methods: {
+    creditsExchange() {
+      if (this.loginInfo.state == true) {
+        console.log("已登录");
+        this.creditsExchangeShow();
+        this.showType = true;
+      } else {
+        console.log("用户没有登录");
+        this.$store.dispatch("setLoginShowType", { state: true });
+        this.$store.dispatch("setCodeType", { state: 1 });
+      }
+    },
+    getGoodsUrl() {
+      let param = {};
+      this.$post("/api/yeYunUser/getYeYunUrlList", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.goodsUrl = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    // 跳转链接
+    goUrlPage(url) {
+      window.open(url, "_blank");
+    },
+    //积分兑换
+    creditsExchangeShow() {
+      return this.$post("/api/starNum/queryStarNum")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.$store.dispatch("setstarNum", {
+              state: dataResponse.data.ableRecScore
+            });
+            this.exchangeStarNum = dataResponse.data.recScore;
+            console.log(dataResponse.data.recScore, "获取用户可以兑换的星星");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+
+.mod_points_exchange {
+  display: table;
+  margin: 30px auto 0;
+}
+
+.points_exchange {
+  @extend .flex_hc;
+  margin-top: 23px;
+  font-size: 14px;
+  color: #f3d40c;
+  font-weight: bold;
+  img {
+    width: 23px;
+    height: 23px;
+    margin-right: 8px;
+  }
+  a {
+    width: 122px;
+    margin-left: 45px;
+    line-height: 32px;
+    font-weight: normal;
+    color: #fef8ed;
+    border-radius: 3px;
+    background-color: #401c20;
+    text-align: center;
+    border: 1px solid #8a652e;
+    border-image: linear-gradient(
+        0deg,
+        rgba(138, 101, 46, 1),
+        rgba(185, 157, 110, 1)
+      )
+      10 10;
+    border-image: -webkit-linear-gradient(
+        90deg,
+        rgba(138, 101, 46, 1),
+        rgba(185, 157, 110, 1)
+      )
+      10 10;
+    border-image: -ms-linear-gradient(
+        0deg,
+        rgba(138, 101, 46, 1),
+        rgba(185, 157, 110, 1)
+      )
+      10 10;
+  }
+}
+
+.exchange_tips {
+  padding-top: 26px;
+  font-size: 18px;
+  color: rgba(255, 220, 215, 0.2);
+}
+
+.exchange_con {
+  margin-top: 18px;
+  padding: 60px 0;
+  background-color: #2f1c20;
+  ul {
+    @extend .flex_v_justify;
+    padding: 0 10px;
+    text-align: center;
+  }
+  li {
+    margin: 0 9px;
+  }
+  img {
+    width: 134px;
+    height: 148px;
+  }
+  p {
+    padding-top: 30px;
+    font-size: 22px;
+    color: #ffdcd7;
+  }
+}
+</style>

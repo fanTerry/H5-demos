@@ -1,0 +1,44 @@
+<template>
+  <div class="user_card">
+    <div class="user_info">
+      <div>
+        <div class="user_img">
+          <img :src="expertInfo.userIcon" alt="">
+        </div>
+        <div>
+          <div class="flex_hc">
+            <span class="name">{{expertInfo.userNickName}}</span>
+            <!-- <span class="record">近10中0</span> -->
+          </div>
+          <div class="tips">
+            <!-- <p>
+                                    <span>66%</span>预计回报率</p> -->
+            <p>
+              <span>{{expertInfo.fans}}</span>粉丝数</p>
+          </div>
+        </div>
+      </div>
+      <template v-if="!expertInfo.selfFlag">
+        <div class="follow_btn" v-if="!expertInfo.followFlag" @click="updateFollowStatus(expertInfo.userId,1)">+ 关注
+        </div>
+        <div class="followed_btn" @click="updateFollowStatus(expertInfo.userId,0)" v-else>- 已关注</div>
+      </template>
+      <!-- <div class="followed_btn">+ 关注</div> -->
+    </div>
+    <p class="intro_text">{{expertInfo.expertDesc}}</p>
+  </div>
+</template>
+
+<script>
+export default {
+  props: ["expertInfo"],
+  data() {
+    return {};
+  },
+  methods: {},
+  components: {}
+};
+</script>
+
+<style lang='scss'>
+</style>

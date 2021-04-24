@@ -1,0 +1,23 @@
+<!--component/comm/expertitem/expert-item.wxml-->
+
+<view class='expert-item dsp-table'>
+  <view class='dsp-cell'>
+    <user-avatar userImgUrl="{{followUseInfo.userIcon}}" showSize="100"></user-avatar>
+  </view>
+  <view class='dsp-cell e-i-m'>
+    <view class='expert-name'><text>{{followUseInfo.userNickName}}</text></view>
+    <view class='expert-sub'>
+      <view class='expert-info'><text>{{fans}}</text></view>
+
+      <view class='expert-info' wx:if="{{followStaus==0}}" ><text>未关注</text></view>
+      <view class='expert-info' wx:else ><text>已关注</text></view>
+
+    </view>
+  </view>
+  <view class='dsp-cell'>
+
+    <text class='expert-follow' wx:if="{{followStaus==0}}" bindtap="follow" data-usrid="{{followUseInfo.userId}}">+关注</text>
+     <text class='expert-follow expert-followed' wx:else bindtap="cancelFollow" data-usrid="{{followUseInfo.userId}}">已关注</text>
+
+  </view>
+</view>

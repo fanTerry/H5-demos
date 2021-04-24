@@ -1,0 +1,125 @@
+
+//用户中心 
+const login = () => import('./views/usercenter/login/myLogin.vue');
+const agreement = () => import('./views/usercenter/login/agreement.vue');
+const pravicy = () => import('./views/usercenter/login/safe.vue');
+const register = () => import('./views/usercenter/register/myRegister.vue');
+const registerUserinfo = () => import('./views/usercenter/register/userInfo/myRegisterUserinfo.vue');
+const resetPasswordValidCode = () => import('./views/usercenter/resetPassword/validCode.vue');
+const resetPasswordConfirm = () => import('./views/usercenter/resetPassword/confirm.vue');
+const userInfo = () => import('./views/usercenter/userinfo/userInfo.vue');
+const bindPhone = () => import('./views/usercenter/userinfo/bindPhone.vue');
+const userAuth = () => import('./views/usercenter/userinfo/userAuth.vue');
+const userBankCard = () => import('./views/usercenter/userinfo/userBankCard.vue');
+
+// 小游戏落地页
+const gameIndex = () => import('./views/game/index.vue');
+
+// 摇一摇小游戏动森风格
+const gameShake = () => import('./views/game/gameshake/index.vue');
+const gameShakeRecord = () => import('./views/game/gameshake/wallet.vue');
+
+//罗马帝国小游戏
+const goldEmpire = () => import('./views/game/goldEmpire/index.vue');
+const goldEmpireInvestRecord = () => import('./views/game/goldEmpire/investRecord.vue');
+const goldEmpireDetail = () => import('./views/game/goldEmpire/detail.vue');
+
+
+
+const routers = [{
+    path: '/',
+    component: gameIndex,
+    // meta: {
+    //     keepAlive: true
+    // }
+}, {
+    path: '/game/index',
+    name: 'gameIndex',
+    component: gameIndex
+}, {
+    path: '/login',
+    name: 'login',
+    component: login
+},
+{
+    path: '/login/agreement',
+    name: 'agreement',
+    component: agreement
+}, {
+    path: '/login/pravicy',
+    name: 'pravicy',
+    component: pravicy
+}, {
+    path: '/register',
+    name: 'register',
+    component: register
+}, {
+    path: '/registerUserinfo',
+    name: 'registerUserinfo',
+    component: registerUserinfo
+}, {
+    path: '/userInfo',
+    name: 'userInfo',
+    component: userInfo
+}, {
+    path: '/uc/bindPhone',
+    name: 'bindPhone',
+    component: bindPhone
+}, {
+    path: '/uc/userAuth',
+    name: 'userAuth',
+    component: userAuth
+}, {
+    path: '/uc/userBankCard',
+    name: 'userBankCard',
+    component: userBankCard
+}, {
+    path: '/resetPassword',
+    name: 'resetPassword',
+    component: resetPasswordValidCode
+}, {
+    path: '/resetPasswordConfirm',
+    name: 'resetPasswordConfirm',
+    component: resetPasswordConfirm
+}, {
+    path: '/game/shake',
+    name: 'gameShake',
+    component: gameShake,
+    meta: {
+        title: '欢乐摇一摇'
+    }
+}, {
+    path: '/game/shake/record',
+    name: 'gameShakeRecord',
+    component: gameShakeRecord,
+    meta: {
+        title: '欢乐摇一摇'
+    }
+}, {
+    path: '/game/goldEmpire',
+    name: 'goldEmpire',
+    component: goldEmpire,
+    meta: {
+        title: '罗马帝国'
+    }
+}, {
+    path: '/game/goldEmpire/investRecord',
+    name: 'goldEmpireInvestRecord',
+    component: goldEmpireInvestRecord,
+    meta: {
+        title: '罗马帝国'
+    }
+}, {
+    path: '/game/goldEmpire/detail',
+    name: 'goldEmpireDetail',
+    component: goldEmpireDetail,
+    meta: {
+        title: '罗马帝国'
+    }
+}, {
+    path: '*',
+    component: gameIndex
+}
+];
+
+export default routers;

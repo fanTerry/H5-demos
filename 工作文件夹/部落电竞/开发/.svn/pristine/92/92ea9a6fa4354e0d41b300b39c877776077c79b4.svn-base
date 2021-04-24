@@ -1,0 +1,111 @@
+<template>
+  <section class="tabbar">
+    <ul>
+      <li @click="gotoAddress({path: '/home', query: {}})"
+        :class="{cur:$route.path.indexOf('home')!== -1 || $route.path=='/'}">
+        <i class="home"></i>
+        <span>首页</span>
+      </li>
+      <li @click="gotoAddress({path: '/match', query: {}})" :class="{cur:$route.path.indexOf('match')!== -1}">
+        <i class="match"></i>
+        <span>赛事</span>
+      </li>
+      <li @click="gotoAddress({path: '/follow', query: {}})" :class="{cur:$route.path.indexOf('follow')!== -1}">
+        <i class="follow"></i>
+        <span>关注</span>
+      </li>
+      <li @click="gotoAddress({path: '/expert', query: {}})" :class="{cur:$route.path.indexOf('expert')!== -1}">
+        <i class="expert"></i>
+        <span>专家</span>
+      </li>
+      <li @click="gotoAddress({path: '/userCenter', query: {}})" :class="{cur:$route.path.indexOf('userCenter')!== -1}">
+        <i class="user_center"></i>
+        <span>我的</span>
+      </li>
+    </ul>
+  </section>
+</template>
+
+<script>
+export default {
+  data() {
+    return {};
+  },
+  methods: {
+    gotoAddress(path) {
+      this.$router.push(path);
+    }
+  },
+  components: {}
+};
+</script>
+
+<style lang='scss'>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+.tabbar {
+  color: #a4a2a5;
+  ul {
+    @extend .flex_hc;
+    justify-content: space-around;
+    padding: 5px 0 2px;
+  }
+  i {
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 0 auto;
+  }
+  span {
+    display: block;
+    padding: 5px 0;
+    text-align: center;
+  }
+}
+
+.cur {
+  color: #ff7e00;
+  @include getBorder(bottom, #ff7e00);
+  .home {
+    @include getBgImg("../../assets/images/home/home_cur.png");
+    background-size: 100% auto;
+  }
+  .match {
+    @include getBgImg("../../assets/images/match/match_cur.png");
+    background-size: 100% auto;
+  }
+  .follow {
+    @include getBgImg("../../assets/images/follow/follow_cur.png");
+    background-size: 100% auto;
+  }
+  .expert {
+    @include getBgImg("../../assets/images/expert/expert_cur.png");
+    background-size: 100% auto;
+  }
+  .user_center {
+    @include getBgImg("../../assets/images/user_center/user_center_cur.png");
+    background-size: 100% auto;
+  }
+}
+
+.home {
+  @include getBgImg("../../assets/images/home/home.png");
+  background-size: 100% auto;
+}
+.match {
+  @include getBgImg("../../assets/images/match/match.png");
+  background-size: 100% auto;
+}
+.follow {
+  @include getBgImg("../../assets/images/follow/follow.png");
+  background-size: 100% auto;
+}
+.expert {
+  @include getBgImg("../../assets/images/expert/expert.png");
+  background-size: 100% auto;
+}
+.user_center {
+  @include getBgImg("../../assets/images/user_center/user_center.png");
+  background-size: 100% auto;
+}
+</style>

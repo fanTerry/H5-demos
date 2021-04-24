@@ -1,0 +1,57 @@
+<!--modules/store/detail/goodsDetail.wxml-->
+<view class="main">
+  <view class="goods_list">
+    <slot></slot>
+    <ul>
+      <li class="goods_item">
+        <view class="goods_image mode='aspectFill'">
+          <image mode="aspectFill" src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1860037186,2129045815&fm=26&gp=0.jpg" alt=""></image>
+        </view>
+        <view>
+          <i class="rank_first"></i>
+          <view class="goods_title">
+            <span class="goods_name">妲己电玩皮肤</span>
+            <view class="goods_grade">王者</view>
+						<i class='goods_discount'></i>
+						<i class='goods_new'></i>
+						<i class='goods_recommend'></i>
+						<i class='no_goods'>已抢光</i>
+          </view>
+
+          <view class="goods_detail">
+            <p class="mark">
+              <i class="star_coin"></i>399
+							<span class='discount_price'>399.00</span>
+						</p>
+            <view>
+              <view class="bought_person">
+                <image mode='aspectFill' src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1877235340,1847553292&fm=26&gp=0.jpg" alt=""></image>
+                <image mode='aspectFill' src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1877235340,1847553292&fm=26&gp=0.jpg" alt=""></image>
+                <image mode='aspectFill' src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1877235340,1847553292&fm=26&gp=0.jpg" alt=""></image>
+                <image mode='aspectFill' src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1877235340,1847553292&fm=26&gp=0.jpg" alt=""></image>
+                <image mode='aspectFill' src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1877235340,1847553292&fm=26&gp=0.jpg" alt=""></image>
+                <image mode='aspectFill' src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1877235340,1847553292&fm=26&gp=0.jpg" alt=""></image>
+              </view>
+              <span class="num">56098</span>人兑换
+            </view>
+          </view>
+        </view>
+      </li>
+    </ul>
+  </view>
+  <view class="goods_info">
+    <h3>商品详情</h3>
+    <p>语雀是一款优雅高效的在线文档编辑与协同工具， 让每个企业轻松拥有文档中心阿里巴巴集团内部使用多年，众多中小企业首选。</p>
+    <image mode='aspectFill' src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1860037186,2129045815&fm=26&gp=0.jpg" alt=""></image>
+  </view>
+</view>
+<footer class="mod_footer">
+  <view class="goods_exchange">
+    <view>
+      <i class="service_icon"></i>
+      客服
+    </view>
+    <a class="exchange_btn">立即兑换</a>
+  </view>
+</footer>
+<storeExchange></storeExchange>

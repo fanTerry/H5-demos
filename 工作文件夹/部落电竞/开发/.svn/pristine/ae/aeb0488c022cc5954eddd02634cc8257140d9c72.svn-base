@@ -1,0 +1,88 @@
+<template>
+  <div class="Page" @click="toHideBetPop">
+    <header class="mod_header"></header>
+    <div class="main">
+      <!-- banner图 TODO-->
+      <mod-banner :bannerType=1></mod-banner>
+      <!-- 登录 -->
+      <mod-users></mod-users>
+      <!-- 猜MVP，冠军，英雄，五杀  暂时没有这种-->
+      <mod-guess></mod-guess>
+      <!--TODO-->
+      <mod-banner :bannerType=2></mod-banner>
+      <!-- 赛事竞猜 -->
+      <mod-match-guess></mod-match-guess>
+      <!-- 人气投票 -->
+      <!-- <modVote></modVote> -->
+      <!-- 椰子积分兑换 -->
+      <mod-exchange></mod-exchange>
+    </div>
+  </div>
+</template>
+
+<script>
+import modBanner from "../banner/banner";
+import modUsers from "../users/user.vue";
+import modGuess from "../hotguess/guess";
+import modMatchGuess from "../matchguess/match_guess.vue";
+import modVote from "../vote/vote.vue";
+import modExchange from "../exchange/exchange.vue";
+import { mapActions } from "vuex";
+
+export default {
+  components: {
+    modBanner,
+    modUsers,
+    modGuess,
+    modMatchGuess,
+    modVote,
+    modExchange
+  },
+  props: [],
+  data() {
+    return {};
+  },
+
+  methods: {
+    ...mapActions(["setBetData"]),
+    toHideBetPop() {
+      this.setBetData({ toCurBet: null });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_icon";
+
+.Page {
+  position: relative;
+  min-width: 1350px;
+  @include getBgImg("../../assets/images/home/home_bg.png");
+  background-position: top center;
+  background-size: 1915px auto;
+  background-color: #1b111e;
+}
+
+.mod_header {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  &::after {
+    content: "";
+    @extend .g_c_mid;
+    top: 0;
+    width: 100%;
+    height: 409px;
+    @include getBgImg("../../assets/images/home/star_light.png");
+    background-position: top center;
+    background-size: 1915px auto;
+  }
+}
+
+.main {
+  width: 1350px;
+  padding-bottom: 160px;
+  margin: 0 auto;
+}
+</style>

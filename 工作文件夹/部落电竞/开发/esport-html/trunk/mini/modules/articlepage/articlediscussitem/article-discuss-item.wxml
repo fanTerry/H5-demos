@@ -1,0 +1,64 @@
+<!--modules/articlepage/articlediscussitem/article-discuss-item.wxml-->
+<view class='article-discuss-item'>
+  
+  <!-- 评论作者头像部分 -->
+  <view class='dsp-cell v-t'>
+    <image class="article-author-avatar" src="/resources/images/avatar/cat.jpg" mode="aspectFill" />
+  </view>
+  
+  <view class='dsp-cell'>
+    <!-- 评论作者信息部分 -->
+    <view class='article-author-info-view'>
+      <view class='dsp-cell w400'>
+        <view class='article-author-name'>
+          <text>强主播欧阳向日葵</text>
+        </view>
+        <view class='article-author-info-v'>
+          <text class='article-author-info'>#1234</text>
+          <text class='article-author-info'>1小时前</text>
+        </view>
+      </view>
+      <view class='dsp-cell'>
+        <view class='article-author-follow'>
+          <text>+ 关注</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 评论内容部分 -->
+    <view class='article-content'>
+      <text>快来批</text>
+    </view>
+
+    <!-- 评论控制条部分 -->
+    <view class='article-control clear'>
+      <view class="article-c-item">
+        <i class='iconfont icon-dianzan atc-c-i-i'></i><text>657823</text>
+      </view>
+      <view class="article-c-item">
+        <i class='iconfont icon-xiaoxi atc-c-i-i'></i><text>657823</text>
+      </view>
+      <view class='atc-c-i-i-m-v'>
+        <i class='iconfont icon-gengduo atc-c-i-i-m'></i>
+      </view>
+    </view>
+
+
+    <!-- 评论的盖楼部分 -->
+    <view class='article-d-discuss'>
+      <!-- 盖楼列表 -->
+      <view wx:for="{{discussArr}}" wx:key="" class='article-d-discuss-item'>
+        <text class='atc-d-d-n'>用户一：</text>
+        <text class='atc-d-d-t'>皮皮皮快来批一下哈~</text>
+      </view>
+  
+      <view class='article-d-d-control'>
+        <text>收起所有回复</text>
+        <icon class='iconfont icon-xiangshang1 atc-d-d-i'></icon>
+      </view>
+
+    </view>
+
+  </view>
+
+</view>

@@ -1,0 +1,23 @@
+const biz = 1;
+const agentId = 10002;
+const loginFlag = 0;
+const clientType = 6;
+
+export default {
+    biz: biz,
+    agentId: agentId,
+    loginFlag: loginFlag,
+    clientType: clientType,
+    setBiz(biz) {
+        this.biz = biz;
+    },
+    setAgentId(agentId) {
+        this.agentId = agentId;
+    },
+    setLoginFlag(loginFlag) {
+        this.loginFlag = loginFlag;
+    },
+    setClientType(clientType) {
+        this.clientType = clientType;
+    }
+}

@@ -1,0 +1,362 @@
+<template>
+  <div class="ui_pop">
+    <div class="Page rechargePage">
+      <h3>
+        星星充值
+        <a class="close" @click="closePop"></a>
+      </h3>
+      <ul class="prize_list">
+        <li v-for="(item,index) in chargeMoneyList" :key="index" :class="chargeIndex==index ? 'select' : ''"
+          @click="selectChargeAmount(item,index)">
+          <!-- <p>{{item.sendStar>0?"赠送"+item.sendStar:""}}</p> -->
+          <img :src="require('../../../assets/images/guess/starday0.png')" alt />
+          <span class="cost_star">{{item*1000}}星星</span>
+          <a class="prize_get_btn" @click="rechargePrize(index)">{{item}}元</a>
+        </li>
+      </ul>
+      <div class="exchange_btn">
+        <!-- 加disabled置为不可点击 -->
+        <a :class="{disabled:selectedAmount<=0}" @click="gotoCharge()">立即支付{{selectedAmount}}元</a>
+      </div>
+      <charge-pop-up v-if="showChargePopUp" :chargeWayList="chargeWayList" @close="closeChargeDialog"
+        @confirmCharge="confirmCharge" :price="selectedAmount"></charge-pop-up>
+      <!-- <pops :showType='showType' :showFlag='showFlag' :currChargeItem='currChargeItem' @closePop='closePop'></pops> -->
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar/index";
+import pops from "./components/pops";
+import chargePopUp from "../../../components/pop_up/charge/index.vue";
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  components: { navBar, pops, chargePopUp },
+  props: [],
+  data() {
+    return {
+      prizeDay: [],
+      showType: 0,
+      showFlag: false,
+      chargeMoneyList: [], //充值金额列表
+      currChargeItem: null, //当前选择的充值选项
+      selectedAmount: 0.0, //需要充值的金额
+      chargeIndex: null, //下标
+      showChargePopUp: false, //是否展示充值方式
+      chargeWayList: [] //充值方式列表
+      // chargeResParam: null,
+      // walletRec: null //用户星星数量
+    };
+  },
+  computed: {
+    ...mapGetters({
+      // wxuserStarNum: "getstarNum"
+    }),
+    getstarNum() {
+      // return this.wxuserStarNum.state;
+    }
+  },
+  //实时监听用户星星状态
+  watch: {
+    getstarNum(val) {
+      // this.walletRec = val;
+      console.log(val, "rechargePops用户星星");
+    }
+  },
+  mounted() {
+    //屏蔽app处理
+    let clientType = this.$route.query.clientType;
+    if (clientType == 3) {
+      this.$router.push({
+        path: "/home",
+        query: {}
+      });
+    } else if (clientType == 4) {
+      this.$router.push({
+        path: "/iosRecharge",
+        query: {}
+      });
+    }
+    this.openChargerDialog();
+    this.getWxConfig();
+  },
+  methods: {
+    getWxConfig: function() {
+      this.$post("/api/wxlogin/getJsConfig")
+        .then(rsp => {
+          console.log(rsp, "rsp");
+          if (rsp) {
+            this.wx.config({
+              debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+              appId: rsp.appId, // 必填，公众号的唯一标识
+              timestamp: rsp.timestamp, // 必填，生成签名的时间戳
+              nonceStr: rsp.nonceStr, // 必填，生成签名的随机串
+              signature: rsp.signature, // 必填，签名，见附录1
+              jsApiList: ["chooseWXPay"]
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    /**关闭充值方式弹窗 */
+    closeChargeDialog() {
+      this.showChargePopUp = false;
+    },
+    /**充值 */
+    confirmCharge: function(chooseChargeWay, chargeWayBalance) {
+      console.log(chooseChargeWay, "确认充值选择的充值方式");
+      // console.log(chargeWayBalance, "确认充值选择的充值方式余额");
+      if (parseFloat(chargeWayBalance) < parseFloat(this.selectedAmount)) {
+        this.$toast("余额不足");
+        return;
+      }
+
+      let param = {
+        chargeAmount: this.selectedAmount,
+        chargeWay: chooseChargeWay
+      };
+      console.log(param, "充值传递的参数");
+      var _self = this;
+      console.log(_self.wx, "_self.wx");
+      this.$post("/api/h5charge/tocharge", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse, "充值返回数据");
+          if (dataResponse.code == "200" && dataResponse.data.successFlag) {
+            if (
+              chooseChargeWay == this.globalConst.payIndexMap.get("WXH5_PAY") &&
+              dataResponse.data.requestUrl != ""
+            ) {
+              var redirect_url = encodeURIComponent(window.location.href);
+              window.location.href = dataResponse.data.requestUrl;
+              this.url = dataResponse.data.requestUrl;
+              // this.showPop = true;
+            } else if (
+              chooseChargeWay == this.globalConst.payIndexMap.get("WXJSAPI_PAY")
+            ) {
+              this.weixinPay(dataResponse.data.requestParams, _self);
+            } else {
+              this.$toast("充值成功", 1);
+              this.$parent.getUserWallet();
+              setTimeout(() => {
+                this.closePop();
+              }, 1000);
+            }
+            this.closeChargeDialog();
+          } else if (dataResponse.code == "600") {
+            this.$toast("余额不足");
+          } else {
+            this.$toast("系统异常");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    /**微信支付 */
+    weixinPay: function(params, _self) {
+      console.log(params, "params");
+      _self.wx.ready(function() {
+        _self.wx.chooseWXPay({
+          timestamp: params.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+          nonceStr: params.nonceStr, // 支付签名随机串，不长于 32 位
+          package: params.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+          signType: "MD5", // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+          paySign: params.paySign, // 支付签名
+          success: function(res) {
+            _self.$toast("充值成功", 1);
+            this.$parent.getUserWallet();
+            setTimeout(() => {
+              _self.closePop();
+            }, 1000);
+          },
+          cancel: function(res) {
+            _self.$toast("支付取消", 2);
+          },
+          fail: function(res) {
+            _self.$toast("支付失败", 2);
+          }
+        });
+      });
+    },
+    /**获取充值方式 */
+    gotoCharge() {
+      console.log("点击立即充值");
+      console.log(this.selectedAmount, "选择的充值金额");
+      if (this.selectedAmount <= 0.0) {
+        // this.$toast("请先选择充值金额");
+        return;
+      }
+
+      this.$post("/api/payment/getPayWayList", {
+        needRecPay: false
+      })
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse, "h5充值方式返回");
+          if (dataResponse.code == "200") {
+            this.chargeWayList = dataResponse.data;
+            console.log(this.chargeWayList, "充值方式列表1");
+            if (this.chargeWayList.length <= 0) {
+              this.$toast("充值暂未开放");
+              return;
+            }
+            this.showChargePopUp = true;
+          } else {
+            this.$toast("获取充值方式异常，请稍后再试");
+            return;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    /**点击选择充值的金额 */
+    selectChargeAmount(item, index) {
+      console.log(item, index, "充值参数", item.money);
+      this.selectedAmount = item;
+      this.chargeIndex = index;
+    },
+    closePop() {
+      // this.showFlag = false;
+      this.$emit("closeRechargePop");
+    },
+    openChargerDialog() {
+      return this.$post("/api/charge/pageData")
+        .then(res => {
+          console.log(res, "得到充值页所需数据");
+          if (res.code == "200") {
+            this.chargeMoneyList = res.data.chargeAmountList;
+            this.walletRec = res.data.ableRecScore;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    rechargePrize(index) {
+      this.currChargeItem = this.chargeMoneyList[index];
+      this.showFlag = true;
+      this.showType = 1;
+    }
+  }
+};
+</script>
+
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  width: 94.6667vw;
+  height: 84vw;
+  background: #391a1c;
+}
+
+h3 {
+  position: relative;
+  width: 100%;
+  line-height: 8.8vw;
+  font-size: 4.8vw;
+  font-weight: normal;
+  text-align: center;
+  color: #fedcd7;
+  background-color: #482527;
+}
+
+.close {
+  position: absolute;
+  right: 2.67vw;
+  top: 1.6vw;
+  width: 5.33vw;
+  height: 5.33vw;
+  @include getBgImg("../../../assets/images/guess/close.png");
+  background-size: contain;
+}
+
+.pop_tips {
+  @extend .g_v_c_mid;
+  width: 57.33vw;
+  padding: 5.33vw 0;
+  text-align: center;
+  background-color: #34201d;
+  p {
+    font-size: 3.73vw;
+    color: #fff;
+  }
+  span {
+    display: block;
+    padding-top: 5.33vw;
+    font-size: 5.33vw;
+    color: #f6b70d;
+  }
+}
+.prize_list {
+  @extend .flex_v_h;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  padding-top: 2.6667vw;
+}
+li {
+  width: 22.6667vw;
+  height: 25.8667vw;
+  padding-bottom: 2.4vw;
+  margin: 0 0.5333vw 3.2vw;
+  @include getBgImg("../../../assets/images/guess/recharge.png");
+  background-size: auto 100% !important;
+  box-shadow: 0px 6px 8px 0px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  &.select {
+    @include getBgImg("../../../assets/images/guess/recharge_select.png");
+  }
+  .cost_star {
+    font-size: 2.6667vw;
+    color: #fff;
+  }
+  img {
+    display: block;
+    height: 6.4vw;
+    margin: 2.6667vw auto 3.3333vw;
+    object-fit: contain;
+  }
+}
+.prize_get_btn {
+  display: inline-block;
+  width: 14.9333vw;
+  margin-top: 3.2vw;
+  padding: 2px 0 1px;
+  font-size: 3.4667vw;
+  font-weight: bold;
+  color: #fff300;
+  border: 2px solid #fff300;
+  border-radius: 5.3333vw;
+}
+
+.exchange_btn {
+  margin-top: -1.3333vw;
+  padding: 2.67vw 0 4vw;
+  @include getBgImg("../../../assets/images/guess/shadow.png");
+  background-size: 100% auto;
+  background-position: top center;
+  text-align: center;
+  a {
+    display: inline-block;
+    margin: 0 auto;
+    padding: 0 8.2667vw;
+    border-radius: 3px;
+    line-height: 8.8vw;
+    font-size: 3.73vw;
+    color: #fedcd7;
+    background: linear-gradient(to bottom, #df2f26, #86171a);
+    background: -webkit-linear-gradient(top, #df2f26, #86171a);
+  }
+  .disabled {
+    opacity: 0.2;
+  }
+}
+</style>

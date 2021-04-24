@@ -1,0 +1,39 @@
+const biz = 1;
+const agentId = 10002;
+const loginFlag = 0;
+const clientType = 6;
+//腾讯统计渠道参数
+const  ADTAG ="bz.h5";
+const ADTAGTable = {
+    100104: "yb.gzhdh",  //友宝.公众号大号
+    100103: "yb.gzhxh",  //友宝.公众号小号
+    10006: "bz.gzh",  //本站.公众号
+    10002: "bz.h5",  //本站.h5
+    10003: "app.andro",  //app.安卓
+    10004: "app.ios",  //app.ios
+}
+
+
+export default {
+    biz: biz,
+    agentId: agentId,
+    loginFlag: loginFlag,
+    clientType: clientType,
+    ADTAG:ADTAG,
+    ADTAGTable:ADTAGTable,
+    setBiz(biz) {
+        this.biz = biz;
+    },
+    setAgentId(agentId) {
+        this.agentId = agentId;
+    },
+    setLoginFlag(loginFlag) {
+        this.loginFlag = loginFlag;
+    },
+    setClientType(clientType) {
+        this.clientType = clientType;
+    },
+    setADTAG(ADTAG) {
+        this.ADTAG = ADTAG;
+    }
+}

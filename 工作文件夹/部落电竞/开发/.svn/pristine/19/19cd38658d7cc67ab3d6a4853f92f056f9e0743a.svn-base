@@ -1,0 +1,18 @@
+//dota2英雄前缀
+const heroDota2ImgUrlPrefix = 'https://rs.esportzoo.com/upload/league/hero/dota2/';
+//LOL英雄前缀
+const heroLoLImgUrlPrefix = 'https://rs.esportzoo.com/upload/league/champion/';
+//直播赛事数据存放的json文本
+const matchDataLiveJsonUrl = '/rsDomain/upload/interface/matchdata/match_live_';
+//直播图文数据存放的json文本
+const matchEventLiveJsonUrl = '/rsDomain/upload/interface/matchdata/event_live_';
+//默认的赛事队伍logo
+const matchTeamDefaultIcon = 'https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png';
+
+export default {
+    heroDota2ImgUrlPrefix,
+    heroLoLImgUrlPrefix,
+    matchDataLiveJsonUrl,
+    matchEventLiveJsonUrl,
+    matchTeamDefaultIcon
+}

@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "user-avatar": "/component/comm/useravatar/user-avatar",
+    "member-pay-item": "memberpayitem/member-pay-item",
+    "report-banner": "/component/report/reportbanner/report-banner"
+  }
+}

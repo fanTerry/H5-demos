@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:amq="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://activemq.apache.org/schema/core
+		http://activemq.apache.org/schema/core/activemq-core-5.4.2.xsd">
+
+	<description>ActiveMQ相关配置</description>
+
+	<!-- ActiveMQ 连接工厂 -->
+	<amq:connectionFactory id="defaultConnectionFactoryA" brokerURL="${jms1.receive.broker_url}" />
+
+	<!-- Spring Caching 连接工厂 -->
+	<bean id="cachingConnectionFactoryA" class="org.springframework.jms.connection.CachingConnectionFactory"
+		destroy-method="destroy">
+		<property name="targetConnectionFactory" ref="defaultConnectionFactoryA" />
+		<property name="sessionCacheSize" value="10" />
+	</bean>
+
+	<!-- 定义Topic监听器 -->
+	<bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="cachingConnectionFactoryA" />
+		<!-- 发布订阅模式 -->
+		<property name="pubSubDomain" value="true"/>
+		<property name="destination" ref="loginWebTopic" />
+		<property name="messageListener" ref="loginWebListener" />
+		<property name="concurrentConsumers" value="1" />
+		<property name="maxConcurrentConsumers" value="1" />
+		<property name="sessionAcknowledgeModeName" value="AUTO_ACKNOWLEDGE" />
+	</bean>
+
+
+
+</beans>

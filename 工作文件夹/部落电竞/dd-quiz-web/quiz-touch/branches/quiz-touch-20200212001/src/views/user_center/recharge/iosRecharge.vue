@@ -1,0 +1,605 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar :pageTitle="'充值'"></navBar>
+    </header>
+    <div class="main">
+      <!-- 第一行:基础数据 -->
+      <div class='user_card'>
+        <div class="user_info">
+          <img mode="aspectFill" :src="userInfo.icon|getDefaultImg(globalConst.userDefaultIcon)">
+          <div>
+            <p class='name'>{{userInfo.nickName}}</p>
+          </div>
+        </div>
+        <div class="balance">可用星星<i class="star_coin"></i></div>
+        <div class="money_num">{{myBalance}}</div>
+      </div>
+      <!-- 第二行:充值列表 -->
+      <div class='recharge_list'>
+        <h3 class="title">购买数量</h3>
+        <div class="list">
+          <!-- 选中加上类名"active" -->
+          <div class="item" :class="item.productId==userSelectItem.selectedProductId ? 'active' : ''"
+            v-for="(item,index) in chargeAmoumtList" :key="index" @click="selectChargeAmount(item)">
+            <div class="num">
+              <i class="star_coin"></i>
+              <span class="amount">{{item.chargeAmount*1000}}</span>
+            </div>
+            <div class="price">
+              <span class="discount">￥{{item.chargeAmount}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rules">
+        <h3 class="title">温馨提示：</h3>
+        <div class="txt">
+          <span>1、</span>
+          <p>充值完成后，若星星没有增加，可进入"我的-客服中心" 联系解决。</p>
+        </div>
+        <div class="txt">
+          <span>2、</span>
+          <p>星星交易明细，进入我的-钱包-交易明细查看到明细。</p>
+        </div>
+        <div class="txt">
+          <span>3、</span>
+          <p>星星可用于支付查看达人发布的文章，不能提现。</p>
+        </div>
+      </div>
+    </div>
+    <footer class="mod_footer">
+      <charge @gotoCharge="gotoCharge" :price="userSelectItem.selectedChargeAmount"></charge>
+    </footer>
+    <chargePopUp v-if="showChargePopUp" :chargeWayList="chargeWayList" @close="closeChargeDialog"
+      @confirmCharge="confirmCharge" :price="userSelectItem.selectedChargeAmount"></chargePopUp>
+    <popAlert :showPop='showPop' @close='showPop=false' @confirm='confirm' btnTxt1="已取消" btnTxt2="已完成支付" type="2">
+      <p>请确认微信支付是否已完成</p>
+    </popAlert>
+  </div>
+</template>
+<script>
+import charge from "../../../components/footer/charge/index";
+import chargePopUp from "../../../components/pop_up/charge/index";
+import navBar from "../../../components/header/nav_bar/index";
+import popAlert from "components/pop_up/pop_alert";
+export default {
+  components: {
+    charge,
+    chargePopUp,
+    navBar,
+    popAlert
+  },
+  data() {
+    return {
+      myBalance: "0",
+      chargeAmoumtList: [],
+      returnUrl: "",
+      returnUrlEncodeFlag: 0,
+      userInfo: Object,
+      showChargePopUp: false,
+      chargeWayList: [],
+      showPop: false,
+      iap: {}, //ios 支付渠道
+      ids: [], //应用内购项目，需要申请
+      userSelectItem: {
+        selectedChargeAmount: "0.00",
+        selectedChargeWay: null,
+        selectedProductId: null
+      }
+    };
+  },
+  created() {
+    if (this.$route.query.clientType != 4) {
+      this.$router.push("/home");
+    }
+    this.getChargePageData().then(dataResponse => {
+      document.addEventListener("plusready", function() {
+        console.log(
+          "所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。"
+        );
+      });
+      document.addEventListener("plusready", this.plusReady(), false);
+    });
+  },
+  mounted() {
+    if (window.sessionStorage.user) {
+      this.userInfo = JSON.parse(window.sessionStorage.user);
+    }
+  },
+  methods: {
+    //点击去充值,获取充值支付列表
+    gotoCharge: function() {
+      console.log("点击立即充值");
+      console.log(this.userSelectItem.selectedChargeAmount, "选择的充值金额");
+      if (this.userSelectItem.selectedChargeAmount == "0.00") {
+        this.$toast("请先选择充值金额");
+        return;
+      }
+      this.$post("/api/payment/getPayWayList", {
+        needRecPay: false
+      })
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse, "h5充值方式返回");
+          if (dataResponse.code == "200") {
+            this.chargeWayList = dataResponse.data;
+            console.log(this.chargeWayList, "充值方式列表1");
+            if (this.chargeWayList.length <= 0) {
+              this.$toast("充值暂未开放");
+              return;
+            }
+            this.showChargePopUp = true;
+          } else {
+            this.$toast("获取充值方式异常，请稍后再试");
+            return;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //关闭支付列表弹窗
+    closeChargeDialog: function() {
+      this.showChargePopUp = false;
+    },
+    //确定充值,调用后端接口
+    confirmCharge: function(chooseChargeWay, chargeWayBalance) {
+      if (
+        parseFloat(chargeWayBalance) <
+        parseFloat(this.userSelectItem.selectedChargeAmount)
+      ) {
+        this.$toast("余额不足");
+        return;
+      }
+      let param = {
+        chargeAmount: this.userSelectItem.selectedChargeAmount,
+        chargeWay: chooseChargeWay
+      };
+      console.log(param, "充值传递的参数");
+      var _self = this;
+      _self.userSelectItem.selectedChargeWay = chooseChargeWay;
+      console.log(_self.wx, "_self.wx");
+      this.$post("/api/h5charge/tocharge", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse, "充值返回数据");
+          if (dataResponse.code == "200" && dataResponse.data.successFlag) {
+            this.responseToCharge(dataResponse);
+            this.closeChargeDialog();
+          } else if (dataResponse.code == "600") {
+            this.$toast("余额不足");
+          } else {
+            this.$toast("系统异常");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //响应充值,公用方法
+    responseToCharge(dataResponse) {
+      let chooseChargeWay = this.userSelectItem.selectedChargeWay;
+      if (
+        chooseChargeWay == this.globalConst.payIndexMap.get("WXH5_PAY") &&
+        dataResponse.data.requestUrl != ""
+      ) {
+        var redirect_url = encodeURIComponent(window.location.href);
+        window.location.href = dataResponse.data.requestUrl;
+        this.url = dataResponse.data.requestUrl;
+        this.showPop = true;
+      } else if (
+        chooseChargeWay == this.globalConst.payIndexMap.get("WXJSAPI_PAY")
+      ) {
+        this.weixinPay(dataResponse.data.requestParams, _self);
+      } else if (
+        chooseChargeWay == this.globalConst.payIndexMap.get("APPLE_IAP_PAY")
+      ) {
+        this.appleIapPay(dataResponse.data);
+      } else {
+        this.$toast("充值成功");
+        setTimeout(() => {
+          let redirect = decodeURIComponent(
+            this.$route.query.redirect || "/userCenter"
+          );
+          console.log(redirect, "redirect");
+          this.$router.push({
+            path: redirect
+          });
+        }, 1000);
+      }
+    },
+    //获取充值页面所需要的数据
+    getChargePageData: function() {
+      return this.$post("/api/charge/iapAmountList")
+        .then(res => {
+          console.log(res, "得到充值页所需数据");
+          if (res.code == "200") {
+            var _self = this;
+            _self.myBalance = res.data.ableRecScore;
+            _self.chargeAmoumtList = res.data.iapChargeList;
+            _self.ids = _self.getParamValues(
+              "productId",
+              _self.chargeAmoumtList
+            );
+          } else {
+            this.$toast(res.message, 2);
+          }
+        })
+        .catch(e => {});
+    },
+    getParamValues: function(name, arr) {
+      var ret = [];
+      for (var i = 0, len = arr.length; i < len; i++) {
+        ret.push(arr[i][name]);
+      }
+      return ret;
+    },
+
+    //选择充值项
+    selectChargeAmount: function(item) {
+      this.userSelectItem.selectedChargeAmount = item.chargeAmount;
+      this.userSelectItem.selectedProductId = item.productId;
+    },
+    //微信H5充值后的弹窗
+    confirm: function() {
+      this.showPop = false;
+      this.getChargePageData();
+    },
+    //微信支付
+    weixinPay: function(params, _self) {
+      console.log(params, "params");
+      _self.wx.ready(function() {
+        _self.wx.chooseWXPay({
+          timestamp: params.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+          nonceStr: params.nonceStr, // 支付签名随机串，不长于 32 位
+          package: params.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+          signType: "MD5", // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+          paySign: params.paySign, // 支付签名
+          success: function(res) {
+            _self.$toast("充值成功", 2);
+            _self.getChargePageData();
+          },
+          cancel: function(res) {
+            _self.$toast("支付取消", 2);
+          },
+          fail: function(res) {
+            _self.$toast("支付失败", 2);
+          }
+        });
+      });
+    },
+    plusReady() {
+      let _self = this;
+      console.log(_self.ids, "检测支付环境...");
+      // 获取支付通道
+      plus.payment.getChannels(
+        function(channels) {
+          for (var i in channels) {
+            var channel = channels[i];
+            // 用于标识支付通道： "alipay" - 表示支付宝； "wxpay" - 表示微信支付； "appleiap" - 表示苹果应用内支付； "qhpay" - 表示360聚合支付（仅360手助流应用环境下支持）。
+            if (channel.id === "appleiap") {
+              _self.iap = channel;
+              _self.requestOrder();
+            }
+          }
+        },
+        function(e) {
+          console.log("获取支付通道失败：" + e.message);
+        }
+      );
+    },
+    requestOrder() {
+      let _self = this;
+      // plus.nativeUI.showWaiting("检测支付环境...");
+      console.log(_self.ids, "检测支付环境...");
+      _self.iap.requestOrder(_self.ids, function(e) {
+        plus.nativeUI.closeWaiting();
+        // plus.nativeUI.alert("支付环境检测成功", null, "支付环境", "确定");
+        console.log("requestOrder success: " + JSON.stringify(e));
+      });
+    },
+    function(e) {
+      console.log("requestOrder failed: " + JSON.stringify(e));
+      plus.nativeUI.closeWaiting();
+      // plus.nativeUI.confirm(
+      //   "错误信息：" + JSON.stringify(e),
+      //   function(e) {
+      //     if (e.index == 0) {
+      //       _self.requestOrder();
+      //     } else {
+      //       // back();
+      //     }
+      //   },
+      //   "重新请求支付",
+      //   ["确定", "取消"]
+      // );
+    },
+    // 支付
+    appleIapPay(requestParams) {
+      let id = this.userSelectItem.selectedProductId;
+      console.log(id, "点击toPay");
+      let _self = this;
+      // plus.nativeUI.showWaiting("", {
+      //   style: "black",
+      //   background: "rgba(0,0,0,0)"
+      // });
+      plus.nativeUI.showWaiting("支付中...");
+      plus.payment.request(
+        _self.iap,
+        { productid: id },
+        function(result) {
+          plus.nativeUI.closeWaiting();
+          // plus.nativeUI.alert("支付成功" + id, null, "支付状态", "确定");
+          _self.applePayCallBack(result, requestParams);
+        },
+        function(e) {
+          console.log("toPay错误信息", e);
+          plus.nativeUI.closeWaiting();
+          // plus.nativeUI.alert(
+          //   "错误信息：" + e.message,
+          //   null,
+          //   "支付失败：" + e.code
+          // );
+        }
+      );
+    },
+    applePayCallBack(result, requestParams) {
+      //验证收据
+      console.log(result, requestParams, ",充值后回调参数");
+      let param = {
+        payNo: requestParams.payNo,
+        receiptData: result.transactionReceipt,
+        productId: this.userSelectItem.selectedProductId
+      };
+      this.$post("/api/h5charge/applePayCallBack", param)
+        .then(res => {
+          console.log(res, "充值后回调返回结果");
+          if (res.code == "200" && res.data) {
+            this.$toast("充值成功");
+            setTimeout(() => {
+              let redirect = decodeURIComponent(
+                this.$route.query.redirect || "/userCenter"
+              );
+              console.log(redirect, "redirect");
+              this.$router.push({
+                path: redirect
+              });
+            }, 2 * 1000);
+          } else {
+            this.$toast(res.message, 2);
+          }
+        })
+        .catch(e => {});
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.main {
+  padding: 5px;
+}
+.user_card {
+  position: relative;
+  padding: 20px 0 17px 20px;
+  border-radius: 8px;
+  @include getBgImg("../../../assets/images/user_center/recharge_bg.png");
+}
+
+.user_info {
+  @extend .flex_hc;
+}
+
+.user_info img {
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+}
+
+.user_info .name {
+  font-size: 20px;
+  color: #fff;
+  font-weight: bold;
+  @include t_nowrap(150px);
+  line-height: 1.2;
+}
+
+.user_info .tips {
+  display: block;
+  padding-top: 7px;
+  color: #fffe93;
+}
+
+.super_vip_icon {
+  @extend .flex_hc;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+
+  font-size: 14px;
+  color: #fff;
+  font-weight: middle;
+}
+
+.super_vip_icon i {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
+  border-radius: 50%;
+  @include getBgImg("../../../assets/images/user_center/super_vip.png");
+}
+
+.user_card .balance {
+  @extend .flex_hc;
+  padding-top: 15px;
+  font-size: 14px;
+  color: #fffe93;
+  i {
+    width: 16px;
+    height: 16px;
+    margin-left: 3px;
+  }
+}
+
+.money_num {
+  padding-top: 5px;
+  font-size: 21px;
+  color: #fff;
+}
+
+.title {
+  color: #7b7b7b;
+}
+
+.recharge_list .title {
+  @extend .flex_hc;
+
+  padding: 10px 0 7px 10px;
+  font-size: 13px;
+}
+
+.recharge_list .adver {
+  margin-left: 7px;
+  padding: 1px 7px 1px 11px;
+  font-size: 11px;
+  color: #fff;
+  @include getBgImg("../../../assets/images/user_center/adver.png");
+}
+
+.recharge_list .list {
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.recharge_list .item {
+  @extend .flex_v_justify;
+
+  padding: 20px 20px 15px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+  position: relative;
+}
+
+.recharge_list .item.active {
+  border-radius: 8px;
+  background: linear-gradient(
+    to right,
+    rgba(255, 162, 0, 1) 0%,
+    rgba(255, 123, 28, 1) 100%
+  );
+}
+
+.recharge_list .item:last-child {
+  border-bottom: none;
+}
+
+.recharge_list .item > div {
+  @extend .flex_hc;
+}
+
+.most_worthy,
+.give_more {
+  display: block !important;
+  width: 30px;
+  height: 18px;
+  padding-top: 2px;
+  font-size: 10px;
+  text-align: center;
+  color: #fff;
+
+  position: absolute;
+  left: 8px;
+  top: 0;
+}
+
+.most_worthy {
+  @include getBgImg("../../../assets/images/user_center/most_worthy.png");
+}
+
+.give_more {
+  @include getBgImg("../../../assets/images/user_center/give_more.png");
+}
+
+.recharge_list .star_coin {
+  width: 26px;
+  height: 26px;
+  margin-right: 5px;
+  border-radius: 50%;
+}
+
+.recharge_list .num {
+  font-size: 18px;
+  color: #6d6d6d;
+}
+
+.recharge_list .price {
+  font-size: 15px;
+}
+
+.recharge_list .original {
+  text-decoration: line-through;
+  color: #c6c6c6;
+}
+
+.recharge_list .discount {
+  padding-left: 15px;
+  color: #777;
+}
+
+.amount {
+  width: 40px;
+  margin-right: 5px;
+}
+
+.rules,
+.question {
+  padding: 17px 17px 22px;
+  font-size: 13px;
+}
+
+.rules .title {
+  padding-bottom: 15px;
+}
+
+.rules {
+  .txt {
+    position: relative;
+    padding-left: 20px;
+    padding-bottom: 4px;
+    color: #9b9b9b;
+    > span {
+      position: absolute;
+      left: 0;
+      top: 0;
+      line-height: 20px;
+    }
+  }
+  p {
+    line-height: 20px;
+  }
+}
+
+.rules a {
+  padding-left: 4px;
+  color: #ff9501;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.question .title {
+  padding-bottom: 15px;
+}
+
+.question p {
+  text-indent: 20px;
+  padding-bottom: 5px;
+  line-height: 16px;
+  color: #9b9b9b;
+}
+</style>

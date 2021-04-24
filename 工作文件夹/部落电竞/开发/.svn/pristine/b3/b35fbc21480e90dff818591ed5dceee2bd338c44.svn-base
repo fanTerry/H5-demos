@@ -1,0 +1,675 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <h2>
+        <div class="back" @click="goBack()"></div>专家主页
+      </h2>
+      <div class="user_card">
+        <div class="user_info">
+          <div>
+            <div class="user_img">
+              <img :src="expertInfo.userIcon" alt="">
+            </div>
+            <div>
+              <div class="flex_hc">
+                <span class="name">{{expertInfo.userNickName}}</span>
+                <!-- <span class="record">近10中0</span> -->
+              </div>
+              <div class="tips">
+                <!-- <p>
+                                    <span>66%</span>预计回报率</p> -->
+                <p>
+                  <span>{{expertInfo.fans}}</span>粉丝数</p>
+              </div>
+            </div>
+          </div>
+          <template v-if="!expertInfo.selfFlag">
+            <div class="follow_btn" v-if="!expertInfo.followFlag" @click="updateFollowStatus(expertInfo.userId,1)">+ 关注
+            </div>
+            <div class="followed_btn" @click="updateFollowStatus(expertInfo.userId,0)" v-else>- 已关注</div>
+          </template>
+          <!-- <div class="followed_btn">+ 关注</div> -->
+        </div>
+        <p class="intro_text">{{expertInfo.expertDesc}}</p>
+      </div>
+    </header>
+
+    <div class="main">
+      <scroll ref="scroll" :scrollbar="scrollbar" :pullDownRefresh="pullDownRefresh" :pullUpLoad="pullUpLoad"
+        :startY="0" @pullingDown="onPullingDown" @pullingUp="onPullingUp">
+        <!-- <section class="mod_expert">
+                <h2 class="expert_title">
+                    <i class="zj_icon"></i>战绩走势
+                    <ul>
+                        <li>全部时间</li>
+                        <li class="active">近7日</li>
+                        <li>近30日</li>
+                    </ul>
+                </h2>
+                <div class="expert_con expert_grid">
+                    <div class="grid">
+                        <p>500</p>
+                        <p>总推荐数</p>
+                    </div>
+                    <div class="grid">
+                        <div>
+                            <p class="c_red">57%</p>
+                            <p>命中率</p>
+                        </div>
+                        <div>
+                            <p class="c_red">5</p>
+                            <p>连红</p>
+                        </div>
+                    </div>
+                    <div class="grid">
+                        <div>
+                            <p class="c_red">57%</p>
+                            <p>命中率</p>
+                        </div>
+                        <div>
+                            <p class="c_red">5</p>
+                            <p>连红</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="expert_con expert_forecast">
+                    <ul>
+                        <li>方案预测</li>
+                        <li class="active">专栏</li>
+                        <li>历史预测</li>
+                    </ul>
+                </div>
+            </section> -->
+
+        <section class="mod_expert">
+          <h2 class="expert_title">
+            <i class="onSale_icon"></i>在售方案
+            <!-- <i class="history_icon"></i>历史方案 -->
+          </h2>
+          <!-- 暂无在售方案 -->
+          <div class="hot_recommend">
+            <div class="no_recommend">
+              <p>暂无在售方案</p>
+              <p>关注专家可第一时间收到新发布方案通知</p>
+            </div>
+            <a class="follow_btn">+ 关注</a>
+          </div>
+          <hotRecommend :article="item" :type="1" v-for="(item,index) in articleList " :key="index">
+          </hotRecommend>
+        </section>
+
+        <!-- <section class="mod_expert">
+                <h2 class="expert_title"> -->
+        <!-- 推荐选项胜负 -->
+        <!-- <i class="history_icon"></i>历史方案 -->
+        <!-- </h2>
+                <div class="expert_con expert_match">
+                    <div class="item">
+                        <div class="left">
+                            <img src="https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=2094543967,385852855&fm=179&app=42&f=PNG?w=121&h=140" alt="">
+                            <p>WE</p>
+                        </div>
+                        <div class="center">
+                            <p class="name">2019 KPL青春赛-小组赛 拷贝</p>
+                            <p class="vs">VS</p>
+                            <p>5月29日08:00 [BO3]</p>
+                        </div>
+                        <div class="right">
+                            <img src="https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=2094543967,385852855&fm=179&app=42&f=PNG?w=121&h=140" alt="">
+                            <p>WE</p>
+                        </div>
+                    </div>
+                </div>
+            </section> -->
+
+        <!-- <section class="mod_expert">
+                <h2 class="expert_title">
+                    推荐理由
+                </h2> -->
+        <!-- 付费后去掉no_per展开文章内容 -->
+        <!-- <div class="expert_con expert_reason no_per">
+                    <h2>【官方】 电竞吧 专家评到用户指南</h2>
+                    <p class="time">官方 2019-01-09 17：01：22</p>
+                    <p class="txt">1.专家文本文 本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本. 2.专家文本文 本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本.</p>
+                    <div class="expert_mask">
+                        <div class="lock"></div>
+                        <p>请支付后查看推荐结果和理由</p>
+                    </div>
+                </div>
+            </section> -->
+
+        <!-- <section class="mod_expert ">
+                <div class="expert_con expert_agreement">
+                    <p>
+                        <span>推荐编号</span>
+                        <span class="num">201905063511594</span>
+                    </p>
+                    <p>
+                        <span>发布时间</span>
+                        <span class="num">201905063511594</span>
+                    </p>
+                    <p>
+                        <span>支付金币</span>
+                        <span class="num">
+                            <span>38</span>个</span>
+                    </p>
+                    <p>
+                        <span>查看人数</span>
+                        <span class="num">201905063511594</span>
+                    </p>
+                    <div class="agreement">
+                        <span class="active"></span>我已阅读同意
+                        <a>《专家解读和推荐服务协议》</a>
+                    </div>
+                </div>
+            </section> -->
+      </scroll>
+    </div>
+
+    <!-- <footer class="mod_footer">
+            <pay></pay>
+        </footer> -->
+  </div>
+</template>
+
+<script>
+import hotRecommend from "../../../components/hot_recommend/index";
+import pay from "../../../components/footer/pay/index";
+import Scroll from "../../../components/common/scroll";
+
+export default {
+  data() {
+    return {
+      articleList: [],
+      userId: Number,
+      expertInfo: Object,
+      articlrQueryParam: {
+        pageNo: 1,
+        pageSize: 10,
+        showAuthPage: true
+        // returnUrl: api.getCurrentPageUrlWithArgs()
+      },
+      currPageSize: 0,
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "没有更多数据了" }
+      }
+    };
+  },
+  created() {
+    this.userId = this.$route.query.id;
+    console.log("userId", this.$route.query.id);
+  },
+  mounted() {
+    this.setExpertInfo();
+    this.getPageData();
+  },
+  methods: {
+    /**获取分页资讯数据 */
+    getPageData(param) {
+      if (!param) {
+        param = this.articlrQueryParam;
+      }
+      param.userId = this.userId;
+      console.log("分页参数", param);
+      return this.$post("/api/recExpert/articleList", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log(
+              dataResponse.data.articleList,
+              "getPageData---请求成功"
+            );
+            this.currPageSize = dataResponse.data.articleList.length;
+            if (dataResponse.data.articleList.length > 0) {
+              this.articleList = this.articleList.concat(
+                dataResponse.data.articleList
+              );
+            }
+            return this.articleList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    setExpertInfo(param) {
+      if (!param) {
+        param = this.articlrQueryParam;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/recExpert/baseInfo/" + this.userId, param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log(dataResponse.data, "setExpertInfo---请求成功");
+            this.expertInfo = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    updateFollowStatus(userId, status) {
+      let param = { type: status, usrId: userId };
+      let message = "";
+      if (status == 1) {
+        message = "关注成功";
+      } else {
+        message = "取消成功";
+      }
+      console.log("update-关注", param);
+      return this.$post("/api/user/follow", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.$toast(message);
+            this.expertInfo.followFlag = !this.expertInfo.followFlag;
+          }
+        })
+        .catch(error => {
+          this.$toast("网络异常，稍后再试");
+          console.log(error);
+          return dataResponse.code;
+        });
+    },
+
+    onPullingDown() {
+      console.log("you are onPullingDown");
+      if (this._isDestroyed) {
+        return;
+      }
+      this.articleList = [];
+      this.getPageData().then(() => {
+        this.$refs.scroll.forceUpdate();
+      });
+    },
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+
+      if (this.currPageSize < this.articlrQueryParam.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+    /** 上拉加载*/
+    loadMore() {
+      this.articlrQueryParam.pageNo = this.articlrQueryParam.pageNo + 1;
+      this.getPageData();
+    },
+    goBack() {
+      this.$router.back(-1);
+    }
+  },
+  components: {
+    hotRecommend,
+    pay,
+    Scroll
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin.scss";
+@import "../../../assets/common/_base.scss";
+@import "../../../assets/common/_var.scss";
+
+.main {
+  padding-bottom: 40px;
+}
+
+.user_card {
+  margin: 5px;
+  padding: 0 10px;
+  background: linear-gradient(
+    155deg,
+    rgba(253, 158, 1, 1),
+    rgba(255, 130, 1, 1)
+  );
+  box-shadow: 0px 2px 5px 0px #999;
+  border-radius: 8px;
+  .user_info {
+    position: relative;
+    @extend .flex_v_justify;
+    padding: 10px 0;
+    > div {
+      @extend .flex_hc;
+    }
+    .user_img {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      margin-right: 15px;
+      img {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #fff;
+        border-radius: 50%;
+      }
+    }
+    .name {
+      @include t_nowrap(101px);
+      line-height: 1.2;
+      font-size: 16px;
+      padding-bottom: 5px;
+      font-weight: 500;
+      color: #fff;
+    }
+    .tips {
+      @extend .flex_hc;
+      font-size: 10px;
+      p {
+        margin-right: 10px;
+        color: #fff;
+      }
+    }
+    .tips span {
+      padding-right: 5px;
+      font-size: 14px;
+      color: #ffea00;
+    }
+    .record {
+      font-size: 10px;
+      line-height: 14px;
+      padding: 0 8px;
+      border-radius: 12px;
+      color: #fff;
+      background-color: #ff4557;
+    }
+    .follow_btn,
+    .followed_btn {
+      position: absolute;
+      right: 5px;
+      border-radius: 24px;
+      &::before {
+        display: none;
+      }
+    }
+    .follow_btn {
+      background-color: #ff172d;
+      color: #fff;
+    }
+    .followed_btn {
+      color: #575757;
+      background-color: #f5f6f7;
+    }
+  }
+}
+
+.intro_text {
+  padding: 5px 0 15px;
+  font-size: 12px;
+  line-height: 19px;
+  color: #fff151;
+  text-align: justify;
+  @include getBorder(top, #ffb12f);
+}
+
+.expert_title {
+  @extend .flex;
+  position: relative;
+  margin: 14px 0 12px;
+  padding: 0 10px;
+  font-size: 14px;
+  border-left: 2px solid $color_main;
+  ul {
+    @extend .g_v_mid;
+    right: 10px;
+    @extend .flex;
+    background-color: #f5f6f7;
+    font-weight: normal;
+  }
+  li {
+    line-height: 24px;
+    width: 56px;
+    font-size: 11px;
+    color: #a3a3a3;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    text-align: center;
+    &:first-child {
+      border-right: none;
+      border-radius: 12px 0 0 12px;
+    }
+    &:nth-child(2) {
+      border-right: none;
+      border-left: none;
+    }
+    &:last-child {
+      border-left: none;
+      border-radius: 0 12px 12px 0;
+    }
+    &.active {
+      background-color: #fea21b;
+      color: #fff;
+      border: none;
+    }
+  }
+}
+
+.expert_con {
+  margin: 0 5px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.expert_grid {
+  @extend .flex_hc;
+  margin-bottom: 10px;
+  text-align: center;
+  .grid {
+    flex: 1;
+    -webkit-flex: 1;
+    color: #818181;
+    > div {
+      padding: 4px 0;
+      border-width: 0 0 1px 1px;
+      border-style: solid;
+      border-color: rgba(0, 0, 0, 0.1);
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+  p {
+    line-height: 16px;
+  }
+}
+
+.expert_forecast {
+  ul {
+    @extend .flex;
+    margin: 10px 35px;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f5f6f7;
+    font-weight: normal;
+  }
+  li {
+    flex: 1;
+    -webkit-flex: 1;
+    height: 24px;
+    @extend .flex_v_h;
+    color: #a3a3a3;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    &:first-child {
+      border-right: none;
+      border-radius: 12px 0 0 12px;
+    }
+    &:nth-child(2) {
+      border-right: none;
+      border-left: none;
+    }
+    &:last-child {
+      border-left: none;
+      border-radius: 0 12px 12px 0;
+    }
+    &.active {
+      background-color: #fea21b;
+      color: #fff;
+      border: none;
+    }
+  }
+}
+
+.onSale_icon,
+.history_icon,
+.zj_icon {
+  width: 15px;
+  height: 15px;
+  margin-right: 1px;
+}
+
+.onSale_icon {
+  @include getBgImg("../../../assets/images/expert/onSale.png");
+}
+
+.history_icon {
+  @include getBgImg("../../../assets/images/expert/history.png");
+}
+
+.expert_match {
+  .item {
+    @extend .flex_v_justify;
+    height: 84px;
+    @include getBorder(bottom, rgba(0, 0, 0, 0.1));
+    text-align: center;
+    &:last-child {
+      background: initial;
+    }
+    > div {
+      flex: 1;
+      -webkit-flex: 1;
+      white-space: nowrap;
+    }
+    img {
+      width: 38px;
+      height: 38px;
+      margin-bottom: 5px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .vs {
+      padding: 10px 0;
+      color: #444;
+    }
+    .left,
+    .right {
+      font-size: 14px;
+    }
+    .center {
+      color: #999;
+    }
+  }
+}
+
+.expert_reason {
+  padding: 15px;
+  &.no_per {
+    position: relative;
+    height: 145px;
+    .expert_mask {
+      display: block;
+    }
+  }
+  .time {
+    padding-top: 15px;
+    color: #aeaeae;
+  }
+  .txt {
+    padding-top: 10px;
+    padding-bottom: 100px;
+    line-height: 18px;
+    color: #4a4a4a;
+  }
+  .expert_mask {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 145px;
+    color: #979797;
+    background-color: rgba(255, 255, 255, 0.95);
+    text-align: center;
+  }
+  .lock {
+    width: 50px;
+    height: 50px;
+    margin: 20px auto 10px;
+    @include getBgImg("../../../assets/images/expert/lock.png");
+  }
+}
+
+.expert_agreement {
+  padding: 15px 20px 10px;
+  margin-top: 10px;
+  p {
+    @extend .flex_v_justify;
+    padding-bottom: 15px;
+    color: #a3a3a3;
+  }
+  .num {
+    color: #333;
+    span {
+      color: $color_main;
+    }
+  }
+  .agreement {
+    @extend .flex_v_h;
+    span {
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      &.active {
+        @include getBgImg("../../../assets/images/expert/agree.png");
+        border: none;
+      }
+    }
+    a {
+      color: #679dfa;
+    }
+  }
+}
+
+.hot_recommend {
+  margin: 5px;
+  padding: 0 5px;
+  border-radius: 8px;
+  background-color: #fff;
+  .no_recommend {
+    margin: 10px 5px 0;
+    padding: 10px 0;
+    border-radius: 8px;
+    background-color: #f8f9fe;
+    text-align: center;
+    p {
+      line-height: 15px;
+      color: #a3a3a3;
+    }
+  }
+  .follow_btn {
+    @extend .flex_v_h;
+    width: 70px;
+    height: 24px;
+    font-size: 13px;
+    margin: 10px auto;
+    border-radius: 24px;
+    color: #fff;
+    background-color: $color_main;
+  }
+}
+
+.mod_footer {
+  background-color: #fff;
+}
+</style>

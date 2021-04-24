@@ -1,0 +1,288 @@
+<template>
+  <div class="chat_con">
+    <div class="no_data" v-if="ready&&chatList.length==0">
+      <img src="../../../assets/images/matchtool/no_chat_data.png" alt="">
+      <p>暂时没有人聊天哦～</p>
+    </div>
+    <div class="chat_box" v-else>
+      <ul class="chat_list">
+        <li class="chat_item" :class="{cur:true}" v-for="(item,index) in chatList" :key="index">
+          <img class="user_img"
+            v-bind:src="item.icon?item.icon:require('../../../assets/images/matchtool/chat_default.png')" alt />
+          <div class="users">
+            <p class="user_name">{{item.nickName}}：</p>
+            <p class="user_message">{{item.sendMsg}}</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="send_message">
+      <input type="text" placeholder="点我发言" rows="1" @click='bindFocus($event)' @focus="bindFocus($event)"
+        @blur="bindBlur" ref="inputVal" v-model="contentValue" :maxlength="chatContentLen">
+      <a class='send_btn' @click="sendChat"></a>
+    </div>
+  </div>
+
+</template>
+
+<script>
+export default {
+  components: {},
+  props: ["matchId", "chatType", "switchFlag"],
+  data() {
+    return {
+      chatList: [],
+      socketUrl: "", //websocket地址
+      lockReconnect: false, //默认进来是断开链接的
+      initScene: {},
+      contentValue: "",
+      chatContentLen: 100,
+      pageNo: 1,
+      pageSize: 50,
+      userId: "",
+      nickName: "",
+      interval: Object,
+      ready: false
+    };
+  },
+  computed: {},
+  created() {},
+  destroyed() {
+    // this.socketToolApi.websocketclose(); //离开路由之后断开websocket连接
+    clearInterval(this.interval);
+  },
+
+  mounted() {
+    console.log(this.matchId, "初始化ID");
+    // this.getMatchDetail(this, true);
+  },
+
+  methods: {
+    scrollToBottom() {
+      let chatMessageLength = document.getElementsByClassName("chat_item")
+        .length;
+      if (chatMessageLength) {
+        document
+          .getElementsByClassName("chat_item")
+          [chatMessageLength - 1].scrollIntoView();
+      }
+    },
+    myInterval() {
+      let _self = this;
+
+      setTimeout(() => {
+        _self.scrollToBottom();
+      }, 100);
+
+      this.interval = setInterval(() => {
+        _self.scrollToBottom();
+      }, 10000);
+    },
+    // 发送聊天信息
+    sendChat() {
+      this.$refs.inputVal.rows = 1;
+      console.log(this.contentValue, "sendChat");
+      var content = this.contentValue;
+      if (!content) {
+        this.$toast("请输入要发送的内容", 2);
+        return;
+      }
+      if (content.length > this.chatContentLen) {
+        this.$toast("聊天内容不能超过100个字", 2);
+        return;
+      }
+      this.socketToolApi.heartCheck.reset().start(content, this);
+      this.contentValue = "";
+      this.$toast("发送成功", 1);
+      this.$nextTick(() => {
+        setTimeout(() => {
+          let scrollHeight = document.getElementsByClassName("chat_list")[0]
+            .scrollHeight;
+          document.getElementsByClassName(
+            "chat_box"
+          )[0].scrollTop = scrollHeight;
+        }, 200);
+      });
+    },
+    bindFocus(e) {
+      this.$refs.inputVal.rows = 2;
+      console.log(e, "获取焦点");
+      this.$emit("hideFooter");
+      this.$refs.inputVal.focus();
+    },
+    bindBlur() {
+      this.$emit("showFooter");
+      setTimeout(function() {
+        window.scrollTo(0, 0);
+      }, 100);
+    },
+    getConfigResult: function(res) {
+      console.log(res, "返回的内容");
+    },
+    getMatchDetail: function(_self, linkFlag) {
+      var matchId = this.matchId;
+      console.log(this.initScene);
+      return this.$post("/api/league/room")
+        .then(res => {
+          console.log(res, "获取赛事详情");
+          if (res.code == "200" && res.data) {
+            _self.socketUrl = res.data.chatSocketUrl;
+            _self.userId = res.data.userId + "";
+            _self.nickName = res.data.nickName;
+            _self.icon = res.data.icon;
+            window.sessionStorage.userId = res.data.userId + "";
+            window.sessionStorage.nickName = res.data.nickName;
+            window.sessionStorage.icon = res.data.icon;
+            var initScene = _self.socketToolApi.getSceneMsg(
+              // 3,
+              // 21,
+              // 10,
+              this.chatType.sceneType, //房间
+              this.chatType.cmdType, //进入场景
+              this.chatType.execType, // 用户与房间进行关联
+              "T_R_",
+              matchId,
+              _self.userId,
+              _self.icon
+            );
+            _self.initScene = initScene;
+            // console.log("jinlai", _self.socketUrl);
+            this.socketToolApi.initWebSocket(_self);
+          } else {
+            this.$toast(res.message, 2);
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    }
+  },
+  watch: {
+    switchFlag(newValue, oldValue) {
+      console.log(newValue, oldValue, this.chatList.length);
+      if (newValue == 2) {
+        this.getMatchDetail(this, true).then(() => {
+          this.myInterval();
+        });
+      } else {
+        this.socketToolApi.websocketclose();
+        this.chatList = [];
+        clearInterval(this.interval);
+        console.log("定时器销毁");
+      }
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.chat_con {
+  @extend .flex;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.66) 0%,
+    rgba(0, 0, 0, 0) 21%,
+    rgba(0, 0, 0, 0) 55%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  background: -webkit-linear-gradient(
+    top,
+    rgba(0, 0, 0, 0.66) 0%,
+    rgba(0, 0, 0, 0) 21%,
+    rgba(0, 0, 0, 0) 55%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+}
+
+.chat_box {
+  flex: 1;
+  -webkit-flex: 1;
+  padding: 1.3333vw 4vw 0;
+  // overflow-y: scroll;
+  overflow-x: hidden;
+  // -webkit-overflow-scrolling: touch;
+  ul {
+    min-height: 101%;
+  }
+}
+.no_data {
+  flex: 1;
+  -webkit-flex: 1;
+  @extend .flex_v_h;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  img {
+    width: 40vw;
+  }
+  p {
+    padding-top: 4vw;
+    font-size: 3.7333vw;
+    line-height: 5.3333vw;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+li {
+  display: table;
+  margin-bottom: 1.3333vw;
+  padding: 1.3333vw 4vw 1.3333vw 1.3333vw;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 7.2vw;
+  &.cur {
+    background: rgba($color: #00b4ff, $alpha: 0.5);
+  }
+}
+.users {
+  display: inline-block;
+  vertical-align: top;
+  max-width: 72vw;
+  padding-top: 0.8vw;
+  margin-left: 2.1333vw;
+  word-break: break-all;
+}
+.user_img {
+  width: 11.7333vw;
+  height: 11.7333vw;
+  object-fit: cover;
+  vertical-align: top;
+  border-radius: 50%;
+  background-color: #fff;
+}
+.user_name {
+  font-size: 3.4667vw;
+  line-height: 5.3333vw;
+  color: rgba(255, 255, 255, 0.5);
+}
+.user_message {
+  font-size: 4vw;
+  line-height: 5.3333vw;
+  font-weight: 500;
+  color: #fff;
+}
+.send_message {
+  @extend .flex_v_justify;
+  padding: 5.3333vw 4vw;
+  input {
+    width: 79.4667vw;
+    height: 9.6vw;
+    line-height: 9.6vw;
+    padding: 0 4vw;
+    font-size: 4vw;
+    color: #333;
+    border-radius: 4.8vw;
+    background-color: #fff;
+  }
+  .send_btn {
+    width: 9.6vw;
+    height: 9.6vw;
+    border-radius: 50%;
+    @include getBgImg("../../../assets/images/matchtool/send_message.png");
+  }
+}
+</style>

@@ -1,0 +1,266 @@
+//模拟border 但不能用作有圆角的样式
+@mixin getBorder($direction, $color:#e5e5e5) {
+    @if $direction==bottom {
+        background: -webkit-linear-gradient(top, transparent, transparent 50%, $color 50%) 0 $direction no-repeat;
+        background-size: 100% 1px;
+    }
+    @if $direction==top {
+        background: -webkit-linear-gradient(top, transparent, transparent 50%, $color 50%) 0 $direction no-repeat;
+        background-size: 100% 1px;
+    }
+    @if $direction==left {
+        background: -webkit-linear-gradient(left, transparent, transparent 50%, $color 50%) $direction 0 no-repeat;
+        background-size: 1px 100%;
+    }
+    @if $direction==right {
+        background: -webkit-linear-gradient(left, transparent, transparent 50%, $color 50%) $direction 0 no-repeat;
+        background-size: 1px 100%;
+    }
+    @if $direction==all {
+        background: -webkit-linear-gradient(top, $color, $color 50%, transparent 50%, transparent 100%) 0 top no-repeat, -webkit-linear-gradient(top, transparent, transparent 50%, $color 50%, $color 100%) 0 bottom no-repeat, -webkit-linear-gradient(left, $color, $color 50%, transparent 50%, transparent 100%) left 0 no-repeat, -webkit-linear-gradient(left, transparent, transparent 50%, $color 50%, $color 100%) right 0 no-repeat;
+        background-size: 100% 1px, 100% 1px, 1px 100%, 1px 100%;
+    }
+    @if $direction==none {
+        background: -webkit-linear-gradient(top, transparent, transparent 50%, transparent 50%, transparent 100%) 0 top no-repeat, -webkit-linear-gradient(top, transparent, transparent 50%, transparent 50%, transparent 100%) 0 bottom no-repeat, -webkit-linear-gradient(left, transparent, transparent 50%, transparent 50%, transparent 100%) left 0 no-repeat, -webkit-linear-gradient(left, transparent, transparent 50%, transparent 50%, transparent 100%) right 0 no-repeat;
+        background-size: 100% 1px, 100% 1px, 1px 100%, 1px 100%;
+    }
+}
+
+//模拟border 用作有圆角的样式
+@mixin getRadiusBorder($color, $direction, $radius:8px) {
+    position: relative;
+    &:before {
+        content: "";
+        pointer-events: none;
+        /* 防止点击触发 */
+        box-sizing: border-box;
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        left: 0;
+        top: 0;
+        @if $direction==all {
+            border-radius: $radius;
+            border: 2px solid $color;
+        }
+        @if $direction==top {
+            border-top: 2px solid $color;
+            border-radius: 0 0 $radius $radius;
+        }
+        @if $direction==bottom {
+            border-bottom: 2px solid $color;
+            border-radius: $radius $radius 0 0;
+        }
+        -webkit-transform:scale(0.5);
+        -webkit-transform-origin: 0 0;
+        transform:scale(0.5);
+        transform-origin: 0 0;
+    }
+}
+
+//模拟border 用作有虚线的样式
+@mixin getDashedBorder($color, $direction, $radius:0) {
+    position: relative;
+    &:before {
+        content: "";
+        pointer-events: none;
+        /* 防止点击触发 */
+        box-sizing: border-box;
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        left: 0;
+        top: 0;
+        @if $direction==all {
+            border-radius: $radius;
+            border: 1px dashed $color;
+        }
+        @if $direction==top {
+            border-top: 1px dashed $color;
+        }
+        @if $direction==bottom {
+            border-bottom: 1px dashed $color;
+        }
+        @if $direction==left {
+            border-left: 1px dashed $color;
+        }
+        @if $direction==right {
+            border-right: 1px dashed $color;
+        }
+        -webkit-transform:scale(0.5);
+        -webkit-transform-origin: 0 0;
+        transform:scale(0.5);
+        transform-origin: 0 0;
+    }
+}
+
+
+
+// 超过某个长度显示省略号
+@mixin t_nowrap($width:100%) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: $width;
+}
+
+// 文本多行省略
+@mixin line_clamp($num:2) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $num;
+    overflow: hidden;
+    white-space: normal;
+}
+
+//文字垂直 水平居中的一个按钮
+@mixin getBtn($width, $height, $bgColor, $fontColor:white, $border-radius:20px) {
+    text-align: center;
+    width: $width;
+    line-height: $height;
+    background-color: $bgColor;
+    color: $fontColor;
+    border-radius: $border-radius;
+}
+
+//垂直水平居中的一个圆形
+@mixin getCircle($r, $bgColor, $fontColor:white) {
+    display: inline-block;
+    border-radius: 100%;
+    width: $r;
+    height: $r;
+    background-color: $bgColor;
+    color: $fontColor;
+    text-align: center;
+    line-height: $r;
+}
+
+//可以拉伸的背景图
+@mixin getBgImg($url) {
+    background-image: url($url);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+}
+
+// 背景渐变色
+@mixin getBgLinear($direction,$color1,$color2){
+    background: linear-gradient(to $direction,$color1,$color2);
+    @if $direction == bottom{
+        background: -webkit-linear-gradient(top,$color1,$color2);
+    }
+    @if $direction == right{
+        background: -webkit-linear-gradient(left,$color1,$color2);
+    }
+    @if $direction == (right bottom) { 
+        background: -webkit-linear-gradient(left top,$color1,$color2);
+    }
+}
+
+@mixin getSquare($size) {
+    width: $size;
+    height: $size;
+}
+
+// 关闭按钮
+@mixin getClose($size, $color) {
+    position: absolute;
+    width: $size*2;
+    height: $size*2;
+    &:before,
+    &:after {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        content: " ";
+        display: inline-block;
+        width: 1px;
+        height: $size;
+        background-color: $color;
+    }
+    &:before {
+        transform: translate3d(-50%, -50%, 0) rotate(45deg);
+        -webkit-transform: translate3d(-50%, -50%, 0) rotate(45deg);
+    }
+    &:after {
+        transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+        -webkit-transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+    }
+    z-index:100;
+}
+
+//三角箭头
+@mixin getArrow($size, $color, $direction) {
+    @if $direction==left {
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+    @if $direction==right {
+        -webkit-transform: rotate(-90deg);
+        transform: rotate(-90deg);
+    }
+    @if $direction==top {
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+    // @if $direction==bottom {
+    //     -webkit-transform: rotate(-90deg);
+    //     transform: rotate(-90deg);
+    // }
+    &:before,
+    &:after {
+        content: " ";
+        display: inline-block;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 1px;
+        height: $size;
+        background-color: $color;
+        // @if $direction==down {
+        //     -webkit-transform-origin: bottom;
+        //     transform-origin: bottom;
+        // }
+        // @if $direction==up {
+        //     -webkit-transform-origin: top;
+        //     transform-origin: top;
+        // }
+        // @if $direction==right {
+        //     -webkit-transform-origin: bottom;
+        //     transform-origin: bottom;
+        // }
+        // @if $direction==left {
+        //     -webkit-transform-origin: top;
+        //     transform-origin: top;
+        // }
+        -webkit-transform-origin: bottom;
+        transform-origin: bottom;
+    }
+    &:before {
+        transform: translate3d(-50%, -50%, 0) rotate(45deg);
+        -webkit-transform: translate3d(-50%, -50%, 0) rotate(45deg);
+    }
+    &:after {
+        transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+        -webkit-transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+    }
+}
+
+// 三角形
+@mixin getTriangle($size, $color, $direction) {
+    display: inline-block;
+    border: $size solid transparent;
+    @if $direction==down {
+        border-top-color: $color;
+    }
+    @if $direction==up {
+        border-bottom-color: $color;
+    }
+    @if $direction==left {
+        border-right-color: $color;
+    }
+    @if $direction==right {
+        border-left-color: $color;
+    }
+}
+

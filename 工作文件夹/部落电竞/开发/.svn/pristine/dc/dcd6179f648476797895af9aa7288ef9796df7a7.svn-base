@@ -1,0 +1,100 @@
+<!-- 达人主页 -->
+<view class="container">
+	<!-- 头部通用模块 -->
+  <view class="mod_header">
+		<expert-header></expert-header>	
+  </view>
+
+  <!-- 第一部分：头部公共部分 -->
+  <!-- <wxs src="../../../utils/tools.wxs" module="tools" />
+  <expert-header expertBaseInfo="{{expertBaseInfo}}"></expert-header> -->
+
+	<!-- 页面主内容模块 -->
+  <view class="main">
+
+    <!-- 第三部分：在售方案 -->
+    <view class='expert-info-title'>
+      <view class='expert-title'>
+        <i class='iconfont icon-zaishouwenzhang e-t-icon' style="color: #e69806;"></i>在售文章</view>
+    </view>
+    <block wx:if="{{pageNo==1 && articleList.length<=0}}">
+      <view class='expert-plan'>
+        <view class='expert-no-plan'>
+          <view>暂无在售文章</view>
+          <!-- <view wx:if="{{!expertBaseInfo.selfFlag}}">关注达人可第一时间收到新发布方案通知</view> -->
+        </view>
+        <!-- <view class='expert-plan-button' wx:if="{{!expertBaseInfo.selfFlag}}" bindtap="operateFollow">
+					<text class='expert-follow' wx:if="{{!expertBaseInfo.followFlag}}">+关注</text>
+					<text class='expert-follow' wx:else>-取消关注</text>
+				</view> -->
+      </view>
+    </block>
+    <block wx:else>
+      <!-- 隐藏样式：expert-plan-blur -->
+      <view class='report-expert-info dsp-table'>
+
+      </view>
+      <view class='expert-plan' wx:for="{{articleList}}" wx:key="">
+        <navigator url="/modules/expertpage/expertdetailpage/expert-detail-page?expertUsrId={{expertBaseInfo.userId}}&&articleId={{item.id}}">
+          <!-- 第二部分 -->
+          <view class='report-expert-detail dsp-table'>
+            <view class='report-expert-detail-vs dsp-cell '>
+              <view class='r-e-d-tit-view'>
+                <!--<i class='iconfont icon-shoucang r-e-d-logo' style="color: #efc75e;"></i>-->
+                <i wx:if="{{item.videogameId==1}}" class='iconfont icon-lol1 icon-lol'></i>
+                <i wx:if="{{item.videogameId==4}}" class='iconfont icon-dota'></i>
+                <text class='r-e-d-tit'>{{item.title}}</text>
+              </view>
+              <view class='dsp-table' wx:for="{{item.matchList}}" wx:key="">
+                <view class='dsp-cell'>
+                  <text class='r-e-d-text t-r'>{{tools.sub(item.homeTeamName)}}</text>
+                </view>
+
+                <view class='dsp-cell'>
+                  <image class='r-e-d-img' src='{{item.homeTeamLogo?item.homeTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFill' />
+                </view>
+
+
+                <view class='dsp-cell'>
+                  <text class='r-e-d-vs'>VS</text>
+                </view>
+
+                <view class='dsp-cell'>
+                  <image class='r-e-d-img' src='{{item.awayTeamLogo?item.awayTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFill' />
+                </view>
+
+                <view class='dsp-cell'>
+                  <text class='r-e-d-text t-l'>{{tools.sub(item.awayTeamName)}}</text>
+                </view>
+              </view>
+            </view>
+
+            <view class='report-expert-detail-money'>
+              <view>
+                <block wx:if="{{item.isFree==0 && item.price>0}}">
+                  <i class='iconfont icon-xiaojinbi icon-dollar'></i>
+                  <text class='r-e-d-money'>{{item.price}}星星</text>
+                </block>
+                <text class='r-e-d-money' wx:else>免费</text>
+              </view>
+              <!-- <view>
+              <i class='r-e-d-note'>不中全退</i>
+            </view> -->
+            </view>
+          </view>
+        </navigator>
+        <view class='report-expert-sub'>
+          <text>发布时间{{item.publishTime}} | 阅读 {{item.views}}</text>
+        </view>
+
+      </view>
+
+      <!--  <view class=''>
+        <report-expert-item wx:for="{{articleList}}" wx:key='' expertArticle="{{item}}"></report-expert-item>
+    </view>-->
+
+    </block>
+  </view>
+
+
+</view>

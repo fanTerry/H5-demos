@@ -1,0 +1,106 @@
+/* pages/help/feedBackDetail/feedBackDetail.wxss */
+
+.film_handle {
+	display: flex;
+	display: -webkit-flex;
+	align-items: center;
+	-webkit-align-items: center;
+	justify-content: space-between;
+	-webkit-justify-content: space-between;
+  padding: 10px;
+}
+
+.feedback_item {
+	padding: 0;
+	font-size: 14px;
+}
+
+.feedback_item > view {
+	padding: 0 8px;
+	color: #818181;
+}
+.feedback_item i {
+	width: 26px;
+	height: 26px;
+}
+
+.comment_input {
+  flex: 1;
+  -webkit-flex: 1;
+  position: relative;
+  height: 38px;
+  margin-right: 10px;
+  background-color: #f0efee;
+  border-radius: 5px;
+}
+
+.comment_input input {
+	width: 100%;
+	height: 100%;
+	padding: 0 35px;
+	font-size: 16px;
+	color: #333;
+	border: none;
+}
+.comment_input input::-webkit-input-placeholder {
+	color: #aeaeae;
+}
+.comment_input .comment_btn {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	left: 10px;
+	width: 20px;
+	height: 20px;
+	background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/my/comment.png");
+	background-size: 100% auto;
+}
+.comment_input .clean {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	width: 18px;
+	height: 18px;
+	right: 10px;
+	border: 1px solid #999;
+	border-radius: 50%;
+}
+
+.comment_input .clean::before,.comment_input .clean::after{
+	content: '';
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    content: " ";
+    display: inline-block;
+    width: 1px;
+    height: 9px;
+    background-color: #999;
+}
+
+.comment_input .clean[data-v-e829b0ac]:before {
+	transform: translate3d(-50%, -50%, 0) rotate(45deg);
+	-webkit-transform: translate3d(-50%, -50%, 0) rotate(45deg);
+}
+
+.comment_input .clean[data-v-e829b0ac]:after {
+	transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+	-webkit-transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+}
+
+.send_btn {
+	display: flex;
+	display: -webkit-flex;
+	align-items: center;
+	-webkit-align-items: center;
+	justify-content: center;
+	-webkit-justify-content: center;
+  width: 58px;
+  height: 38px;
+  font-size: 17px;
+  color: #fff;
+  background-color: #ff7e00;
+  border-radius: 5px;
+}

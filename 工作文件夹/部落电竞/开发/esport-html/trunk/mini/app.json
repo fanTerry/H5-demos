@@ -1,0 +1,69 @@
+{
+  "pages": [
+		"pages/index/index",
+    "pages/follow/follow",
+    "pages/report/report",
+    "pages/expert/expert",
+    "pages/my/my",
+    "modules/articlepage/article-page",
+    "modules/reportpage/reportpage/report-page",
+    "modules/expertpage/expertpage/expert-page",
+    "modules/expertpage/expertdetailpage/expert-detail-page",
+    "modules/expertpage/expertapplypage/expert-apply-page",
+    "modules/expertpage/expertagreepage/expert-agree-page",
+    "modules/memberpaycenter/member-pay-center",
+    "modules/mypage/mywallet/my-wallet",
+    "modules/mypage/myrecharge/my-recharge"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "电竞吧-重构",
+    "backgroundColor": "#eeeeee",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#0f87ff",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "/resources/images/tabbar/index-icon.png",
+        "selectedIconPath": "resources/images/tabbar/index-icon-act.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/report/report",
+        "iconPath": "resources/images/tabbar/report-icon.png",
+        "selectedIconPath": "resources/images/tabbar/report-icon-act.png",
+        "text": "赛事"
+      },
+      {
+        "pagePath": "pages/follow/follow",
+        "iconPath": "resources/images/tabbar/follow-icon.png",
+        "selectedIconPath": "resources/images/tabbar/follow-icon-act.png",
+        "text": "关注"
+      },
+      {
+        "pagePath": "pages/expert/expert",
+        "iconPath": "resources/images/tabbar/expert-icon.png",
+        "selectedIconPath": "resources/images/tabbar/expert-icon-act.png",
+        "text": "专家"
+      },
+      {
+        "pagePath": "pages/my/my",
+        "iconPath": "resources/images/tabbar/my-icon.png",
+        "selectedIconPath": "resources/images/tabbar/my-icon-act.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "networkTimeout": {
+    "request": 10000,
+    "downloadFile": 10000
+  },
+  "debug": true,
+  "sitemapLocation": "sitemap.json"
+}

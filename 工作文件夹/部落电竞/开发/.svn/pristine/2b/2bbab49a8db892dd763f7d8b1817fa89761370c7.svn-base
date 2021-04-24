@@ -1,0 +1,41 @@
+import utils from './libs/utils';
+
+/** 根据size格式化传入的对象
+ *  @param {string} val 需要格式化的字符串
+ *  @param {num} size 保留多少位
+ */
+exports.subStr = (val, size) => {
+    if (!val || val.length == 0 || val == undefined) {
+        return;
+    }
+    if (val.length > size) {
+        return val.substring(0, size) + "...";
+    } else {
+        return val;
+    }
+};
+
+/** 根据图片地址判断是否取默认图
+ *  @param {string} imgUrl 传入的图片地址
+ *  @param {string} defaultImg 默认显示的图片地址
+ */
+exports.getDefaultImg = (imgUrl, defaultImg) => {
+    if (!imgUrl) {
+        return defaultImg;
+    } else {
+        return imgUrl;
+    }
+};
+
+/** 格式化时间
+ *  @param {string} time 需要格式化的时间
+ *  @param {bool} friendly 是否是fromNow
+ */
+exports.getLastTimeStr = (time, friendly) => {
+    if (friendly) {
+        return utils.MillisecondToDate(time);
+    } else {
+        return utils.fmtDate(new Date(time), 'yyyy-MM-dd hh:mm');
+    }
+};
+

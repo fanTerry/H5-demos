@@ -1,0 +1,241 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <nav-bar :pageTitle="'反馈填写'"></nav-bar>
+    </header>
+    <div class="main">
+      <div class="title_tip">简单描述你的反馈<a href="javascript:;">我的反馈</a></div>
+      <div class="cmt_textarea">
+        <div class="textarea_wrap">
+          <textarea placeholder="请输入10个字以上的问题描述以便我们提供更好的帮助" maxlength="200"></textarea>
+          <span>0/500</span>
+        </div>
+      </div>
+      <div class="cmt_images">
+        <p class="label">上传图片能更好的帮助我们定位问题<span>0/4</span></p>
+        <ul class="images">
+          <li>
+            <img
+              src="https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=638833913,3134162988&fm=179&app=42&f=JPEG?w=121&h=140">
+            <span href="javascript"></span>
+          </li>
+          <li>
+            <a href="javascript:;" class="btn_add">
+              <input type="file" name="">
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="title_tip">联系电话</div>
+      <div class="phone_input">
+        <input type="txet" name="" placeholder="选填，便于我们联系你">
+      </div>
+    </div>
+    <footer class="mod_footer">
+      <div class="cmt_btns">
+        <a @click="cmtSuccess()" class="cmt_btn">提交</a>
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index.vue";
+
+export default {
+  components: {
+    navBar
+  },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {
+    cmtSuccess() {
+      this.$router.push({
+        path: "/helpCenter/feedBackSuccess"
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+.title_tip {
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 0.8rem;
+  line-height: 0.8rem;
+  padding: 0 0.3rem;
+  font-size: 0.26rem;
+  color: #666;
+}
+.title_tip.h90 {
+  height: 0.9rem;
+  line-height: 0.9rem;
+}
+.title_tip a {
+  position: absolute;
+  top: 50%;
+  right: 0.3rem;
+  margin-top: -0.22rem;
+  color: #e47b32;
+  border: 0.02rem solid #e47b32;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border-radius: 0.4rem;
+  line-height: 0.44rem;
+  height: 0.44rem;
+  padding: 0 0.14rem;
+}
+.cmt_textarea {
+  position: relative;
+  overflow: hidden;
+  border-top: 0.01rem solid #e1e1e1;
+  border-bottom: 0.01rem solid #e1e1e1;
+}
+.cmt_images {
+  background: #fff;
+  margin-top: 0.2rem;
+  padding: 0.2rem 0.3rem;
+  border-top: 0.01rem solid #e1e1e1;
+  border-bottom: 0.01rem solid #e1e1e1;
+}
+.cmt_images .label {
+  margin-bottom: 0.25rem;
+  font-size: 0.26rem;
+  color: #666;
+}
+.cmt_images .label span {
+  float: right;
+  color: #999;
+}
+.cmt_images .images {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  font-size: 0;
+}
+.cmt_images .images li {
+  position: relative;
+  width: 1.12rem;
+  height: 1.12rem;
+  margin: 0 0.2rem 0.2rem 0;
+}
+.cmt_images .images li img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.cmt_images .images li span {
+  position: absolute;
+  right: -0.26rem;
+  top: -0.26rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  background: url("../../assets/images/help/icon_close.png") no-repeat;
+  background-size: 0.32rem 0.32rem;
+  background-position: center;
+}
+.phone_input {
+  border-top: 0.01rem solid #e1e1e1;
+  border-bottom: 0.01rem solid #e1e1e1;
+}
+.phone_input input {
+  display: block;
+  width: 100%;
+  height: 0.86rem;
+  padding-left: 0.3rem;
+  font-size: 0.28rem;
+  color: #333;
+  background-color: #fff;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+  border: none;
+  outline: none;
+}
+.phone_input input::-webkit-input-placeholder {
+  font-size: 0.28rem;
+  color: #e1e1e1;
+}
+.textarea_wrap {
+  padding: 0.25rem 0.3rem;
+  background: #fff;
+  position: relative;
+}
+.textarea_wrap textarea {
+  width: 100%;
+  height: 3.3rem;
+  font-size: 0.28rem;
+  color: #333;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+  border: none;
+  outline: none;
+  resize: none;
+}
+.textarea_wrap textarea::-webkit-input-placeholder {
+  font-size: 0.28rem;
+  color: #e1e1e1;
+}
+.textarea_wrap span {
+  position: absolute;
+  right: 0.35rem;
+  bottom: 0.16rem;
+  font-size: 0.26rem;
+  color: #999;
+}
+.cmt_btns {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+.cmt_btns .cmt_btn {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  height: 0.9rem;
+  line-height: 0.9rem;
+  text-align: center;
+  font-size: 0.34rem;
+  color: #fff;
+  background-image: -webkit-linear-gradient(left, #e69e59, #e47b32);
+  border: 0 solid transparent;
+  -webkit-border-image: -webkit-linear-gradient(#eebb8b, #eca370) 30 30;
+  border-image: -webkit-linear-gradient(#eebb8b, #eca370) 30 30;
+  border-top-width: 0.01rem;
+}
+.btn_add {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: url("../../assets/images/help/icon_add.png") no-repeat;
+  background-size: cover;
+}
+.btn_add input {
+  width: 100%;
+  height: 100%;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+  border: none;
+  outline: none;
+  opacity: 0;
+}
+</style>

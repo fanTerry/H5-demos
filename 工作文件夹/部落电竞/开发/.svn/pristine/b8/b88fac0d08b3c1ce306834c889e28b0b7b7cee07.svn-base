@@ -1,0 +1,423 @@
+<template>
+  <div class="Page">
+    <header class="mod_header header_nav_list">
+      <!-- <userHeader :num="isIf"></userHeader> -->
+      <navList :dataList="channelList" @changeTab="relodDataByTab"></navList>
+    </header>
+    <div class="main">
+      <div class="scroll-list-wrap">
+        <scroll ref="scroll" :scrollbar="scrollbar" :pullDownRefresh="pullDownRefresh" :pullUpLoad="pullUpLoad"
+          :startY="0" @pullingDown="onPullingDown" @pullingUp="onPullingUp">
+          <div class="scroll_wrapper">
+            <banner ref="banner" v-if="contentType==1" :adList="adList"></banner>
+
+            <section class="infor_list">
+              <template v-for="item in newsList">
+                <article class="item" v-if="item.type==1" @click="toCmsDetail(item.aricleId,item.type)">
+                  <div>
+                    <img class="item_img" v-if="item.type==1" :src="item.imageSrc" alt />
+                    <img class="item_img" v-if="item.type==2" :src="item.titleImg" alt />
+                  </div>
+                  <div class="item_right">
+                    <div>
+                      <p class="item_title">
+                        <span>#{{item.tag}}</span>
+                        <span>{{item.publishTimeStr}}</span>
+                      </p>
+                      <p class="txt">{{item.detail}}</p>
+                    </div>
+                    <div class="visited">
+                      <p>
+                        <i class="iconfont icon-icon_yulan"></i>
+                        <span>{{item.seeNum}}</span>
+                      </p>
+                      <p>
+                        <i class="iconfont icon-pinglun"></i>
+                        <span>{{item.discussNum}}</span>
+                      </p>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="item" v-else-if="item.type==2" :class="'video-'+item.aricleId">
+                  <div class="film_con">
+                    <video :class="'video-'+item.aricleId" @click="playVideo($event,item.aricleId)" :src="item.imageSrc"
+                      :poster="item.titleImg" controls></video>
+                    <div class="film_title" @click="toCmsDetail(item.aricleId,item.type)">{{item.detail}}</div>
+                    <div class="flex_v_justify" @click="toCmsDetail(item.aricleId,item.type)">
+                      <span>#{{item.tag}}</span>
+                      <div class="visited">
+                        <p>
+                          <i class="iconfont icon-icon_yulan"></i>
+                          <span>{{item.seeNum}}</span>
+                        </p>
+                        <p>
+                          <i class="iconfont icon-pinglun"></i>
+                          <span>{{item.discussNum}}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </template>
+            </section>
+          </div>
+        </scroll>
+      </div>
+    </div>
+    <footer class="mod_footer">
+      <tabbar></tabbar>
+    </footer>
+    <loading v-show="isShowLoad"></loading>
+  </div>
+</template>
+
+<script>
+import tabbar from "../../components/tabbar/index";
+import navList from "../../components/header/nav_list/index";
+import userHeader from "../../components/header/user_header/index";
+import banner from "../../components/header/banner/index";
+import Scroll from "components/common/scroll";
+import loading from "components/common/loading";
+
+export default {
+  data() {
+    return {
+      isIf: true,
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "没有更多数据了" }
+      },
+      index: 1,
+      turnToPrev: false,
+      turnToNext: false,
+
+      pageNo: 1,
+      pageSize: 10,
+      currPageSize: 10,
+      clientType:6,//H5客户端
+      newsList: [],
+      noDataFlag: false,
+      canShowVideo: false,
+      requestMore: false,
+      contentType: 1,
+      adList: [],
+      channelList: [],
+      isShowLoad: false,
+
+      currVideo: 0
+    };
+  },
+  mounted() {
+    $(".loading_wrapper").hide();
+    this.getPageData();
+    this.setHeader();
+  },
+  methods: {
+    onPullingDown() {
+      console.log("you are onPullingDown");
+      if (this._isDestroyed) {
+        return;
+      }
+      this.refresh(true);
+    },
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+
+      if (this.currPageSize < this.pageSize) {
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+    refresh(loaded) {
+      console.log("you are refresh");
+      this.setHeader();
+      this.getPageData().then(() => {
+        this.$refs.scroll.forceUpdate();
+      });
+    },
+    loadMore() {
+      console.log("you are loadMore");
+      let param = {};
+      param.pageNo = this.pageNo + 1;
+      param.pageSize = this.pageSize;
+      param.contentType = this.contentType;
+      this.getPageData(param).then(() => {
+        this.$refs.scroll.forceUpdate();
+      });
+    },
+
+    /**获取菜单栏 */
+    setHeader() {
+      let param = {};
+      param.contentType = this.contentType;
+      param.clientType = this.clientType
+      console.log("切换tab", param);
+      this.$post("/api/indexData", param)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp;
+          if ((dataResponse.code = "200")) {
+            console.log("setHeader---请求成功");
+            this.adList = dataResponse.data.adList;
+            this.slideText = this.adList[0].title;
+            this.channelList = dataResponse.data.channelList;
+            console.log("channelList", this.channelList);
+            this.$nextTick(() => {
+              this.$refs.banner.update("更新");
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    /**获取分页资讯数据 */
+    getPageData(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+        param.contentType = this.contentType;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/newlist", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if ((dataResponse.code = "200")) {
+            console.log(dataResponse.data, "getPageData---请求成功");
+            this.currPageSize = dataResponse.data.length;
+            if (dataResponse.data.length > 0) {
+              this.newsList = this.newsList.concat(dataResponse.data);
+            }
+            return this.newsList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    /**切换tab数据 */
+    relodDataByTab(tabId) {
+      console.log("tabId---", tabId);
+      this.contentType = tabId;
+      this.isShowLoad = true;
+      let param = {};
+      param.pageNo = 1;
+      param.pageSize = 10;
+      param.contentType = this.contentType;
+      this.newsList = [];
+      this.currPageSize = 10;
+      this.getPageData(param).then(res => {
+        this.isShowLoad = false;
+      });
+    },
+
+    /** 跳转详情页 */
+    toCmsDetail(id, type) {
+      this.$router.push({
+        name: "homeDetail",
+        params: {
+          id: id
+        },
+        query: {
+          type: type
+        }
+      });
+    },
+    /**视频点击播放 */
+    playVideo(event, id) {
+      let video = event.currentTarget;
+      if (video.paused) {
+        // console.log("播放-",id);
+        video.play();
+        if (this.currVideo === 0) {
+          this.currVideo = id;
+        } else {
+          /**暂停上一个视频 */
+          //  console.log("暂停上一个视频",this.currVideo);
+          document.querySelector(".video-" + this.currVideo).pause();
+          this.currVideo = id;
+        }
+      } else {
+        // console.log("暂停",id);
+        video.pause();
+      }
+    }
+  },
+  components: {
+    tabbar,
+    userHeader,
+    navList,
+    banner,
+    Scroll,
+    loading,
+    banner
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+@import "../../assets/common/iconfont.css";
+.scroll-list-wrap {
+  position: relative;
+  height: 100%; // border: 1px solid rgba(0,0,0,.1);
+  // border-radius: .3rem;
+  -webkit-transform: rotate(0deg);
+  transform: rotate(0deg);
+  overflow: hidden; //margin-top: 80px ;
+  //margin-bottom: 60px;
+}
+.header_nav_list {
+  background: linear-gradient(-15deg, #ffa904, #ff782f);
+  .nav_top {
+    @extend .flex_v_justify;
+    padding: 15px 10px 10px;
+    .user_img {
+      width: 24px;
+      height: 24px;
+      margin-right: 12px;
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+      }
+    }
+  }
+  .left,
+  .right {
+    @extend .flex_hc;
+  }
+  .left {
+    flex: 1;
+    -webkit-flex: 1;
+  }
+  .search_con {
+    position: relative;
+    flex: 1;
+    -webkit-flex: 1;
+    margin-right: 20px;
+  }
+  input {
+    width: 100%;
+    height: 24px;
+    padding-left: 30px;
+    border-radius: 24px;
+    background-color: #fff;
+    border: none;
+  }
+  .search {
+    @extend .g_v_mid;
+    left: 7px;
+    width: 16px;
+    height: 16px;
+    @include getBgImg("../../assets/images/home/search.png");
+  }
+  .message,
+  .comment {
+    position: relative;
+    width: 22px;
+    height: 22px;
+  }
+  .message {
+    @include getBgImg("../../assets/images/home/message.png");
+    .att {
+      @extend .flex_v_h;
+
+      position: absolute;
+      right: 0;
+      top: 0;
+      transform: translate(50%, -30%);
+      -webkit-transform: translate(50%, -30%);
+
+      @include getCircle(14px, #ff0000, #fff);
+      font-size: 11px;
+    }
+  }
+  .comment {
+    margin-left: 20px;
+    @include getBgImg("../../assets/images/home/comment.png");
+  }
+}
+.main {
+  margin: 5px 5px 0;
+  padding-top: 5px;
+  border-radius: 6px;
+  background-color: #fff;
+
+  .infor_list {
+    padding: 0 5px;
+  }
+  .infor_list .item {
+    @extend .flex_hc;
+    padding: 10px 0;
+    @include getBorder(bottom, #ddd);
+    .item_img {
+      width: 140px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    .item_right {
+      @extend .flex_justify;
+      flex-direction: column;
+      -webkit-flex-direction: column;
+      height: 90px;
+      margin-left: 14px;
+    }
+    .item_title {
+      @extend .flex_justify;
+      font-size: 11px;
+      color: #a3a3a3;
+    }
+    .txt {
+      padding-top: 7px;
+      font-size: 13px;
+      line-height: 17px;
+      color: #000;
+      text-align: justify;
+      @include line_clamp(3);
+    }
+    .visited {
+      @extend .flex;
+      .iconfont {
+        font-size: 12px;
+        margin-right: 2px;
+      }
+      p {
+        margin-right: 10px;
+      }
+      i,
+      span {
+        color: #a3a3a3;
+      }
+    }
+    video {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .film_con {
+      width: 100%;
+      span {
+        color: #a3a3a3;
+      }
+    }
+    .film_title {
+      padding: 10px 0;
+      @include t_nowrap(100%);
+      line-height: 1.2;
+    }
+  }
+}
+</style>

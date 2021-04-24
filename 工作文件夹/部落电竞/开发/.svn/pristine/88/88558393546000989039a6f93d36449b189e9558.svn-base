@@ -1,0 +1,148 @@
+<view class="ui_pop" wx:if='{{showFlag}}'>
+	<!-- 所有弹窗按钮默认皆为绿色bg_green,选中状态为bg_red;不可选为bg_grey -->
+	<!-- 分享弹窗-暂时未用上 -->
+	<view class="mod_pop pop_share" wx:if="{{curType==1}}">
+		<a class="close" bindtap="closePop(7)"></a>
+		<view class="share_tag"></view>
+		<view class="title">点击本页面右上角“...”进行分享，有用户点击进入分享链接后，方可成功续命！</view>
+		<view class="rule_tips">
+			<p>1. 选择续命均需在1分钟内达成</p>
+			<p>2. 每次只可选择一次续命方式</p>
+		</view>
+	</view>
+	<!-- 观看视频，再次挑战 -->
+	<view class="mod_pop" wx:if="{{curType==2}}">
+		<a class='close' bindtap="closePop"></a>
+		<view class="title">每天可观看视频,获得3次挑战机会</view>
+		<!-- <a class="bg_green mt36 mb50" bindtap="payToJoin(1)">观看视频</a> -->
+    <a class="bg_green mt36 mb50" bindtap="watchAdTo" data-type='1'>观看视频</a>
+	</view>
+	<!-- 提交派奖申请 -->
+	<view class="mod_pop" wx:if="{{curType==3}}">
+		<a class="close" bindtap="closePop"></a>
+		<view class="title tac">领取成功</view>
+		<image class="success_logo mt36" src="../../../../assets/images/hd/hd101/success_logo.png" alt=""></image>
+		<a class="bg_green mt36 mb36" bindtap="toHdHome">返回首页</a>
+		<view class="rule_tips mt14">
+			<p>1. 在官方商城，1星星等值于1元人民币</p>
+			<p>2. 星星限定在2天内使用</p>
+		</view>
+	</view>
+	<!-- 答题机会用完 -->
+	<view class="mod_pop pop_nochance" wx:if="{{curType==4}}">
+		<a class="close" bindtap="closePop"></a>
+		<view class="title">
+			您今天的答题机会已经用完，
+			请明天再来挑战～
+		</view>
+	</view>
+	<!-- 今日头奖 -->
+	<view class="mod_pop pop_award" wx:if="{{curType==5}}">
+		<a class="close" bindtap="closePop"></a>
+		<image class="award_logo" src="../../../../assets/images/hd/hd101/award_logo.png" alt=""></image>
+		<view class="title">成功答对20题，恭喜获得</view>
+		<view class="award_title">今日头奖</view>
+		<!-- <view class="title">请联系官方客服核实领取！</view> -->
+		<view class="bg_red mt14" bindtap="getYourPrize(prizeInfo.userGiftLogId,1)">点击领取</view>
+		<view class="att_tips mb50">请在5分钟之内领取 </view>
+		<view class="rule_tips">
+			<!-- <p>1. 在官方商城，1星星等值于1元人民币</p>
+			<p>2. 星星限定在2天内使用</p> -->
+		</view>
+	</view>
+	<!-- 答对多少题获得星星 -->
+	<view class="mod_pop pop_award" wx:if="{{curType==6}}">
+		<a class="close" bindtap="closePop"></a>
+		<image class="award_logo" src="../../../../assets/images/hd/hd101/award_logo.png" alt=""></image>
+		<block wx:if="{{prizeInfo.userGiftLogId}}">
+			<view class="title tac">成功答对{{prizeInfo.rightAnswer}}题，获得</view>
+			<view class="award_title">{{prizeInfo.startPrizeNum}}<span>元</span></view>
+			<view class="att_tips mt14 mb7">请在5分钟之内领取</view>
+			<view class="bg_red" bindtap="getYourPrize(prizeInfo.userGiftLogId,1)">点击领取</view>
+			<!-- <view class="bg_green " wx:if="prizeInfo.canJoinSubject" bindtap="payToJoin(3,prizeInfo.userGiftLogId)">
+				<p class="pay_one">【支付三毛】</p>
+				<p>点击领取并再次挑战</p>
+			</view> -->
+		</block>
+		<block v-else>
+			<view class="title tac lh34">成功答对{{prizeInfo.rightAnswer}}<br></br>题还请再接再厉</view>
+			<view class="bg_green mb50 mt36" wx:if="{{prizeInfo.canJoinSubject}}" bindtap="watchAdTo" data-type='1'>
+				<p class="pay_one">观看视频</p>
+				<p>再次挑战</p>
+			</view>
+		</block>
+		<view class="rule_tips">
+			<!-- <p>1. 在官方商城，1星星等值于1元人民币</p>
+			<p>2. 星星限定在2天内使用</p> -->
+		</view>
+	</view>
+	<!-- 答错可选续命方式 -->
+	<view class="mod_pop" wx:if="{{curType==7}}">
+		<a class="close" bindtap="closePop"></a>
+		<view class="count_tips" wx:if="{{totalTime>0}}">{{totalTime}}</view>
+		<view class="title lh_one">答题错误！可选续命方式</view>
+		<view :class="{'bg_green':item.canActive,'bg_grey':!item.canActive,'bg_red':bindtapFlag==index,'mt36':index==0}"
+			wx:for="{{wayList}}" data-item="item" bindtap="wayContinue(item,index)">
+      <!--续命方式-->
+			<p>{{item.wayName}}</p>
+		</view>
+		<view class="bg_green" bindtap="toEndGame">
+			<p>结束答题</p>
+		</view>
+		<view class="rule_tips mt36">
+			<p>1. 选择续命均需在1分钟内达成</p>
+			<p>2. 每次只可选择一次续命方式</p>
+		</view>
+	</view>
+
+	<!-- 提现弹窗-暂时未用上 -->
+	<view class="mod_pop" wx:if="{{curType==8}}">
+		<a class="close" bindtap="closePop"></a>
+		<view class="title lh_one tac">可提现金额</view>
+		<view class="money mt36 mb36">￥{{withdrawMoney}}</view>
+		<view class="bg_green mb36" bindtap="goWithdrawMonery()">
+			<p>点我提现</p>
+		</view>
+		<view class="rule_tips mt14 tac">
+			<p class=" pl0">1. 一天仅可提现一次</p>
+			<p class=" pl0">2. 每天仅可提现5元</p>
+		</view>
+	</view>
+	<!-- 提现成功-暂时未用上 -->
+	<view class="mod_pop" wx:if="{{curType==9}}">
+		<a class="close" bindtap="closePop"></a>
+		<image class="success_logo" src="../../../../assets/images/hd/hd101/success_logo.png" alt=""></image>
+		<view class="title mb36">
+			您已成功提交申请，请留意
+			提现记录和个人钱包哦～
+		</view>
+	</view>
+	<!-- 提现机会用完--暂时未用上 -->
+	<view class="mod_pop pop_nochance" wx:if="{{curType==10}}">
+		<a class="close" bindtap="closePop"></a>
+		<view class="title">
+			一天仅可提现一次，请明天再来！
+		</view>
+	</view>
+	<!-- 联系客服领取头奖弹窗 -->
+	<view class="mod_pop pop_nochance" wx:if="{{curType==11}}">
+		<a class="close" bindtap="closePop"></a>
+		<view class="title">
+			请联系官方客服微信领取：jzdj08。
+		</view>
+	</view>
+	<!-- 答对题目数量不够，没有奖励，提醒支付三毛再来一次 -->
+	<!-- <view class="mod_pop pop_award" wx:if="curType==10">
+		<a class="close"></a>
+		<img class="award_logo" src="../../../../assets/images/hd/hd101/award_logo.png" alt="">
+		<view class="title tac lh34">成功答对33题<br>还请再接再厉</view>
+		<view class="bg_green mb50 mt36">
+			<p class="pay_one">【支付三毛】</p>
+			<p>点击领取并继续挑战</p>
+		</view>
+		<view class="rule_tips">
+			<p>1. 在官方商城，1星星等值于1元人民币</p>
+			<p>2. 星星限定在2天内使用</p>
+		</view>
+	</view> -->
+</view>

@@ -1,0 +1,109 @@
+<template>
+  <div class="Page matchToolPage">
+    <header class="mod_header">
+      <nav-bar :pageTitle="'首页'"></nav-bar>
+      <div class="nav_list">
+        <ul>
+          <li :class="{active:tabIndex == index}" @click="switchTab(index)" v-for="(item,index) in dataList"
+            :key="index">{{item}}</li>
+        </ul>
+      </div>
+    </header>
+    <div class="main">
+      <match-list ref="matchInfo"></match-list>
+    </div>
+    <footer class="mod_footer">
+
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "components/header/nav_bar/index.vue";
+import navList from "components/header/nav_list/index.vue";
+import matchList from "./components/matchlist.vue";
+
+export default {
+  components: { navBar, navList, matchList },
+  props: [],
+  data() {
+    return {
+      tabIndex: 0,
+      dataList: ["赛事列表", "我的赛事", "我的营地", "创建赛事"],
+      toolMatchParam: {
+        pageNo: 1,
+        pageSize: 10,
+        status: 0, //初始加载首页赛事信息，剔除无效赛事
+        showUserMacth: false // false展示所有赛事信息，true展示个人参赛信息
+      },
+      matchList: []
+    };
+  },
+  created() {},
+  methods: {
+    switchTab(index) {
+      this.matchList = [];
+      console.log(index, "点击的index");
+      this.tabIndex = index;
+      if (index == 1) {
+        this.toolMatchParam.showUserMacth = true;
+      } else if (index == 0) {
+        this.toolMatchParam.showUserMacth = false;
+      } else if (index == 3) {
+        this.$router.push({
+          path: "/matchTool/createMatch",
+          query: {}
+        });
+      }
+      this.getsomeList(this.toolMatchParam);
+    },
+    getsomeList(toolMatchParam) {
+      this.$refs.matchInfo.clearMatchList(this.toolMatchParam.showUserMacth);
+      this.$refs.matchInfo.getPageData(toolMatchParam); //调用子组件中的方法
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.matchToolPage {
+  .nav_bar .back {
+    display: none;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+
+.nav_list {
+  background-color: #f4f4f4;
+  height: 17.0667vw;
+  overflow: hidden;
+  ul {
+    @extend .flex_hc;
+    flex-wrap: nowrap;
+    -webkit-flex-wrap: nowrap;
+    height: calc(100% + 6px);
+    padding: 0 1.6vw;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+  li {
+    padding: 0 2vw;
+    font-size: 6.6667vw;
+    line-height: 17.0667vw;
+    font-weight: 600;
+    color: #ccc;
+    white-space: nowrap;
+    &.active {
+      color: #333;
+    }
+  }
+}
+
+.main {
+  padding-bottom: 20px;
+}
+</style>

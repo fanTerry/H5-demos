@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+		"storeExchange":"/component/popup/store/exchange"
+	}
+}

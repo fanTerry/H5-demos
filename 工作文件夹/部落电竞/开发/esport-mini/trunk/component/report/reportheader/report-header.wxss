@@ -1,0 +1,198 @@
+/* component/report/reportheader/report-header.wxss */
+@import "/resources/wxss/base/display.wxss";
+@import "/resources/wxss/base/clear.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+.report-main {
+  position: relative;
+}
+.report-main-bg-view {
+  width: 750rpx;
+  height: 350rpx;
+}
+.report-main-bg {
+  width: 750rpx;
+  height: 350rpx;
+}
+
+.report-main-view {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.report-main-head {
+  width: 750rpx;
+  height: 100rpx;
+
+  text-align: right;
+}
+
+.r-m-h-i {
+  color: #fff;
+  padding: 20rpx 20rpx 0 0;
+}
+
+.report-main-title {
+  width: 750rpx;
+  padding: 40rpx 0 20rpx;
+
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: bold;
+  text-align: center;
+}
+
+.report-main-info {
+  width: 730rpx;
+  padding: 0 10rpx;
+}
+.report-info-name {
+  color: #fff;
+  line-height: 30rpx;
+  font-size: 40rpx;
+  font-weight: bold;
+  padding-top: 20rpx;
+}
+
+.r-m-i-c1 {
+  width: 200rpx;
+  text-align: center;
+}
+
+.r-m-i-c2 {
+  width: 310rpx;
+  text-align: center;
+
+}
+.report-info-time {
+  color: #fff;
+  padding: 40rpx 0 50rpx;
+}
+.report-info-score {
+  color: #fff;
+}
+.r-h-i-bell {
+  color: #fff;
+  font-size: 40rpx;
+}
+.r-h-i-bell-act {
+  color: #f97500;
+  font-size: 40rpx;
+}
+.r-i-score {
+  width: 80rpx;
+  height: 140rpx;
+  font-size: 40rpx;
+}
+.r-i-s-l {
+  text-align: right;
+}
+.r-i-s-r {
+  text-align: left;
+}
+.r-i-s-m {
+  font-size: 50rpx;
+}
+.r-i-status {
+  width: 150rpx;
+  font-size: 24rpx;
+}
+.r-i-s-text {
+  line-height: 30rpx;
+}
+.r-i-s-ing {
+  color: #74baff;
+}
+.r-i-s-over {
+  padding: 40rpx 0;
+}
+.report-info-info {
+  color: #fff;
+  font-size: 28rpx;
+}
+.r-w-btn {
+  display: inline-block;
+  width: 150rpx;
+  height: 50rpx;
+  line-height: 50rpx;
+  
+  text-align: center;
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: bold;
+
+  background: #fea21b;
+  border-radius: 30rpx;
+}
+.r-w-i-i {
+  font-size: 24rpx;
+  padding-right: 5rpx;
+}
+
+
+
+.r-m-i-l-l {
+  height: 15rpx;
+  line-height: 10rpx;
+}
+.r-m-i-l-line {
+  display: inline-block;
+  width: 80%;
+  height: 5rpx;
+  background: #d60c1f;
+}
+.r-m-l-red {
+  color: #d60b19;
+}
+.r-m-l-green {
+  background: #229455;
+}
+.r-m-i-text {
+  color: #7a83ac;
+  font-weight: bold;
+}
+.r-m-i-red {
+  color: #d60b19;
+}
+.r-m-i-green {
+  color: #229455;
+}
+
+.r-m-i-time {
+  width: 100%;
+  height: 50rpx;
+  line-height: 60rpx;
+
+  text-align: center;
+  padding-top: 30rpx;
+
+  color: #fff;
+}
+.r-m-i-title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.report-info-img {
+  width: 150rpx;
+  height: 110rpx;
+}
+
+.report-btn-bet {
+  display: inline-block;
+  width: 150rpx;
+  height: 50rpx;
+  line-height: 50rpx;
+
+  color: #d60c1f;
+  font-size: 36rpx;
+  text-align: center;
+
+  background: #fff000;
+  border-radius: 30rpx;
+
+  margin-top: 20rpx;
+}
+
+

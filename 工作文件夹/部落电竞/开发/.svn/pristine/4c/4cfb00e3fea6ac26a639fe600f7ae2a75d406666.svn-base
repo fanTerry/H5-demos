@@ -1,0 +1,44 @@
+
+/* resources/wxss/base/display.wxss */
+
+.dsp-none { display: none; }
+.border-none { border-bottom: none; }
+
+
+.dsp-table {
+  display: table;
+  border-collapse: separate;
+}
+
+.dsp-row {
+  display: table-row;
+}
+
+.dsp-cell {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.dsp-ili-block {
+  display: inline-block;
+}
+
+.flex{
+	display: flex;
+}
+
+.flex-v{
+	display: flex;
+	align-items: center;
+}
+
+.flex-h{
+	display: flex;
+	justify-content: center;
+}
+
+.flex-v-h{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}

@@ -1,0 +1,23 @@
+//主路由入口
+import home from './home';
+import community from './community';
+import usercenter from './usercenter';
+import guess from './guess';
+import hd from './hd';
+import store from './store';
+import expert from './expert';
+import other from './other';
+
+
+const routers = [
+    ...home,
+    ...community,
+    ...usercenter,
+    ...guess,
+    ...hd,
+    ...store,
+    ...expert,
+    ...other
+];
+
+export default routers;

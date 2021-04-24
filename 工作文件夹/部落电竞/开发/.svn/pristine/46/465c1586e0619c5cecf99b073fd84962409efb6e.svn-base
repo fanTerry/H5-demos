@@ -1,0 +1,9 @@
+<div class="tab_con">
+	<!-- 选中加cur -->
+	<!-- <a href="/hd/hd101/home" class="tabs rank_record " @click='cur'></a>
+	<a href="/hd/hd101/ruleslist" class="tabs rules_lists"></a>
+	<a href="/hd/hd101/userwallet" class="tabs user_wallet"></a> -->
+	<div v-for="(item,index) in tabList" :key="index" class="tabs"
+		:class="[item.class,{cur:$route.path.indexOf(item.link)!== -1}]"
+		click="gotoAddress({path: item.link, query: {}},index)"></div>
+</div>

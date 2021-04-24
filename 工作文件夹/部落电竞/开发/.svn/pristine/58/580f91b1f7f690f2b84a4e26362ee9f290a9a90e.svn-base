@@ -1,0 +1,406 @@
+<template>
+  <div class="ui_pop" v-if='step1Flag||step2Flag'>
+    <!-- 兑换数量 -->
+    <section class="exchange_quantity" v-if='step1Flag'>
+      <a class="close" @click="step1Flag=false"></a>
+      <div class="card" v-if="goodsDetail.imageList&&goodsDetail.imageList.length>0">
+        <img :src="goodsDetail.imageList[0]" alt="">
+        <div>
+          <span><i class="star_coin"></i>{{goodsDetail.payScore}}</span>
+          <p>库存{{goodsDetail.stock?goodsDetail.stock:0}}件</p>
+        </div>
+      </div>
+      <div class="exchange_num">
+        <span>兑换数量</span>
+        <div class="data">
+          <span class="reduce" @click="minuNum($event,true)"></span>
+          <input class="num" maxlength="6" type="tel"
+            onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" v-model.number.lazy="finalNum">
+          <span class="add" @click="minuNum($event,false)"></span>
+        </div>
+      </div>
+      <a class="exchange_btn" @click="toConfirmAddress">确定</a>
+    </section>
+
+    <!-- 填写收获地址 -->
+    <section class="receive_adress" v-if='step2Flag'>
+      <a class="close" @click="step2Flag=false"></a>
+      <template v-if='!hasDefaultAddress&&receiveAddress==null'>
+        <writeAddress @successSave="successSave"></writeAddress>
+      </template>
+      <template v-if="hasDefaultAddress||receiveAddress!=null">
+        <h3 class="title">确认订单</h3>
+        <!-- 地址填写组件 -->
+        <router-link :to="{path:'/addressManage', query:{redirect:$route.path}}">
+          <locationAddress :address='receiveAddressComp'></locationAddress>
+        </router-link>
+        <div class="confirm_con">
+          <div>
+            <span class="num">共{{finalNum}}件，</span>
+            <span>合计：</span>
+            <span class="money"><i class="star_coin"></i>{{finalNum*goodsDetail.payScore}}</span>
+            <a class="confirm_btn" @click="confimPayChange">确定</a>
+          </div>
+        </div>
+      </template>
+    </section>
+  </div>
+</template>
+
+<script>
+import locationAddress from "../../../components/store/address";
+import writeAddress from "./writeAddress";
+import { mapGetters, mapActions } from "vuex";
+import { add } from "../../../libs/utils";
+export default {
+  components: {
+    locationAddress,
+    writeAddress
+  },
+  props: {
+    goodsDetail: Object
+  },
+  data() {
+    return {
+      step1Flag: true,
+      step2Flag: false,
+      receiveAddress: null,
+      hasDefaultAddress: false,
+      finalNum: 1
+    };
+  },
+  computed: {
+    ...mapGetters({
+      addressObj: "getUserAddress"
+    }),
+    receiveAddressComp() {
+      console.log(this.addressObj);
+      if (this.addressObj.receiverName) {
+        return this.addressObj;
+      } else {
+        return this.receiveAddress;
+      }
+    }
+  },
+  created() {},
+  mounted() {
+    this.getUserAddress();
+    console.log(this.$store.state.addressObj, "ssssdd");
+  },
+  methods: {
+    successSave(address) {
+      // console.log("sdfadsfadfaf");
+      //  this.$router.go(-1);
+      this.receiveAddress = address;
+      console.log(address, "sss");
+    },
+    toSaveAddress() {},
+    confimPayChange() {
+      if (null == this.receiveAddress) {
+        this.$toast("请先填写收货地址", 2);
+        return;
+      }
+      let param = {};
+      param.addressId = this.receiveAddress.id;
+      param.goodsId = this.goodsDetail.id;
+      param.num = this.finalNum;
+
+      this.$post("/api/shopOrder/submit/" + this.goodsDetail.id, param)
+        .then(res => {
+          console.log(res);
+          if ((res.code = "200" && res.data != null)) {
+            this.$toast("兑换成功", 2);
+            this.step1Flag = false;
+            this.step2Flag = false;
+            setTimeout(() => {
+              this.$router.push({
+                name: "orderDetails",
+                params: {
+                  orderId: res.data.orderId
+                }
+              });
+            }, 1 * 1000);
+          } else {
+            this.$toast(res.message, 2);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    toConfirmAddress() {
+      if (this.finalNum > this.goodsDetail.stock) {
+        this.$toast("超过库存总数", 2);
+        return;
+      }
+      this.step1Flag = false;
+      this.step2Flag = true;
+    },
+    getUserAddress() {
+      this.$post("/api/shopAddress/default")
+        .then(res => {
+          console.log(res);
+          if ((res.code = "200" && res.data != null)) {
+            this.hasDefaultAddress = true;
+            this.receiveAddress = res.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    minuNum(e, isMinu) {
+      let curTar = e.target; // 当前元素
+      let input, mulInt;
+      if (isMinu) {
+        input = curTar.nextElementSibling;
+        if (parseInt(input.value) <= 1) {
+          return;
+        }
+        mulInt = parseInt(input.value) - 1;
+      } else {
+        input = curTar.previousElementSibling;
+        if (parseInt(input.value) >= 50000) {
+          return;
+        }
+        mulInt = parseInt(input.value) + 1;
+      }
+      this.finalNum = mulInt;
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+.close {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  @include getClose(10px, #999);
+  border: 1px solid #999;
+  border-radius: 50%;
+}
+.star_coin {
+  width: 20px;
+  height: 20px;
+  margin-right: 3px;
+  @include getBgImg("../../../assets/images/user_center/star_coin.png");
+}
+.location_address {
+  flex: 1;
+  -webkit-flex: 1;
+  span {
+    padding-right: 5px;
+    color: #333;
+  }
+}
+.exchange_btn {
+  @extend .flex_v_h;
+  margin: 4px auto;
+  font-size: 17px;
+  @include getBtn(147px, 40px, transparent, #fff, 40px);
+  background: linear-gradient(to right, #ffa200, #ff7b1c);
+}
+.exchange_quantity,
+.receive_adress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 0 10px;
+  border-radius: 6px 6px 0 0;
+  background-color: #fff;
+}
+.exchange_quantity {
+  .card {
+    @extend .flex_hc;
+    padding-bottom: 15px;
+    margin-top: -10.6vw;
+    @include getBorder(bottom, #eee);
+    img {
+      width: 45.3vw;
+      height: 22.6vw;
+      border-radius: 6px;
+    }
+    > div {
+      font-size: 16px;
+      padding-left: 15px;
+      padding-top: 13vw;
+      color: $color_main;
+      span {
+        @extend .flex_hc;
+      }
+      p {
+        font-size: 12px;
+        padding-top: 5px;
+        color: #999;
+      }
+    }
+  }
+
+  .exchange_num {
+    @extend .flex_v_justify;
+    padding: 12px 0 13px;
+    font-size: 13px;
+    color: #666;
+    @include getBorder(bottom, #eee);
+    .data {
+      @extend .flex_hc;
+      span {
+        text-align: center;
+        background-color: #eee;
+      }
+    }
+    .reduce,
+    .add {
+      position: relative;
+      width: 24px;
+      height: 24px;
+    }
+    .reduce,
+    .add {
+      &::after {
+        content: "";
+        @extend .g_v_c_mid;
+        width: 10px;
+        height: 1px;
+        background-color: #999;
+      }
+    }
+    .add {
+      &::before {
+        content: "";
+        @extend .g_v_c_mid;
+        height: 10px;
+        width: 1px;
+        background-color: #999;
+      }
+    }
+    .num {
+      width: 35px;
+      line-height: 24px;
+      margin: 0 1px;
+      font-size: 13px;
+      color: #333;
+      font-weight: 500;
+      border: none;
+      text-align: center;
+      background-color: #eee;
+    }
+  }
+}
+.receive_adress {
+  .title {
+    padding: 13px 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    @include getBorder(bottom, #eee);
+  }
+  > div {
+    @extend .flex_v_justify;
+    @include getBorder(bottom, #eee);
+    font-size: 13px;
+    color: #999;
+  }
+  input {
+    flex: 1;
+    -webkit-flex: 1;
+  }
+  label {
+    width: 94px;
+  }
+  label,
+  input {
+    @extend .flex_hc;
+    height: 48px;
+    font-size: 13px;
+  }
+  input,
+  textarea {
+    border: none;
+    font-size: 13px;
+    color: #333;
+  }
+  .choose {
+    position: relative;
+    padding-right: 24px;
+    i {
+      @extend .g_v_mid;
+      right: 0;
+      margin-right: 10px;
+      @include getArrow(8px, #999, right);
+    }
+  }
+  .detail_adress {
+    position: relative;
+    padding: 15px 0;
+    textarea {
+      flex: 1;
+      line-height: 15px;
+      text-indent: 64px;
+    }
+    span {
+      position: absolute;
+      left: 0;
+      top: 15px;
+      font-size: 13px;
+      color: #999;
+    }
+  }
+  .set_address {
+    @extend .flex_hc;
+    height: 48px;
+    span {
+      @extend .flex_hc;
+      i {
+        width: 16px;
+        height: 16px;
+        margin-right: 7px;
+        border: 1px solid #999;
+        border-radius: 50%;
+      }
+      .select {
+        @include getBgImg("../../../assets/images/store/select.png");
+        border: none;
+      }
+    }
+  }
+  .confirm_con {
+    @extend .flex_hc;
+    justify-content: flex-end;
+    padding: 4px 0;
+    font-size: 14px;
+    color: #333;
+    > div,
+    .money {
+      @extend .flex_hc;
+    }
+    .num {
+      font-size: 12px;
+      color: #999;
+    }
+    .money {
+      color: $color_main;
+      font-size: 14px;
+    }
+    .confirm_btn {
+      margin-left: 12px;
+      @include getBtn(95px, 40px, transparent, #fff, 40px);
+      background: linear-gradient(to right, #ffa200, #ff7b1c);
+    }
+  }
+}
+
+// iphoneX,iphone Xs max适配
+@media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+  only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+  .exchange_quantity {
+    padding-bottom: constant(safe-area-inset-bottom) !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
+  }
+}
+</style>

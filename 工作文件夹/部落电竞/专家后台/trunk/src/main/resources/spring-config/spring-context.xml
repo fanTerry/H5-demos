@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+ 	
+	<description>spring配置文件</description>
+
+	<dubbo:application name="esport-expert" owner="esport" organization="esport" logger="slf4j" />
+	
+	<context:component-scan base-package=" com.esportzoo.esport">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- 导入本项目配置 -->
+	<import resource="spring-env.xml" />
+	
+	<import	resource="classpath*:/esportServiceClientConfig/client-context-esport.xml" />
+    <import	resource="classpath*:/leaguelibServiceClient/context.xml" />
+
+</beans>

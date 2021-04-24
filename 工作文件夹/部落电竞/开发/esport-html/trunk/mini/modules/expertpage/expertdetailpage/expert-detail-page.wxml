@@ -1,0 +1,224 @@
+<!--modules/expertpage/expertdetailpage/expert-detail-page.wxml-->
+
+<!-- 第一部分：头部公共部分 -->
+<expert-header></expert-header>
+
+<!-- 第二部分：菜单栏 -->
+<view class='expert-menu-view dsp-none'>
+  <view class='expert-menu expert-menu-center clear'>
+    <view class='e-m-item e-m-c-item e-m-l'><text>方案预测</text></view>
+    <view class='e-m-item e-m-c-item e-m-item-cur'><text>专栏</text></view>
+    <view class='e-m-item e-m-c-item e-m-r'><text>历史预测</text></view>
+  </view>
+</view>
+
+
+<!-- 状态一：未付费状态：开始 -->
+
+<!-- 第三部分：在售方案 -->
+<view class='expert-info-title'>
+  <view class='expert-title'><i class='iconfont icon-shoucang e-t-icon'></i>在售方案</view>
+</view>
+<view class='expert-plan'>
+  <view class='report-expert-info-note'>
+    <text>推荐买点：</text>
+    <view class='r-e-high'>
+      <text class='r-e-h-text'>胜负让分</text>
+      <text class='r-e-h-text'>大小分</text>
+      <text class='r-e-h-text'>十二杀</text>
+    </view>
+  </view>
+
+  <!-- 第二部分 -->
+  <view class='report-expert-detail dsp-table'>
+    
+    <view class='report-expert-detail-vs dsp-cell '>
+      <view>
+        <i class='iconfont icon-shoucang r-e-d-logo'></i>
+        <text class='r-e-d-tit'>MDL 巴黎迪士尼Major预选赛 BO3</text>
+      </view>
+
+      <view class='dsp-table'>
+        <view class='dsp-cell'>
+          <image class='r-e-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+          <text>DETONA...</text>
+        </view>
+
+        <view class='dsp-cell'>
+          <text class='r-e-d-vs'>VS</text>
+        </view>
+
+        <view class='dsp-cell'>
+          <image class='r-e-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+          <text>DETONA...</text>
+        </view>
+
+      </view>
+    </view>
+
+    <view class='report-expert-detail-money'>
+      <view>
+        <i class='iconfont icon-shoucang r-e-d-i'></i>
+        <text class='r-e-d-money'>800竞彩币</text>
+      </view>
+      <view>
+        <i class='r-e-d-note'>不中全退</i>
+      </view>
+    </view>
+
+  </view>
+
+  <view class='report-expert-sub'>
+    <text>1小时前发布 | 阅读 18</text>
+  </view>
+  
+</view>
+
+<!-- 第四部分：方案支付部分显示逻辑 -->
+<!-- 隐藏样式：expert-plan-blur -->
+<view class='expert-plan'>
+  <view class='report-expert-info-note'>
+    <text>推荐买点：</text>
+    <view class='r-e-high'>
+      <text class='r-e-h-text'>胜负让分</text>
+      <text class='r-e-h-text'>大小分</text>
+      <text class='r-e-h-text'>十二杀</text>
+    </view>
+  </view>
+
+  <!-- 第二部分 -->
+  <view class='report-expert-detail dsp-table'>
+    
+    <view class='report-expert-detail-vs dsp-cell '>
+      <view>
+        <i class='iconfont icon-shoucang r-e-d-logo'></i>
+        <text class='r-e-d-tit'>MDL 巴黎迪士尼Major预选赛 BO3</text>
+      </view>
+
+      <view class='dsp-table'>
+        <view class='dsp-cell'>
+          <image class='r-e-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+          <text>DETONA...</text>
+        </view>
+
+        <view class='dsp-cell'>
+          <text class='r-e-d-vs'>VS</text>
+        </view>
+
+        <view class='dsp-cell'>
+          <image class='r-e-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+          <text>DETONA...</text>
+        </view>
+
+      </view>
+    </view>
+
+    <view class='report-expert-detail-money'>
+      <view>
+        <i class='iconfont icon-shoucang r-e-d-i'></i>
+        <text class='r-e-d-money'>800竞彩币</text>
+      </view>
+      <view>
+        <i class='r-e-d-note'>不中全退</i>
+      </view>
+    </view>
+
+  </view>
+
+  <view class='report-expert-sub'>
+    <text>1小时前发布 | 阅读 18</text>
+  </view>
+
+  <!-- 支付浮层状态 -->
+  <view class='expert-plan-hide'></view>
+  <view class='expert-plan-buy'>
+    <view>
+      <image class='e-p-b-image' src='/resources/images/iconimg/pay.png' mode='aspectFit' />
+    </view>
+    <view class='e-p-b-text'><text>请支付后查看推荐结果和理由</text></view>
+  </view>
+</view>
+
+<!-- 支付逻辑：支付明细 -->
+<view class='expert-pop-pay'>
+  <view class='expert-pop-pay-info'>
+    <view class='dsp-table'>
+      <view class='dsp-cell'>
+        <view class='e-p-p-gray'>推荐编号：</view>
+        <view class='e-p-p-gray'>发布时间：</view>
+        <view class='e-p-p-gray'>支付金币：</view>
+        <view class='e-p-p-gray'>查看人数：</view>
+      </view>
+      <view class='dsp-cell'>
+        <view class='e-p-p-data'>201905063511594</view>
+        <view class='e-p-p-data'>2019-05-06 01:00 </view>
+        <view class='e-p-p-data'><text class='e-p-p-num'>38</text>个</view>
+        <view class='e-p-p-data'>200人</view>
+      </view>
+    </view>
+    <view class='expert-pop-pay-agree'>
+      <label class="e-p-p-label">
+        <i class='iconfont icon-shoucang e-t-icon'></i>我已阅读同意<text class='e-p-p-deal'>《专家解读和推荐服务协议》</text>
+      </label>
+    </view>
+  </view>
+  <view class='expert-pop-pay-btn dsp-table'>
+    <view class='dsp-cell e-p-p-c1'>
+      <text>查看推荐需支付：</text><text class='e-p-p-b-num'>88</text><text class='e-p-p-b-coin'>金币</text>
+    </view>
+    <view class='dsp-cell t-c'>
+      <text class='e-p-p-btn'>立即支付</text>  
+    </view>
+  </view>
+
+  <view class='expert-pop-blank'></view>
+</view>
+<!-- 支付逻辑：弹框部分 -->
+<pp-expert class='dsp-none'></pp-expert>
+<!-- 状态一：未付费状态：结束 -->
+
+
+<!-- 状态二：已付费状态：开始 -->
+<view class='expert-detail-paragraph dsp-none'>
+
+  <view class='e-a-v-title-h1'>
+    <text class='e-a-t-title-h1'>【官方】   电竞吧 专家评到用户指南</text>
+  </view>
+
+  <view class='e-a-v-sub'>
+    <text class='e-a-t-tag'>电竞吧</text>
+    <text class='e-a-t-sub'>官方  2019-01-09  17：01：22</text>
+  </view>
+
+  <view class='e-a-v-title-h2'>
+    <text class='e-a-t-title-h2'>专家评到简介</text>
+  </view>
+
+  <view class='e-a-v-paragraph'>
+    <text class='e-a-t-tag'>电竞吧</text>
+    <text>专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本.专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本.</text>
+  </view>
+
+
+  <view class='e-a-v-title-h2'>
+    <text class='e-a-t-title-h2'>专家评到简介</text>
+  </view>
+
+  <view class='e-a-v-title-h3'>
+    <text>1.专家文本文</text>
+  </view>
+  <view class='e-a-v-paragraph'>
+    <text>本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本.</text>
+  </view>
+
+  <view class='e-a-v-title-h3'>
+    <text>2.专家文本文</text>
+  </view>
+  <view class='e-a-v-paragraph'>
+    <text>本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本.</text>
+  </view>
+
+</view>
+<!-- 状态二：已付费状态：结束 -->
+
+

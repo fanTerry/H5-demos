@@ -1,0 +1,84 @@
+<!-- TODO:待定方案 -->
+<!-- 图文直播菜单栏 -->
+<!-- <report-sub-menu gameIdArray="{{gameIdArray}}"></report-sub-menu> -->
+
+<view class='report-sub-menu clear'>
+  <!-- <view class='report-sub-menu-item report-s-m-i-cur'><text>全部</text></view> -->
+  
+  <block wx:for="{{gameIdArray}}" wx:key="" wx:for-index="index">
+    <view class="report-sub-menu-item {{curGame==item?'report-s-m-i-cur':''}}" data-game="{{item}}"  bindtap='_selectGameId'>
+      <text>第{{index+1}}局</text>
+    </view>
+  </block>
+</view>
+
+<!-- 上半场VS下半场 -->
+<view class='md-charts-half dsp-none'>
+
+  <!-- 第一部分标题内容 -->
+  <view class='md-charts-half-title dsp-table'>
+    <!-- 第二格 -->
+    <view class='dsp-cell r-p-i-r2'>
+      <view class='fr'>
+        <image class='r-p-i-d-img' src='https://rs.esportzoo.com/svn/esport-res/mini/images/image1.png' mode='aspectFill' />
+      </view>
+      <view class='fr r-p-i-d-text'>
+        <text>DETONA...</text>
+      </view>
+    </view>
+
+    <!-- 第三格 -->
+    <view class='dsp-cell r-p-i-r3'>
+      <view class='r-p-i-score r-p-i-s-win'><text>3</text></view>
+      <view class='r-p-i-score'><text>:</text></view>
+      <view class='r-p-i-score'><text>2</text></view>
+    </view>
+
+    <!-- 第四格 -->
+    <view class='dsp-cell r-p-i-r4'>
+      <view class='fl'>
+        <image class='r-p-i-d-img' src='https://rs.esportzoo.com/svn/esport-res/mini/images/image1.png' mode='aspectFill' />
+      </view>
+      <view class='fl r-p-i-d-text'>
+        <text>DETONA...</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 上半场部分 -->
+  <view class='md-charts-half-list'>
+    <!-- 标题部分 -->
+    <view class='md-c-h-l-tit-view clear'>
+      <text class='md-c-h-l-tit'>----上半场----</text>
+      <view class='fl'>
+        <i class='iconfont icon-icon_tianjia md-c-h-l-icon'></i>
+        <text class='md-c-h-l-txt'>3</text>
+      </view>
+      <view class='fr'>
+        <text class='md-c-h-l-txt'>12</text>
+        <i class='iconfont icon-icon_tianjia md-c-h-l-icon'></i>
+      </view>
+    </view>
+
+    <!-- 表头部分 -->
+    <view class='md-c-h-l-table-tr'>
+      <view class='tr-box' wx:for='{{tableTrArr}}' wx:key=''>{{item}}</view>
+    </view>
+
+    <!-- 表格部分 -->
+    <view class='md-c-h-l-grid'>
+      <view class='md-c-h-l-box' wx:for='{{32}}' wx:key=''>1</view>
+    </view>
+  </view>
+
+  <!-- 下半场部分 -->
+
+</view>
+
+<!-- 05.09 更改后方案 -->
+<view class='md-charts-chat-list' wx:for="{{liveDataList}}" wx:key="">
+  <chart-chat-item liveData="{{item}}"></chart-chat-item>
+</view>
+
+<!-- 暂无数据显示 -->
+<no-data  wx:if="{{ready&&(liveDataList==null||liveDataList.length==0)}}"></no-data>

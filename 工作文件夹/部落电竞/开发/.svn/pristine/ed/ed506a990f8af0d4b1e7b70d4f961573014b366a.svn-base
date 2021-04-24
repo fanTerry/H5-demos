@@ -1,0 +1,352 @@
+.none {
+  display: none !important;
+}
+
+.ui_pop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.close {
+  position: absolute;
+  right: 16rpx;
+  top: 16rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border: 1rpx solid #999;
+  border-radius: 50%;
+}
+
+.close:before {
+  transform: translate3d(-50%, -50%, 0) rotate(45deg);
+}
+
+.close::after {
+  transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+}
+
+.close::before, .close::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  content: " ";
+  display: inline-block;
+  width: 2rpx;
+  height: 20rpx;
+  background-color: #999;
+}
+
+.exchange_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8rpx auto;
+  font-size: 34rpx;
+  width: 294rpx;
+  line-height: 80rpx;
+  color: #fff;
+  border-radius: 80rpx;
+  background: linear-gradient(to right, #ffa200, #ff7b1c);
+}
+
+.exchange_num .data {
+  display: flex;
+  align-items: center;
+}
+
+.exchange_num .data 	span {
+  text-align: center;
+  background-color: #eee;
+}
+
+.exchange_num .reduce, .exchange_num .add {
+  position: relative;
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.exchange_num .reduce::after, .exchange_num .add::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  width: 20rpx;
+  height: 2rpx;
+  background-color: #999;
+}
+
+.exchange_num .add::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  height: 20rpx;
+  width: 2rpx;
+  background-color: #999;
+}
+
+.exchange_num .num {
+  width: 70rpx;
+  height: 48rpx;
+  min-height: initial;
+  line-height: 48rpx;
+  margin: 0 2rpx;
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+  border: none;
+  text-align: center;
+  background-color: #eee;
+}
+
+
+.receive_adress {
+	position: relative;
+  width: 100%;
+  border-radius: 12rpx 12rpx 0 0;
+  background-color: #fff;
+	box-sizing: border-box;
+}
+
+.receive_adress  .title {
+  padding: 26rpx 0;
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  background: -webkit-linear-gradient(top, transparent, transparent 50%, #eee 50%) 0 bottom no-repeat;
+  background-size: 100% 1px;
+}
+
+.receive_adress  > view {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.receive_adress  > view::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: scaleY(0.5);
+}
+
+.receive_adress input {
+  flex: 1;
+  -webkit-flex: 1;
+}
+
+.receive_adress label {
+  width: 188rpx;
+}
+
+.receive_adress label, .receive_adress input {
+  display: flex;
+  align-items: center;
+  height: 96rpx;
+  font-size: 26rpx;
+}
+
+.receive_adress  input, .receive_adress textarea {
+  border: none;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.receive_adress .choose {
+  position: relative;
+  padding-right: 48rpx;
+}
+
+.receive_adress .choose i {
+  position: absolute;
+  top: 50%;
+  transform: rotate(-90deg) translateY(-50%);
+  right: 0;
+  margin-right: 20rpx;
+}
+
+.receive_adress .choose i::before, .receive_adress .choose i::after {
+  content: " ";
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2rpx;
+  height: 16rpx;
+  background-color: #999;
+  -webkit-transform-origin: bottom;
+  transform-origin: bottom;
+}
+
+.receive_adress .choose i:before {
+  transform: translate3d(-50%, -50%, 0) rotate(45deg);
+}
+
+.receive_adress .choose i:after {
+  transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+}
+
+.receive_adress .detail_address {
+  position: relative;
+  padding: 30rpx 0;
+}
+
+.detail_address  .address_txt {
+	display: block;
+  width: 100%;
+  height: 75px;
+  line-height: 30rpx;
+  padding-left: 128rpx;
+}
+
+.detail_address  span {
+  position: absolute;
+  left: 0;
+  top: 30rpx;
+  font-size: 26rpx;
+  line-height: 30rpx;
+  color: #999;
+}
+
+.receive_adress .set_address {
+  display: flex;
+  align-items: center;
+  height: 96rpx;
+}
+
+.set_address  span {
+  display: flex;
+  align-items: center;
+}
+
+.set_address  span  i {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 14rpx;
+  border: 1rpx solid #999;
+  border-radius: 50%;
+	box-sizing: border-box;
+}
+
+.set_address  span .select {
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/store/select.png') no-repeat center;
+  background-size: cover;
+  border: none;
+}
+
+.location_address {
+  flex: 1;
+  -webkit-flex: 1;
+}
+
+.location_address span {
+  padding-right: 10rpx;
+  color: #333;
+}
+
+.confirm_con {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end !important;
+  padding: 8rpx 0;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.confirm_con > view, .confirm_con   .money {
+  display: flex;
+  align-items: center;
+}
+
+.confirm_con   .num {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.confirm_con   .money {
+  color: #fea21b;
+  font-size: 28rpx;
+}
+
+.confirm_con   .confirm_btn {
+  margin-left: 24rpx;
+  text-align: center;
+  width: 190rpx;
+  line-height: 80rpx;
+  background-color: transparent;
+  color: #fff;
+  border-radius: 80rpx;
+  background: linear-gradient(to right, #ffa200, #ff7b1c);
+}
+
+.star_coin {
+  width: 20px;
+  height: 20px;
+  margin-right: 3px;
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/wallet/star_coin.png') no-repeat center;
+  background-size: cover;
+}
+
+/* 编辑地址 */
+
+.addressEditPage.ui_pop {
+  background-color: #f5f4f3 ;
+}
+
+
+.addressEditPage .receive_adress {
+  bottom: initial ;
+  top: 0;
+  border-radius: 0 ;
+}
+
+.addressEditPage .close, .addressEditPage .title,
+.addressEditPage .location_address, .addressEditPage .exchange_btn {
+  display: none ;
+}
+
+.addressEditPage .delete_address {
+  position: absolute;
+  top: 610rpx;
+  width: 100%;
+  line-height: 96rpx;
+  font-size: 28rpx;
+  color: #333;
+  background-color: #fff;
+  text-align: center;
+}
+
+.addressEditPage .exchange_btn {
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+  align-items: center;
+  justify-content: center;
+  display: flex ;
+  margin: 8rpx auto;
+  font-size: 34rpx;
+  text-align: center;
+  width: 420rpx;
+  line-height: 80rpx;
+  color: #fff;
+  border-radius: 80rpx;
+  background: linear-gradient(to right, #ffa200, #ff7b1c);
+}

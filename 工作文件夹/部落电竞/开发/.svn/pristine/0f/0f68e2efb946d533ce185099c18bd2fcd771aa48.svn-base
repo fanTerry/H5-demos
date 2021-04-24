@@ -1,0 +1,113 @@
+<!--pages/usercenter/user_center.wxml-->
+<view class="main">
+  <view class="user_info">
+    <view class="user_img">
+      <image src="{{userInfo.icon==null?'https://rs.esportzoo.com/svn/esport-res/mini/images/icon/avatar.png':userInfo.icon}}" alt=""></image>
+    </view>
+    <view>
+      <view class="name">{{userInfo.nickName==null?'橘子电竞欢迎您':userInfo.nickName}}</view>
+      <!-- <p class="tips">简介:{{userInfo.intro==null?'电竞爱好者聚集地':userInfo.intro}}</p> -->
+    </view>
+    <!-- 会员标志 -->
+    <!-- <view class="vip_player" v-if="userInfo.nickName">
+      <span></span>会员
+    </view> -->
+    <!-- 登录注册按钮 -->
+    <!-- <template v-if="!userInfo.nickName">
+      <router-link to="/login">
+        <view class="login_btn">注册/登录</view>
+      </router-link>
+    </template> -->
+  </view>
+
+	<view class="fans_column">
+    <view>
+      <span class="num">{{userInfo.upSum==null?0:userInfo.upSum}}</span>
+			<span>点赞</span>
+    </view>
+    <view bindtap='toFollowTab'>
+      <span class="num">{{userInfo.followers==null?0:userInfo.followers}}</span>
+			<span>关注</span>
+    </view>
+    <view>
+      <span class="num">{{userInfo.fans==null?0:userInfo.fans}}</span>
+			<span>粉丝</span>
+    </view>
+  </view>
+
+  <view class="business_column">
+    <ul>
+      <li bindtap='toMyWallet'>
+        <span class="wallet_icon" ></span>钱包
+      </li>
+      <li bindtap='toShop'>
+        <span class="store_icon" ></span>商城
+      </li>
+      <li bindtap='toMyRecharge' wx:if="{{userInfo.chargeFlag}}">
+        <span class="recharge_icon" ></span>充值
+      </li>
+      <li bindtap='toExpertPage' wx:if="{{userInfo.hasExpertApply}}">
+        <span class="expert_icon"></span>达人申请
+      </li>
+      <li bindtap='toPaidArticle'>
+        <span class="payment_icon"></span>
+        <text wx:if="{{userInfo.chargeFlag}}">付费</text>
+        <text>文章</text>
+      </li>
+			<li bindtap='toMyChange'>
+        <span class="my_order_icon"></span>我的订单
+      </li>
+			<li wx:if="{{!userInfo.phone}}" >
+				<button open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber" >
+        	<span class="confirm_phone_icon"></span>同步手机号
+				</button>
+      </li>
+      <li>
+				<button open-type="contact" bindcontact="handleContact" disabled="{{disabled}}" >
+        	<span class="service_icon"></span>客服中心
+				</button>
+      </li>
+    </ul>
+  </view>
+
+  <!-- <view class="module_view">
+        <h3>账号安全</h3>
+        <view class="bind_phoneNum">
+          <span class="firewall_icon"></span>
+          <view>
+            <p class="bind">你绑定得手机是 151*****456 吗？</p>
+            <p class="phone">手机换号可能导致无法正常使用程序</p>
+            <p class="confirm_tips">请确认是否已经换号</p>
+          </view>
+        </view>
+        <view class="confirm_btn">
+          <a>立即确认</a>
+        </view>
+      </view> -->
+
+  <!-- <view class="module_view">
+        <h3>签到领红包</h3>
+        <p class="vip_tips">
+          您有一个
+          <span>会员</span>福利带领
+        </p>
+        <view class="gift">
+          <view>
+            <img
+              src="../../assets/images/user_center/gold_coin.png"
+              alt=""
+            > 1000竞猜币
+          </view>
+          <view>
+            <img
+              src="../../assets/images/user_center/gift.png"
+              alt=""
+            > 小积分赚豪礼
+          </view>
+        </view>
+        <view class="confirm_btn">
+          <a>立即打开</a>
+        </view>
+      </view> -->
+
+</view>

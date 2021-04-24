@@ -1,0 +1,698 @@
+<template>
+  <div class="Page orangeGamePage">
+    <header class="mod_header" v-if="!adList.length">
+      <nav-bar :pageTitle="'首页'"></nav-bar>
+      <!-- <navList :dataList="channelList" @changeTab="relodDataByTab"></navList> -->
+    </header>
+    <div class="main" id='mainId'>
+      <!-- <div class="scroll-list-wrap" id='scrollId'> -->
+      <!-- <scroll ref="scroll" :scrollbar="scrollbar"  :pullDownRefresh="pullDownRefresh" :pullUpLoad="pullUpLoad"
+          :startY="0" @pullingDown="onPullingDown" @pullingUp="onPullingUp"> -->
+      <mescroll id="mescroll" ref="mescroll" @downCallback="downCallback" @upCallback="upCallback"
+        @mescrollInit="mescrollInit">
+        <div class="scroll_wrapper">
+          <banner class="banner" ref="banner" v-if="adList.length >0" :adList="adList">
+          </banner>
+          <section class="hot_game" v-if="centerAdList.length>0">
+            <h3 class="title">
+              <span>热门游戏</span>
+              <a @click="gotoAddress({path: '/community', query: {}})&&MtaH5.clickStat('hot_game_all')">去发现</a>
+            </h3>
+            <div class="con">
+              <div class="list">
+                <div class="item" v-for="(item,index) in centerAdList " :key="index">
+                  <a :href="item.location" @click="toAddMtaH5(index)">
+                    <img :src="item.picUrl" alt="">
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="infor_list">
+            <template v-for="(item,index) in newsList">
+              <article class="item" v-if="item.type==1 " @click="toCmsDetail(item.aricleId,item.type)" :key="index">
+                <div>
+                  <img class="item_img" :imgurl="item.imageSrc" src="../../assets/images/common/default_img.png" alt />
+                </div>
+                <div class="item_right">
+                  <div class="title" v-html="item.detail"></div>
+                  <div class="user_info">
+                    <div class="flex_hc">
+                      <img class="user_img" :src="item.authorImg" alt="">
+                      <div>
+                        <p class="user_name">#{{item.tag}}</p>
+                        <span class="publish_time">{{item.publishTimeStr}}</span>
+                      </div>
+                    </div>
+                    <div class="visited">
+                      <p>
+                        <i class="iconfont icon-icon_yulan"></i>
+                        <span>{{item.seeNum}}</span>
+                      </p>
+                      <p>
+                        <i class="iconfont icon-pinglun"></i>
+                        <span>{{item.discussNum}}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+              <article class="item film_item" v-else-if="item.type==2" :key="index">
+                <div class="film_con">
+                  <xi-gua-video ref="xiGuaVideo" :videoUrl="item.imageSrc" :poster="item.titleImg"
+                    :videoId="item.aricleId" scene="home">
+                  </xi-gua-video>
+                  <div class="film_title" @click="toCmsDetail(item.aricleId,item.type)" v-html="item.detail"></div>
+                  <div class="user_info" @click="toCmsDetail(item.aricleId,item.type)">
+                    <div class="flex_hc">
+                      <!-- <img class="user_img" :src="item.authorImg" alt=""> -->
+                      <!-- <div> -->
+                      <p class="user_name">{{item.tag}}</p>
+                      <span class="publish_time">{{item.publishTimeStr}}</span>
+                      <!-- </div> -->
+                    </div>
+                    <!-- <div class="visited">
+                      <p>
+                        <i class="iconfont icon-icon_yulan"></i>
+                        <span>{{item.seeNum}}</span>
+                      </p>
+                      <p>
+                        <i class="iconfont icon-pinglun"></i>
+                        <span>{{item.discussNum}}</span>
+                      </p>
+                    </div> -->
+                  </div>
+                </div>
+              </article>
+            </template>
+          </section>
+        </div>
+        <!-- </scroll> -->
+      </mescroll>
+      <!-- </div> -->
+    </div>
+    <footer class="mod_footer">
+      <tabbar></tabbar>
+    </footer>
+    <loading v-show="isShowLoad"></loading>
+    <!-- <pop-agreement></pop-agreement> -->
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index.vue";
+import tabbar from "../../components/tabbar/index";
+import navList from "../../components/header/nav_list/index";
+import userHeader from "../../components/header/user_header/index";
+import banner from "../../components/header/banner/swiper.vue";
+import Scroll from "components/common/scroll";
+import loading from "components/common/loading";
+import fixScroll from "../../libs/common/fix-scroll-ios";
+import xiGuaVideo from "../../components/common/video.vue";
+import mescroll from "../../components/common/mescroll.vue";
+import popAgreement from "../../components/pop_up/pop_agreement.vue";
+export default {
+  components: {
+    tabbar,
+    userHeader,
+    navList,
+    banner,
+    Scroll,
+    loading,
+    xiGuaVideo,
+    mescroll,
+    navBar,
+    popAgreement
+  },
+  data() {
+    return {
+      pageNo: 1,
+      pageSize: 10,
+      currPageSize: 10,
+      clientType: 6, //H5客户端
+      newsList: [],
+      noDataFlag: false,
+      contentType: 2,
+      adList: [],
+      centerAdList: [],
+      channelList: [],
+      isShowLoad: false,
+      currVideo: 0,
+      mescroll: null,
+      mescrollConfig: {
+        warpId: "mainId", //设置置顶时，必须设置父容器ID
+        hasToTop: true //默认不开启回到顶部项
+      },
+      autoPlayFlag: false //开启页面视频自动播放标识
+    };
+  },
+  created() {
+    window.sessionStorage.selectedTab = 2;
+  },
+  mounted() {
+    this.$refs.mescroll.config = this.mescrollConfig;
+    $(".loading_wrapper").hide();
+    if (window.sessionStorage.selectedTab) {
+      this.contentType = window.sessionStorage.selectedTab;
+    } else {
+      this.contentType = 2;
+    }
+    // this.getPageData();
+    this.setHeader();
+    // fixScroll.tofix();
+    if (this.$route.query.clientType == 3) {
+      //安卓app记录信息
+      this.setAndroidId();
+    }
+    // if (
+    //   this.$route.query.clientType == 3 ||
+    //   this.$route.query.clientType == 4
+    // ) {
+    if (this.autoPlayFlag) {
+      // 监听滚动条变化
+      this.$nextTick(() => {
+        this.mutedVideo();
+        document
+          .querySelector("#mescroll")
+          .addEventListener("scroll", this.handleMescrollY, true);
+      });
+    }
+    // }
+  },
+  activated() {
+    //keepAlive组件激活才会触发的钩子，用于重新获取数据进而保存更新的缓存
+    this.$wxApi.wxRegister({
+      title: "橘子电竞-电竞玩家平台",
+      desc: "全球最新游戏资讯，精彩赛事直播，电竞玩家聚集地。",
+      imgUrl:
+        "http://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg"
+    });
+  },
+  methods: {
+    mescrollInit(mescroll) {
+      this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
+      this.mescroll.setBounce(true); //允许iOS回弹,相当于配置up的isBounce为true
+    },
+    downCallback() {
+      let param = {};
+      param.pageNo = 1;
+      param.pageSize = this.pageSize;
+      param.contentType = this.contentType;
+      this.newsList = [];
+      this.currPageSize = 10;
+      this.getPageData(param).then(() => {
+        // this.$refs.scroll.forceUpdate();
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize);
+        });
+      });
+    },
+    upCallback() {
+      console.log("加载更多");
+      this.loadMore();
+    },
+    onPullingDown() {
+      console.log("you are onPullingDown");
+      if (this._isDestroyed) {
+        return;
+      }
+      this.refresh(true);
+    },
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+
+      if (this.currPageSize < this.pageSize) {
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+    refresh(loaded) {
+      console.log("you are refresh");
+      this.setHeader();
+      this.getPageData().then(() => {
+        this.$refs.scroll.forceUpdate();
+      });
+    },
+    loadMore() {
+      console.log("you are loadMore");
+      this.pageNo += 1;
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      param.contentType = this.contentType;
+      this.getPageData(param).then(() => {
+        // this.$refs.scroll.forceUpdate();
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize);
+        });
+      });
+    },
+    /**获取菜单栏 */
+    setHeader() {
+      let param = {};
+      param.contentType = this.contentType;
+      // param.clientType = this.clientType;
+      console.log("切换tab", param);
+      this.$post("/api/indexData", param)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log("setHeader---请求成功");
+            this.adList = dataResponse.data.adList;
+            this.centerAdList = dataResponse.data.centerAdList;
+            // this.slideText =  this.adList[0].title;
+            this.channelList = dataResponse.data.channelList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    /**获取分页资讯数据 */
+    getPageData(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+        param.contentType = this.contentType;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/newlist", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log(dataResponse.data, "getPageData---请求成功");
+            this.currPageSize = dataResponse.data.length;
+            if (dataResponse.data.length > 0) {
+              let list = dataResponse.data;
+              list.forEach(element => {
+                if (element.type == 2) {
+                  element.imgShow = true;
+                }
+              });
+              this.newsList = this.newsList.concat(list);
+              //   this.$nextTick(() => {
+              //         this.videHandle();
+              // });
+            }
+            return this.newsList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    /**切换tab数据 */
+    relodDataByTab(tabId) {
+      console.log("tabId---", tabId);
+      window.sessionStorage.selectedTab = tabId;
+      this.contentType = tabId;
+      this.isShowLoad = true;
+      this.newsList = [];
+      this.currPageSize = 10;
+      this.pageNo = 1;
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      param.contentType = this.contentType;
+
+      this.getPageData(param).then(res => {
+        this.isShowLoad = false;
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize);
+        });
+      });
+    },
+    /** 跳转详情页 */
+    toCmsDetail(id, type) {
+      this.$bus.$emit("videoPauseByAll", this.id);
+      this.$router.push({
+        name: "homeDetail",
+        params: {
+          id: id
+        },
+        query: {
+          type: type
+        }
+      });
+    },
+    /**视频点击播放 */
+    playVideo(event, id) {
+      let video = event.currentTarget;
+      console.log("-------", video.paused);
+      if (video.paused) {
+        // console.log("播放-",id);
+
+        let lastVideo = this.currVideo;
+        console.log("上一个视频", lastVideo);
+        if (this.currVideo === 0) {
+          this.currVideo = id;
+        } else {
+          /**暂停上一个视频 */
+          console.log("暂停上一个视频", lastVideo);
+
+          //  $(".video-"+lastVideo).pause()
+          let lastVideoEl = document.querySelector(".video-" + lastVideo);
+          console.log("暂停上一个视频------", lastVideoEl);
+          if (lastVideoEl) {
+            lastVideoEl.pause();
+          }
+          this.currVideo = id;
+        }
+        video.play();
+      } else {
+        // console.log("暂停",id);
+        video.pause();
+        // video.currentTime = 0;
+      }
+    },
+    playVideoImage(event, item) {
+      item.imgShow = false;
+      this.$nextTick(() => {
+        let curr = document.querySelector(".video-" + item.aricleId);
+        let lastVideo = this.currVideo;
+        console.log("2222", curr);
+        if (curr.paused) {
+          curr.play();
+          if (this.currVideo === 0) {
+          } else {
+            /**如果有上一个视频，直接暂停上一个再播放 */
+            let lastVideoEl = document.querySelector(".video-" + lastVideo);
+            if (lastVideoEl) {
+              lastVideoEl.pause();
+            }
+          }
+          this.currVideo = item.aricleId;
+        } else {
+          curr.pause();
+        }
+      });
+    },
+    updateView() {
+      return this.$post("/api/newlist", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log(dataResponse.data, "getPageData---请求成功");
+            this.currPageSize = dataResponse.data.length;
+            if (dataResponse.data.length > 0) {
+              this.newsList = this.newsList.concat(dataResponse.data);
+            }
+            return this.newsList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    gotoAddress(path) {
+      this.$router.push(path);
+    },
+    setAndroidId() {
+      let _self = this;
+      document.addEventListener("plusready", function() {
+        var mainActivity = plus.android.runtimeMainActivity();
+        var Settings = plus.android.importClass("android.provider.Settings");
+        var androidId = Settings.Secure.getString(
+          mainActivity.getContentResolver(),
+          Settings.Secure.ANDROID_ID
+        );
+        if (!androidId) {
+          _self.$toast("获取不到ANDROID_ID", 4);
+        }
+        var flag = window.localStorage.appInfoFlag || false;
+        if (!flag) {
+          setTimeout(() => {
+            _self
+              .$post("/api/appClient/addUserClientInfo", {
+                deviceId: androidId
+              })
+              .then(rsp => {
+                console.log(rsp);
+                if ((rsp.code = "200")) {
+                  window.localStorage.appInfoFlag = true;
+                }
+              })
+              .catch(error => {
+                console.log(error);
+              });
+          }, 2 * 1000);
+        }
+      });
+    },
+    toAddMtaH5(index) {
+      var keyStr = {
+        "0": "hot_game_first",
+        "1": "hot_game_second",
+        "2": "hot_game_third"
+      };
+      MtaH5.clickStat(keyStr[index]);
+    },
+    // 监听当视频滑到中间位置时，播放该视频
+    handleMescrollY() {
+      // console.log(document.getElementById("mescroll").scrollTop);
+      this.mutedVideo();
+      let clientHeight = document.documentElement.clientHeight;
+      let inforList = document.getElementsByClassName("infor_list")[0];
+      let topArr = [];
+      let heightArr = [];
+      for (var i = 0; i < this.newsList.length; i++) {
+        topArr[i] = parseInt(
+          inforList.childNodes[i].getBoundingClientRect().top
+        );
+        heightArr[i] = parseInt(inforList.childNodes[i].clientHeight);
+      }
+      for (var j = 0; j < this.newsList.length; j++) {
+        let value = parseInt((clientHeight - heightArr[j]) / 2);
+        if (topArr[j] - value <= 40 && topArr[j] - value >= -20) {
+          this.$refs.xiGuaVideo[j].player.play();
+          console.log(document.getElementsByTagName("video"));
+          document.getElementsByTagName("video")[j].play();
+        }
+      }
+      // console.log(topArr[0]);
+    },
+
+    // 把所有视频都静音
+    mutedVideo() {
+      let video = document.getElementsByTagName("video");
+      for (let k = 0; k < video.length; k++) {
+        video[k].muted = true;
+        video[k].setAttribute({ "webkit-playsinline": "true" });
+      }
+      console.log(video);
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+@import "../../assets/common/_base";
+
+.orangeGamePage {
+  .back {
+    display: none;
+  }
+  .nav_bar {
+    color: #ff7e00 !important;
+    font-weight: bold;
+  }
+  .swiper-pagination {
+    @extend .flex_hc;
+    width: auto;
+    left: 4.2667vw;
+  }
+  .swiper-pagination-bullet {
+    width: 2.6667vw;
+    height: 2.6667vw;
+  }
+  .swiper-pagination-bullet-active {
+    width: 3.7333vw;
+    height: 3.7333vw;
+    background-color: #ff8a0f;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+@import "../../assets/common/iconfont.css";
+@import "../../assets/common/_var";
+.scroll-list-wrap {
+  position: relative;
+  height: 100%;
+  -webkit-transform: rotate(0deg);
+  transform: rotate(0deg);
+  overflow: hidden;
+}
+
+.mod_footer {
+  background-color: #fff;
+}
+
+.main {
+  .banner {
+    height: 90.6667vw;
+    margin: 0 0 15px;
+    padding: 0;
+  }
+}
+
+.hot_game {
+  padding: 20px 12px 16px;
+  .title {
+    @extend .flex_v_justify;
+    span {
+      font-size: 19px;
+      font-weight: 500;
+    }
+    a {
+      font-size: 15px;
+      color: $color_main;
+      font-weight: normal;
+    }
+  }
+  .con {
+    height: 110px;
+    margin-top: 8px;
+    overflow: hidden;
+    .list {
+      height: calc(100% + 6px);
+      white-space: nowrap;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .item {
+      display: inline-block;
+      margin-right: 8px;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+    img {
+      width: 250px;
+      height: 110px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+  }
+}
+
+.infor_list .item {
+  @extend .flex_hc;
+  margin: 8px 0;
+  &.film_item {
+    padding: 15px;
+    margin: 0 0 15px;
+    background-color: #fff;
+    // box-shadow: 0px 20px 40px 0px rgba(0, 0, 0, 0.1);
+  }
+  .item_img {
+    width: 144px;
+    height: 92px;
+    object-fit: cover;
+    border-radius: 5px;
+    background-color: #eee;
+    @media (max-width: 320px) {
+      width: 115px;
+    }
+  }
+  .item_right {
+    @extend .flex_justify;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+    flex: 1;
+    -webkit-flex: 1;
+    height: 92px;
+    padding: 4px 0;
+    margin-left: 14px;
+  }
+  .title {
+    font-size: 14px;
+    line-height: 21px;
+    color: #333;
+    text-align: justify;
+    font-weight: 500;
+    @include line_clamp(2);
+  }
+  .visited {
+    @extend .flex;
+    .iconfont {
+      font-size: 12px;
+    }
+    p {
+      margin-right: 6px;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+    i,
+    span {
+      color: #a3a3a3;
+    }
+  }
+  video {
+    width: 100%;
+    cursor: pointer;
+  }
+  .film_con {
+    width: 100%;
+    video {
+      width: 100%;
+    }
+    .video_img {
+      position: relative;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+      .video_play_icon {
+        @extend .g_v_c_mid;
+        display: block;
+        width: 48px;
+        height: 48px;
+        @include getBgImg("../../assets/images/home/video_icon.png");
+      }
+    }
+    span {
+      font-size: 11px;
+      color: #a3a3a3;
+    }
+  }
+  .film_title {
+    margin-top: 15px;
+    font-size: 18px;
+    @include line_clamp(2);
+    line-height: 23px;
+    color: #333;
+    font-weight: 500;
+  }
+}
+
+.user_info {
+  @extend .flex_v_justify;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #aaa;
+  .user_img {
+    width: 24px;
+    height: 24px;
+    margin-right: 4px;
+    border-radius: 50%;
+  }
+  .user_name {
+    @include t_nowrap(100%);
+    padding-right: 10px;
+  }
+  .publish_time {
+    font-size: 14px !important;
+  }
+}
+</style>

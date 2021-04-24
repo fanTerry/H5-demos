@@ -1,0 +1,993 @@
+<template>
+  <div class="Page userCenter_Page" @click="closeShowRulesPop($event)">
+    <div class="main">
+      <header class="mod_header">
+        <!-- <span class="msg_icon" @click="goUrlPage('/guess/message')" :class="{'active':true}"></!-->
+        <span class="set_icon" @click="goUrlPage('/userInfo')"></span>
+      </header>
+      <section class="user_top">
+        <div class="user_info">
+          <div class="user_img" @click="goUrlPage('/userInfo')">
+            <img :src="userInfo.icon|getDefaultImg(globalConst.userDefaultIcon)" alt="">
+          </div>
+          <div>
+            <div class="name">{{userInfo.nickName?userInfo.nickName:'枫叶电竞欢迎您'}}</div>
+            <p class="tips">简介:{{userInfo.intro?userInfo.intro:'电竞爱好者集聚地'}}</p>
+          </div>
+          <!-- 会员标志 -->
+          <!-- <div class="vip_player" v-if="userInfo.nickName">
+            <span></span>会员
+          </div> -->
+          <!-- 登录注册按钮 -->
+          <template v-if="!userInfo">
+            <router-link to="/login">
+              <div class="login_btn">注册/登录</div>
+            </router-link>
+          </template>
+        </div>
+      </section>
+      <!-- 枫叶余额 -->
+      <section class="banlance">
+        <p>星星余额</p>
+        <div>
+          <span class="num" v-if="getVuexUserInfo.recScore!=null">{{getVuexUserInfo.recScore.toFixed(2)}}</span>
+          <a @click="popUps.showRechargePop = true">星星获取</a>
+        </div>
+      </section>
+      <!-- 我的服务 -->
+      <section class="my_service">
+        <h3 class="title">我的服务</h3>
+        <div class="swiper-container swiper_service">
+          <ul class="swiper-wrapper">
+            <li class="list swiper-slide">
+              <div class="item" @click="goUrlPage('/guess/record')">
+                <img src="../../assets/images/user_center/guess_record_icon.png" alt="">
+                <p>预测记录</p>
+              </div>
+              <div class="item" @click="goUrlPage('/wallet')">
+                <img src="../../assets/images/user_center/wallet_record_icon.png" alt="">
+                <p>流水记录</p>
+              </div>
+              <!-- <div class="item">
+                <img src="../../assets/images/user_center/my_plan_icon.png" alt="">
+                <p>我的方案</p>
+              </div> -->
+              <div v-if="systemUser" class="item" @click="goUrlPage2('/followPlan/myRecomendPlan')">
+                <img src="../../assets/images/user_center/follow_record_icon.png" alt="">
+                <p>我的发单</p>
+              </div>
+              <div class="item" @click="goUrlPage('/userCenter/myMessage')">
+                <img src="../../assets/images/user_center/my_message_icon.png" alt="">
+                <p>我的消息</p>
+                <span class="message_num" v-if="userInfo.messageNum > 0">{{userInfo.messageNum>99?'99+':userInfo.messageNum}}</span>
+              </div>
+              <div class="item" @click="goUrlPage('/myFollow')">
+                <img src="../../assets/images/user_center/my_follow_icon.png" alt="">
+                <p>我的关注</p>
+              </div>
+              <div class="item" @click="goUrlPage('/userCenter/myFans')">
+                <img src="../../assets/images/user_center/my_fans_icon.png" alt="">
+                <p>我的粉丝</p>
+              </div>
+              <div class="item" @click="goUrlMyPage('/userCenter/myRelease')">
+                <img src="../../assets/images/user_center/my_community_icon.png" alt="">
+                <p>我的社区</p>
+              </div>
+              <div class="item" @click="goUrlPage('/helpcenter')">
+                <img src="../../assets/images/user_center/help_icon.png" alt="">
+                <p>帮助中心</p>
+              </div>
+            </li>
+            <li class="list swiper-slide" v-if="userInfo.saleAuth">
+              <div class="item" v-if="userInfo.saleAuth" @click="goUrlPage('/userCenter/salesManage')">
+                <img src="../../assets/images/user_center/sales_icon.png" alt="">
+                <p>销售管理</p>
+              </div>
+              <div class="item" @click="goUrlPage('/userCenter/preventAddiction')">
+                <img src="../../assets/images/user_center/sales_icon.png" alt="">
+                <p>防沉迷设置</p>
+              </div>
+            </li>
+          </ul>
+          <div class="swiper-pagination"></div>
+        </div>
+      </section>
+      <section class="exchange_store">
+        <h3 class="title">兑换商城</h3>
+        <div class="exchange">
+          <p class="exchange_amount">可兑换商品额度：<span>
+              <template v-if='getVuexUserInfo.exchangeStarNum!=null'>
+                <!-- {{getVuexUserInfo.exchangeStarNum>getVuexUserInfo.recScore?getVuexUserInfo.recScore.toFixed(2):getVuexUserInfo.exchangeStarNum.toFixed(2)}} -->
+                {{getVuexUserInfo.exchangeStarNum.toFixed(2)}}
+              </template>
+            </span>
+            <i class="rules_icon exchange_rules" @click="popUps.showJlRulesPop = true"></i>
+          </p>
+        </div>
+        <section class="store">
+          <div class="store_item" @click='toJinLiMall()'>
+            <img src="https://rs.esportzoo.com/upload/admin/cmsContent/2020/6/8/jinlinew_1591611616213.jpg" alt="">
+            <span class="name">锦鲤商城</span>
+          </div>
+          <p class="yezi_title">
+            椰子分：<span>{{getVuexUserInfo.yeYunPoints}}</span>
+            <i class="rules_icon yz_rules" @click="popUps.showYzRulesPop = true"></i>
+            <a class="btn" @click="popUps.showExchangeType = true">椰子分兑换</a>
+          </p>
+          <div class="store_item" @click="goToYeYunPage()">
+            <img src="../../assets/images/user_center/yzsc.jpg" alt="">
+            <span class="name">椰子商城</span>
+            <!-- 跑马灯 -->
+            <section class="mod_award" v-show="false&&this.prizeList.length">
+              <div class="winner_scroll swiper-container">
+                <ul class="swiper-wrapper">
+                  <template v-for="(item,index) in prizeList">
+                    <li class="swiper-slide" v-if='item.type==2' :key="index">
+                      <span>恭喜</span>
+                      <span class="winner_name">{{item.userName}}</span>
+                      <span>成功兑换</span>
+                      <span class="award_value">{{item.goodsName}}</span>
+                    </li>
+                  </template>
+                </ul>
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+
+      <!-- <section class="business_column">
+        <ul>
+          <li @click="goUrlPage('/store')">
+            商城<span class="link_icon"></span>
+          </li>
+          <li @click="goUrlPage('/myExchange')">
+            我的订单<span class="link_icon"></span>
+          </li>
+          <li @click="goUrlPage('/uc/bindPhone')" v-if='!bindPhoneFlag'>
+            绑定手机号<span class="link_icon"></span>
+          </li>
+          <li @click="goUrlPage('/userCenter/userPublishArticle')">
+            我的发布<span class="link_icon"></span>
+          </li>
+          <li @click="goUrlPage('/userArticle')">
+            付费文章<span class="link_icon"></span>
+          </li>
+          <li @click="goExpertApplyPage('/expertApply')" v-if="userInfo.hasExpertApply">
+            专家申请<span class="link_icon"></span>
+          </li>
+        </ul>
+      </section> -->
+
+      <!-- <section class="AQ">
+        备案/许可证编号：琼ICP备19001792号-1<br><br>琼公网安备 46902302000297号
+      </section> -->
+
+      <!-- <section class="module_section">
+        <h3>账号安全</h3>
+        <div class="bind_phoneNum">
+          <span class="firewall_icon"></span>
+          <div>
+            <p class="bind">你绑定得手机是 151*****456 吗？</p>
+            <p class="phone">手机换号可能导致无法正常使用程序</p>
+            <p class="confirm_tips">请确认是否已经换号</p>
+          </div>
+        </div>
+        <div class="confirm_btn">
+          <a>立即确认</a>
+        </div>
+      </section> -->
+
+      <!-- <section class="module_section">
+        <h3>签到领红包</h3>
+        <p class="vip_tips">
+          您有一个
+          <span>会员</span>福利带领
+        </p>
+        <div class="gift">
+          <div>
+            <img
+              src="../../assets/images/user_center/gold_coin.png"
+              alt=""
+            > 1000预测币
+          </div>
+          <div>
+            <img
+              src="../../assets/images/user_center/gift.png"
+              alt=""
+            > 小积分赚豪礼
+          </div>
+        </div>
+        <div class="confirm_btn">
+          <a>立即打开</a>
+        </div>
+      </section> -->
+
+    </div>
+    <!-- 椰子积分兑换规则 -->
+    <div class="exchange_rule_pop" v-show="popUps.showYzRulesPop || popUps.showJlRulesPop">
+      <p>1. {{popUps.showJlRulesPop?'可兑换商品额度=用户星星返奖总额-已兑换星星总额；':'可兑换椰子分额度=用户星星返奖总额-已兑换星星总额；'}}</p>
+      <p>2. {{popUps.showJlRulesPop?'星星与锦鲤分1:1消耗，无需单独兑换。':'1星星可兑换1椰子分，椰子分可在椰子商城兑换各种商品。'}}</p>
+    </div>
+    <exchange-pop v-if="popUps.showExchangeType" @closeExchangePop='popUps.showExchangeType = false' :exchangeYeYunScore='exchangeScore' :exchangeRatio='exchangeRatio'></exchange-pop>
+    <recharge-pop v-if="popUps.showRechargePop" @closeRechargePop="popUps.showRechargePop = false" @getUserWallet="getUserWallet()" @openPopAlert="openPopAlert()">
+    </recharge-pop>
+    <!-- 充值完成支付的弹窗,目前微信H5用上 -->
+    <pop-Alert :showPop="popUps.showPop" @close="popUps.showPop=false" @confirm="confirm" btnTxt1="已取消" btnTxt2="已完成支付" type="2">
+      <p>请确认支付是否已完成</p>
+    </pop-Alert>
+    <footer class="mod_footer">
+      <tabbar></tabbar>
+    </footer>
+  </div>
+</template>
+
+<script>
+import tabbar from '../../components/tabbar/index.vue';
+import navBar from '../../components/header/nav_bar/index';
+import sessionStorage from '../../libs/storages/sessionStorage';
+import { mapGetters, mapActions, mapMutations } from 'vuex';
+import exchangePop from '../guess/pointsExchange.vue';
+import rechargePop from '../guess/recharge/recharge.vue';
+import popAlert from '../../components/pop_up/pop_alert.vue';
+import Swiper from 'swiper';
+
+export default {
+  components: {
+    tabbar,
+    navBar,
+    exchangePop,
+    rechargePop,
+    popAlert
+  },
+  data() {
+    return {
+      serviceSwiper: Object,
+      userInfo: Object,
+      clientType: null,
+      // bindPhoneFlag: false //默认未绑定
+      popUps: {
+        showExchangeType: false,
+        showRechargePop: false,
+        showYzRulesPop: false,
+        showJlRulesPop: false,
+        showPop: false
+      },
+      systemUser: false,
+      prizeList: [], //跑马灯中奖信息
+      exchangeScore: 0, //椰云分每日额度
+      exchangeRatio: null, //椰子分兑换比例
+      giftSwiper: null
+    };
+  },
+  computed: {
+    ...mapGetters({
+      getVuexUserInfo: 'getUserInfo'
+    })
+  },
+  mounted() {
+    this.getUserInfo();
+    this.dataRefresh(); //刷新用户钱包
+    this.judgeSystemUser();
+    // this.checkBindPhone();
+    this.clientType = this.$route.query.clientType;
+    this.$nextTick(() => {
+      this.swiperService();
+    });
+    this.prizeCarousel().then(() => {
+      if (this.prizeList.length) {
+        this.$nextTick(() => {
+          this.initGiftSwiper();
+        });
+      }
+    });
+  },
+  methods: {
+    ...mapActions(['setUserInfo']),
+    /**测试用 */
+    ...mapMutations(['USER_CENTER_INFO']),
+    judgeSystemUser() {
+      this.$post('/api/quiz/bet/judgeSystemInsideUser')
+
+        .then(rsp => {
+          console.log(rsp, 'judgeSystemUser');
+          if (rsp.code == 200) {
+            this.systemUser = rsp.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getUserInfo() {
+      let param = {};
+      this.$post('/api/usercenter/ucIndexdata', param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          this.isLoading = false;
+          if (dataResponse.code == '200') {
+            console.log('个人中心首页--setHeader---请求成功');
+            this.userInfo = dataResponse.data;
+            this.$wxApi.wxRegister({
+              title: '枫叶电竞-（' + this.userInfo.nickName + '）个人中心',
+              desc: '游戏爱好者聚集地',
+              imgUrl: 'http://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg'
+            });
+            this.USER_CENTER_INFO(dataResponse.data);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    goUrlPage(url) {
+      this.$router.push({
+        path: url,
+        query: {
+          id: this.userInfo.userId
+        }
+      });
+    },
+    goUrlPage2(url) {
+      this.$router.push({
+        path: url,
+        query: {
+          uid: this.userInfo.userId
+        }
+      });
+    },
+    goExpertApplyPage(url) {
+      this.$router.push({
+        path: url,
+        query: {}
+      });
+    },
+    goUrlMyPage(url) {
+      sessionStorage.set('tabIndex', 0);
+      this.$router.push({
+        path: url,
+        query: {}
+      });
+    },
+    // swiper组件初始化
+    swiperService() {
+      this.serviceSwiper = new Swiper('.swiper_service', {
+        pagination: {
+          el: '.swiper-pagination'
+        },
+        speed: 1000,
+        observer: true,
+        observeParents: true
+      });
+    },
+
+    // 跳转到椰云积分商城
+    goToYeYunPage() {
+      this.$post('/api/yeYunUser/getYeYunIndex')
+        .then(rsp => {
+          const dataResponse = rsp;
+          let yeYunUrl = dataResponse.message;
+          console.log(yeYunUrl);
+          window.location.href = yeYunUrl;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //查询设置用户钱包
+    getUserWallet() {
+      return this.$post('/api/starNum/queryStarNum')
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse.data.ableRecScore, '获取用户的星星');
+            // this.ableRecScore = dataResponse.data.ableRecScore;
+            this.setUserInfo({
+              ...this.getVuexUserInfo,
+              recScore: dataResponse.data.ableRecScore
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    //查询椰云积分
+    queryYeYunPoints() {
+      return this.$post('/api/yeYunUser/yeYunUserInfo')
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse.data, '获得用户椰云积分');
+            this.exchangeScore = dataResponse.data.exchangeScore;
+            this.exchangeRatio = dataResponse.data.exchangeRatio;
+            this.setUserInfo({
+              ...this.getVuexUserInfo,
+              yeYunPoints: dataResponse.data.score
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //查询用户可兑换余额
+    getExchangeStarNum() {
+      this.$post('/api/starNum/queryExchangeScore')
+        .then(rsp => {
+          console.log(rsp, 'starNum/queryExchangeScore');
+          if (rsp.code == '200') {
+            if (rsp.data >= 0) {
+              // this.exchangeStarNum = rsp.data;
+              this.setUserInfo({
+                ...this.getVuexUserInfo,
+                exchangeStarNum: rsp.data
+              });
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    dataRefresh() {
+      this.queryYeYunPoints();
+      this.getExchangeStarNum();
+      this.getUserWallet();
+    },
+    // userWalletRefresh() {
+    //   this.queryYeYunPoints();
+    //   this.getUserWallet();
+    // },
+
+    // 跑马灯数据请求
+    prizeCarousel() {
+      return this.$post('/api/quiz/record/broadcastList')
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            // console.log(dataResponse.data, "顶部获奖跑马灯");
+            this.prizeList = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    /**h5支付后 */
+    openPopAlert() {
+      this.popUps.showPop = true;
+    },
+    confirm() {
+      this.popUps.showPop = false;
+      this.getUserWallet();
+    },
+    initGiftSwiper() {
+      this.giftSwiper = new Swiper('.winner_scroll', {
+        loop: true,
+        autoplay: {
+          delay: 3000,
+          disableOnInteraction: false
+        },
+        direction: 'vertical',
+        observer: true,
+        observeParents: true
+      });
+    },
+
+    showRulesPop() {
+      this.popUps.showRulesPop = true;
+    },
+    closeShowRulesPop(e) {
+      if (e) {
+        console.log(e.target, 123123);
+        let rulePopDom = document.getElementsByClassName('exchange_rule_pop')[0];
+        let exchangeRulesDom = document.getElementsByClassName('exchange_rules')[0];
+        let yzRulesDom = document.getElementsByClassName('yz_rules')[0];
+        if (!rulePopDom.contains(e.target) && e.target != exchangeRulesDom && e.target != yzRulesDom) {
+          this.popUps.showYzRulesPop = false;
+          this.popUps.showJlRulesPop = false;
+        }
+      }
+    },
+
+    toJinLiMall() {
+      this.$post('/api/mall/koi')
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse);
+          if (dataResponse.code == '200' && dataResponse.data.koiMallUrl) {
+            window.location.href = dataResponse.data.koiMallUrl;
+          } else {
+            this.$toast(dataResponse.message, 3);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+
+    //判断是否已经绑定手机
+    // checkBindPhone() {
+    //   console.log("in checkBindPhone");
+    //   this.$post("/api/user/checkBindingPhone")
+    //     .then(dataResponse => {
+    //       console.log(dataResponse, "checkBindPhone");
+    //       if (dataResponse.code == 200) {
+    //         this.bindPhoneFlag = dataResponse.data;
+    //       } else {
+    //         this.$toast(dataResponse.message);
+    //       }
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //     });
+    // }
+  }
+};
+</script>
+
+<style lang="scss">
+@import '../../assets/common/_var.scss';
+.userCenter_Page {
+  .swiper-pagination {
+    bottom: 5px;
+  }
+  .swiper-pagination-bullet {
+    background-color: $color_main;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import '../../assets/common/_base.scss';
+@import '../../assets/common/_mixin.scss';
+@import '../../assets/common/_var.scss';
+
+.mod_header {
+  position: relative;
+  min-height: 4.2667vw;
+  background-color: transparent;
+  .msg_icon,
+  .set_icon {
+    position: absolute;
+    bottom: -7.7333vw;
+    z-index: 10;
+    width: 5.8667vw;
+    height: 5.8667vw;
+  }
+}
+
+.msg_icon {
+  right: 15.4667vw;
+  @include getBgImg('../../assets/images/user_center/msg_icon.png');
+  background-size: contain;
+  &.active {
+    &::before {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 2.4vw;
+      height: 2.4vw;
+      background-color: #feff00;
+      border-radius: 50%;
+    }
+  }
+}
+
+.set_icon {
+  right: 4.2667vw;
+  @include getBgImg('../../assets/images/user_center/set_icon.png');
+  background-size: contain;
+}
+
+.mod_footer {
+  background-color: #fff;
+}
+
+.main {
+  padding-bottom: 5.3333vw;
+
+  .user_info {
+    position: relative;
+    @extend .flex_hc;
+    padding: 0 4.2667vw;
+    .name {
+      @include t_nowrap(40vw);
+      line-height: 1.2;
+      font-size: 4.2667vw;
+      padding-bottom: 2.6667vw;
+      font-weight: bold;
+      color: #fff;
+    }
+    .tips {
+      @include t_nowrap(68vw);
+      line-height: 1.2;
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+  .user_img {
+    position: relative;
+    flex: none;
+    width: 15.7333vw;
+    height: 15.7333vw;
+    margin-right: 3.7333vw;
+    img {
+      width: 100%;
+      height: 100%;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+}
+.vip_player {
+  @extend .flex_hc;
+  position: absolute;
+  right: 5.3333vw;
+  top: 2.6667vw;
+  font-size: 3.7333vw;
+  color: #333;
+  span {
+    width: 6.4vw;
+    height: 6.4vw;
+    margin-right: 1.3333vw;
+    @include getBgImg('../../assets/images/user_center/super_vip.png');
+  }
+}
+.login_btn {
+  @extend .g_v_mid;
+  right: 2.6667vw;
+  padding: 2.6667vw;
+  font-size: 3.7333vw;
+  border-radius: 9.0667vw;
+  color: $color_main;
+  background-color: #fff;
+}
+
+.business_column {
+  margin-top: 2.1333vw;
+  li {
+    @extend .flex_v_justify;
+    height: 12.8vw;
+    padding: 0 4.5333vw;
+    font-size: 4vw;
+    color: #333;
+    span {
+      display: block;
+      width: 5.3333vw;
+      height: 5.3333vw;
+      @include getArrow(2.6667vw, #bbb, right);
+    }
+  }
+  .wallet_icon {
+    @include getBgImg('../../assets/images/user_center/wallet_icon.png');
+  }
+  .expert_icon {
+    @include getBgImg('../../assets/images/user_center/expert_icon.png');
+  }
+  .recharge_icon {
+    @include getBgImg('../../assets/images/user_center/recharge_icon.png');
+  }
+  .payment_icon {
+    @include getBgImg('../../assets/images/user_center/payment_icon.png');
+  }
+  .my_order_icon {
+    @include getBgImg('../../assets/images/user_center/my_order_icon.png');
+  }
+  .service_icon {
+    @include getBgImg('../../assets/images/user_center/service_icon.png');
+  }
+}
+
+.banlance {
+  margin: 4.2667vw 4.2667vw 0;
+  padding: 4vw 4.2667vw;
+  background-color: #fff;
+  border-radius: 1.3333vw;
+  p {
+    font-size: 3.2vw;
+    color: #333;
+  }
+  div {
+    @extend .flex_v_justify;
+    margin-top: 1.3333vw;
+  }
+  .num {
+    font-size: 9.3333vw;
+    font-weight: bold;
+    color: #d33940;
+  }
+  a {
+    padding: 2.1333vw;
+    font-size: 3.2vw;
+    border-radius: 0.8vw;
+    color: #fff;
+    background-color: #d13840;
+  }
+}
+
+.title {
+  padding-top: 5.3333vw;
+  font-size: 4.2667vw;
+  line-height: 4.8vw;
+  color: #fff;
+}
+
+.swiper_service {
+  margin-top: 3.2vw;
+  background-color: #fff;
+  border-radius: 1.3333vw;
+}
+
+.my_service {
+  margin: 0 4.2667vw;
+  .list {
+    @extend .flex_hc;
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    padding: 2.6667vw 1.3333vw;
+    p {
+      margin-top: 2.1333vw;
+      font-size: 3.2vw;
+      line-height: 3.7333vw;
+      color: #333;
+    }
+  }
+  .item {
+    position: relative;
+    width: 25%;
+    padding: 1.6vw 0;
+    text-align: center;
+  }
+  img {
+    width: 10.1333vw;
+    height: 10.1333vw;
+  }
+  .message_num {
+    position: absolute;
+    right: 4.6667vw;
+    top: 1.3vw;
+    @extend .flex_v_h;
+    width: 4.2667vw;
+    height: 4.2667vw;
+    font-size: 2.1333vw;
+    color: #feff00;
+    background-color: #d63941;
+    border: 1px solid #fff;
+    border-radius: 50%;
+  }
+}
+
+.exchange_store {
+  margin: 0 4.2667vw;
+  .exchange {
+    @extend .flex_hc;
+    margin-top: 2.1333vw;
+    height: 7.4667vw;
+    background-color: #d0383f;
+    // @include getRadiusBorder(#ff9da3, all, 6px);
+  }
+  .rules_icon {
+    width: 3.6vw;
+    height: 3.6vw;
+    margin-left: 1.0667vw;
+    @include getBgImg('../../assets/images/user_center/rules_icon.png');
+    background-size: contain;
+  }
+  .exchange_amount,
+  .yezi_title {
+    @extend .flex_hc;
+    font-size: 3.2vw;
+    color: #ff9da3;
+    span {
+      color: #fff;
+    }
+  }
+  .btn {
+    margin-left: 3.2vw;
+    padding: 1.0667vw;
+    font-size: 2.6667vw;
+    border-radius: 3px;
+    color: #d13840;
+    background-color: #fff;
+  }
+  .yezi_title {
+    height: 7.4667vw;
+  }
+  .store_item {
+    position: relative;
+    margin: 2.1333vw 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    img {
+      width: 100%;
+      height: 27.7333vw;
+      border-radius: 0.8vw;
+      object-fit: cover;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    .name {
+      position: absolute;
+      top: 3.6vw;
+      right: 0;
+      @extend .flex_v_h;
+      width: 15.4667vw;
+      height: 4.8vw;
+      font-size: 2.6667vw;
+      border-radius: 0.8vw 0 0 0.8vw;
+      color: #fff;
+      background-color: #d13840;
+    }
+  }
+}
+
+.mod_award {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  @extend .flex_hc;
+  border-radius: 0 0 6px 6px;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.winner_scroll {
+  flex: 1;
+  -webkit-flex: 1;
+  height: 6.4vw;
+  overflow: hidden;
+  li {
+    @extend .flex_v_h;
+    padding: 0 2.6667vw 0 2.2667vw;
+    color: #fff;
+    span {
+      font-size: 3.2vw;
+      line-height: 1.2;
+    }
+    .winner_name {
+      @include t_nowrap(20vw);
+      padding: 0 1.8667vw;
+      color: #feff00;
+    }
+    .award_value {
+      @include t_nowrap(30.3333vw);
+      padding: 0 1.8667vw;
+      color: #feff00;
+    }
+  }
+  .notice {
+    @include t_nowrap(100%);
+  }
+}
+
+.fans_column {
+  @extend .flex_v_justify;
+  margin: 2.1333vw 3.2vw 0;
+  padding: 4vw 6.1333vw;
+  color: #666;
+  border-radius: 6px;
+  box-shadow: 0 0 5px rgba(#000, 0.1);
+  > div {
+    text-align: center;
+  }
+  .num {
+    display: block;
+    margin: 0 auto 2.1333vw;
+    font-size: 4.5333vw;
+    line-height: 3.4667vw;
+    color: #333;
+  }
+  .thumbs-icon,
+  .follow-icon,
+  .fans-icon,
+  .message-icon {
+    width: 5.3333vw;
+    height: 5.3333vw;
+    margin-right: 1px;
+  }
+  .thumbs-icon {
+    @include getBgImg('../../assets/images/user_center/thumbs_icon.png');
+  }
+  .message-icon {
+    @include getBgImg('../../assets/images/user_center/message_icon.png');
+  }
+  .follow-icon {
+    @include getBgImg('../../assets/images/user_center/follow_icon.png');
+  }
+  .fans-icon {
+    @include getBgImg('../../assets/images/user_center/fans_icon.png');
+  }
+}
+
+.module_section {
+  padding: 0 2.6667vw;
+  h3 {
+    padding-top: 2.6667vw;
+    color: #a3a3a3;
+  }
+  .bind_phoneNum {
+    @extend .flex_hc;
+    padding: 4vw 0;
+  }
+  .firewall_icon {
+    width: 18.6667vw;
+    height: 18.6667vw;
+    margin-right: 2.6667vw;
+    @include getBgImg('../../assets/images/user_center/firewall_icon.png');
+  }
+  .bind {
+    font-size: 4.2667vw;
+    color: #3e3e3e;
+  }
+  .phone {
+    padding-top: 2.6667vw;
+    font-size: 3.4667vw;
+    color: #8a8a8a;
+  }
+  .confirm_tips {
+    padding-top: 2.6667vw;
+    color: #a3a3a3;
+  }
+  .confirm_btn {
+    @include getBorder(top, rgba(#000, 0.1));
+    padding: 2.6667vw 0;
+    a {
+      @extend .flex_v_h;
+      width: 29.3333vw;
+      height: 10.6667vw;
+      margin: 0 auto;
+      font-size: 3.7333vw;
+      border-radius: 20px;
+      color: #fff;
+      background-color: $color_main;
+    }
+  }
+  .vip_tips {
+    padding-top: 4vw;
+    font-size: 3.7333vw;
+    span {
+      padding: 0 0.8vw;
+      color: #ec9805;
+    }
+  }
+  .gift {
+    @extend .flex_hc;
+    justify-content: space-around;
+    text-align: center;
+    padding: 2.6667vw 0 5.3333vw;
+    img {
+      display: block;
+      width: 18.6667vw;
+      height: 18.6667vw;
+      margin: 0 auto 1.3333vw;
+    }
+  }
+}
+
+// .AQ {
+// text-align: center;
+// margin-top: 30px;
+// font-size: 15px;
+// color: #999;
+// }
+
+.exchange_rule_pop {
+  @extend .g_v_c_mid;
+  z-index: 999;
+  width: 80vw;
+  padding: 3.2vw;
+  border-radius: 6px;
+  background-color: rgba(0, 0, 0, 0.8);
+  p {
+    padding: 1.3333vw 0;
+    font-size: 4.2667vw;
+    line-height: 5.3333vw;
+    color: #fff;
+  }
+}
+</style>

@@ -1,0 +1,57 @@
+
+<template>
+  <div :id="videoLiveInfo.scene+videoLiveInfo.videoId"></div>
+
+</template>
+<script>
+import '../../libs/common/xgplayer';
+import '../../libs/common/xgplayer-hls';
+import '../../libs/common/xgplayer-flv';
+
+export default {
+
+  props: ['videoLiveInfo'],
+  data() {
+    return {
+      // msg: 'Welcome to Your Vue.js App'
+    };
+  },
+  mounted() {
+    let _self = this;
+    let vedioConfig = {
+      id: _self.videoLiveInfo.scene + _self.videoLiveInfo.videoId,
+      url: _self.videoLiveInfo.videoUrl,
+      playsinline: true,
+      whitelist: [''],
+      'x5-video-player-type': 'h5',
+      'x5-video-player-fullscreen': 'true',
+      playbackRate: [null],
+      autoplay: true,
+      fluid: true
+    };
+
+    if (this.videoLiveInfo.videoType == 1) {
+      let player = new HlsJsPlayer(vedioConfig);
+    } else if (this.videoLiveInfo.videoType == 2) {
+      let player = new FlvJsPlayer(vedioConfig);
+    }
+  }
+};
+</script>
+<style scoped>
+h1,
+h2 {
+  font-weight: normal;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+}
+</style>

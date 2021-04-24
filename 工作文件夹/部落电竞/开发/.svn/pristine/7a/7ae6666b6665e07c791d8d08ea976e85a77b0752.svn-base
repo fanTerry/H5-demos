@@ -1,0 +1,131 @@
+import Vue from 'vue';
+import $ from 'webpack-zepto';
+import VueRouter from 'vue-router';
+import filters from './filters';
+import routes from './routers';
+import Alert from './libs/alert';
+import './libs/rem';
+import store from './vuex';
+import FastClick from 'fastclick';
+import './assets/common/iconfont.css';
+import './assets/common/main.scss';
+import 'jquery';
+import toastRegistry from './components/common/toast/index';
+import {
+    post,
+    get
+} from './libs/request/http';
+import axios from 'axios';
+import VConsole from 'vconsole';
+import globalConst from './globalConst';
+import baseParamConfig from './baseParamConfig';
+import * as socketApi from './libs/websocket/socketService'
+Vue.prototype.socketApi = socketApi;
+// 定义全局变量
+Vue.prototype.$post = post;
+Vue.prototype.$get = get;
+Vue.prototype.$axios = axios;
+Vue.prototype.globalConst = globalConst;
+Vue.prototype.baseParamConfig = baseParamConfig;
+Vue.use(VueRouter);
+Vue.use(Alert);
+Vue.use(toastRegistry);
+//console.log(process.env.NODE_ENV, 'process.env.NODE_ENV');
+// if (process.env.NODE_ENV === 'development') {
+//   new VConsole();
+// }
+new VConsole();
+
+
+// 实例化Vue的filter
+Object.keys(filters).forEach(k => Vue.filter(k, filters[k]));
+
+// 实例化VueRouter
+const router = new VueRouter({
+    mode: 'history',
+    routes
+});
+// FastClick.attach(document.body);
+if ('addEventListener' in document) {
+    document.addEventListener('DOMContentLoaded', function () {
+        FastClick.attach(document.body);
+    }, false);
+}
+//console.log(window.sessionStorage.user, 'window.sessionStorage.user');
+// 处理刷新的时候vuex被清空但是用户已经登录的情况
+// if (window.sessionStorage.user) {
+//     store.dispatch('setUserInfo', JSON.parse(window.sessionStorage.user));
+// }
+//console.log(window.localStorage.user, 'window.localStorage.user');
+if (window.localStorage.user) {
+    store.dispatch('setUserInfo', JSON.parse(window.localStorage.user));
+}
+
+function getCookie(sName) {
+    var aCookie = document.cookie.split("; ");
+    for (var i = 0; i < aCookie.length; i++) {
+        var aCrumb = aCookie[i].split("=");
+        if (sName == aCrumb[0])
+            return unescape(aCrumb[1]);
+    }
+    return null;
+}
+//统一加渠道号&登录中间验证，页面需要登录而没有登录的情况直接跳转登录 from 上一个路由,to现在的路由
+router.beforeEach((to, from, next) => {
+    // 以下注释掉的这段代码并没有执行,已被http.js中覆盖
+    // if (to.matched.some(record => record.meta.requiresAuth)) {
+    //     const cookieSid = getCookie('h5_login_cookie_sid');
+    //     console.log(cookieSid, 'inner-cookieSid')
+    //     //if (store.state.user.userInfo && store.state.user.userInfo.nickName) {
+    //     if (cookieSid) {
+    //         next();
+    //     } else {
+    //         if (to.path === '/login') {
+    //             next();
+    //         } else {
+    //             next({
+    //                 path: '/login',
+    //                 query: {
+    //                     redirect: to.fullPath
+    //                 }
+    //             });
+    //         }
+    //     }
+    // } else {
+    //     next();
+    // }
+    window.sessionStorage.setItem("redirectUrl", encodeURIComponent(to.fullPath));
+    if (to.query.agentId || to.query.biz) {
+        baseParamConfig.setAgentId(to.query.agentId);
+        baseParamConfig.setBiz(to.query.biz);
+        next();
+        return;
+    };
+    if (from.query.agentId || from.query.biz) {
+        baseParamConfig.setAgentId(from.query.agentId);
+        baseParamConfig.setBiz(from.query.biz);
+        let toQuery = JSON.parse(JSON.stringify(to.query));
+        toQuery.agentId = from.query.agentId;
+        toQuery.biz = from.query.biz;
+        next({
+            path: to.path,
+            query: toQuery
+        })
+    } else {
+        next()
+    }
+});
+
+router.afterEach((to, from) => {
+    const u = navigator.userAgent.toLowerCase()
+    if (u.indexOf("like mac os x") < 0 || u.match(/MicroMessenger/i) != 'micromessenger') return
+    if (to.path !== global.location.pathname) {
+        location.assign(to.fullPath)
+    }
+})
+
+
+new Vue({
+    router,
+    store
+}).$mount('#app');

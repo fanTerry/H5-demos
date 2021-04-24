@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "follow-top-menu": "/component/follow/followtopmenu/follow-top-menu",
+    "follow-expert-list": "/component/follow/followexpertlist/follow-expert-list",
+    "expert-item": "/component/comm/expertitem/expert-item",
+    "no-data": "/component/comm/no-data/no-data"
+  }
+}

@@ -1,0 +1,58 @@
+<!--pages/help/feedBackSubmit/feedBackSubmit.wxml-->
+<view class="Page">
+    <view class="main">
+      <view class="title_tip">简单描述你的反馈<a bindtap="toMyFeedback">我的反馈</a></view>
+      <view class="cmt_textarea">
+        <view class="textarea_wrap">
+          <textarea bindinput="changeVal" name="" id=""
+            maxlength="200" placeholder="请输入10个字以上的问题描述以便我们提供更好的帮助" bindblur="bindBlur"></textarea>
+          <span>{{content.length}}/200</span>
+        </view>
+      </view>
+      <view class="cmt_images">
+        <p class="label">上传图片能更好的帮助我们定位问题<span>{{imgs.length}}/{{maxSize}}</span></p>
+        <view class="add_container">
+          <view class="add_item" style="display:none">
+            <image :src="test"></image>
+          </view>
+          <block wx:if='{{imgs.length>0}}'>
+            <view class="add_item" wx:for="{{imgs}}" wx:key='item' wx:for-index='idx' >
+              <image src="{{item}}"></image>
+              <span class="close" bindtap="del" data-index="{{idx}}"></span>
+              <span class="edit">编辑</span>
+              <input style="position:absolute;opacity:0;" type="file" bindtap="fileUpdate" accept="image/*"></input>
+            </view>
+          </block>
+          <view class="add_item" wx:if="{{imgs.length<maxSize}}">
+            <span class="add_icon"></span>
+            <image src="" alt="" ref="img"></image>
+            <input style="position:absolute;opacity:0;" type="primary" id='files' bindtap="fileChange" ref="input"
+              accept="image/*"></input>
+          </view>
+        </view>
+        <!-- <ul class="images">
+          <li>
+            <img
+              src="https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=638833913,3134162988&fm=179&app=42&f=JPEG?w=121&h=140">
+            <span href="javascript"></span>
+          </li>
+          <li>
+            <a href="javascript:;" class="btn_add">
+              <input style="position:absolute;opacity:0;" type="file" id='files' @change="fileChange($event)"
+                ref="input" accept="image/*">
+            </a>
+
+          </li>
+        </ul> -->
+      </view>
+      <view class="title_tip">联系电话</view>
+      <view class="phone_input">
+        <input type="tel" maxlength="11" placeholder="选填，便于我们联系你" bindblur="checkPhone"></input>
+      </view>
+    </view>
+    <footer class="mod_footer">
+      <view class="cmt_btns">
+        <a bindtap="submitFeedBack" class="cmt_btn">提交</a>
+      </view>
+    </footer>
+  </view>

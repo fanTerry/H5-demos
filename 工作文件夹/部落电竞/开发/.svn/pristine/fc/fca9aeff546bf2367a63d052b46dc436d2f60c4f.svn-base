@@ -1,0 +1,39 @@
+<template>
+  <div class="Page myFkPage">
+    <header class="mod_header">
+      <nav-bar :pageTitle="'我的反馈'"></nav-bar>
+    </header>
+    <div class="main">
+      <fan-kui-list></fan-kui-list>
+    </div>
+    <footer class="mod_footer"></footer>
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index.vue";
+import fanKuiList from "./components/fankui";
+
+export default {
+  components: {
+    navBar,
+    fanKuiList
+  },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang="scss">
+.myFkPage {
+  .cmt_list.detail li {
+    padding-bottom: 0 !important;
+  }
+}
+</style>
+
+<style lang='scss' scoped>
+</style>

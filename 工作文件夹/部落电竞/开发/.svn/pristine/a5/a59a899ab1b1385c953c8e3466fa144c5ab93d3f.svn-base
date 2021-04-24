@@ -1,0 +1,55 @@
+<!--modules/mypage/myrecharge/my-recharge.wxml-->
+<!-- 个人中心二级页面：充值页 -->
+
+<!-- 第一行：基础数据 -->
+<view class='my-recharge-info'>
+  <image class="m-r-i-bg" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/my-info-bg.png" mode="aspectFill" />
+  <view class='m-w-i-title'><text>拥有星星数量</text></view>
+  <view class='m-w-i-num'><text>{{myBalance}}</text></view>
+</view>
+
+<!-- 第二行：充值列表 -->
+<view class='my-section'>
+  <!-- 选中样式：m-r-i-act -->
+  <view class='my-recharge-item clear {{item==selectedAmount ? "m-r-i-act" : ""}}' 
+        wx:for="{{chargeAmoumtList}}" catchtap='selectChargeAmount' data-amount="{{item}}">
+    <view class='m-r-i-unit fl'>¥</view>
+    <view class='m-r-i-money'>{{item}}</view>
+  </view>
+</view>
+
+<!-- 第三行：FAQ -->
+<!-- <view class='my-section'>
+  
+  <view class='my-faq-line'>
+    <text class='m-f-l-title'>FAQ常见问题：</text>
+  </view>
+
+  <view class='my-faq-line'>
+    <view class='m-f-l-subt'><text>常见问题1常见问题？</text></view>
+    <view class='m-f-l-answer'><text>我是回答我是回答，我是回答我是回答我是回答我是回答我是回答。</text></view>
+  </view>
+
+  <view class='my-faq-line'>
+    <view class='m-f-l-subt'><text>常见问题1常见问题？</text></view>
+    <view class='m-f-l-answer'><text>我是回答我是回答，我是回答我是回答我是回答我是回答我是回答。</text></view>
+  </view>
+
+  <view class='my-faq-line'>
+    <view class='m-f-l-subt'><text>常见问题1常见问题？</text></view>
+    <view class='m-f-l-answer'><text>我是回答我是回答，我是回答我是回答我是回答我是回答我是回答。</text></view>
+  </view>
+
+</view> -->
+
+<!-- 第四行：充值按钮 -->
+<view class='my-recharge-btn-view'>
+  <view class='my-recharge-btn-text'>
+    <text class='m-r-b-text'>确认支付：</text><text class='m-r-b-unit'>¥</text><text class='m-r-b-money'>{{selectedAmount}}</text>
+  </view>
+
+  <view class='my-recharge-btn' catchtap='confirmCharge'><text>确认支付</text></view>
+</view>
+
+<!-- 第五行：支付方式选择弹框 -->
+<!--<pp-my></pp-my>-->

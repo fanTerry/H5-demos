@@ -1,0 +1,308 @@
+<!--modules/articlepage/article-page.wxml-->
+
+<!-- Todo:Q:顶部已经有返回了，这里再一个返回重复了哟～ -->
+<view class='page-head dsp-none'>
+  <view class='dsp-cell'>
+    <image class='page-icon' src='/resources/images/icon/back.png' mode='aspectFit' />
+  </view>
+  
+  <!-- 长文显示标题 -->
+  <view class='dsp-cell page-title dsp-none'>
+    <text>常驻标题驻留位置未上拉的时候显示“详  情”</text>
+  </view>
+
+  <!-- 短文显示 -->
+  <view class='dsp-cell page-title atc-t-short'>
+    <text>详情</text>
+  </view>
+
+  <view class='dsp-cell'>
+    <image class='page-icon-more' src='/resources/images/icon/more.png' mode='aspectFit' />
+  </view>
+</view>
+
+<view class='page-video-view'>
+  <video class='page-video' id="myVideo" src="http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400" binderror="videoErrorCallback" object-fit="fill" controls show-play-btn ></video>
+
+</view>
+
+<!-- 文章内页内容主要部分:长文 -->
+<view class='article-page-section'>
+
+  <!-- 文章标题部分 -->
+  <view class='article-head'>
+    <view class='article-title'>
+      <text>常驻标题驻留位置AVHEHN很长一段文字</text>
+    </view>
+    <view>
+      <text class='article-info'>电子竞技</text>
+      <text class='article-info'>10万阅读</text>
+      <text class='article-info'>1小时前</text>
+    </view>
+  </view>
+
+  <!-- 文章作者部分 -->
+  <view class='article-author'>
+    <view class='dsp-cell'>
+      <image class="article-author-avatar" src="/resources/images/avatar/cat.jpg" mode="aspectFill" />
+    </view>
+    <view class='dsp-cell w400'>
+      <view class='article-author-name'>
+        <text>强主播欧阳向日葵</text>
+      </view>
+      <view>
+        <text class='article-author-info'>13万粉丝</text>
+        <text class='article-author-info'>100万阅读</text>
+      </view>
+    </view>
+    <view class='dsp-cell'>
+      <view class='article-author-follow'>
+        <text>+ 关注</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 文章主体部分 -->
+  <view class='article-paragraph'>
+    <text>由於《In These Words言之罪》有前傳有番外，其世界觀還延伸至我們其他的作品，不少人對故事的時間順序感到困惑，在此提供《言》的簡介與時間指南，後續更會有中文站支。</text>
+    <view class='article-p-image-view'>
+      <image class="article-p-image" src="/resources/images/paragraph/image1.png" mode="scaleToFill" />
+      <text>直播时拍摄</text>
+    </view>
+    <text>
+    由於《In These Words言之罪》有前傳有番外，其世界觀還延伸至我們其他的作品，不少人對故事的時間順序感到困惑，在此提供《言》的簡介與時間指南，後續更會有中文站支持購買。各位小伙伴們有其他問題的話可以在下面留言，我們會把相關資訊彙整起來做補充。有前傳有番外，其世界觀還延伸至我們其他的作品，不少人對故事的時間順序感到困惑，在此提供《言》的簡介與時間指南，後續更會有中文站支持購買。各位小伙伴們有其他問題的話可以在下面留言，我們會把相關資訊彙整起來做補充。
+    </text>
+
+  </view>
+
+  <!-- 文章说明部分 -->
+  <view class='article-warn'>
+    <text>本文禁止转载或摘编</text>
+  </view>
+
+  <!-- 文章标签部分 -->
+  <view class='article-tag margin-t40'>
+    <text class='article-t article-t-blue'>LOL</text>
+    <text class='article-t article-t-red'>LCS</text>
+    <text class='article-t article-t-yellow'>刺激战场</text>
+    <i></i>
+  </view>
+
+  <!-- 文章操作部分 -->
+  <view class='article-control margin-t20'>
+    <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-dianzan atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>65652</text></view>
+    </view>
+    <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-xiaoxi atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>65652</text></view>
+    </view>
+    <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-fenxiang atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>65652</text></view>
+    </view>
+    <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-shoucang atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>65652</text></view>
+    </view>
+    <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-yichoujine atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>65652</text></view>
+    </view>
+  </view>
+
+
+</view>
+
+<!-- 文章内页内容主要部分:短文 -->
+<view class='article-page-section'>
+
+  <!-- 文章作者部分 -->
+  <view class='article-author atc-a-short'>
+    <view class='dsp-cell'>
+      <image class="article-author-avatar" src="/resources/images/avatar/cat.jpg" mode="aspectFill" />
+    </view>
+    <view class='dsp-cell w400'>
+      <view class='article-author-name'>
+        <text>强主播欧阳向日葵</text>
+      </view>
+      <view>
+        <text class='article-author-info'>1小时前</text>
+      </view>
+    </view>
+    <view class='dsp-cell'>
+      <view class='article-author-follow'>
+        <text>+ 关注</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 文章主体部分 -->
+  <view class='article-paragraph'>
+
+    <view>
+      <text class='atc-tag'>#LOL#</text>
+      <text class='atc-tag-sub'>春季赛冠军牛逼</text>
+    </view>
+
+    <view class='article-at'>
+      <text>@欧阳长臂猿</text>
+    </view>
+
+    <text>快来happy一下一下一下一下一下一下一下一下一下</text>
+    <view class='article-p-image-view'>
+      <image class="article-p-image" src="/resources/images/paragraph/image1.png" mode="scaleToFill" />
+    </view>
+  </view>
+
+</view>
+
+<!-- 文章内页内容主要部分:视频 -->
+<view class='article-page-section'>
+
+  <!-- 文章作者部分 -->
+  <view class='article-author atc-a-v'>
+    <view class='dsp-cell'>
+      <image class="article-author-avatar" src="/resources/images/avatar/cat.jpg" mode="aspectFill" />
+    </view>
+    <view class='dsp-cell w400'>
+      <view class='article-author-name'>
+        <text>强主播欧阳向日葵</text>
+      </view>
+      <view>
+        <text class='article-author-info'>13万粉丝</text>
+        <text class='article-author-info'>100万阅读</text>
+      </view>
+    </view>
+    <view class='dsp-cell'>
+      <view class='article-author-follow'>
+        <text>+ 关注</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 文章标题部分 -->
+  <view class='article-head'>
+    <view class='article-title'>
+      <text>常驻标题驻留位置AVHEHN很长一段文字</text>
+    </view>
+    <view>
+      <text class='article-info'>电子竞技</text>
+      <text class='article-info'>10万阅读</text>
+      <text class='article-info'>1小时前</text>
+    </view>
+  </view>
+
+  <!-- 文章标签部分 -->
+  <view class='article-tag margin-t20'>
+    <text class='article-t article-t-blue'>LOL</text>
+    <text class='article-t article-t-red'>LCS</text>
+    <text class='article-t article-t-yellow'>刺激战场</text>
+  </view>
+  <!-- 文章操作部分 -->
+  <view class='article-control margin-t20'>
+    <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-dianzan atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>65652</text></view>
+    </view>
+    <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-xiaoxi atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>65652</text></view>
+    </view>
+    <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-fenxiang atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>65652</text></view>
+    </view>
+    <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-shoucang atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>65652</text></view>
+    </view>
+    <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-yichoujine atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>65652</text></view>
+    </view>
+  </view>
+
+
+</view>
+
+
+<!-- 文章内页评论部分 -->
+<view class='article-page-section'>
+
+  <!-- 评论标题部分 -->
+  <view class='discuss-head'>
+    <text class='discuss-title'>评论</text>
+    <text class='discuss-num'>#10099</text>
+  </view>
+
+  <!-- 评论列表部分 -->
+  <view class='discuss-list'>
+
+    <view wx:for="abc" wx:key="">
+      <article-discuss-item></article-discuss-item>
+    </view>
+
+    <view class='discuss-more'>
+      <view class='discuss-more-view'><text class='discuss-more-text'>更多热门评论>></text></view>
+    </view>
+
+    <view wx:for="a" wx:key="">
+      <article-discuss-item></article-discuss-item>
+    </view>
+
+  </view>
+
+</view>
+<view class='article-page-section a-p-s-last'></view>
+
+<!-- 文章内页编辑部分 -->
+
+<!-- 输入框聚焦时显示状态 -->
+<view wx:if='{{textareaFocus}}' class='article-page-edit'>
+
+  <!-- 输入框部分 -->
+  <view class='dsp-cell'>
+    <view class='atc-e-t-view atc-e-t-view-focus'>
+      <textarea class='atc-e-t atc-e-t-focus' placeholder="说一说" placeholder-class	='atc-e-t-ph' bindblur='bindDTextAreaBlur' auto-focus='{{textareaFocus}}' cursor-spacing='100' fixed />
+      <!-- <input class='atc-e-t atc-e-t-focus' placeholder="说一说" placeholder-class	='atc-e-t-ph' bindblur='bindDTextAreaBlur' auto-focus='{{textareaFocus}}' fixed /> -->
+    </view>
+  </view>
+
+  <!-- 发送部分 -->
+  <view class='dsp-cell'>
+    <button class='a-p-e-send-button'>
+      <text class='a-p-e-send'>发送</text>
+    </button>
+  </view>
+  
+</view>
+
+<!-- 输入框未聚焦显示状态 -->
+<view wx:else class='article-page-edit'>
+
+  <!-- 输入框部分 -->
+  <view class='dsp-cell'>
+    <view class='atc-e-t-view atc-e-t-view-default'>
+      <text class='atc-e-t-default' bindtouchstart='bindDTextAreaFocus'>说一说</text>
+    </view>
+  </view>
+
+  <!-- 点赞转发部分 -->
+  <view class='dsp-cell'>
+    <view class='dsp-cell atc-p-c-item'>
+      <view><i class='iconfont icon-dianzan atc-p-c-icon'></i></view>
+      <view class='atc-p-c-num'><text>65652</text></view>
+    </view>
+    <view class='dsp-cell atc-p-c-item'>
+      <view><i class='iconfont icon-shoucang atc-p-c-icon'></i></view>
+      <view class='atc-p-c-num'><text>65652</text></view>
+    </view>
+    <view class='dsp-cell atc-p-c-item'>
+      <view><i class='iconfont icon-fenxiang atc-p-c-icon'></i></view>
+      <view class='atc-p-c-num'><text>65652</text></view>
+    </view>
+  </view>
+</view>
+

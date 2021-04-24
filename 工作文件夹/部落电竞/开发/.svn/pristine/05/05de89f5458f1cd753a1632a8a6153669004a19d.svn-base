@@ -1,0 +1,215 @@
+<template>
+  <div class="ui_pop" v-if='step1Flag||step2Flag'>
+    <!-- 填写收获地址 -->
+    <section class="receive_adress" v-if='step2Flag'>
+      <a class="close" @click="step2Flag=false"></a>
+      <template v-if='!hasDefaultAddress'>
+        <h3 class="title">请添加一个收货地址</h3>
+        <div>
+          <label for="receive_user">收货人</label>
+          <input type="text" id="receive_user" placeholder="">
+        </div>
+        <div>
+          <label for="phone_num">手机号码</label>
+          <input type="text" id="phone_num" placeholder="">
+        </div>
+        <div>
+          <label>所在地区</label>
+          <p class="location_address"><span>广东省</span><span>深圳市</span><span>福田区</span></p>
+          <span class="choose">请选择<i></i></span>
+        </div>
+        <div class="detail_adress">
+          <span>详细地址：</span>
+          <textarea name="" id="" cols="30" rows="5" placeholder="详细地址：如道路、门牌号、小区、楼栋号、单元室等">
+        </textarea>
+        </div>
+        <div class="set_address">
+          <span><i class="select"></i>设置为默认地址</span>
+        </div>
+        <a class="exchange_btn" @click="toSaveAddress">确定</a>
+      </template>
+      <template v-else>
+        <h3 class="title">确认订单</h3>
+        <!-- 地址填写组件 -->
+        <locationAddress :address='receiveAddress'></locationAddress>
+        <div class="confirm_con">
+          <div>
+            <span class="num">共{{finalNum}}件，</span>
+            <span>合计：</span>
+            <span class="money"><i class="star_coin"></i>{{finalNum*goodsDetail.payScore}}</span>
+            <a class="confirm_btn" @click="confimPayChange">确定</a>
+          </div>
+        </div>
+        <!-- <a class="exchange_btn" @click="confimPayChange">确定</a> -->
+      </template>
+    </section>
+  </div>
+</template>
+
+<script>
+import locationAddress from "../../../components/store/address";
+export default {
+  data() {
+    return {};
+  },
+  methods: {},
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+.close {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  @include getClose(10px, #999);
+  border: 1px solid #999;
+  border-radius: 50%;
+}
+.star_coin {
+  width: 20px;
+  height: 20px;
+  margin-right: 3px;
+  @include getBgImg("../../../assets/images/user_center/star_coin.png");
+}
+.location_address {
+  flex: 1;
+  -webkit-flex: 1;
+  span {
+    padding-right: 5px;
+    color: #333;
+  }
+}
+.exchange_btn {
+  @extend .flex_v_h;
+  margin: 4px auto;
+  font-size: 17px;
+  @include getBtn(147px, 40px, transparent, #fff, 40px);
+  background: linear-gradient(to right, #ffa200, #ff7b1c);
+}
+
+.receive_adress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 0 10px;
+  border-radius: 6px 6px 0 0;
+  background-color: #fff;
+}
+
+.receive_adress {
+  .title {
+    padding: 13px 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    @include getBorder(bottom, #eee);
+  }
+  > div {
+    @extend .flex_v_justify;
+    @include getBorder(bottom, #eee);
+    font-size: 13px;
+    color: #999;
+  }
+  input {
+    flex: 1;
+    -webkit-flex: 1;
+  }
+  label {
+    width: 94px;
+  }
+  label,
+  input {
+    @extend .flex_hc;
+    height: 48px;
+    font-size: 13px;
+  }
+  input,
+  textarea {
+    border: none;
+    font-size: 13px;
+    color: #333;
+  }
+  .choose {
+    position: relative;
+    padding-right: 24px;
+    i {
+      @extend .g_v_mid;
+      right: 0;
+      margin-right: 10px;
+      @include getArrow(8px, #999, right);
+    }
+  }
+  .detail_adress {
+    position: relative;
+    padding: 15px 0;
+    textarea {
+      flex: 1;
+      line-height: 15px;
+      text-indent: 64px;
+    }
+    span {
+      position: absolute;
+      left: 0;
+      top: 15px;
+      font-size: 13px;
+      color: #999;
+    }
+  }
+  .set_address {
+    @extend .flex_hc;
+    height: 48px;
+    span {
+      @extend .flex_hc;
+      i {
+        width: 16px;
+        height: 16px;
+        margin-right: 7px;
+        border: 1px solid #999;
+        border-radius: 50%;
+      }
+      .select {
+        @include getBgImg("../../../assets/images/store/select.png");
+        border: none;
+      }
+    }
+  }
+  .confirm_con {
+    @extend .flex_hc;
+    justify-content: flex-end;
+    padding: 4px 0;
+    font-size: 14px;
+    color: #333;
+    > div,
+    .money {
+      @extend .flex_hc;
+    }
+    .num {
+      font-size: 12px;
+      color: #999;
+    }
+    .money {
+      color: $color_main;
+      font-size: 14px;
+    }
+    .confirm_btn {
+      margin-left: 12px;
+      @include getBtn(95px, 40px, transparent, #fff, 40px);
+      background: linear-gradient(to right, #ffa200, #ff7b1c);
+    }
+  }
+}
+
+// iphoneX,iphone Xs max适配
+@media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+  only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+  .exchange_quantity {
+    padding-bottom: constant(safe-area-inset-bottom) !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
+  }
+}
+</style>

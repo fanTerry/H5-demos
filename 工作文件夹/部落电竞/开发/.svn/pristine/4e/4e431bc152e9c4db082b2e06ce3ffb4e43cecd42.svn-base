@@ -1,0 +1,275 @@
+<template>
+  <div class="Page matchToolPage">
+    <header class="mod_header">
+      <div class="tab">
+        <div @click="myFollow()">关注</div>
+        <div @click="community()">热点</div>
+        <div class="active">发现</div>
+      </div>
+    </header>
+
+    <div class="main" id='mainId'>
+      <mescroll ref="mescroll" :isShowEmpty="false" @downCallback="downCallback" @upCallback="upCallback" @mescrollInit="mescrollInit">
+        <div class="match_tab">
+          <ul>
+            <li :class="{active:tabIndex == index}" @click="switchTab(index)" v-for="(item,index) in dataList" :key="index">
+              {{item}}</li>
+          </ul>
+        </div>
+        <match-list :matchInfoList="matchInfoList"></match-list>
+        <noData v-if="noData"></noData>
+      </mescroll>
+    </div>
+    <footer class="mod_footer">
+      <tabbar></tabbar>
+    </footer>
+  </div>
+</template>
+
+<script>
+import tabbar from '../../components/tabbar/index.vue';
+import navBar from 'components/header/nav_bar/index.vue';
+import matchList from './components/matchlist.vue';
+import mescroll from '../../components/common/mescroll.vue';
+import sessionStorage from '../../libs/storages/sessionStorage';
+import noData from '../../components/no_data/index.vue';
+
+export default {
+  components: { navBar, matchList, mescroll, noData, tabbar },
+  props: [],
+  data() {
+    return {
+      noData: false,
+      createFlag: false, // 是否可以创建赛事，
+      tabIndex: 0,
+      currPageSize: 10,
+      // dataList: ["赛事列表", "我的赛事", "创建赛事", "我的营地"],
+      dataList: [],
+      toolMatchParam: {
+        pageNo: 1,
+        pageSize: 10,
+        status: 0, //初始加载首页赛事信息，剔除无效赛事
+        showUserMacth: false // false展示所有赛事信息，true展示个人参赛信息
+      },
+      mescroll: null,
+      mescrollConfig: {
+        warpId: 'mainId', //设置置顶时，必须设置父容器ID
+        hasToTop: true //默认不开启回到顶部项
+      },
+      matchInfoList: [], //赛事信息
+      quizShow: true
+    };
+  },
+  created() {
+    //展示个人参赛信息
+    if (sessionStorage.get('tabIndex') == 1) {
+      this.tabIndex = sessionStorage.get('tabIndex');
+      this.toolMatchParam.showUserMacth = true;
+    } else {
+      this.tabIndex = 0;
+    }
+  },
+  mounted() {
+    this.$refs.mescroll.config = this.mescrollConfig;
+    this.checkCanCreateMatch();
+
+    this.$wxApi.wxRegister({
+      title: '赢加赛事',
+      desc: '赢加竞技邀你来参赛啦！',
+      imgUrl: 'http://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg'
+    });
+  },
+  methods: {
+    checkCanCreateMatch() {
+      return this.$post('/api/matchtool/canCreateMatch')
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.createFlag = dataResponse.data;
+            if (this.createFlag == true) {
+              // this.dataList = ["赛事列表", "我的赛事", "创建赛事", "我的营地"];
+              this.dataList = ['赛事列表', '我的赛事', '创建赛事'];
+            } else {
+              // this.dataList = ["赛事列表", "我的赛事", "我的营地"];
+              this.dataList = ['赛事列表', '我的赛事'];
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    switchTab(index) {
+      this.tabIndex = index;
+      sessionStorage.set('tabIndex', index);
+      if (index == 1) {
+        this.toolMatchParam.showUserMacth = true;
+      } else if (index == 0) {
+        this.toolMatchParam.showUserMacth = false;
+      } else if (index == 2 && this.createFlag == true) {
+        this.$router.push({
+          path: '/matchTool/createMatch',
+          query: {}
+        });
+      } else if ((index == 2 && this.createFlag == false) || index == 3) {
+        this.$router.push({
+          path: '/community',
+          query: {}
+        });
+      }
+      this.downCallback();
+    },
+
+    mescrollInit(mescroll) {
+      this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
+      this.mescroll.setBounce(true);
+    },
+    downCallback() {
+      let param = {};
+      this.toolMatchParam.pageNo = 1;
+      param = this.toolMatchParam;
+      this.matchInfoList = [];
+      this.currPageSize = 10;
+      this.getPageData(param).then(() => {
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize);
+        });
+      });
+    },
+    upCallback() {
+      this.loadMore();
+    },
+    loadMore() {
+      this.toolMatchParam.pageNo += 1;
+      let param = {};
+      param = this.toolMatchParam;
+      this.getPageData(param).then(() => {
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize);
+        });
+      });
+    },
+    /**获取分页比赛数据 */
+    getPageData(param) {
+      if (!param) {
+        param = {};
+        param = this.toolMatchParam;
+      }
+      console.log('分页参数', param);
+      return this.$post('/api/matchtool/homeMatch', param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == '200') {
+            console.log(dataResponse, 'getPageData---请求成功');
+            if (dataResponse.data.homeResult == null) {
+              // this.$toast("暂无赛事信息");
+              this.currPageSize = 0;
+            } else if (dataResponse.data.homeResult.length > 0) {
+              this.currPageSize = dataResponse.data.homeResult.length;
+              this.matchInfoList = this.matchInfoList.concat(dataResponse.data.homeResult);
+              console.log(this.matchInfoList, '首页赛事信息');
+            }
+            if (this.matchInfoList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+
+            return this.matchInfoList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    community() {
+      this.$router.push({
+        path: '/community',
+        query: {}
+      });
+    },
+    myFollow() {
+      this.$router.push({
+        path: '/myFollow',
+        query: {}
+      });
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.matchToolPage {
+  .nav_bar .back {
+    display: none;
+  }
+  .no_data {
+    margin-top: 40vw;
+  }
+}
+</style>
+
+<style lang='scss' scoped>
+@import '../../assets/common/_base';
+@import '../../assets/common/_mixin';
+
+.mod_header {
+  background-color: $color_item;
+  .tab {
+    @extend .flex_v_h;
+    padding: 0 9.3333vw;
+    div {
+      position: relative;
+      padding: 2.1333vw 8vw 4.2667vw;
+      font-size: 3.7333vw;
+      line-height: 4.2667vw;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: bold;
+      text-align: center;
+      &.active {
+        color: #fff;
+        &::after {
+          content: '';
+          @extend .g_c_mid;
+          bottom: 2.1333vw;
+          width: 4vw;
+          height: 1.0667vw;
+          background-color: #fff;
+          border-radius: 5px;
+        }
+      }
+    }
+  }
+}
+
+.match_tab {
+  margin: 2.1333vw 4.2667vw;
+  height: 6.4vw;
+  overflow: hidden;
+  ul {
+    @extend .flex;
+    height: calc(100% + 6px);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  li {
+    @extend .flex_v_h;
+    height: 6.4vw;
+    padding: 0 1.0667vw;
+    font-size: 3.7333vw;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.5);
+    border-radius: 0.5333vw;
+    margin-right: 8px;
+  }
+  .active {
+    border-radius: 1.0667vw;
+    color: #fff;
+    background-color: $color_item;
+    &::after {
+      display: none;
+    }
+  }
+}
+</style>

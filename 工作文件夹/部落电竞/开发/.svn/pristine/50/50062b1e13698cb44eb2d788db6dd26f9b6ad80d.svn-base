@@ -1,0 +1,282 @@
+<template>
+  <div class="chat_con">
+    <div class="no_data" v-if="chatList==''">
+      <img src="../../../assets/images/matchtool/no_chat_data.png" alt="">
+      <p>暂时没有人聊天哦～</p>
+    </div>
+    <div class="chat_list" v-else>
+      <ul>
+        <li class="chat_item" :class="{cur:true}" v-for="(item,index) in chatList" :key="index">
+          <img class="user_img"
+            v-bind:src="item.icon?item.icon:require('../../../assets/images/matchtool/chat_default.png')" alt />
+          <!-- <img class="user_img" src="../../../assets/images/matchtool/chat_default.png" alt=""> -->
+          <div class="users">
+            <p class="user_name">{{item.nickName}}：</p>
+            <p class="user_message">{{item.sendMsg}}</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="send_message">
+      <input type="text" placeholder="点我发言" rows="1" @click='bindFocus($event)' @focus="bindFocus($event)"
+        @blur="bindBlur" ref="inputVal" v-model="contentValue" :maxlength="chatContentLen">
+      <!-- <textarea name id placeholder="点我发言" rows="1" @focus="bindFocus($event)" @blur="bindBlur" ref="inputVal"
+        v-model="contentValue" :maxlength="chatContentLen"></textarea> -->
+      <a class='send_btn' @click="sendChat"></a>
+    </div>
+  </div>
+</template>
+
+<script>
+// import { mapGetters, mapActions } from "vuex";
+import sessionStorage from "../../../libs/storages/sessionStorage";
+export default {
+  components: {},
+  prop: [],
+  data() {
+    return {
+      matchId: 0,
+      chatList: [],
+      socketUrl: "", //websocket地址
+      lockReconnect: false, //默认进来是断开链接的
+      initScene: {},
+      contentValue: "",
+      chatContentLen: 100,
+      pageNo: 1,
+      pageSize: 50,
+      userId: "",
+      nickName: "",
+      interval: Object
+    };
+  },
+  computed: {
+    // ...mapGetters({
+    //   getMatchInfo: "getMatchInfo" // 获取赛事ID
+    // })
+  },
+  created() {},
+  destroyed() {
+    this.socketToolApi.websocketclose(); //离开路由之后断开websocket连接
+    // console.log("销毁");
+    window.clearInterval(this.interval);
+  },
+  mounted() {
+    // this.matchId = this.getMatchInfo.matchId;
+    this.matchId = sessionStorage.get("matchId");
+    console.log(this.matchId, "初始化ID");
+    this.getMatchDetail(this, true);
+    this.interval = window.setInterval(() => {
+      if (this.chatList.length != 0) {
+        // let msg = document.getElementsByClassName("chat_list")[0]; // 获取对象
+        // msg.scrollTop = msg.scrollHeight; // 滚动高度
+        // console.log(msg.scrollTop, msg, msg.scrollHeight);
+        let chatListLength = document.getElementsByClassName("chat_item")
+          .length;
+        document
+          .getElementsByClassName("chat_item")
+          [chatListLength - 1].scrollIntoView();
+      }
+    }, 5000);
+  },
+
+  methods: {
+    // 发送聊天信息
+    sendChat() {
+      this.$refs.inputVal.rows = 1;
+      console.log(this.contentValue, "sendChat");
+      var content = this.contentValue;
+      if (!content) {
+        this.$toast("请输入要发送的内容", 2);
+        return;
+      }
+      if (content.length > this.chatContentLen) {
+        this.$toast("聊天内容不能超过100个字", 2);
+        return;
+      }
+      this.socketToolApi.heartCheck.reset().start(content, this);
+      this.contentValue = "";
+      this.$toast("发送成功", 1);
+      this.$nextTick(() => {
+        setTimeout(() => {
+          // let msg = document.getElementsByClassName("chat_list")[0]; // 获取对象
+          // msg.scrollTop = msg.scrollHeight; // 滚动高度
+          // console.log(msg.scrollTop, msg, msg.scrollHeight);
+          let chatListLength = document.getElementsByClassName("chat_item")
+            .length;
+          document
+            .getElementsByClassName("chat_item")
+            [chatListLength - 1].scrollIntoView();
+        }, 200);
+      });
+    },
+    bindFocus(e) {
+      this.$refs.inputVal.rows = 2;
+      console.log(e, "获取焦点");
+      this.$emit("hideFooter");
+      // setTimeout(() => {
+      //   document.getElementsByClassName("send_message")[0].scrollIntoView();
+      // }, 600);
+
+      this.$refs.inputVal.focus();
+    },
+    bindBlur() {
+      this.$emit("showFooter");
+      setTimeout(function() {
+        window.scrollTo(0, 0);
+        // document.getElementsByClassName("send_message")[0].scrollIntoView();
+      }, 100);
+    },
+    getConfigResult: function(res) {
+      console.log(res, "返回的内容");
+    },
+    getMatchDetail: function(_self, linkFlag) {
+      var matchId = _self.matchId;
+      console.log(this.initScene);
+      this.$post("/api/league/room")
+        .then(res => {
+          console.log(res, "获取赛事详情");
+          if (res.code == "200" && res.data) {
+            _self.socketUrl = res.data.chatSocketUrl;
+            // _self.matchDetail = res.data;
+            _self.userId = res.data.userId + "";
+            _self.nickName = res.data.nickName;
+            _self.icon = res.data.icon;
+            window.sessionStorage.userId = res.data.userId + "";
+            window.sessionStorage.nickName = res.data.nickName;
+            window.sessionStorage.icon = res.data.icon;
+            var initScene = _self.socketToolApi.getSceneMsg(
+              3,
+              21,
+              10,
+              "T_R_",
+              matchId,
+              _self.userId,
+              _self.icon
+            );
+            _self.initScene = initScene;
+            // console.log("jinlai", _self.socketUrl);
+            this.socketToolApi.initWebSocket(_self);
+          } else {
+            this.$toast(res.message, 2);
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    }
+  },
+  watch: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.chat_con {
+  @extend .flex;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.66) 0%,
+    rgba(0, 0, 0, 0) 21%,
+    rgba(0, 0, 0, 0) 55%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  background: -webkit-linear-gradient(
+    top,
+    rgba(0, 0, 0, 0.66) 0%,
+    rgba(0, 0, 0, 0) 21%,
+    rgba(0, 0, 0, 0) 55%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+}
+
+.chat_list {
+  flex: 1;
+  -webkit-flex: 1;
+  padding: 1.3333vw 4vw 0;
+  overflow-y: scroll;
+  // -webkit-overflow-scrolling: touch;
+  // -webkit-backface-visibility: hidden;
+  // -webkit-transform: translate3d(0, 0, 0);
+  ul {
+    min-height: calc(100% + 1px);
+  }
+}
+.no_data {
+  flex: 1;
+  -webkit-flex: 1;
+  @extend .flex_v_h;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  img {
+    width: 40vw;
+  }
+  p {
+    padding-top: 4vw;
+    font-size: 3.7333vw;
+    line-height: 5.3333vw;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+li {
+  display: table;
+  margin-bottom: 1.3333vw;
+  padding: 1.3333vw 4vw 1.3333vw 1.3333vw;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 7.2vw;
+  &.cur {
+    background: rgba($color: #00b4ff, $alpha: 0.5);
+  }
+}
+.users {
+  display: inline-block;
+  vertical-align: top;
+  max-width: 72vw;
+  padding-top: 0.8vw;
+  margin-left: 2.1333vw;
+  word-break: break-all;
+}
+.user_img {
+  width: 11.7333vw;
+  height: 11.7333vw;
+  object-fit: cover;
+  vertical-align: top;
+  border-radius: 50%;
+  background-color: #fff;
+}
+.user_name {
+  font-size: 3.4667vw;
+  line-height: 5.3333vw;
+  color: rgba(255, 255, 255, 0.5);
+}
+.user_message {
+  font-size: 4vw;
+  line-height: 5.3333vw;
+  font-weight: bold;
+  color: #fff;
+}
+.send_message {
+  @extend .flex_v_justify;
+  padding: 5.3333vw 4vw;
+  input {
+    width: 79.4667vw;
+    height: 9.6vw;
+    line-height: 9.6vw;
+    padding: 0 4vw;
+    font-size: 4vw;
+    color: #333;
+    border-radius: 4.8vw;
+    background-color: #fff;
+  }
+  .send_btn {
+    width: 9.6vw;
+    height: 9.6vw;
+    border-radius: 50%;
+    @include getBgImg("../../../assets/images/matchtool/send_message.png");
+  }
+}
+</style>

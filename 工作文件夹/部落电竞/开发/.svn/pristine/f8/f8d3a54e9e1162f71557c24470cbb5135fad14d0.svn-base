@@ -1,0 +1,91 @@
+<template>
+  <div>
+    <ul class="chat_list">
+      <li v-for="(item,index) in 10" :key="index">
+        <img class="user_img" src="../../../assets/images/matchtool/default.png" alt="">
+        <div class="users">
+          <p class="user_name">1231456</p>
+          <p class="user_message">啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+        </div>
+      </li>
+    </ul>
+    <div class="send_message">
+      <input type="text" placeholder="点我发言">
+      <a class='send_btn'></a>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.chat_list {
+  height: 80vw;
+  padding: 1.3333vw 4vw 0;
+  overflow: hidden;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+li {
+  display: table;
+  margin-bottom: 1.3333vw;
+  padding: 1.3333vw 2vw 1.3333vw 1.3333vw;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 7.2vw;
+}
+.users {
+  display: inline-block;
+  vertical-align: top;
+  max-width: 74.6667vw;
+  padding-top: 0.6667vw;
+  margin-left: 2.1333vw;
+}
+.user_img {
+  width: 11.7333vw;
+  height: 11.7333vw;
+  object-fit: cover;
+  border-radius: 50%;
+  vertical-align: top;
+}
+.user_name {
+  font-size: 3.4667vw;
+  line-height: 5.3333vw;
+  color: rgba(255, 255, 255, 0.5);
+}
+.user_message {
+  font-size: 4vw;
+  line-height: 5.3333vw;
+  color: #fff;
+}
+.send_message {
+  @extend .flex_v_justify;
+  padding: 5.3333vw 4vw;
+  input {
+    width: 79.4667vw;
+    height: 9.6vw;
+    padding: 0 4vw;
+    font-size: 4vw;
+    color: #333;
+    border-radius: 4.8vw;
+    background-color: #fff;
+  }
+  .send_btn {
+    width: 9.6vw;
+    height: 9.6vw;
+    border-radius: 50%;
+    @include getBgImg("../../../assets/images/matchtool/send_message.png");
+  }
+}
+</style>

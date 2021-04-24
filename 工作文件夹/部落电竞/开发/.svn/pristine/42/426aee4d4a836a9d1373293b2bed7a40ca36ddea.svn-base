@@ -1,0 +1,69 @@
+<template>
+  <div class="Page guessRules">
+    <header class="mod_header">
+      <navBar :pageTitle="'规则说明'"></navBar>
+    </header>
+    <div class="main">
+      <p>
+        文本信息文本信息文本信息文本信息文本信息文
+        本信息文本信息文本信息文本信息文本信息文本信息
+        文本信息文本信息文本信息文本信息文本信息文本信
+        息文本信息文本信息文本信息文本信息文本信息文本
+        信息文本信息文本信息文本信息文本信息文本信息文
+        本信息文本信息文本信息文本信息文本信息。
+        文本信息文本信息文本信息文本信息文本信息信
+        息文本信息文本信息文本信息文本信息文本信息文本
+        信息文本信息文本信息文本信息文本信息文本信息文
+        本信息文本信息文本信息文本信息文本信息文本信息
+        文本信息文本信息文本信息文本信息文本信息文本信
+        息文本信息。
+      </p>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index";
+
+export default {
+  components: {
+    navBar
+  },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang="scss">
+.guessRules {
+  background: #1f1212;
+  .mod_header {
+    background-color: #321919;
+  }
+  .nav_bar {
+    color: #fedcd7 !important;
+  }
+  .back {
+    &::before,
+    &::after {
+      background-color: #a26767 !important;
+    }
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+.main {
+  padding: 20px 10px 0;
+  p {
+    font-size: 14px;
+    line-height: 24px;
+    text-indent: 28px;
+    color: #c08c85;
+  }
+}
+</style>

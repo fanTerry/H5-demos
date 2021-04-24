@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+  },
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
+  "navigationBarTitleText": "答题"
+}

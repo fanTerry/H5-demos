@@ -1,0 +1,29 @@
+<!--pages/follow/follow.wxml-->
+<view class='follow-view'>
+  <!-- 顶部菜单栏 -->
+  <follow-top-menu menuArray='{{menuArr}}'></follow-top-menu>
+
+  <!-- 搜索框 -->
+  <view class='follow-search-view'>
+    <input class='f-s-input' placeholder="搜索话题" placeholder-class="f-s-input-ph" />
+  </view>
+
+  <!-- 用户列表 -->
+  <view class='follow-list-view'>
+    <!-- 搜索结果列表 -->
+    <view class='follow-search-result-list'>
+      <expert-item wx:for="list"></expert-item>
+    </view>
+  
+    <view class='follow-list'>
+      <!-- 按字母搜索列表 -->
+      <view class='follow-search-letter-list'>
+        <view><i class='iconfont icon-sousuo f-s-l-icon'></i></view>
+        <view class='f-s-l-item' wx:for="{{letterArr}}">{{item}}</view>
+      </view>
+
+      <!-- 全部列表 -->
+      <follow-expert-list wx:for="list"></follow-expert-list>
+    </view>
+  </view>
+</view>

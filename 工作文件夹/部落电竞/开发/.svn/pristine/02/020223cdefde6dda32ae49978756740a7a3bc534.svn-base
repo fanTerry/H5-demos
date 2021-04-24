@@ -1,0 +1,118 @@
+<template>
+
+  <div>
+    <figure class="mod_banner swiper-container swiper-no-swiping" v-if="bannerType == 1">
+      <ul class="swiper-wrapper">
+        <li class="swiper-slide" v-for="(item,index) in bannerUrl" :key="index">
+          <img :src='item.picUrl' alt />
+        </li>
+      </ul>
+      <div class="swiper-pagination banner_pagination"></div>
+    </figure>
+    <section class="mod_poster  swiper-container" v-if="bannerType == 2&&posterUrl&&posterUrl.length>0">
+      <div class="swiper-wrapper">
+        <img class="swiper-slide" v-for="(item,index) in posterUrl" :key="index" :src="item.picUrl" alt />
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+import Swiper from "swiper";
+
+export default {
+  components: {},
+  props: ["bannerType"],
+  data() {
+    return {
+      swiper1: null,
+      swiper2: null,
+      bannerUrl: [],
+      posterUrl: []
+    };
+  },
+  mounted() {
+    this.getBannerUrl().then(() => {
+      this.$nextTick(() => {
+        this.initSwiper();
+      });
+    });
+  },
+  methods: {
+    getBannerUrl() {
+      let param = { typeStr: "1,5" };
+      return this.$post("/api/getAdList", param)
+        .then(rsp => {
+          const dataResponse = rsp.data;
+          this.bannerUrl = dataResponse.adList1;
+          this.posterUrl = dataResponse.adList5;
+        })
+        .catch(error => {
+          console.log(error, 122222222222213111111111111111111111);
+        });
+    },
+    initSwiper() {
+      let swiper1 = new Swiper(".mod_banner", {
+        autoplay: this.bannerUrl.length >= 3 ? 3000 : false,
+        autoplayDisableOnInteraction: false,
+        loop: this.bannerUrl.length >= 3 ? true : false,
+        slidesPerView: 3,
+        centeredSlides: true,
+        pagination: ".swiper-pagination.banner_pagination",
+        paginationClickable: true
+      });
+      let swiper2 = new Swiper(".mod_poster", {
+        autoplay: this.posterUrl.length >= 2 ? 3000 : false,
+        autoplayDisableOnInteraction: false,
+        loop: true,
+        direction: "vertical"
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+
+.mod_banner {
+  width: 900px;
+  height: 228px;
+  margin: 39px auto 0;
+  padding-top: 50px;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .swiper-slide {
+    position: relative;
+    @extend .flex_v_h;
+    transition: 600ms;
+    transform: scale(0.8);
+    transform-origin: bottom center;
+    border-radius: 10px 10px 0 0;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .swiper-slide-active,
+  .swiper-slide-duplicate-active {
+    z-index: 1;
+    transform: scale(1.3);
+    transform-origin: bottom center;
+  }
+}
+
+.mod_poster {
+  width: 1240px;
+  height: 100px;
+  margin: 30px auto 0;
+  overflow: hidden;
+  img {
+    width: 1240px;
+    height: 100px;
+    object-fit: cover;
+  }
+}
+</style>

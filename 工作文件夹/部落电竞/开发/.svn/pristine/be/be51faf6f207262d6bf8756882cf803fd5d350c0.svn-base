@@ -1,0 +1,17 @@
+/* component/report/oddresultitem/odd-result-item.wxss */
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/grid.wxss";
+
+.odd-result-item {
+  margin-bottom: 10rpx;
+}
+.odd-result-item-tit {
+  line-height: 60rpx;
+  padding-left: 20rpx;
+}
+.odd-result-list {
+  font-size: 22rpx; 
+}
+.o-r-i-img {
+  display: inline;
+}

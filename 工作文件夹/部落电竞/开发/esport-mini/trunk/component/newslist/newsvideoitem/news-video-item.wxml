@@ -1,0 +1,61 @@
+<!--component/newslist/newsvideoitem/news-video-item.wxml-->
+<!-- <news-video-item > -->
+    <!-- 最后一个元素添加border-none  bindtap='videoPlay'  -->
+   <!-- <view class="news-video-item border-none">
+        <view  class="video" data-id="{{newsData.aricleId}}" bindtap="videoPlay" >
+          <video wx:if="{{curr_id == newsData.aricleId}}" style="width: 750rpx;height: calc(9 * 750rpx / 16);" id="video{{newsData.aricleId}}" src="{{newsData.imageSrc}}" show-center-play-btn="{{false}}" show-mute-btn="{{true}}"
+          poster="newsData.titleImg" object-fit="fill"  controls></video>
+          <view wx:else >
+              <image class="model-img" style="width: 710rpx;height: 423rpx;" mode="aspectFill" src="{{newsData.titleImg}}"></image>
+              <view class="model-btn"></view>
+          </view>
+        </view>
+    </view> -->
+
+   <view class='news-video-item border-none'>
+        <view class='pad-t20' >
+          <!--  <block wx:if="{{platform==2&&newsData.titleImg!=null}}">
+                <video class='news-video' id="video{{newsData.aricleId}}"  bindplay="pauseOtherPlay" src="{{newsData.imageSrc}}"
+                    show-center-play-btn="{{false}}" show-mute-btn="{{true}}" binderror="videoErrorCallback" poster=""
+                    custom-cache="{{false}}" object-fit="fill" controls show-play-btn >
+                </video>
+                <cover-view class="controls" style="display:{{tab_image}};width: 710rpx;height: 423rpx;">
+                    <cover-image src="{{newsData.titleImg}}" />
+                </cover-view>
+                <cover-view class="play" style="display:{{tab_image}};z-index:200;">
+                    <cover-image bindtap="bindPlay" src="https://rs.esportzoo.com/svn/esport-res/mini/images/play.png" class="cover-image-c" />
+                </cover-view>
+            </block>-->
+                <view  class="video"  >
+                <video wx:if="{{curr_id == newsData.aricleId}}"  class='news-video' id="video{{newsData.aricleId}}" 
+                    src="{{newsData.imageSrc}}" show-center-play-btn="{{false}}" show-mute-btn="{{true}}"
+                    poster="newsData.titleImg" binderror="videoErrorCallback" poster="" custom-cache="{{false}}" object-fit="fill"  controls="true" show-play-btn
+                     bindended="endVideo" bindplay="pauseOtherPlay" >
+                </video>
+                <view wx:else data-id="{{newsData.aricleId}}"  bindtap="videoPlay" >
+                    <image class="model-img" style="width: 710rpx;height: 423rpx;" mode="aspectFill" src="{{newsData.titleImg}}"></image>
+                    <view class="model-btn"></view>
+                </view>
+                </view>
+        </view>
+        <navigator url="/modules/articlepage/article-page?id={{newsData.aricleId}}&type=3">
+            <view class='news-video-title'>
+                <text>{{newsData.detail}}</text>
+            </view>
+            <view class='news-video-sub clear'>
+                <view class='news-info fr'>
+                    <view class="news-info-item">
+                        <i class='iconfont icon-icon_yulan n-i-i-i'></i><text>{{newsData.seeNum}}</text>
+                    </view>
+                    <!-- <view class="news-info-item">
+                        <i class='iconfont icon-pinglun n-i-i-i'></i><text>{{newsData.discussNum}}</text>
+                    </view> -->
+                    <view class='news-info-item n-i-i-last'>
+                    <i class='iconfont icon-gengduo n-i-i-i'></i>
+                    </view>
+                </view>
+                <view class='news-tag'>#{{newsData.tag==null?'佚名':newsData.tag}}</view>
+            </view>
+        </navigator>
+    </view>
+<!-- </news-video-item> -->

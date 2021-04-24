@@ -1,0 +1,842 @@
+<template>
+  <div class='Page' v-if='pageReady'>
+    <div class='main'>
+      <game-header ref="ref"></game-header>
+      <div>
+        <div class="tree">
+          <div class="tree_leaf" :class="{'active':gameShake.gameStatus}" @animationend="treeShakeEnd()"></div>
+          <div class="tree_back" :class="{'active':gameShake.gameStatus}"></div>
+          <div class="tree_body"></div>
+          <!-- 未中奖，树叶飘过 -->
+          <div>
+            <span></span>
+          </div>
+          <!-- 奖品掉落球 -->
+          <img class="prize_img" :class="{'active':gameShake.gameBingo}" @animationend="ballDropOut()"
+            src="../../../assets/images/game/shake/ball.png" alt="" style="">
+          <!-- 中奖物品 -->
+          <div class="awards" :class="{'more_awards':gameShake.playRes.combination.indexOf('+')>-1}"
+            v-if='gameShake.playRes'>
+
+            <div class="award_packs" :class="{'active':gameShake.ballDrop}" @animationend="awardShow()">
+              <!-- 中奖星星 -->
+              <div class="award_content" v-for="(award,index) in gameShake.playRes.awardList" :key="index">
+                <img :src="award.awardIcon" alt="">
+                <span>X {{award.awardNum}}</span>
+              </div>
+              <p class="award_num">+{{gameShake.playRes.awardScoreValue}}</p>
+            </div>
+          </div>
+          <div class="gold_list">
+            <div class="gold_coin" :class="{'active':gameShake.showAward}" v-for="(item,index) in 10" :key="index">
+              <span></span>
+            </div>
+          </div>
+          <!--背景音乐-->
+          <div class="voice" :class="{'muted':gameShake.mutedVoice}" @click="bgm()">
+            <audio class="player" ref="audio" loop autoplay preload>
+              <source :src="roomInfo.audioSrc">
+            </audio>
+          </div>
+          <div class="songshu" :class="{'active':gameShake.bitTree}"></div>
+        </div>
+        <footer class='mod_footer'>
+          <div class="play">
+            <div class="bet" v-if='roomInfo.playItems'>
+              <span class="bet_star"></span>
+              <div class="power" @click="showPowerList()">
+                <ul v-if="shutFlag">
+                  <li>摇晃力量</li>
+                  <li v-for="(item,index) in roomInfo.playItems" :key="index"
+                    :class="{'active':roomInfo.selectPlayItem.itemScore == item.itemScore}"
+                    @click="selectPower(index,$event)">{{item.itemScore}}
+                  </li>
+                </ul>
+                <span class="num">{{roomInfo.selectPlayItem.itemScore}}</span>
+              </div>
+              <span class="open" :class="{'shut':shutFlag}" @click="showPowerList()"></span>
+            </div>
+            <a class='play_btn' :class="{'active': gameShake.btnStatus,'disabled':gameShake.gameStatus}"
+              @click="playGame()"></a>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <bet-failed v-if='betFailedFlag' @closeBetPop='betFailedFlag = false' @toCharge='toCharge'></bet-failed>
+
+  </div>
+</template>
+
+<script>
+import { mapGetters, mapActions } from "vuex";
+import gameHeader from "../components/header.vue";
+import betFailed from "../components/betFailed.vue";
+// import {throttle} from '../../../libs/utils';
+export default {
+  components: {
+    gameHeader,
+    betFailed
+  },
+  props: [],
+  data() {
+    return {
+      shutFlag: false, //是否收起摇晃力量列表标识
+      winStar: 0, //用户中奖金额
+      pageReady: false, //页面请求数据标识
+      gameShake: {
+        //摇一摇动画关键字
+        btnStatus: false, //按钮状态
+        gameStatus: false, //游戏状态
+        mutedVoice: false, //关闭音乐
+        bitTree: false, //敲树
+        gameBingo: false, //中奖了
+        ballDrop: false, //星星球掉落状态
+        showAward: false, //展示获奖奖品
+        playRes: null, //游戏结果
+        isSubmit: false //游戏提交标识
+      },
+      roomInfo: {
+        //房间信息
+        playItems: null, //房间档位
+        roomNo: "", //房间编号
+        selectPlayItem: null, //选择的档位对象
+        audioSrc: "http://rs.esportzoo.com/upload/game/bg.mp3"
+      },
+      betFailedFlag: false
+    };
+  },
+  computed: {
+    ...mapGetters({
+      userInfo: "getUserInfo"
+    })
+  },
+  watch: {},
+  mounted() {
+    this.roomInfo.roomNo = this.$route.query.roomNo;
+    this.roomData();
+    document.addEventListener("click", e => {
+      let bet = document.querySelector(".bet");
+      if (bet && !bet.contains(e.target)) {
+        this.shutFlag = false;
+      }
+    });
+    this.iosAutoPlayBgm();
+  },
+  methods: {
+    ...mapActions(["setUserInfo"]),
+    roomData() {
+      this.$post("/api/game/shake/roomData", { roomNo: this.roomInfo.roomNo })
+        .then(data => {
+          this.pageReady = true;
+          console.log(data, "调用接口返回数据");
+          if (data.code == 200) {
+            this.roomInfo.playItems = data.data.playItems;
+            this.roomInfo.selectPlayItem = data.data.defaultPlayItem;
+          } else {
+          }
+        })
+        .catch(error => {
+          console.log(error, "获取档位异常");
+        });
+    },
+    //选择摇晃力量
+    selectPower(index, e) {
+      e.stopPropagation();
+      this.roomInfo.selectPlayItem = this.roomInfo.playItems[index];
+      this.shutFlag = !this.shutFlag;
+    },
+    showPowerList() {
+      this.shutFlag = !this.shutFlag;
+    },
+    // 点击play按钮
+    playGame() {
+      if (!this.checkBalance()) {
+        console.log("检查");
+        return;
+      }
+      if (this.roomInfo.isSubmit || this.gameShake.gameStatus) {
+        this.$toast("游戏进行中");
+        return;
+      } else {
+        this.roomInfo.isSubmit = true;
+        let useStar = this.roomInfo.selectPlayItem.itemScore;
+        this.reduceStar(useStar);
+        // 点击按钮gameStatus和敲树bitTree不需要判断中奖情况
+        this.gameShake.gameStatus = true;
+        this.gameShake.bitTree = true;
+        let playData = {
+          roomNo: this.roomInfo.roomNo,
+          gamePlayItemId: this.roomInfo.selectPlayItem.id
+        };
+        this.doSubmitPlay(playData);
+      }
+    },
+    //树抖动动画结束
+    treeShakeEnd() {
+      this.gameShake.bitTree = false;
+      console.log("树抖动动画结束");
+      //判断是否中奖
+      let playData = this.gameShake.playRes;
+      if (!playData) {
+        this.$toast("参与游戏异常");
+        this.gameShake.gameStatus = false;
+        return;
+      }
+      if (playData.winFlag) {
+        //中奖
+        this.gameShake.gameBingo = true; //中奖了设置为true
+        this.gameShake.btnStatus = true; //按钮按下
+      } else {
+        this.$toast("未中奖,刮一阵风。。。");
+        this.gameShake.gameStatus = false;
+      }
+    },
+    // 掉落星星球结束
+    ballDropOut() {
+      this.gameShake.gameBingo = false; // 清除掉落球动画的状态
+      this.gameShake.ballDrop = true;
+      console.log("掉落");
+    },
+    // 展示获奖产品结束
+    awardShow() {
+      // 清楚展示奖品动画的状态
+      this.gameShake.ballDrop = false;
+      this.gameShake.showAward = true;
+      console.log("展示");
+      // document
+      //   .querySelector(".gold_coin")
+      //   .addEventListener("webkitAnimationEnd", () => {
+      //     this.shakeEnd();
+      //   });
+      setTimeout(() => {
+        this.shakeEnd();
+      }, 1000);
+    },
+    // 奖品回流动画结束
+    shakeEnd() {
+      //刷新用户余额
+      this.gameShake.showAward = false; // 清除奖品回流动画的状态
+      setTimeout(() => {
+        this.gameShake.btnStatus = false; //按钮变亮
+        this.gameShake.gameStatus = false;
+      }, 500);
+      this.reflushBanlance();
+      console.log("结束");
+    },
+    //减星星
+    reduceStar(starNum) {
+      let userNowStar = this.userInfo.ableRecScore;
+      console.log("减星星,用户目前的星星余额", userNowStar);
+      this.setUserInfo({
+        ...this.userInfo,
+        ableRecScore: userNowStar - starNum
+      });
+    },
+    //刷新用户余额
+    reflushBanlance() {
+      this.$refs.ref.getUserWallet();
+    },
+    //提交游戏订单
+    doSubmitPlay(playData) {
+      this.$post("/api/game/shake/startPlay", playData)
+        .then(data => {
+          console.log(data, "参与游戏调用接口返回数据");
+          this.roomInfo.isSubmit = false;
+          if (data.code == 200) {
+            if (!data.data.balanceEnough) {
+              this.betFailedFlag = true;
+            }
+            //游戏成功处理
+            this.playSuccess(data);
+          } else {
+            //游戏失败处理
+            this.playFail(data);
+          }
+        })
+        .catch(error => {
+          console.log(error, "调用游戏接口");
+        });
+    },
+    //游戏成功处理
+    playSuccess(data) {
+      this.gameShake.playRes = data.data;
+    },
+    //游戏失败处理
+    playFail(data) {},
+    //检查账户余额
+    checkBalance() {
+      let userPowerNum = this.roomInfo.selectPlayItem.itemScore;
+      if (!userPowerNum) {
+        this.$toast("请先选择摇晃力量~");
+        return false;
+      }
+      console.log("要投注的", userPowerNum);
+      console.log("用户的", this.userInfo.ableRecScore);
+      if (userPowerNum > this.userInfo.ableRecScore) {
+        this.betFailedFlag = true;
+        return false;
+      }
+      return true;
+    },
+    bgm() {
+      console.log(123123123);
+      if (!this.gameShake.mutedVoice) {
+        this.$refs.audio.pause();
+        this.gameShake.mutedVoice = true;
+      } else {
+        this.$refs.audio.play();
+        this.gameShake.mutedVoice = false;
+      }
+    },
+    toCharge() {
+      this.betFailedFlag = false;
+      this.$refs.ref.toCharge();
+    },
+    iosAutoPlayBgm() {
+      let u = navigator.userAgent;
+      let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+      if (!isiOS) {
+        console.log("不是ios不处理");
+        return;
+      }
+      this.$post("/api/wxlogin/getJsConfig")
+        .then(rsp => {
+          console.log(rsp, "rsp");
+          if (rsp.appId != "") {
+            this.wx.config({
+              debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+              appId: rsp.appId, // 必填，公众号的唯一标识
+              timestamp: rsp.timestamp, // 必填，生成签名的时间戳
+              nonceStr: rsp.nonceStr, // 必填，生成签名的随机串
+              signature: rsp.signature, // 必填，签名，见附录1
+              jsApiList: ["chooseWXPay"]
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      this.wx.ready(() => {
+        console.log("in122");
+        this.$refs.audio.play();
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  @include getBgImg("../../../assets/images/game/shake/shake_bg.png");
+  background-position: top center;
+  background-color: #13c3c0;
+}
+
+.main {
+  position: relative;
+  @extend .flex_justify;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+}
+
+.tree {
+  position: relative;
+  width: 100%;
+  // height: 116.5333vw;
+  margin-top: 5.8667vw;
+  .tree_leaf,
+  .tree_back {
+    &.active {
+      animation: shaking 0.75s ease 1s;
+      will-change: transform;
+    }
+  }
+  .tree_leaf {
+    position: absolute;
+    top: -1.0667vw;
+    left: 0;
+    z-index: 3;
+    width: 97.0667vw;
+    height: 81.3333vw;
+    @include getBgImg("../../../assets/images/game/shake/tree_leaf.png");
+    &::after {
+      content: "";
+      @extend .g_c_mid;
+      top: 35.2vw;
+      margin-left: 3.6667vw;
+      width: 44.5333vw;
+      height: 10vw;
+      @include getBgImg("../../../assets/images/game/shake/tree_name.png");
+    }
+  }
+  .tree_back {
+    z-index: 1;
+    position: absolute;
+    left: 13.6vw;
+    bottom: 32.8vw;
+    width: 78.1333vw;
+    height: 26vw;
+    @include getBgImg("../../../assets/images/game/shake/leaf_back.png");
+  }
+  .tree_body {
+    position: relative;
+    z-index: 2;
+    height: 114.9333vw;
+    @include getBgImg("../../../assets/images/game/shake/tree_body.png");
+  }
+  .prize_img {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    left: 39.6vw;
+    width: 11.3333vw;
+    &.active {
+      animation: dropout 1s ease-out;
+      will-change: transform;
+    }
+  }
+
+  .awards {
+    // position: absolute;
+    // left: 32vw;
+    // top: 17.3333vw;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 81.3333vw;
+    z-index: 4;
+  }
+  .award_packs {
+    // width: 66.6667vw;
+    // height: 53.3333vw;
+    width: 89.3333vw;
+    height: 77.3333vw;
+    margin: 0 auto;
+    transform: scale(0);
+    -webkit-transform: scale(0);
+    @include getBgImg("../../../assets/images/game/shake/shine.gif");
+    background-size: 66.6667vw;
+    background-position: center 6.9333vw;
+    &.active {
+      animation: shining 3s linear forwards;
+      will-change: transform;
+    }
+    img {
+      // opacity: 0;
+      width: 21.3333vw;
+    }
+  }
+  .award_num {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    font-size: 7.7333vw;
+    color: #fff;
+  }
+  .gold_coin {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    z-index: 10;
+    width: 12vw;
+    height: 12vw;
+    transform: translate3d(-50%, -50%, 0) scale(0);
+    -webkit-transform: translate3d(-50%, -50%, 0) scale(0);
+    &.active {
+      will-change: transform;
+      &:first-child {
+        animation: moveTop 0.6s cubic-bezier(0.66, 0.01, 1, 1) 0 forwards;
+        span {
+          animation: moveLeft 0.6s cubic-bezier(0, 0, 0.36, 1) 0 forwards;
+        }
+      }
+      &:nth-child(2) {
+        animation: moveTop 0.55s cubic-bezier(0.66, 0.01, 1, 1) 0.05s forwards;
+        span {
+          animation: moveLeft 0.55s cubic-bezier(0, 0, 0.36, 1) 0.05s forwards;
+        }
+      }
+      &:nth-child(3) {
+        animation: moveTop 0.5s cubic-bezier(0.66, 0.01, 1, 1) 0.1s forwards;
+        span {
+          animation: moveLeft 0.5s cubic-bezier(0, 0, 0.36, 1) 0.1s forwards;
+        }
+      }
+      &:nth-child(4) {
+        animation: moveTop 0.45s cubic-bezier(0.66, 0.01, 1, 1) 0.15s forwards;
+        span {
+          animation: moveLeft 0.45s cubic-bezier(0, 0, 0.36, 1) 0.15s forwards;
+        }
+      }
+      &:nth-child(5) {
+        animation: moveTop 0.4s cubic-bezier(0.66, 0.01, 1, 1) 0.2s forwards;
+        span {
+          animation: moveLeft 0.4s cubic-bezier(0, 0, 0.36, 1) 0.2s forwards;
+        }
+      }
+      &:nth-child(6) {
+        animation: moveTop 0.35s cubic-bezier(0.66, 0.01, 1, 1) 0.25s forwards;
+        span {
+          animation: moveLeft 0.35s cubic-bezier(0, 0, 0.36, 1) 0.25s forwards;
+        }
+      }
+      &:nth-child(7) {
+        animation: moveTop 0.3s cubic-bezier(0.66, 0.01, 1, 1) 0.3s forwards;
+        span {
+          animation: moveLeft 0.3s cubic-bezier(0, 0, 0.36, 1) 0.3s forwards;
+        }
+      }
+      &:nth-child(8) {
+        animation: moveTop 0.25s cubic-bezier(0.66, 0.01, 1, 1) 0.35s forwards;
+        span {
+          animation: moveLeft 0.25s cubic-bezier(0, 0, 0.36, 1) 0.35s forwards;
+        }
+      }
+      &:nth-child(9) {
+        animation: moveTop 0.2s cubic-bezier(0.66, 0.01, 1, 1) 0.4s forwards;
+        span {
+          animation: moveLeft 0.2s cubic-bezier(0, 0, 0.36, 1) 0.4s forwards;
+        }
+      }
+      &:nth-child(10) {
+        animation: moveTop 0.15s cubic-bezier(0.66, 0.01, 1, 1) 0.45s forwards;
+        span {
+          animation: moveLeft 0.15s cubic-bezier(0, 0, 0.36, 1) 0.45s forwards;
+        }
+      }
+    }
+    span {
+      @extend .g_v_c_mid;
+      display: block;
+      z-index: 10;
+      width: 12vw;
+      height: 12vw;
+      @include getBgImg("../../../assets/images/game/shake/star_icon.png");
+    }
+  }
+  .more_awards {
+    .award_packs {
+      @include getBgImg("../../../assets/images/game/shake/shine_strong.gif");
+    }
+  }
+  .award_content {
+    position: absolute;
+    &:first-of-type {
+      left: 50%;
+      top: 46%;
+      transform: translate3d(-50%, -50%, 0) rotate(0deg);
+      -webkit-transform: translate3d(-50%, -50%, 0) rotate(0deg);
+      z-index: 6;
+    }
+    &:nth-of-type(2) {
+      left: 42%;
+      top: 65%;
+      transform: translate3d(-50%, -50%, 0) rotate(-15deg);
+      -webkit-transform: translate3d(-50%, -50%, 0) rotate(-15deg);
+      z-index: 5;
+    }
+    &:nth-of-type(3) {
+      left: 60%;
+      top: 65%;
+      transform: translate3d(-50%, -50%) rotate(10deg);
+      -webkit-transform: translate3d(-50%, -50%, 0) rotate(10deg);
+      z-index: 4;
+    }
+    &:nth-of-type(4) {
+      left: 36%;
+      top: 46%;
+      transform: translate3d(-50%, -50%) rotate(-10deg);
+      -webkit-transform: translate3d(-50%, -50%, 0) rotate(-10deg);
+      z-index: 3;
+    }
+
+    &:nth-of-type(5) {
+      left: 65%;
+      top: 45%;
+      transform: translate3d(-50%, -50%, 0) rotate(15deg);
+      -webkit-transform: translate3d(-50%, -50%, 0) rotate(15deg);
+      z-index: 2;
+    }
+
+    &:nth-of-type(6) {
+      left: 51%;
+      top: 28%;
+      transform: translate3d(-50%, -50%, 0) rotate(15deg);
+      -webkit-transform: translate3d(-50%, -50%, 0) rotate(15deg);
+      z-index: 1;
+    }
+    span {
+      @extend .g_v_c_mid;
+      font-size: 4.8vw;
+      color: #fff;
+    }
+  }
+  .songshu {
+    position: absolute;
+    right: 7.3333vw;
+    bottom: 0;
+    z-index: 3;
+    width: 36.5333vw;
+    height: 41.2vw;
+    @include getBgImg("../../../assets/images/game/shake/songshu.png");
+    &.active {
+      will-change: transform;
+      @include getBgImg("../../../assets/images/game/shake/songshu.gif");
+    }
+  }
+  .voice {
+    position: absolute;
+    left: 3.7333vw;
+    top: -4vw;
+    z-index: 10;
+    width: 9.0667vw;
+    height: 9.0667vw;
+    @include getBgImg("../../../assets/images/game/shake/voice.png");
+    &.muted {
+      @include getBgImg(
+        "../../../assets/images/game/shake/voice_forbidden.png"
+      );
+    }
+  }
+  .player {
+    position: absolute;
+    left: -26.6667vw;
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+}
+
+.mod_footer {
+  position: relative;
+  z-index: 5;
+  @include getBgImg("../../../assets/images/game/shake/footer_bg.png");
+  .play {
+    @extend .flex_hc;
+    height: 16vw;
+    padding-left: 2.6667vw;
+  }
+  .bet {
+    @extend .flex_hc;
+  }
+  .bet_star {
+    width: 8vw;
+    height: 8vw;
+    @include getBgImg("../../../assets/images/game/shake/bet_star.png");
+  }
+  .open {
+    width: 8vw;
+    height: 8vw;
+    @include getBgImg("../../../assets/images/game/shake/open.png");
+    &.shut {
+      @include getBgImg("../../../assets/images/game/shake/shut.png");
+    }
+  }
+  .power {
+    position: relative;
+    margin: 0 1.6vw;
+    ul {
+      @extend .g_c_mid;
+      bottom: 0;
+      z-index: 4;
+      width: 29.0667vw;
+      padding-bottom: 13.6vw;
+      background: rgba(90, 31, 8, 0.8);
+      border-radius: 5.3333vw;
+      overflow: hidden;
+      li {
+        bottom: 0;
+        @extend .flex_v_h;
+        width: 26.6667vw;
+        height: 8.8vw;
+        margin: 2.6667vw auto 0;
+        font-size: 4.5333vw;
+        color: #fff;
+        background: #5a1f08;
+        border-radius: 8.8vw;
+        &:first-child {
+          width: 100%;
+          height: 10.6667vw;
+          margin-top: 0;
+          background-color: #5a1f08;
+          border-radius: 0;
+        }
+        &.active {
+          font-weight: bold;
+          color: #f64500;
+          background-color: #ffcf0c;
+        }
+      }
+    }
+    .num {
+      position: relative;
+      z-index: 5;
+      @extend .flex_v_h;
+      width: 29.0667vw;
+      height: 9.8667vw;
+      font-size: 4.5333vw;
+      color: #fff;
+      @include getBgImg("../../../assets/images/game/shake/power_num_bg.png");
+    }
+  }
+  .play_btn {
+    width: 34.1333vw;
+    height: 12.5333vw;
+    margin-left: 5.3333vw;
+    @include getBgImg("../../../assets/images/game/shake/play_btn.png");
+    &.disabled {
+      filter: grayscale(1);
+      -webkit-filter: grayscale(1);
+      opacity: 0.1;
+    }
+    &.active {
+      filter: grayscale(0);
+      -webkit-filter: grayscale(0);
+      opacity: 1;
+      animation: playBtn 6.5s linear forwards;
+      will-change: transform;
+    }
+  }
+}
+
+// 按钮
+@keyframes playBtn {
+  from {
+    filter: grayscale(1);
+    -webkit-filter: grayscale(1);
+    opacity: 0.1;
+  }
+  to {
+    filter: grayscale(0);
+    -webkit-filter: grayscale(0);
+    opacity: 1;
+  }
+}
+
+// 奖品掉落
+@keyframes dropout {
+  0% {
+    transform: translate(0) translateZ(0);
+    -webkit-transform: translateY(0) translateZ(0);
+  }
+  100% {
+    transform: translateY(60vw) translateZ(0);
+    -webkit-transform: translateY(60vw) translateZ(0);
+  }
+}
+
+// 奖品闪耀
+@keyframes shining {
+  13%,
+  93% {
+    transform: scale(1) translateZ(0);
+    -webkit-transform: scale(1) translateZ(0);
+  }
+
+  0%,
+  100% {
+    transform: scale(0) translateZ(0);
+    -webkit-transform: scale(0) translateZ(0);
+  }
+}
+
+// 大树摇晃
+@keyframes shaking {
+  30% {
+    transform: translate3d(0, 0, 0) rotate(-10deg);
+    -webkit-transform: translate3d(0, 0, 0) rotate(-10deg);
+  }
+  50% {
+    transform: translate3d(0, 0, 0) rotate(8deg);
+    -webkit-transform: translate3d(0, 0, 0) rotate(8deg);
+  }
+  65% {
+    transform: translate3d(0, 0, 0) rotate(-6deg);
+    -webkit-transform: translate3d(0, 0, 0) rotate(-6deg);
+  }
+  80% {
+    transform: translate3d(0, 0, 0) rotate(4deg);
+    -webkit-transform: translate3d(0, 0, 0) rotate(4deg);
+  }
+  90% {
+    transform: translate(0, 0, 0) rotate(-2deg);
+    -webkit-transform: translate(0, 0, 0) rotate(-2deg);
+  }
+  0%,
+  100% {
+    transform: translate(0, 0, 0) rotate(0);
+    -webkit-transform: translate(0, 0, 0) rotate(0);
+  }
+}
+
+//星星左移
+@keyframes moveLeft {
+  0% {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0) scale(0);
+    -webkit-transform: translate3d(-50%, -50%, 0) scale(0);
+  }
+  20% {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0) scale(1);
+    -webkit-transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+  99% {
+    position: fixed;
+    left: -23vw;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0) scale(1);
+    -webkit-transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+  100% {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0) scale(1);
+    -webkit-transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+}
+// 星星上移
+@keyframes moveTop {
+  0% {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0) scale(0);
+    -webkit-transform: translate3d(-50%, -50%, 0) scale(0);
+  }
+  20% {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0) scale(1);
+    -webkit-transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+  99% {
+    position: fixed;
+    top: 9.3333vw;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0) scale(1);
+    -webkit-transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+  100% {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0) scale(0);
+    -webkit-transform: translate3d(-50%, -50%, 0) scale(0);
+  }
+}
+</style>

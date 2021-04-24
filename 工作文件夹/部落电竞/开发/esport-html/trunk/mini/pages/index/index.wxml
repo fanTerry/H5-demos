@@ -1,0 +1,17 @@
+<!--pages/index/index.wxml-->
+
+<!-- 顶部信息栏 -->
+<userinfo-bar showType="1"></userinfo-bar>
+
+<!-- 菜单导航栏 -->
+<submenu-bar titleArray="{{subMenuArr}}"></submenu-bar>
+
+<view class="main">
+  <view class='index-section'>
+    <!-- 图片滚动部分 -->
+    <bigimage-swiper indicatorColor="{{swiperOpt.indColor}}" indicatorActiveColor="{{swiperOpt.indActColor}}" swiperArray="{{swiperArr}}"></bigimage-swiper>
+
+    <!-- 新闻列表部分 -->
+    <news-list newsDataList="{{newsList}}"></news-list>
+  </view>
+</view>

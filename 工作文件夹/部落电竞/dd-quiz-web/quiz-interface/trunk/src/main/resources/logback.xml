@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%-16(%d{MM-dd HH:mm:ss.SSS}) %-5level %logger{1} - %msg%n</pattern>
+		</layout>
+	</appender>
+
+	<appender name="file"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${catalina.home}/logs/quiz-scheduler.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${catalina.home}/logs/quiz-scheduler-%d{yyyy-MM-dd}.%i.log
+			</FileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %date %level [%thread] %msg%n </pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="match"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${catalina.home}/logs/quiz-match.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${catalina.home}/logs/quiz-match-%d{yyyy-MM-dd}.%i.log
+			</FileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %date %level [%thread] %msg%n </pattern>
+		</encoder>
+	</appender>
+
+	<logger name="org.springframework" level="info" />
+	<logger name="com.alibaba.dubbo" level="warn" />
+
+	<logger name="com.ibatis">
+		<level value="info" />
+	</logger>
+
+	<logger name="com.ibatis.common.jdbc.SimpleDataSource">
+		<level value="info" />
+	</logger>
+
+	<logger name="com.ibatis.common.jdbc.ScriptRunner">
+		<level value="info" />
+	</logger>
+
+	<logger name="com.ibatis.common.jdbc.SqlMapClientDelegate">
+		<level value="info" />
+	</logger>
+
+	<logger name="java.sql.Connection">
+		<level value="info" />
+	</logger>
+
+	<logger name="java.sql.Statement">
+		<level value="info" />
+	</logger>
+
+	<logger name="java.sql.PreparedStatement">
+		<level value="info" />
+	</logger>
+
+	<logger name="java.sql.ResultSet">
+		<level value="info" />
+	</logger>
+
+	<logger name="planErrorOut" level="INFO">
+		<appender-ref ref="PlanErrorFile" />
+	</logger>
+
+	<root level="info">
+		<!--<appender-ref ref="file" />-->
+		<appender-ref ref="stdout" />
+		<!--<appender-ref ref="match" />-->
+	</root>
+</configuration>

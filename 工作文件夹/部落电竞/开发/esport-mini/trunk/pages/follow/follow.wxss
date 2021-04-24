@@ -1,0 +1,51 @@
+/* pages/follow/follow.wxss */
+/* @import "/resources/wxss/iconfont/iconfont.wxss"; */
+
+.follow-search-view {
+  padding: 20rpx 0;
+}
+.f-s-input {
+  width: 500rpx;
+  height: 52rpx;
+  line-height: 52rpx;
+
+  font-size: 28rpx;
+  color: #818181;
+  
+  background: #fff;
+  border-radius: 30rpx;
+  padding: 0 30rpx;
+  margin: 0 auto;
+}
+.f-s-input-ph {
+  color: #818181;
+}
+
+.follow-list-view {
+  width: 690rpx;
+  padding: 20rpx;
+  margin: 0 auto;
+
+  background: #fff;
+  border-radius: 20rpx;
+}
+.follow-search-result-list {
+  border-bottom: solid 2rpx #ddd;
+}
+.follow-list {
+  position: relative;
+}
+
+.follow-search-letter-list {
+  float: right;  
+  margin-top: 40rpx;
+}
+.f-s-l-item {
+  text-align: center;
+  color: #818181;
+  line-height: 40rpx;
+}
+.f-s-l-icon {
+  font-size: 30rpx;
+  color: #818181;
+}

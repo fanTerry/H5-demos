@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>橘子电竞</title>
+    <meta name="referrer" content="no-referrer" />
+    <meta name="viewport" content="viewport-fit=cover,width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <link rel="shortcut icon" type="image/x-icon" href="https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1561430992&di=c8dd0bff78c6917f1eafba51fd30eb05&src=http://p0.qhimg.com/t0116b89b9845c0d82b.jpg" rel="external nofollow" />
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <!-- <keep-alive include='home,match'>
+        <router-view ></router-view>
+      </keep-alive> -->
+      <transition name="router-fade" mode="out-in">
+        <keep-alive>
+            <router-view v-if="$route.meta.keepAlive"></router-view>
+        </keep-alive>
+    	</transition>
+    	<transition name="router-fade" mode="out-in">
+        <router-view v-if="!$route.meta.keepAlive"></router-view>
+      </transition>
+    </div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
+<style lang="scss">
+  /* @import './style/common'; */
+.router-fade-enter-active, .router-fade-leave-active {
+    transition: opacity .3s;
+}
+.router-fade-enter, .router-fade-leave-active {
+    opacity: 0;
+}
+</style>

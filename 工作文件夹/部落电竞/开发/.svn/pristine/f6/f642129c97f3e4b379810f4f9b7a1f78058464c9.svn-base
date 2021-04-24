@@ -1,0 +1,12 @@
+{
+  "usingComponents": {
+    "userinfo-bar":"/component/userinfobar/userinfo-bar",
+    "submenu-bar":"/component/submenubar/submenu-bar",
+    "bigimage-swiper": "/component/bigimageswiper/bigimage-swiper",
+    "news-list": "/component/newslist/news-list",
+    "no-data": "/component/comm/no-data/no-data",
+    "add-tips": "/component/addtips/index"
+  },
+  "enablePullDownRefresh": true
+
+}

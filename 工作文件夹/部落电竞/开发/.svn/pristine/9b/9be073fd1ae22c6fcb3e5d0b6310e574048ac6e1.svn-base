@@ -1,0 +1,10 @@
+<!--component/follow/followexpertlist/follow-expert-list.wxml-->
+<!--<view class='follow-start-letter'>
+  <text>A</text>
+</view>-->
+<view class='follow-expert-list'>
+    <block wx:for="{{followedUserList}}" wx:key="" >
+        <expert-item followUseInfo = "{{item}}"  ></expert-item>
+    </block>
+
+</view>

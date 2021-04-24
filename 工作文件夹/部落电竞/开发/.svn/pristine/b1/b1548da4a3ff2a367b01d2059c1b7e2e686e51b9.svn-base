@@ -1,0 +1,6 @@
+<!--component/expert/hotexpertitem/hot-expert-item.wxml-->
+
+<view class='hot-expert-item'>
+  <image class="userinfo-avatar" src="/resources/images/avatar/cat.jpg" mode="aspectFill" />
+  <view class='userinfo-name'><text>名字五个字</text></view>
+</view>

@@ -1,0 +1,339 @@
+<template>
+  <div class="Page guessPage">
+    <header class="mod_header">
+      <h2>2016职业联赛秋季赛竞猜</h2>
+      <div class="navBar">
+        <div class="users">
+          <img :src="userInfo.icon|getDefaultImg(globalConst.userDefaultIcon)" alt="">
+          <div>
+            <p class="user_name">{{userInfo?userInfo.nickName:'未登录'}}</p>
+            <p class="user_assets">星星：{{userInfo.ableRecScore}}&nbsp;&nbsp;&nbsp;&nbsp;椰云分：{{userInfo.yeYunPoints}} </p>
+          </div>
+        </div>
+        <div class="herf_gather">
+          <a class="get_icon" :class="{active:showGetList}" @click="showGetList = !showGetList">
+            <ul v-if="showGetList">
+              <li @click="goUrlPage('/recharge')">星星充值</li>
+              <li @click="goUrlPage('/guess/sign')">签到领星星</li>
+              <li @click="showExchangeType = true">兑换椰子分</li>
+            </ul>
+          </a>
+          <a class="exchange_icon" href='https://tmall.cocogc.cn'></a>
+          <a class="record_icon" :class="{active:showRecordList}" @click="showRecordList = !showRecordList">
+            <ul v-if="showRecordList">
+              <li @click="goUrlPage('/guess/record')">竞猜记录</li>
+              <li @click="goUrlPage('/guess/rules')">规则说明</li>
+            </ul>
+          </a>
+        </div>
+      </div>
+    </header>
+    <div class="main" id="main" @scroll="onScroll()">
+      <!-- 没有数据时展示 -->
+      <!-- <div class="no_data">
+        <div>
+          <span class="no_data_icon"></span>
+          <p class="tips">暂时没有新的比赛</p>
+        </div>
+      </div> -->
+      <ul class="guess_list" id="guess_list">
+        <guess-item :type=1 :matchInfo="item" v-for="(item,index) in matchList" :key="index"></guess-item>
+      </ul>
+    </div>
+
+    <exchange-pop v-if="showExchangeType" @closeExchangePop='showExchangeType = false'></exchange-pop>
+  </div>
+</template>
+
+<script>
+import guessItem from "./components/guessItem.vue";
+import exchangePop from "../pointsExchange.vue";
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  components: {
+    guessItem,
+    exchangePop
+  },
+  props: [],
+  data() {
+    return {
+      showRecordList: false,
+      showGetList: false,
+      showExchangeType: false,
+      itemNum: 10,
+      matchList: [], //赛事列表
+      morePlayList: [], //更多玩法列表
+      currSpList: "", //用于刷新赔率
+      requestParam: {
+        pageNo: 1,
+        pageSize: 5,
+        totalPages: 0,
+        leagueId: null
+      },
+      loadMore:true ,//加载更多
+      stopReapeat:false,
+    };
+  },
+  created() {},
+  computed: {
+    ...mapGetters({
+      userInfo: "getUserInfo"
+    })
+  },
+  mounted() {
+    //屏蔽app处理
+    if (this.$route.query.clientType == 3) {
+      this.$router.push({
+        path: "/home",
+        query: {}
+      });
+    }
+
+    this.getUserWallet();
+    this.getIndexMatchData();
+    this.queryYeYunPoints();
+  },
+
+  methods: {
+    ...mapActions(["setUserInfo"]),
+    getIndexMatchData() {
+      let param = {};
+      param = this.requestParam;
+      return this.$post("/api/quiz/match/indexQuizMatch", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          this.stopReapeat= false
+          if (dataResponse.code == 200) {
+            console.log(dataResponse.data.dataList);
+            this.loadMore = dataResponse.data.hasNext
+            this.matchList = this.matchList.concat(dataResponse.data.dataList) ;
+            this.requestParam.totalPages = dataResponse.data.totalPages;
+            this.requestParam.pageNo = dataResponse.data.pageNo;
+            this.createSpList();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    createSpList() {
+      this.currSpList = [];
+      this.matchList.forEach(matchInfo => {
+        if (matchInfo.quizMathGame.id) {
+          this.currSpList = this.currSpList + matchInfo.quizMathGame.id + ",";
+        }
+      });
+      console.log("获取赔率列表", this.currSpList);
+    },
+    goUrlPage(url) {
+      this.$router.push({
+        path: url,
+        query: {}
+      });
+    },
+    onScroll() {
+      //可滚动容器的高度
+      let innerHeight = document.querySelector("#guess_list").clientHeight;
+      //屏幕尺寸高度
+      let outerHeight = document.querySelector("#main").clientHeight;
+      //可滚动容器超出当前窗口显示范围的高度
+      let scrollTop = document.querySelector("#main").scrollTop;
+      if (innerHeight < outerHeight + scrollTop+30) {
+        //加载更多操作
+        if(!this.loadMore){
+          return
+        }
+        if(this.stopReapeat){
+            return
+        }
+        this.stopReapeat= true
+        console.log("loadmore");
+        this.requestParam.pageNo+=1
+        this.getIndexMatchData()
+      }
+    },
+    //查询设置用户钱包
+    getUserWallet() {
+      return this.$post("/api/starNum/queryStarNum")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse.data.ableRecScore, "获取用户的星星");
+            this.setUserInfo({
+              ...this.userInfo,
+              recScore: dataResponse.data.recScore,
+              giftRecScore: dataResponse.data.giftRecScore,
+              ableRecScore: dataResponse.data.ableRecScore
+            });
+            console.log(this.userInfo);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+     //查询椰云积分
+    queryYeYunPoints() {
+      return this.$post("/api/yeYunUser/yeYunUserInfo")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse.data, "获得用户椰云积分");
+            this.setUserInfo({
+              ...this.userInfo,
+              yeYunPoints: dataResponse.data.score
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error, "调用椰云出现错误");
+        });
+    },
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.exchange_icon {
+  @include getBgImg("../../../assets/images/guess/exchange_icon.png");
+}
+
+.record_icon,
+.get_icon {
+  position: relative;
+  @include getBgImg("../../../assets/images/guess/record_icon.png");
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2.67vw;
+    right: -2.4vw;
+    @include getTriangle(1.07vw, #d6a638, down);
+  }
+  &.active {
+    &::after {
+      top: 1.33vw;
+      transform: rotate(180deg);
+      -webkit-transform: rotate(180deg);
+      transform-origin: center;
+      -webkit-transform-origin: center;
+    }
+  }
+  ul {
+    @include getRadiusBorder(#d6564f, all, 6px);
+    position: absolute;
+    right: -3.2vw;
+    top: 6.93vw;
+    z-index: 10;
+    width: 18.67vw;
+    border-radius: 3px;
+    background-color: #ba3129;
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0.27vw;
+      right: 3.47vw;
+      transform: translateY(-100%);
+      -webkit-transform: translateY(-100%);
+      @include getTriangle(1.33vw, #ba3129, up);
+    }
+  }
+  li {
+    line-height: 10.67vw;
+    font-size: 3.2vw;
+    color: #ffeaea;
+    text-align: center;
+    border-bottom: 1px solid #d6564f;
+    &:last-child {
+      border: none;
+    }
+  }
+}
+
+.get_icon {
+  @include getBgImg("../../../assets/images/guess/get_icon.png");
+}
+
+.link_icon {
+  @include getBgImg("../../../assets/images/guess/link_icon.png");
+}
+
+.Page {
+  background-color: #1f1212;
+}
+
+.mod_header {
+  background-color: #321919;
+  h2 {
+    line-height: 11.73vw;
+    font-size: 4.8vw;
+    font-weight: normal;
+    color: #fedcd7;
+    text-align: center;
+  }
+}
+
+.navBar {
+  @extend .flex_v_justify;
+  height: 10.67vw;
+  padding: 0 5.33vw 0 2.67vw;
+  border-top: 1px solid #6a3223;
+}
+
+.users {
+  @extend .flex_hc;
+  img {
+    width: 8vw;
+    height: 8vw;
+    margin-right: 2.67vw;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+.user_name {
+  font-size: 3.2vw;
+  color: #fedcd7;
+}
+
+.user_assets {
+  padding-top: 1.07vw;
+  font-size: 3.2vw;
+  color: #86564e;
+}
+
+.herf_gather {
+  @extend .flex_hc;
+  a {
+    width: 5.87vw;
+    height: 5.87vw;
+    margin-left: 6.4vw;
+  }
+}
+
+.guess_list {
+  padding: 0 2.67vw;
+}
+
+.no_data {
+  @extend .flex_v_h;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  .tips {
+    padding-top: 2.67vw;
+    font-size: 3.73vw;
+    color: #fedcd7;
+  }
+}
+
+.no_data_icon {
+  display: inline-block;
+  width: 9.07vw;
+  height: 9.07vw;
+  @include getBgImg("../../../assets/images/guess/no_data_icon.png");
+}
+</style>

@@ -1,0 +1,156 @@
+<template>
+  <li class="guess_item">
+    <div class="header">
+      <div class="title"><span>[投注结束]</span>9月16日 常规赛 BO3</div>
+      <div class="more_guess" @click="goUrlPage('/guess/allGuess')">更多玩法<span class="link_icon"></span></div>
+    </div>
+    <div class="con">
+      <div class="battle_info">
+        <img src="" alt="">
+        <div>
+          <span class="before" v-if="type == 1">8:00</span>
+          <span class="live" v-if="type == 2">直播中</span>
+          <span class="end" v-if="type == 3"><i>2</i>:<i>1</i></span>
+          <p class="join_num">1003人参加</p>
+        </div>
+        <img src="" alt="">
+      </div>
+    </div>
+    <betItem class="bet_item"></betItem>
+  </li>
+
+</template>
+
+<script>
+import betItem from "../../components/betItem";
+
+export default {
+  components: { betItem },
+  props: ["type"],
+  data() {
+    return {};
+  },
+  methods: {
+    goUrlPage(url) {
+      this.$router.push({
+        path: url,
+        query: {}
+      });
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+@import "../../../../assets/common/_base";
+
+.guess_item {
+  .battle_team {
+    @extend .flex_hc;
+    a {
+      flex: 1;
+      -webkit-flex: 1;
+      &:first-child {
+        margin-right: 10px;
+      }
+      &:last-child {
+        margin-left: 10px;
+      }
+    }
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../../../assets/common/_base";
+@import "../../../../assets/common/_mixin";
+
+.guess_item {
+  margin-top: 15px;
+  @include getBgImg("../../../../assets/images/guess/guess_item_bg.png");
+  background-size: 100% 100%;
+}
+
+.header {
+  @extend .flex_v_justify;
+  height: 32px;
+  padding: 0 10px;
+  .title {
+    font-size: 14px;
+    color: #fedcd7;
+    span {
+      padding-right: 10px;
+      font-size: 12px;
+      color: #a86459;
+    }
+  }
+  .more_guess {
+    @extend .flex_hc;
+    font-size: 12px;
+    color: #d6a638;
+  }
+  .link_icon {
+    width: 12px;
+    height: 12px;
+    margin-left: 4px;
+    @include getBgImg("../../../../assets/images/guess/link_icon.png");
+  }
+}
+
+.con {
+  padding: 0 10px;
+}
+
+.battle_info {
+  @extend .flex_v_justify;
+  width: 210px;
+  margin: 0 auto;
+  padding-top: 20px;
+  text-align: center;
+  img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+.before,
+.live {
+  @extend .flex_v_h;
+  width: 56px;
+  height: 18px;
+  margin: 0 auto;
+  font-size: 12px;
+  border-radius: 18px;
+  color: #fff;
+}
+
+.before {
+  @include getRadiusBorder(#4f2f2c, all, 18px);
+}
+
+.live {
+  background: linear-gradient(to right, #bc3129, #902522);
+  background: -webkit-linear-gradient(to right, #bc3129, #902522);
+}
+
+.end {
+  font-size: 18px;
+  color: #fedcd7;
+  i {
+    padding: 0 10px;
+  }
+}
+
+.join_num {
+  padding-top: 5px;
+  color: #714038;
+}
+
+.bet_item {
+  margin-top: 25px;
+  padding: 0 10px 15px;
+}
+</style>

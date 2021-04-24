@@ -1,0 +1,21 @@
+package com.esportzoo.esport.connect.request;
+
+/**
+ * @description: 首页参数
+ *
+ * @author: Haitao.Li
+ *
+ * @create: 2019-07-22 10:01
+ **/
+public class IndexRequest {
+
+	private  Integer clientType;
+
+	public Integer getClientType() {
+		return clientType;
+	}
+
+	public void setClientType(Integer clientType) {
+		this.clientType = clientType;
+	}
+}

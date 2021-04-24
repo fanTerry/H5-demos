@@ -1,0 +1,74 @@
+<!--modules/store/detail/goodsDetail.wxml-->
+<import src="../../../wxParse/wxParse.wxml" />
+<view class="main">
+  <view class="goods_list">
+    <ul>
+      <li class="goods_item">
+        <bigimage-swiper indicatorColor="{{swiperOpt.indColor}}" indicatorActiveColor="{{swiperOpt.indActColor}}" swiperArray="{{bannerList}}" styleObject="height:400rpx;" mode='aspectFit'></bigimage-swiper>
+        <!-- <view class="goods_image mode='aspectFill'">
+          <image mode="aspectFill" src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1860037186,2129045815&fm=26&gp=0.jpg" alt=""></image>
+        </view> -->
+        <view>
+          <i class="rank_first"></i>
+          <view class="goods_title">
+            <span class="goods_name">{{goodsDetail.name}}</span>
+            <!-- <view class="goods_grade">王者</view>
+            <i class='goods_discount'></i>
+            <i class='goods_new'></i>
+            <i class='goods_recommend'></i>
+            <i class='no_goods'>已抢光</i>  -->
+            <i class="goods_recommend" wx:if="{{goodsDetail.label==1}}">{{goodsDetail.labelName}}</i>
+            <i class="goods_discount" wx:if="{{goodsDetail.label==2}}">{{goodsDetail.labelName}}</i>
+            <i class="goods_new" wx:if="{{goodsDetail.label==3}}">{{goodsDetail.labelName}}</i>
+            <i class="no_goods" wx:if='{{!goodsDetail.stock||goodsDetail.stock==0}}'>已抢光</i>
+          </view>
+
+          <view class="goods_detail">
+            <p class="mark">
+              <!-- <i class="star_coin"></i>-->￥{{goodsDetail.payScore}}
+              <span class="discount_price" wx:if="{{goodsDetail.referencePrice && goodsDetail.referencePrice>goodsDetail.payScore}}">{{goodsDetail.referencePrice}}</span>
+            </p>
+            <view>
+              <view class="bought_person" wx:if="{{goodsDetail.icons!=null}}">
+                <image wx:for="{{goodsDetail.icons}}" wx:key="" src="{{item}}" alt="" />
+              </view>
+              <span class="num">{{goodsDetail.purchases?goodsDetail.purchases:0}}</span>人购买
+            </view>
+          </view>
+        </view>
+      </li>
+    </ul>
+  </view>
+  <view class="goods_info">
+    <block wx:if="{{goodsDetail.description&&goodsDetail.description.length>20}}">
+      <h3>商品详情</h3>
+      <template is="wxParse" data="{{wxParseData:goodsDesc.nodes}}" />
+    </block>
+    <block wx:if="{{goodsDetail.purchaseNote&&goodsDetail.purchaseNote.length>20}}">
+      <h3>购买须知</h3>
+      <template is="wxParse" data="{{wxParseData:goodsPurchaseNote.nodes}}" />
+    </block>
+    <block wx:if="{{goodsDetail.serviceNote&&goodsDetail.serviceNote.length>20}}">
+      <h3>售后须知</h3>
+      <template is="wxParse" data="{{wxParseData:goodsServiceNote.nodes}}" />
+    </block>
+  </view>
+</view>
+<footer class="mod_footer">
+  <view class="goods_exchange">
+    <view bindtap="contactCustomerService">
+      <i class="service_icon"></i>
+      客服
+    </view>
+     <form bindsubmit="formSubmit" report-submit="{{true}}">
+        <button formType="submit" class='exchange_btn'>
+          <!-- <view class='u-publish-btn'  bindtap='test'>立即购买</view> -->
+          立即购买
+        </button> 
+     </form>
+    <!-- <a class="exchange_btn" bindtap="showPop">立即购买</a> -->
+  </view>
+</footer>
+<popAlert showPop="{{showPopUp}}" type="3" bindmycancel="closePopUp">
+</popAlert>
+<storeExchange id='goods_exchange' goodsDetail='{{goodsDetail}}' wx:if="{{popChangeFlag}}"></storeExchange>

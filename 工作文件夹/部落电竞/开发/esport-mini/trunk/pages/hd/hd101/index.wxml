@@ -1,0 +1,13 @@
+<!--pages/hd/hd101/index.wxml-->
+<view class="Page">
+	<view class="main">
+		<home id='home' wx:if='{{flagNum == 0}}'/>
+		<rules id='rules' wx:elif="{{flagNum == 1}}"/>
+		<users id='users' wx:else />
+	</view>
+	<view class="mod_footer">
+	<div class="tab_con">
+		<div wx:for="{{tabList}}" wx:key="index" data-index="{{index}}" class="tabs {{item.class}} {{flagNum === index?'cur':''}}" bindtap="showTab"></div>
+	</div>
+	</view>
+</view>

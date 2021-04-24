@@ -1,0 +1,174 @@
+<template>
+  <div class="match_more_guess" :class="{bottom_guess:matchMoreMark>3}" v-if="matchMoreMark >-1">
+    <ul>
+      <li class="cf" v-for="(matchInfo,index) in morePlayList" :key="index">
+        <h3>{{matchInfo.subjectName}}
+          <!-- <span class="flex_hc"><span class="time_icon"></span>截止投注{{matchInfo.deadLine}}</span> -->
+        </h3>
+        <!-- <div class="outcome">
+          <div class="item" v-for="option in matchInfo.quizOptions" :key="option">
+            <p>{{option.name}}</p>
+            <span>{{option.odds}}</span>
+          </div>
+        </div> -->
+        <div class="outcome">
+          <bet-item :quizMatchGame='matchInfo'></bet-item>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+</template>
+
+<script>
+import betItem from "../../../components/guessbet/bet_item.vue";
+
+export default {
+  components: { betItem },
+  props: ["matchMoreMark", "morePlayList"],
+  data() {
+    return {};
+  },
+  mounted() {},
+  methods: {}
+};
+</script>
+
+<style lang="scss">
+.match_more_guess {
+  .outcome .match_item {
+    width: 135px;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+
+.match_more_guess {
+  position: absolute;
+  top: 339px;
+  left: 0;
+  z-index: 1;
+  width: 1240px;
+  padding: 30px 0 30px 30px;
+  background: linear-gradient(0deg, rgba(50, 25, 30, 1), rgba(80, 41, 35, 1));
+  background: -webkit-linear-gradient(
+    90deg,
+    rgba(50, 25, 30, 1),
+    rgba(80, 41, 35, 1)
+  );
+  background: -ms-linear-gradient(
+    0deg,
+    rgba(50, 25, 30, 1),
+    rgba(80, 41, 35, 1)
+  );
+  border: 1px solid;
+  border-image: linear-gradient(0deg, rgba(66, 33, 37, 1), rgba(94, 50, 44, 1))
+    1 1;
+  ul::after {
+    content: "";
+    display: table;
+    overflow: hidden;
+    clear: both;
+  }
+  li {
+    position: relative;
+    float: left;
+    width: 541px;
+    margin-right: 50px;
+    margin-bottom: 30px;
+    &::after {
+      content: "";
+      overflow: hidden;
+      display: table;
+    }
+  }
+  h3 {
+    @extend .flex_hc;
+    position: relative;
+    padding-left: 12px;
+    font-size: 14px;
+    font-weight: normal;
+    color: #ffdcd7;
+    &::after {
+      content: "";
+      @extend .g_v_mid;
+      left: 0;
+      width: 4px;
+      height: 14px;
+      background: linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -ms-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -webkit-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+    }
+    span {
+      color: #6e4c47;
+    }
+  }
+  .time_icon {
+    width: 15px;
+    height: 15px;
+    margin: 0 8px 0 15px;
+  }
+  // .item {
+  //   width: 135px !important;
+  // }
+}
+
+.outcome {
+  position: relative;
+  display: inline-block;
+  margin-top: 12px;
+  text-align: center;
+  border-width: 0 1px 1px 0;
+  border-style: solid;
+  border-color: #463025;
+  &::after {
+    content: "";
+    display: table;
+    overflow: hidden;
+    clear: both;
+  }
+  // .item {
+  //   float: left;
+  //   width: 50%;
+  //   height: 70px;
+  //   border-width: 1px 0 0 1px;
+  //   border-style: solid;
+  //   border-color: #463025;
+  //   background-color: rgba(37, 18, 20, 0.5);
+  //   &.active {
+  //     background: linear-gradient(135deg, #f7d064, #8a5a26);
+  //     background: -ms-linear-gradient(135deg, #f7d064, #8a5a26);
+  //   }
+  // }
+  // p {
+  //   padding-top: 15px;
+  //   font-size: 18px;
+  //   color: #ffdcd7;
+  // }
+  // span {
+  //   display: inline-block;
+  //   padding-top: 6px;
+  //   font-size: 14px;
+  //   color: #6e4c47;
+  // }
+}
+
+.bottom_guess {
+  top: 667px;
+}
+</style>

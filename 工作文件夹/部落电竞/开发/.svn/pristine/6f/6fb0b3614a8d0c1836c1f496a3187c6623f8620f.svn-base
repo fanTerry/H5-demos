@@ -1,0 +1,63 @@
+var sub = function (val) {
+  if (!val || val.length == 0 || val == undefined) {
+    return;
+  }
+  if (val.length > 5) {
+    return val.substring(0, 5) + "...";
+  } else {
+    return val;
+  }
+}
+
+var subSize = function (val, size) {
+  if (!val || val.length == 0 || val == undefined) {
+    return;
+  }
+  if (val.length > size) {
+    return val.substring(0, size) + "...";
+  } else {
+    return val;
+  }
+}
+
+var subSizeStr = function (val, size, str) {
+  if (!val || val.length == 0 || val == undefined) {
+    return;
+  }
+  if (val.length > size) {
+    return val.substring(0, size) + str;
+  } else {
+    return val;
+  }
+}
+
+var calAvgForTeam = function (homeTeamData, awayTeamData) {
+  if (!homeTeamData || !awayTeamData) {
+    return 0;
+  }
+  if (homeTeamData + awayTeamData == 0) {
+    return 0;
+  }
+  return homeTeamData / (homeTeamData + awayTeamData) * 100;
+}
+
+var numberFormat = function (numValue, digit) {
+  var v = parseInt(numValue)//强转Int，毕竟有可能返回是String类型的数字
+  return parseFloat(v.toFixed(digit));
+}
+
+
+module.exports = {
+  sub: sub,
+  subSize: subSize,
+  subSizeStr: subSizeStr,
+  calAvgForTeam: calAvgForTeam,
+  numberFormat: numberFormat,
+
+}
+
+/**
+使用:页面引入和使用
+<wxs src="../../utils/tools.wxs" module="tools" />
+{{tools.sub(matchDetail.homeTeamName)}}
+ */

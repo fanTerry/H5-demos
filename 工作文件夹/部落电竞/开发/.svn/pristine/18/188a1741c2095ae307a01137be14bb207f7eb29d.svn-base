@@ -1,0 +1,51 @@
+<view class="Page">
+	<view class="main">
+		<view class="nav">
+			<a wx:for="{{tablist}}" wx:key="index" data-index="{{index}}" class="{{mark === index?'cur':''}}"
+				bindtap="tabChange">{{item}}</a>
+		</view>
+		<!-- 奖励榜单 -->
+		<view class="award_list swiper" wx:if="{{!mark}}">
+				<swiper autoplay="true" interval="1000" duration="1000" vertical="true" easing-function='linear' circular='{{true}}' display-multiple-items='9'> 
+						<block wx:for="{{awardUserInfo}}">
+							<swiper-item>
+								<li class="swiper-item" >
+									<image src="{{item.icon}}" alt=""></image>
+									<span class="user_name">{{item.userName}}</span>
+									<span>获得 {{item.giftName}}</span>
+									<!-- <span>获得 {{item.amount}}元现金</span> -->
+									<!-- <span wx:if="item.showType == 2">营收 {{item.amount}} 元</span> -->
+								</li>
+							</swiper-item>
+						</block>
+				</swiper>
+		</view>
+
+		<!-- 活动规则 -->
+		<view class="rule_list" wx:if='{{mark}}'>
+			<ul>
+				<li><span>1.</span> 系统随机20题一战到底，无门槛参与答题。</li>
+				<!-- <li><span>2.</span> 分享后产生的收益归分享人所有，满3毛可提现。</li> -->
+				<li><span>2.</span> 奖项与规则：
+					<view>一等奖（详见首页“今日头奖”）-最先连对20题</view>
+					<view>二等奖（288点券王者皮肤）-最先连对19题</view>
+					<view>幸运奖（0.5元现金红包）-连对17~18题</view>
+					<view>普照奖（0.2元现金红包）-连对15~16题</view>
+					<view>同等级同类别奖项，每人每天限领一次。</view>
+				</li>
+				<li><span>3.</span>获奖者需联系橘子电竞官方客服进行领取，客服微信：juziDJ08，客服QQ：1179225115
+				</li>
+				<!-- <li><span>5.</span> 橘子电竞官方商城1星星等值1元人民币，可累计不可提现，须在两日内消费，否则系统将判定失效收回。
+				</li>
+				<li><span>6.</span> 橘子电竞（可检索微信订阅号、服务号），通过菜单进入官网及商城。</li>
+				<li><span>7.</span> 客服微信：jzdj08。</li>-->
+				<li>PS ·本活动最终解释权归主办方所有。</li>
+				<image class="qrcode" src="https://daily-rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/qrcode.png" alt=""></image>
+			</ul>
+		</view>
+	</view>
+
+	<footer class="mod_footer">
+		<tabs flagNum="{{flagNum}}"></tabs>
+	</footer>
+</view>

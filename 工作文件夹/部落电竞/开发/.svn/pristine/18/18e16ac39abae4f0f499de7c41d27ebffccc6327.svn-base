@@ -1,0 +1,97 @@
+<!--modules/reportpage/report-page.wxml-->
+<wxs src="../../utils/tools.wxs" module="tools" />
+<!-- 赛程详情占位  -->
+<report-header matchDetail='{{matchDetail}}'></report-header>
+
+
+<!-- 顶部栏示 小程序暂时不需要 -->
+<!-- <view class='page-head'>
+  <view class='dsp-cell'>
+    <image class='page-icon' src='/resources/images/icon/back.png' mode='aspectFit' />
+  </view> -->
+
+  <!-- 标题 -->
+  <!-- <view class='dsp-cell page-title'>
+    <text>常驻标题驻留位置未上拉的时候显示“详  情”</text>
+  </view>
+</view> -->
+
+
+<!-- 赛程导航列表::暂时保留 --><!-- 当前状态样式r-menu-item-cur -->
+<!-- <view class='report-menu'>
+  <movable-area class="r-menu-mov-area">
+    <movable-view class="r-menu-mov-view" x="0" y="0" direction="horizontal">
+      <view wx:for="{{menuArray}}" wx:key="" data-type="{{item.type}}"  bindtap='selectTap'>
+        <text class="r-menu-item {{curType==item.type?'r-menu-item-cur':''}}">{{item.name}}</text>
+      </view>
+    </movable-view>
+  </movable-area>
+</view> -->
+
+<!-- 新的：赛程导航列表 -->
+<!-- 当前状态样式r-menu-item-cur -->
+<view class='report-menu-new'>
+  <movable-area class="r-menu-n-mov-area">
+    <movable-view class="r-menu-n-mov-view" x="0" y="0" direction="horizontal">
+      <block wx:if="{{matchDetail.liveFlag}}">
+        <view class="r-menu-n-item-view"  wx:for="{{menuArray}}" wx:key="" data-type="{{item.type}}"  bindtap='selectTap'>
+            <text class='{{curType==item.type?"r-menu-item-cur":""}}'>{{item.name}}</text>
+        </view>
+      </block>
+      <block wx:else>
+      <view class="r-menu-n-item-view"  wx:for="{{menuArray}}" wx:key="" data-type="{{item.type}}"  wx:if="{{item.type!=4}}"  bindtap='selectTap'>   
+          <text class='{{curType==item.type?"r-menu-item-cur":""}}'>{{item.name}}</text>   
+      </view>
+      </block>
+    </movable-view>
+  </movable-area>
+</view>
+
+
+<!-- 1. 聊天室显示开始 -->
+<block  wx:if="{{curType==1}}">
+  <!-- <view class='md-chats-view section' style="position:absolute; top:436rpx; left:0; right:0; bottom:120rpx; overflow-y:scroll;padding:0;-webkit-overflow-scrolling: touch"> -->
+   <scroll-view class='md-chats-view section' scroll-y style="position:absolute; top:436rpx; left:0; right:0; bottom:120rpx;padding:0;-webkit-overflow-scrolling: touch"
+   >
+    <view class='md-chats-note'>
+      <text>!! 欢迎来到交流区，任何传播违法、违规、低俗等不良信息的行为将被封号。</text>
+    </view>
+    <view wx:for="{{chatList}}" wx:key="">
+      <text style="color:{{item.nickName==curUsrName?'#fea21b':''}}">{{item.nickName}}: {{item.sendMsg}}</text>
+      <!-- <text wx:else>{{item.nickName}}: {{item.sendMsg}}</text> -->
+      <!-- <text>{{item.nickName}}: {{item.sendMsg}}</text> -->
+    </view>
+    </scroll-view>
+  <!-- </view> -->
+  <chat-edit id="chat_id" bindscorllto="scrollTo" bindmyevent="usrSendMsg" class=''></chat-edit>
+<!-- 1. 聊天室显示结束 -->
+</block>
+
+<!-- 2. 数据显示开始 -->
+<md-data matchDetail="{{matchDetail}}" id='match_data_id' gameIdArray="{{gameIdArray}}" socketUrl="{{socketUrl}}" wx:if="{{curType==2}}"></md-data>
+<!-- 2. 数据显示结束 -->
+
+
+<!-- 3. 会员专享显示开始 -->
+<md-member wx:if="{{curType==3}}"></md-member>
+<!-- 3. 会员专享显示结束 -->
+
+<!-- 4. 图文页面显示开始:TODO：产品需求待定 -->
+<md-charts  bind:myevent="onChangeData" matchId="{{matchDetail.matchId}}" id='live_data_id'  gameIdArray="{{gameIdArray}}"   socketUrl="{{socketUrl}}" matchStatus="{{matchDetail.status}}"  matchDetail="{{matchDetail}}" wx:if="{{curType==4}}"></md-charts>
+<!-- 4. 图文页面显示结束 -->
+
+
+<!-- 5. 达人显示开始 -->
+<md-expert wx:if="{{curType==5}}" matchId="{{matchId}}"></md-expert>
+<!-- 5. 达人显示结束 -->
+
+
+<!-- 6. 赔率页面显示开始 -->
+<md-odds wx:if="{{curType==6}}"></md-odds>
+<!-- 6. 赔率页面显示结束 -->
+
+<!-- 7. 竞猜投注显示开始 -->
+<md-bet wx:if="{{curType==7}}"></md-bet>
+<!-- 7. 竞猜投注显示结束 -->
+
+<!-- <view class='blank'></view> -->

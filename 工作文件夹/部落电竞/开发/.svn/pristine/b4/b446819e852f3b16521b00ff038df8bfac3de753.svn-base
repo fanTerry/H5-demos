@@ -1,0 +1,191 @@
+/* component/popup/charge/charge.wxss */
+
+.ui_pop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+		align-items: center;
+		justify-content: center;
+    background: rgba(0, 0, 0, .7);
+    z-index: 1000;
+}
+
+.pop_pay {
+  position: relative;
+  width: 100%;
+  margin: 0 40rpx;
+  padding-bottom: 50rpx;
+  border-radius: 16rpx;
+  background-color: #fff;
+  color: #b7b7b7;
+}
+
+.close {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 80rpx;
+  height: 80rpx;
+  z-index: 100;
+  right: 0;
+}
+
+.pop_pay .close:before, .pop_pay .close:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: inline-block;
+  width: 2rpx;
+  height: 40rpx;
+  background-color: #000;
+}
+
+.pop_pay .close:before {
+  transform: translate3d(-50%, -50%, 0) rotate(45deg);
+}
+
+.pop_pay .close:after {
+  transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+}
+
+.order, .discount, .balance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order {
+  position: relative;
+  padding: 36rpx 0 28rpx 30rpx;
+  font-size: 34rpx;
+  color: #000;
+  border-bottom: 1rpx solid #ddd;
+}
+
+.discount {
+  margin: 0 30rpx;
+  padding: 24rpx 0;
+  font-size: 30rpx;
+  border-bottom: 1rpx solid #ddd;
+}
+
+.discount .icon-xiangyou {
+  font-size: 30rpx;
+}
+
+.discount  view {
+  display: flex;
+  align-items: center;
+}
+
+.balance {
+  margin: 0 30rpx;
+  padding: 24rpx 0;
+  font-size: 28rpx;
+  border-bottom: 1rpx solid #ddd;
+}
+
+.pay_num {
+  padding: 20rpx 0 30rpx;
+  font-size: 84rpx;
+  text-align: center;
+  color: #ee322b;
+}
+
+.pay_num span {
+  font-size: 38rpx;
+}
+
+.pay_method {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin: 0 30rpx 20rpx;
+  height: 90rpx;
+  font-size: 32rpx;
+  color: #000;
+}
+
+.pay_method > view {
+  display: flex;
+  align-items: center;
+}
+
+.pay_method image {
+  width: 52rpx;
+  height: 52rpx;
+  object-fit: cover;
+  margin-right: 10rpx;
+}
+
+.pay_method span {
+  padding-left: 20rpx;
+  font-size: 26rpx;
+  color: #ee322b;
+}
+
+.pay_method .select_icon {
+  width: 40rpx;
+  height: 40rpx;
+  border: 1rpx solid #999;
+  border-radius: 50%;
+}
+
+.pay_method .selected {
+  background-image: url("https://rs.esportzoo.com/svn/esport-res/mini/images/store/select.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  border: none;
+}
+
+.yb_icon {
+  background-image: url("https://rs.esportzoo.com/svn/esport-res/mini/images/wallet/yb_coin.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+}
+
+.att_tips {
+  padding: 8rpx 0 16rpx;
+  text-align: center;
+}
+
+.pay_title {
+  padding-top: 40rpx;
+  font-size: 30rpx;
+  text-align: center;
+  color: #000;
+}
+
+.warn_tips {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20rpx;
+  color: #d60c1f;
+  text-align: center;
+}
+
+.warn_tips a {
+  color: #d60c1f;
+}
+
+.exchange_btn {
+  display: table;
+  margin: 0 auto 20rpx;
+  padding: 0 60rpx;
+  font-size: 34rpx;
+  line-height: 80rpx;
+  text-align: center;
+  width: auto;
+  background-color: transparent;
+  color: #fff;
+  border-radius: 80rpx;
+  background: linear-gradient(to right, #ffa200, #ff7b1c);
+}

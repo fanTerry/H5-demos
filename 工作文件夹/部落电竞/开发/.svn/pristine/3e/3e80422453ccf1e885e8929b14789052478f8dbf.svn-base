@@ -1,0 +1,39 @@
+<!-- component/feedbackList/feedbackList.wxml -->
+<wxs src="../../utils/tools.wxs" module="tools" />
+<ul class="cmt_list detail">
+  <li wx:for="{{myFeedbackList}}" data-id="{{item.id}}" bindtap="goToDetail" >
+
+    <view class="cmt_user" wx:if="{{type==2}}">
+      <view class="flex_hc">
+        <span class="name">{{userInfo.nickName}}</span>
+        <b></b>
+        <span class="class">
+          {{item.feedbackType==1?'用户问题':item.feedbackType==2?"客服回复":"用户回复"}}
+        </span>
+      </view>
+      <span class="date">{{tools.dateFmt(item.createTime)}}</span>
+    </view>
+    <view class="cmt_cnt">{{item.content}}</view>
+
+    <view class="cmt_att">
+      <span class="img" >
+        <image src="{{item.imageUrl}}"></image>
+      </span>
+    </view>
+    <!-- <view class="cmt_att error" wx:if="{{type==1}}"> -->
+    <!-- 有图，加载失败 -->
+    <!-- <span class="img"><img src=""></span>
+      </view> -->
+    <view class="cmt_type" wx:if="{{type==1}}">
+      <span class="orange">{{item.questionTypeName}}</span>
+    </view>
+
+    <!-- 用户的个人反馈才有cmt_time -->
+    <view class="cmt_time" wx:if="{{type==1}}">
+      <span class="date">{{tools.dateFmt(item.createTime)}}</span>
+      <a class="reply">
+        <span class="num">{{item.replyNum}}</span>
+      </a>
+    </view>
+  </li>
+</ul>

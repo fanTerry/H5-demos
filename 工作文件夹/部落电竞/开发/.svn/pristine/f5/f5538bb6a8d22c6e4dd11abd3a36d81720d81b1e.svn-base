@@ -1,0 +1,6 @@
+/* component/newslist/news-list.wxss */
+
+.news-list {
+    width: 100%;
+    margin: 0 auto;
+  }

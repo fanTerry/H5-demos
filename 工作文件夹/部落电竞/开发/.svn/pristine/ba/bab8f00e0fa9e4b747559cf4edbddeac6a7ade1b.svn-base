@@ -1,0 +1,52 @@
+<!--component/expert/expertheader/expert-header.wxml-->
+
+<!-- 第一部分：达人信息 -->
+<!-- <view class='expert-info-bg'></view>
+<view class='expert-info'>
+  <view class='expert-basic dsp-table'>
+    <view class='dsp-cell e-b-c1'>
+      <image class="expert-avatar" src="{{expertBaseInfo.userIcon}}" mode="aspectFill" />
+    </view>
+    <view class='dsp-cell e-b-c2'>
+      <view class='e-b-f-line'>
+        <text class='expert-name'>{{expertBaseInfo.userNickName}}</text>
+        <i class='expert-tag'>近7中6</i>
+      </view>
+      <view>
+        <text class='expert-num'>66%</text> <text class='expert-sub'>预计回报率</text> 
+        <text class='expert-num'>{{expertBaseInfo.fans}}</text> <text class='expert-sub'>粉丝数</text>
+      </view>
+    </view>
+    <view class='dsp-cell e-b-c3' wx:if="{{!expertBaseInfo.selfFlag}}" bindtap="operateFollow">
+      <text class='expert-follow' wx:if="{{!expertBaseInfo.followFlag}}">+关注</text>
+      <text class='expert-follow' wx:else>取消</text>
+    </view>
+  </view>
+  <view class='expert-detail'>
+  {{expertBaseInfo.expertDesc}}
+  </view>
+</view> -->
+
+<view class="user_card">
+  <view class="user_infor">
+    <navigator url='/modules/expertpage/expertpage/expert-page?id={{expertBaseInfo.userId}}'>
+      <image src="{{expertBaseInfo.userIcon}}" mode="aspectFill"></image>
+    </navigator>
+    <view>
+      <view class="user_name">{{expertBaseInfo.userNickName}}
+        <!-- <text>近7中6</text> -->
+      </view>
+      <view class="fans">
+        <!-- <text class="c_yellow pr5">66%</text>预计回报率 -->
+        <text class="c_yellow pl10 pr5">{{expertBaseInfo.fans}}</text> 粉丝数</view>
+    </view>
+  </view>
+  <block wx:if="{{!expertBaseInfo.selfFlag}}">
+    <view class="follow"  wx:if="{{!expertBaseInfo.followFlag}}"  bindtap="operateFollow">+关注</view>
+    <view class="followed" wx:else  bindtap="operateFollow">已关注</view>
+  </block>
+  <view class="intro_tips">
+    {{expertBaseInfo.expertDesc}}
+  </view>
+</view>
+

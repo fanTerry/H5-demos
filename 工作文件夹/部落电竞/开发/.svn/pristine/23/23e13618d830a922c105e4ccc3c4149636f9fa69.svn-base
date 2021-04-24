@@ -1,0 +1,320 @@
+<template>
+  <div class="Page guessRecord">
+    <header class="mod_header">
+      <navBar :pageTitle="'竞猜'"></navBar>
+      <ul>
+        <li :class="{active:tabFlag == index}" @click="queryRecord(index)" v-for="(item,index) in tabList" :key="index" >
+          {{item}}</li>
+      </ul>
+    </header>
+    <div class="main">
+      <scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" @pullingUp="onPullingUp">
+        <ul class="record_list">
+          <li class="record_item" v-for="(item,index) in recordList" :key="index" @click="show(index)">
+            <div class="title">
+              <!-- 竞猜内容 主队、客队-->
+              <span class="team">{{item.homeTeamName}} VS {{item.awayTeamName}}</span>
+              <!--局数、玩法-->
+              <span class="bet_title">[{{item.matchNo| gameFightNum}} {{item.playName}}]</span>
+              <i class="show_icon" :class="{active:showDetails == index}"></i>
+            </div>
+            <div class="bet_info">
+              <!-- 竞猜时间 竞猜金额 -->
+              <div>{{item.createTime | getQuizRecordTime}} 投{{item.cost}}星星 </div>
+              <span class="waiting" v-if="item.winStatus==0 ">等待开奖</span>
+              <span class="failed" v-else-if="item.winStatus==2 ">未猜中</span>
+              <span class="bingo" v-else-if="item.winStatus==1 ">猜中+{{item.prize}}EP</span>
+            </div>
+            <div class="details" v-if="showDetails === index">
+              <p>投注：{{item.option}} {{item.betSp}} </p>              
+              <p v-if="item.answer">赛果：
+                <span>{{item.answer}}</span>
+              </p>
+
+              <p>方案编号：<span>{{item.planNo}}</span></p>
+              <p>方案状态：<span>{{item.status |betPlan}}</span></p>
+            </div>
+          </li>
+        </ul>
+      </scroll>
+    </div>
+    <footer class="mod_footer">
+      <a class="return_home" @click="goUrlPage('/guess/home')">返回竞猜</a>
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index";
+import Scroll from "../../components/common/scroll";
+import { getQuizRecordTime } from "../../libs/utils";
+import { betPlan, gameFightNum } from "../../filters";
+export default {
+  components: { navBar, Scroll },
+  props: [],
+  filters: {
+    getQuizRecordTime(time) {
+      return getQuizRecordTime(time, false);
+    },
+    //投注方案-->在filters.js中
+    betPlan(status) {
+      return betPlan(status);
+    },    
+    //比赛场数
+    gameFightNum(fightNum) {
+      return gameFightNum(fightNum,true);
+    }
+  },
+  data() {
+    return {
+      tabList: ["全部", "待开奖", "中奖"],
+      tabFlag: 0,
+      showDetails: null, //下标
+      type: 1,
+      recordList: [], //查询用户竞猜记录
+      currPageSize: 0,
+      recordQueryParam: {
+        pageNo: 1,
+        pageSize: 10,
+        winStatus: null //初始加载全部竞猜记录
+      },
+      // 下拉组件相关
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "到底啦~" }
+      }
+    };
+  },
+
+  mounted() {
+    //屏蔽app处理
+    if (this.$route.query.clientType == 3) {
+      this.$router.push({
+        path: "/home",
+        query: {}
+      });
+    }
+    this.quizzesPopRecord(null);
+  },
+  methods: {
+    goUrlPage(url) {
+      this.$router.push({
+        path: url,
+        query: {}
+      });
+    },
+
+    show(index) {
+      if (this.showDetails == index) {
+        this.showDetails = null;
+      } else {
+        this.showDetails = index;
+      }
+    },
+
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+      if (this.currPageSize < this.recordQueryParam.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+
+    queryRecord(index) {
+      this.tabFlag = index
+      this.recordList = []; 
+      console.log(index,"下标1");
+      if(index==0){
+        index=null;
+      }else{
+         index=index-1;
+      }
+      console.log(index,"下标2");  
+      this.recordQueryParam.pageNo = 1;
+      this.recordQueryParam.pageSize = 10;
+      this.recordQueryParam.winStatus = index;
+      this.quizzesPopRecord(this.recordQueryParam);
+    },
+
+    //查询兑奖记录
+    quizzesPopRecord(param) {
+      //this.recordQueryParam.winStatus = param;
+      console.log(this.recordQueryParam.winStatus);
+      //param = this.recordQueryParam;
+      console.log(param);
+      return this.$post("/api/quiz/record/recordPage", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse, "查询兑奖记录成功");
+            if (dataResponse.data.length > 0) {
+              this.currPageSize = dataResponse.data.length;
+              console.log(this.currPageSize, "当前页");
+              this.recordList = this.recordList.concat(dataResponse.data);
+              console.log(this.recordList);
+            }
+            return this.recordList;
+          }
+        })
+        .catch(error => {
+          console.log(error, "查询兑奖记录失败");
+        });
+    },
+    /** 上拉加载*/
+    loadMore() {
+      this.recordQueryParam.pageNo += 1;
+      let param = {};
+      param.pageNo = this.recordQueryParam.pageNo;
+      param.pageSize = this.recordQueryParam.pageSize; 
+      param.winStatus = this.recordQueryParam.winStatus;     
+      this.quizzesPopRecord(param).then(data => {
+        this.$refs.scroll.forceUpdate();
+      });
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.guessRecord {
+  .back {
+    &::before,
+    &::after {
+      background-color: #a26767 !important;
+    }
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.Page {
+  background-color: #1f1212;
+}
+.mod_header {
+  background-color: #321919;
+  ul {
+    @extend .flex_hc;
+    margin: 2.13vw 2.67vw;
+    background-color: #4e2823;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  li {
+    flex: 1;
+    -webkit-flex: 1;
+    font-size: 3.73vw;
+    line-height: 6.4vw;
+    color: #fedcd7;
+    text-align: center;
+    &.active {
+      background-color: #ba3129;
+    }
+  }
+}
+.nav_bar {
+  color: #fedcd7 !important;
+}
+
+.main {
+  padding: 4vw 2.67vw 0;
+}
+
+.record_item {
+  margin-bottom: 2.67vw;
+  background-color: #321919;
+  @include getRadiusBorder(#412121, all, 0);
+}
+.title {
+  padding: 4vw 10.67vw 0 2.67vw;
+}
+.team {
+  font-size: 3.73vw;
+  color: #fedcd7;
+}
+.bet_title {
+  padding-left: 3.2vw;
+  line-height: 4.53vw;
+  color: #f58079;
+}
+.show_icon {
+  position: absolute;
+  right: 2.67vw;
+  top: 4.8vw;
+  width: 3.2vw;
+  height: 3.2vw;
+  transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  @include getBgImg("../../assets/images/guess/red_link_icon.png");
+  &.active {
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+  }
+}
+
+.bet_info {
+  @extend .flex_v_justify;
+  padding: 2.67vw;
+  color: #86564e;
+}
+
+.waiting,
+.failed,
+.bingo {
+  font-size: 3.2vw;
+}
+
+.waiting {
+  color: #cd948d;
+}
+.failed {
+  color: #86564e;
+}
+.bingo {
+  color: #d6a638;
+}
+
+.details {
+  position: relative;
+  padding: 1.33vw 0 4vw 2.67vw;
+  background-color: #4e2823;
+  &::after {
+    content: "";
+    position: absolute;
+    top: -2.13vw;
+    left: 4.8vw;
+    @include getTriangle(1.07vw, #4e2823, up);
+  }
+  p {
+    padding-top: 2.67vw;
+    color: #cd948d;
+  }
+}
+
+.mod_footer {
+  background-color: #4e2823;
+}
+
+.return_home {
+  display: block;
+  width: 35.47vw;
+  margin: 2.13vw auto;
+  border-radius: 9.07vw;
+  line-height: 9.07vw;
+  font-size: 3.73vw;
+  color: #fedcd7;
+  text-align: center;
+  background: linear-gradient(to bottom, #df2f26, #86171a);
+  background: -webkit-linear-gradient(top, #df2f26, #86171a);
+}
+</style>

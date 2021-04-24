@@ -1,0 +1,43 @@
+<!--component/userinfobar/userinfo-bar.wxml-->
+<userinfo-bar>
+    <view class="userinfo">
+          <view class="dsp-cell pad-r20">
+            <image class="userinfo-avatar {{showType==2 ? 'u-a-report' : ''}}" src="/resources/images/avatar/cat.jpg" mode="aspectFill" />
+          </view>
+
+        <!-- 首页：搜索框部分 -->
+        <block wx:if="{{showType==1}}">
+
+          <view class="dsp-cell pr">
+            <i class="iconfont icon-sousuo ui-i-ss"></i>
+            <input class="userinfo-input" placeholder-class="userinfo-input-ph" placeholder="搜索" />
+          </view>
+          <!-- 首页：消息和编辑按钮 -->
+          <view class="dsp-cell">
+            <view class="userinfo-icon pr">
+              <i class="iconfont icon-xiaoxitongzhi ui-i-i-m"></i>
+              <i class="ui-num">2</i>
+            </view>
+            <view class="userinfo-icon">
+              <i class="iconfont icon-tianxie ui-i-i-e"></i>
+            </view>
+          </view>
+        </block>
+
+        <!-- 赛事：顶部导航列表 -->
+        <block wx:elif="showType==2">
+
+          <view class="dsp-cell ub-nav-list">
+            <view class='ub-nav-item ub-n-i-cur'><text>CS:GO</text><i class='ui-num'>99+</i></view>
+            <view class='ub-nav-item'><text>DOTA</text><i class='ui-num'>2</i></view>
+            <view class='ub-nav-item'><text>LOL</text><i class='ui-num'>2</i></view>
+            <view class='ub-nav-item'><text>王者荣耀</text><i class='ui-num'>2</i></view>
+          </view>
+          <view class='dsp-cell'>
+            <i class="iconfont icon-xiangxia ui-nav-i"></i>
+          </view>
+        </block>
+
+
+    </view>
+</userinfo-bar>

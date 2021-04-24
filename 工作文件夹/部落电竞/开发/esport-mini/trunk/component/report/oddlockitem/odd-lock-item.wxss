@@ -1,0 +1,34 @@
+/* component/report/oddlockitem/odd-lock-item.wxss */
+
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+@import "/resources/wxss/base/icon.wxss";
+
+.odd-lock-item {
+  width: 710rpx;
+  padding: 0 0 20rpx 20rpx;
+  margin: 20rpx auto;
+
+  background: #fdfdfd;
+  border-radius: 20rpx;
+}
+.odd-lock-item-tit {
+  padding: 20rpx 0;
+}
+.odd-lock-item-rect {
+  width: 320rpx;
+  padding: 10rpx 0;
+  margin-right: 45rpx;
+
+  background: #fff;
+  border: solid 2rpx #d7d7d7;
+  border-radius: 10rpx;
+
+  text-align: center;
+  line-height: 32rpx;
+}
+
+.o-l-i-r-txt {
+  font-size: 24rpx;
+  color: #aaa;
+}

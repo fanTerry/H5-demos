@@ -1,0 +1,73 @@
+<!--modules/store/order/orderDetails.wxml-->
+<view class="main">
+  <view>
+    <locationAddress></locationAddress>
+  </view>
+  <view class="order_details">
+    <view class="order_name">
+      <view class="goods_img">
+        <image mode="aspectFill" src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1860037186,2129045815&fm=26&gp=0.jpg" alt=""></image>
+      </view>
+      <view class="goods_info">
+        <p class="goods_name">
+          <span class="name">妲己电玩皮肤妲己电玩皮肤</span>
+          <span>
+            <i class="star_coin"></i>399.0</span>
+        </p>
+        <p>
+          <span></span>
+          <span class="num">X 1件</span>
+        </p>
+      </view>
+    </view>
+    <view class="order_info">
+      <span>发货状态</span>
+      <span>已发货</span>
+    </view>
+    <view class="order_info">
+      <span>快递单号</span>
+      <span class="express_bill">
+        <span>45677538947</span>
+        <span class="copy">复制</span>
+      </span>
+    </view>
+    <view class="order_info">
+      <span>创建时间</span>
+      <span>
+        <span>2018-7-28</span>
+        <span>16:40</span>
+      </span>
+    </view>
+    <view class="order_info">
+      <span>订单编号</span>
+      <span>12585856984</span>
+    </view>
+    <view class="order_info">
+      <span class="pay_title">实付款</span>
+      <span class="pay_money">
+        <i class="star_coin"></i>
+        <span>399.00</span>
+      </span>
+    </view>
+  </view>
+	<view class="card_info">
+    <ul class="">
+      <li>
+        <div class="card_name">
+          <p>
+            <i>卡号：</i>
+            <span>12333333123333333333</span>
+          </p>
+          <span class="copy">复制</span>
+        </div>
+        <div class="card_pwd">
+          <p>
+            <i>密码：</i>
+            <span>123333333333333333</span>
+          </p>
+          <span class="copy">复制</span>
+        </div>
+      </li>
+    </ul>
+  </view>
+</view>

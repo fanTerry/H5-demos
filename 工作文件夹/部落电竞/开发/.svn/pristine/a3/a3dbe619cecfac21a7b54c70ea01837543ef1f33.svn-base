@@ -1,0 +1,7 @@
+/* modules/store/list/goodsList.wxss */
+page{
+	/* height: 100%; */
+}
+.main{
+	line-height: 1;
+}

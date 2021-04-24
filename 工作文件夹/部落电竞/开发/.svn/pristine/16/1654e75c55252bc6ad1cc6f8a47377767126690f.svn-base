@@ -1,0 +1,121 @@
+
+<template>
+  <div class="Page">
+    <div class="main">
+      <div class="nav">
+        <a v-for="(item,index) in tablist" :key="item" :class="{cur:mark === index}" @click="mark = index">{{item}}</a>
+      </div>
+      <!-- 营收记录 -->
+      <div class="sales_record" v-if="mark">
+        <ul>
+          <li>
+            <div>
+              <p class="txt">收入</p>
+              <p class="time">2019-09-16 19:42:38</p>
+            </div>
+            <div class="num">+103</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 提现记录 -->
+      <div class="withdraw_record" v-else>
+        <ul>
+          <li>
+            <div>
+              <p class="txt">收入</p>
+              <p class="time">2019-09-16 19:42:38</p>
+            </div>
+            <div class="num">+103</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {
+      mark: 0,
+      tablist: ["奖励榜单", "活动规则"]
+    };
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  background-color: rgb(255, 231, 131);
+}
+.main {
+  @include getBgImg("../../../assets/images/hd/hd101/rule_lists_bg.png");
+  background-position: top center;
+  background-size: 100% auto;
+}
+
+.nav {
+  @extend .flex;
+  padding: 4.5vw 5.3vw 0;
+  a {
+    flex: 1;
+    -webkit-flex: 1;
+    font-size: 4.5vw;
+    line-height: 15.2vw;
+    color: #fff;
+    text-align: center;
+    &.cur {
+      position: relative;
+      color: #fcff00;
+      &::after {
+        content: "";
+        @extend .g_c_mid;
+        bottom: 1.1vw;
+        width: 9.9vw;
+        height: 1.1vw;
+        border-radius: 2px;
+        background-color: #fcff00;
+      }
+    }
+  }
+}
+
+.sales_record,
+.withdraw_record {
+  height: 119vw;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  li {
+    @extend .flex_v_justify;
+    height: 20vw;
+    margin: 0 2.8vw;
+    padding: 0 4vw;
+    @include getBorder(bottom, #eee);
+    &:last-child {
+      background: none;
+    }
+  }
+  .time {
+    padding-top: 4vw;
+    font-size: 3.5vw;
+    color: #999;
+  }
+  .num {
+    font-size: 5.6vw;
+  }
+  .txt {
+    font-size: 4.8vw;
+  }
+}
+
+.sales_record .num {
+  color: #40b7a5;
+}
+</style>

@@ -1,0 +1,515 @@
+<template>
+  <div class="ui_pop" v-if="showRechargeType" @click="$event.stopPropagation();">
+    <!-- 星星充值 -->
+    <div class="recharge">
+      <a class="close" @click="closePop($event)"></a>
+      <h2>获取星星<div><span class="coin"></span>星星<span class="num">{{getUserData.starNum}}</span></div>
+      </h2>
+      <ul class="prize_list">
+        <li v-for="(item,index) in chargeMoneyList" :key="index" :class="{'recevied':prizeDay[index] == index}">
+          <p>{{item.sendStar>0?"赠"+item.sendStar+"星星":""}}</p>
+          <img :src="require('assets/images/pop/starday'+index+'.png')" alt />
+          <span class="cost_star">{{item.starNum}}星星</span>
+          <a class="prize_get_btn" @click="rechargePrize(index)">{{item.money}}元</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 确认支付弹窗 -->
+    <div class="confirm_pay" v-if="showType == 1">
+      <a class="close" @click="showType=0"></a>
+      <h3>确认支付</h3>
+      <p>您将支付 <span>{{currChargeItem.money}}元</span> 购买获得 <span>{{currChargeItem.starNum}} 竞猜星星</span> </p>
+      <a class="confirm_btn" @click="toQrcodePay(currChargeItem.money)">立即支付{{currChargeItem.money}}元</a>
+    </div>
+
+    <!-- 支付扫码弹窗 -->
+
+    <div class="qrCodePay" v-if="showType == 2">
+      <a class="close" @click="closePay()"></a>
+      <div ref="qrcode" class="left" id="qrcode">
+        <p>请用微信支付付款</p>
+        <!-- <img src="" alt=""> -->
+      </div>
+      <div class="right">
+        <span>确认支付</span>
+        <p>您将支付 <span>{{currChargeItem.money}}元</span> 购买获得 <span>{{currChargeItem.starNum}} 竞猜星星</span> </p>
+        <!-- <a @click="checkChargeOrder(chargeResParam.payNo)">支付完成请点击</a> -->
+      </div>
+    </div>
+
+    <!-- 支付状态弹窗 -->
+    <div class="payStatus" v-if="showType == 3">
+      <a class="close" @click="closePay()"></a>
+      <div v-if="payType == 1">
+        <div class="title"><span class="failed_icon"></span>支付中，请稍后查看余额</div>
+        <!-- <p>您已成功购买{{currChargeItem.starNum}}竞猜星星</p> -->
+      </div>
+      <div v-if="payType == 2">
+        <div class="title"><span class="success_icon"></span>支付成功</div>
+        <p>您已成功购买{{currChargeItem.starNum}}竞猜星星</p>
+      </div>
+      <div v-if="payType == 3">
+        <div class="title"><span class="failed_icon"></span>支付失败,请重新支付({{payFailedTime}})</div>
+        <!-- <p>您已成功购买{{currChargeItem.starNum}}竞猜星星</p> -->
+      </div>
+      <div v-if="payType == 4">
+        <div class="title"><span class="failed_icon"></span>系统异常，请稍后再试</div>
+        <!-- <p>您已成功购买{{currChargeItem.starNum}}竞猜星星</p> -->
+      </div>
+
+      <!-- <div v-if="payType == 4">
+        <div class="title"><span class="sad_icon"></span>余额不足</div>
+        <a class="recharge_btn">星星充值</a>
+      </div>
+      <div v-if="payType == 5">
+        <div class="title"><span class="happy_icon"></span>投注成功</div>
+        <p>投注结果详见竞猜记录</p>
+      </div> -->
+    </div>
+  </div>
+</template>
+
+<script>
+import Vue from "vue";
+import QRCode from "qrcodejs2";
+import { mapGetters, mapActions } from "vuex";
+//支付状态常量
+const payStatus = {
+  PAYING: 1, //0:不弹窗
+  PAY_SUCCESS: 2, //2:支付成功
+  PAY_FAILED: 3 //3:支付失败
+};
+var time = null;
+var schedule = null;
+export default {
+  components: { QRCode },
+  props: ["showRechargeType"],
+
+  data() {
+    return {
+      prizeDay: [],
+      showType: Number,
+      payType: Number,
+      chargeMoneyList: [], //充值金额列表
+      currChargeItem: null, //当前选择的充值选项
+      chargeResParam: null,
+      walletRec: null, //用户星星数量
+      currChargeIndex: null,
+      payFailedTime: 0, //记录失败的次数，尝试3次
+      checkOrderTime: 0 //刷新支付状态次数，刷10次
+    };
+  },
+  computed: {
+    ...mapGetters({
+      getUserData: "getUserData"
+    })
+  },
+
+  methods: {
+    ...mapActions(["setUserData"]),
+    closePop(e) {
+      e.stopPropagation(); //阻止冒泡
+      this.$emit("closePop");
+    },
+
+    closePay() {
+      this.showType = 0;
+      this.clearTask()
+    },
+    //支付完成检查支付状态
+    checkChargeOrder(payNo) {
+      let param = {};
+      param.payNo = payNo;
+      return this.$post("/api/payment/getThirdPayStatus", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            if (dataResponse.data.status == payStatus.PAYING) {
+              // this.payType = 1;
+            } else if (dataResponse.data.status == payStatus.PAY_SUCCESS) {
+              //支付成功
+              this.showType = 3;
+              this.payType = 2;
+              this.walletRec = dataResponse.data.walletRec;
+
+              this.setUserData({
+                ...this.getUserData,
+                starNum: this.walletRec
+              });
+              this.$emit("updateUserScore", dataResponse.data.walletRec);
+              this.closePayDialog(3);
+              // setTimeout(() => {
+              //   // this.$toast("充值成功")
+              //   // console.log("充值成功");
+              // }, 2*1000);
+              this.clearTask();
+            } else {
+              this.showType = 3;
+              this.payType = 3;
+              //重新支付2次
+              if (this.payFailedTime > 2) {
+                this.payType = 4;
+                this.clearTask();
+                this.closePayDialog();
+                return;
+              }
+              this.payFailedTime += 1;
+              //充值失败重新生成
+              setTimeout(() => {
+                this.clearTask();
+                this.toQrcodePay(this.currChargeItem.money);
+              }, 2 * 1000);
+            }
+          } else {
+            this.$toast("系统异常");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    clearTask() {
+       window.clearInterval(time);
+       window.clearTimeout(schedule);
+    },
+    closePayDialog(second) {
+      let time = 2;
+      if (second) {
+        time = second;
+      }
+      setTimeout(() => {
+        this.showType = 0;
+        this.clearTask();
+        // this.$emit("closePop");
+      }, time * 1000);
+    },
+
+    rechargePrize(index) {
+      this.currChargeIndex = index;
+      this.currChargeItem = this.chargeMoneyList[index];
+      this.showType = 1;
+    },
+    toQrcodePay(money) {
+      let param = {};
+      param.chargeAmount = money;
+      param.chargeWay = 5;
+      param.chargeType = 1;
+      return this.$post("/api/h5charge/tocharge", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse);
+            let link = dataResponse.data.requestUrl;
+            this.chargeResParam = dataResponse.data;
+            // this.rechargeConfirmMark = false;
+            // this.qrCodePayMark = true;
+            this.showType = 2;
+
+            this.$nextTick(function() {
+              this.qrcode(link);
+            });
+            //  定时刷新支付状态
+            time = setInterval(() => {
+              this.checkOrderTime += 1;
+              this.checkChargeOrder(this.chargeResParam.payNo);
+            }, 3 * 1000);
+
+            schedule = setTimeout(() => {
+              clearInterval(time);
+              $("#qrcode img").remove();
+              this.toQrcodePay(this.currChargeItem.money);
+              // this.$toast("二维码过期，请重新扫码");
+              return;
+            }, 280 * 1000);
+          } else if (dataResponse.code == 9999) {
+            this.$toast(dataResponse.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    qrcode(link) {
+      //生成二维码
+      console.log(link);
+      let url = link;
+      let qrcode = new QRCode("qrcode", {
+        width: 133,
+        height: 133, // 高度
+        text: url // 二维码内容
+        // render: 'canvas' ,   // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
+        // background: '#f0f',   // 背景色
+        // foreground: '#ff0'    // 前景色
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.ui_pop > div {
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  width: 20px;
+  height: 20px;
+}
+
+.pop_tips {
+  @extend .g_v_c_mid;
+  width: 215px;
+  padding: 20px 0;
+  text-align: center;
+  p {
+    font-size: 14px;
+    color: #fff;
+  }
+  span {
+    display: block;
+    padding-top: 20px;
+    font-size: 20px;
+    color: #f6b70d;
+  }
+}
+
+.recharge {
+  width: 648px;
+  padding: 30px 30px 42px;
+  h2 {
+    position: relative;
+    padding-left: 22px;
+    font-size: 24px;
+    color: #fff6ea;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 1px;
+      left: 0;
+      width: 7px;
+      height: 24px;
+      background: linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -ms-linear-gradient(
+        top,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -webkit-linear-gradient(
+        top,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+    }
+  }
+  .prize_list {
+    padding-left: 8px;
+    overflow: hidden;
+  }
+  li {
+    float: left;
+    width: 130px;
+    padding-bottom: 20px;
+    margin: 40px 15px 0 0;
+    @include getBgImg("../../../assets/images/pop/sign_bg.png");
+    background-size: 100% 100%;
+    box-shadow: 0px 6px 8px 0px rgba(0, 0, 0, 0.03);
+    text-align: center;
+    &:first-child {
+      img {
+        height: 50px;
+        margin: 6px auto 5px;
+      }
+    }
+    &:nth-child(4) {
+      margin-right: 0;
+    }
+    p {
+      height: 22px;
+      font-size: 12px;
+      line-height: 22px;
+      color: #fedcd7;
+    }
+    img {
+      display: block;
+      height: 31px;
+      margin: 20px auto 10px;
+    }
+  }
+  .prize_get_btn {
+    display: inline-block;
+    width: 94px;
+    line-height: 28px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #f6b70d;
+    border: 2px solid #f6b70d;
+    border-radius: 14px;
+  }
+}
+
+.recharge {
+  h2 {
+    @extend .flex;
+    align-items: flex-end;
+    > div {
+      @extend .flex_hc;
+      margin-left: 40px;
+      font-size: 14px;
+      color: #f3d40c;
+    }
+  }
+  .coin {
+    width: 20px;
+    height: 20px;
+    margin-right: 7px;
+  }
+  .num {
+    padding-left: 5px;
+  }
+  .cost_star {
+    display: inline-block;
+    font-size: 14px;
+    color: #fedcd7;
+  }
+  .prize_get_btn {
+    margin-top: 20px;
+  }
+}
+
+.confirm_pay,
+.orderDetails,
+.recharge,
+.prize,
+.qrCodePay,
+.payStatus,
+.pointsExchange,
+.pop_tips {
+  background: linear-gradient(to right bottom, #34201d, #2a181c);
+  background: -webkit-linear-gradient(left top, #34201d, #2a181c);
+  background: -ms-linear-gradient(left top, #34201d, #2a181c);
+  box-shadow: 0px 0px 15px 0px rgba(10, 2, 4, 0.5);
+}
+
+.confirm_pay {
+  @extend .g_v_c_mid;
+  position: absolute !important;
+  width: 415px;
+  text-align: center;
+  padding-bottom: 17px;
+
+  h3 {
+    font-size: 20px;
+    line-height: 56px;
+    color: #fff;
+    font-weight: bold;
+    background-color: #f5b457;
+  }
+  p {
+    padding-top: 58px;
+    font-weight: bold;
+    color: #fefefe;
+    font-size: 14px;
+    span {
+      color: #f6b70d;
+    }
+  }
+  .confirm_btn {
+    @extend .flex_v_h;
+    margin: 47px auto 0;
+    width: 118px;
+    height: 38px;
+    color: #f5b457;
+    border: 3px solid #f5b457;
+  }
+}
+
+.qrCodePay {
+  @extend .g_v_c_mid;
+  position: absolute !important;
+  @extend .flex_v_h;
+  width: 647px;
+  height: 300px;
+  text-align: center;
+  .left {
+    padding: 30px 33px 40px;
+    background-color: rgba(94, 158, 66, 1);
+    p {
+      padding-bottom: 20px;
+      font-size: 16px;
+      color: #fff;
+    }
+    img {
+      width: 133px;
+      height: 133px;
+    }
+  }
+  .right {
+    margin-left: 80px;
+    span {
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+    }
+    p {
+      padding-top: 50px;
+      font-size: 14px;
+      color: #fff;
+      span {
+        font-size: 14px;
+        color: #f6b70d;
+      }
+    }
+    a {
+      @extend .flex_v_h;
+      margin: 47px auto 0;
+      width: 118px;
+      height: 38px;
+      color: #f5b457;
+      border: 3px solid #f5b457;
+    }
+  }
+}
+
+.payStatus {
+  @extend .g_v_c_mid;
+  position: absolute !important;
+  @extend .flex_v_h;
+  width: 415px;
+  height: 230px;
+  color: #fff;
+  .title {
+    @extend .flex_hc;
+    font-size: 20px;
+  }
+  p {
+    padding-top: 30px;
+    font-size: 14px;
+  }
+  span {
+    width: 45px;
+    height: 45px;
+    margin-right: 15px;
+  }
+  .recharge_btn {
+    @extend .flex_v_h;
+    margin: 20px auto 0;
+    width: 158px;
+    height: 38px;
+    color: #f5b457;
+    border: 3px solid #f5b457;
+  }
+}
+</style>

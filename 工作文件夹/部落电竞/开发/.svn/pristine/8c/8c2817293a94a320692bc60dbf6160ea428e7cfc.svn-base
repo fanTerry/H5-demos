@@ -1,0 +1,451 @@
+<template>
+  <div class="Page gameTopicPage">
+    <header class="mod_header" :style="topicHeaderInfo.imageUrl!=null?'background-image:url('+topicHeaderInfo.imageUrl+')':'background-image:url('+globalConst.topicDefaultImgUrl+')'">
+      <navBar>
+        <span class="more_action"></span>
+      </navBar>
+      <div class="topic_title">
+        <h2>{{topicHeaderInfo.name}}</h2>
+        <p class="tag">
+          <span>{{topicHeaderInfo.fans}}人已关注</span>
+          <span>{{topicHeaderInfo.views}}阅读</span>
+          <span>{{topicHeaderInfo.comments}}评论</span>
+        </p>
+        <p class="intro">{{topicHeaderInfo.description}}</p>
+        <!-- followed 已关注 -->
+        <span @click="followTopic(topicHeaderInfo.id)"
+          :class="{'follow':!topicHeaderInfo.attention,'followed':topicHeaderInfo.attention}">{{topicHeaderInfo.attention?'- 已关注':'+ 关注'}}</span>
+      </div>
+      <div class="active_user">
+        <p>
+          <img v-for="item in topicHeaderInfo.icons" :src="item" alt="">
+        </p>
+        <!-- <p>
+          更多活跃用户<span></span>
+        </p> -->
+      </div>
+      <navList :dataList='dataList' @changeTab="relodDataByTab"></navList>
+    </header>
+    <div class="main" :class="{'flex_v_h':noData}">
+      <scroll   v-if="!noData" ref="scroll" :scrollbar="scrollbar" :pullDownRefresh="pullDownRefresh" :pullUpLoad="pullUpLoad"
+        :startY="0" @pullingDown="onPullingDown" @pullingUp="onPullingUp">
+        <articleTab :showType='showType' :cmsContentList='cmsContentList'></articleTab>
+
+      </scroll>
+       <noData v-if="noData"> </noData>
+    </div>
+    <a class="release_btn"></a>
+    <div class="ui_pop" :class="{fadeToTop:false}">
+      <div class="tab">
+        <div class="active">短文</div>
+        <div>文章</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar";
+import navList from "../../../components/header/nav_list";
+import articleTab from "../../../components/follow/articleTab";
+import Scroll from "components/common/scroll";
+import noData from "components/no_data/index";
+export default {
+  components: {
+    navBar,
+    navList,
+    articleTab,
+    Scroll,
+    noData
+  },
+  props: [],
+  data() {
+    return {
+      dataList: [
+        { name: "全部", contentType: 100 },
+        // { name: "文章", contentType: 1 },
+        { name: "短文", contentType: 3 },
+        { name: "视频", contentType: 2 }
+      ],
+      topicId: Number,
+      topicHeaderInfo: {},
+      followList: [],
+      cmsContentList: [],
+      searchVal: "", //默认输入为空
+      pageNo: 1,
+      pageSize: 10,
+      currPageSize: 0,
+      contentType: 1,
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "没有更多数据了" }
+      },
+      index: 1,
+      turnToPrev: false,
+      turnToNext: false,
+      showType: 1,
+      noData: false,
+      loading: false
+    };
+  },
+  created() {
+    window.sessionStorage.selectedTab = 1;
+    //设置话题ID
+    this.topicId = this.$route.query.id;
+  },
+  mounted() {
+    this.getHeaderCardInfo();
+    this.getPageContenList();
+    // this.getPageData();
+    // fixScroll.tofix();
+  },
+  methods: {
+    followTopic(topicId) {
+      let param = {};
+      if (!this.topicHeaderInfo.attention) {
+        param.status = 1;
+      } else {
+        param.status = 0;
+      }
+      return this.$post("/api/cmsTopic/followCmsTopic/" + topicId, param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.$toast(dataResponse.message);
+            this.topicHeaderInfo.attention = !this.topicHeaderInfo.attention;
+
+            // let param = {};
+            // param.followStatus = !this.topicHeaderInfo.attention;
+            // param.topicId = topicId;
+            // this.$bus.$emit("detailTopicFollowEvent", param);
+
+            return dataResponse.code;
+          }
+        })
+        .catch(error => {
+          this.$toast("网络异常，稍后再试");
+          console.log(error);
+          // return dataResponse.code;
+        });
+    },
+    relodDataByTab(tabId) {
+      this.showType = tabId;
+      this.contentType = tabId;
+      this.pageNo = 1;
+      this.currPageSize = 0;
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      if (tabId < 10) {
+        param.contentType = tabId;
+      }
+      this.loading = true;
+      this.cmsContentList = [];
+      this.getPageContenList(param).then(res => {
+        this.loading = false;
+      });
+    },
+
+    /**
+     * 获取话题头部卡片信息
+     */
+    getHeaderCardInfo() {
+      return this.$post("/api/cmsTopic/showCmsTopicDetails/" + this.topicId)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if ((dataResponse.code = "200")) {
+            this.topicHeaderInfo = dataResponse.data.cmsTopicVo;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    getPageContenList(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+        param.contentType = this.contentType;
+      }
+      param.id = this.topicId;
+      console.log(param);
+      return this.$post("/api/cmsTopic/showCmsTopicContent", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if ((dataResponse.code = "200")) {
+            this.currPageSize = dataResponse.data.length;
+            if (dataResponse.data.length > 0) {
+              this.cmsContentList = this.cmsContentList.concat(
+                dataResponse.data
+              );
+            }
+
+            if (this.cmsContentList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+            return this.cmsContentList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getPageData(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/user/pageFollowedUser", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if ((dataResponse.code = "200")) {
+            console.log(dataResponse, "关注首页--getPageData--请求成功");
+            this.currPageSize = dataResponse.data.followedUserList.length;
+            if (dataResponse.data.followedUserList.length > 0) {
+              this.followList = this.followList.concat(
+                dataResponse.data.followedUserList
+              );
+            }
+            if (this.followList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+            return this.followList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    follow(val) {
+      console.log(val);
+      for (var i = 0; i < this.followList.length; i++) {
+        if (this.followList[i].userId == val.userId) {
+          let folloewer = this.followList[i];
+          this.updateFollowStatus(val.userId, val.followStatus).then(res => {
+            if (res == "200") {
+              console.log("res", res);
+              folloewer.followStatus = val.followStatus;
+            }
+          });
+        }
+      }
+    },
+    updateFollowStatus(userId, status) {
+      let param = { type: status, usrId: userId };
+      let message = "";
+      if (status == 1) {
+        message = "关注成功";
+        localStorage.set("comment_follow_" + userId, true); //新增关注的usrId
+      } else {
+        message = "取消成功";
+        localStorage.remove("comment_follow_" + userId); //删除取消关注的usrId
+      }
+      console.log("update-关注", param);
+      return this.$post("/api/user/follow", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.$toast(message);
+            return dataResponse.code;
+          }
+        })
+        .catch(error => {
+          this.$toast("网络异常，稍后再试");
+          console.log(error);
+          return dataResponse.code;
+        });
+    },
+
+    onPullingDown() {
+      console.log("you are onPullingDown");
+      if (this._isDestroyed) {
+        return;
+      }
+      if (this.showType == 110) {
+        this.followList = [];
+        this.getPageData().then(() => {
+          this.$refs.scroll.forceUpdate();
+        });
+      } else {
+        this.cmsContentList = [];
+        this.getPageContenList().then(data => {
+          this.$refs.scroll.forceUpdate();
+        });
+      }
+    },
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+
+      if (this.currPageSize < this.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+    /** 上拉加载*/
+    loadMore() {
+      this.pageNo = this.pageNo + 1;
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      if (this.showType < 10) {
+        param.contentType = this.showType;
+      }
+      /**
+       * 关注列表
+       */
+      if (this.showType == 110) {
+        this.getPageData(param).then(data => {
+          this.$refs.scroll.forceUpdate();
+        });
+      } else {
+        this.getPageContenList(param).then(data => {
+          this.$refs.scroll.forceUpdate();
+        });
+      }
+    }
+  }
+};
+</script>
+
+
+<style lang="scss">
+.gameTopicPage {
+  .user_info {
+    padding-top: 14px;
+    padding-bottom: 4px !important;
+  }
+}
+</style>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+.mod_header {
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: 100% auto;
+}
+.nav_bar {
+  height: 44px;
+  background: none !important;
+}
+.more_action {
+  @extend .g_v_mid;
+  right: 0;
+  width: 45px;
+  height: 45px;
+  @include getBgImg("../../../assets/images/home/more.png");
+  background-size: 70%;
+}
+.topic_title {
+  position: relative;
+  padding-left: 27px;
+  padding-bottom: 18px;
+  color: #fff;
+  h2 {
+    font-size: 28px;
+  }
+  .tag {
+    font-size: 8px;
+    padding-top: 5px;
+    span {
+      padding-right: 15px;
+    }
+  }
+  .intro {
+    width: 170px;
+    padding-top: 18px;
+    font-size: 9px;
+    line-height: 14px;
+  }
+  .follow,
+  .followed {
+    position: absolute;
+    right: 5px;
+    bottom: 18px;
+    @include getBtn(57px, 23px, $color_main, #fff, 23px);
+  }
+  .followed {
+    background: #fff;
+    color: #afafaf;
+  }
+}
+.active_user {
+  @extend .flex_v_justify;
+  height: 42px;
+  padding: 0 10px;
+  background-color: #fff;
+  img {
+    width: 28px;
+    height: 28px;
+    margin-right: 3px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  p {
+    @extend .flex_hc;
+    font-size: 12px;
+    color: #818181;
+    span {
+      position: relative;
+      width: 14px;
+      height: 14px;
+      @include getArrow(7px, #999, right);
+    }
+  }
+}
+
+.release_btn {
+  position: fixed;
+  right: 5px;
+  bottom: 100px;
+  width: 56px;
+  height: 56px;
+  @include getBgImg("../../../assets/images/follow/release_icon.png");
+}
+
+.ui_pop {
+  transform: translateY(100%);
+  -webkit-transform: translateY(100%);
+  .tab {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    @extend .flex;
+    background-color: #fff;
+    @media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+      only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+      padding-bottom: constant(safe-area-inset-bottom) !important;
+      padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+    div {
+      position: relative;
+      flex: 1;
+      -webkit-flex: 1;
+      padding: 17px 0;
+      font-size: 16px;
+      color: #000;
+      text-align: center;
+      &.active {
+        color: $color_main;
+      }
+    }
+  }
+}
+</style>

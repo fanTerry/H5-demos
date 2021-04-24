@@ -1,0 +1,294 @@
+<template>
+  <!-- <div>
+    <ul class="match_list">
+      <li class="match_item" v-for="(item,index) in 10" :key="index">
+        <div class="match_img">
+          <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg" alt="">
+          有四种颜色的tag 
+          <span class="tag tag_purple" v-if="tag == 1">已报名</span>
+          <span class="tag tag_grey" v-if="tag == 2 || tag == 3">报名结束</span>
+          <span class="tag tag_red" v-if="tag == 4 || tag == 5">比赛中</span>
+          <span class="tag tag_green" v-if="tag == 6">报名中</span>
+        </div>
+        <div class="match_info">
+          <p class="title">第一届句子电竞王者争霸赛</p>
+          <p class="times">2小时后公布赛程</p>
+          <p class="stage">已报名队伍：<span>8</span>/8</p>
+           <p class="champion">冠军: 非洲企鹅队</p> 
+        </div>
+        <div class="team_logo">
+          <span class="entry_icon"></span>
+          <span class="court_icon"></span>
+        </div>
+      </li>
+    </ul>
+  </div> -->
+  <div>
+    <mescroll ref="mescroll" @downCallback="downCallback" @upCallback="upCallback" @mescrollInit="mescrollInit">
+      <ul class="match_list">
+        <li class="match_item" v-for="(item,index) in matchList" :key="index">
+          <div class="match_img">
+            <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg" alt="">
+            <!-- 有四种颜色的tag -->
+            <span class="tag tag_purple" v-if="item.status== 0">已报名</span>
+            <span class="tag tag_red" v-else-if="item.status== 4">比赛中</span>
+            <span class="tag tag_green" v-else-if="item.status== 1">报名中</span>
+            <span class="tag tag_grey" v-else>{{item.status|matchStatus}}</span>
+          </div>
+          <div class="match_info">
+            <p class="title">{{item.name}}</p>
+            <p class="times">{{item.status|matchTime(item)}}</p>
+            <!-- <p class="stage" v-if="item.status== 3">下一场：({{item.startTime|dateFmt('MM.dd hh:mm')}})</p>
+          <p class="stage" v-else-if="item.status== 5">{{item.championName}}</p>
+          <p class="stage" v-else>已报名队伍：<span>{{item.joinTeamNum}}</span>/{{item.teamNum}}</p> -->
+            <p class="stage">{{item.status|matchMsg(item)}}</p>
+
+          </div>
+          <div class="team_logo">
+            <span class="entry_icon" v-if="item.join==true"></span>
+            <span class="court_icon" v-if="item.creator==true"></span>
+          </div>
+        </li>
+      </ul>
+    </mescroll>
+
+  </div>
+</template>
+
+<script>
+import mescroll from "../../../components/common/mescroll.vue";
+
+export default {
+  components: { mescroll },
+  props: [],
+  data() {
+    return {
+      pageNo: 1,
+      pageSize: 10,
+      currPageSize: 10,
+      mescroll: null,
+      mescrollConfig: {
+        warpId: "mainId", //设置置顶时，必须设置父容器ID
+        hasToTop: true //默认不开启回到顶部项
+      },
+      // tag: 1,
+      matchList: [], //赛事信息
+      status: 0,
+      showUserMacth: false //是否关联用户查询
+    };
+  },
+  mounted() {
+    // this.getPageData();
+  },
+  methods: {
+    mescrollInit(mescroll) {
+      this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
+    },
+    downCallback() {
+      let param = {};
+      param.pageNo = 1;
+      param.pageSize = this.pageSize;
+      param.showUserMacth = this.showUserMacth;
+      param.status = this.status;
+      this.matchList = [];
+      this.currPageSize = 10;
+      this.getPageData(param).then(() => {
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize);
+        });
+      });
+    },
+    upCallback() {
+      console.log("加载更多");
+      this.loadMore();
+    },
+    onPullingDown() {
+      console.log("you are onPullingDown");
+      if (this._isDestroyed) {
+        return;
+      }
+      this.refresh(true);
+    },
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+
+      if (this.currPageSize < this.pageSize) {
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+    refresh(loaded) {
+      console.log("you are refresh");
+      this.setHeader();
+      this.getPageData().then(() => {
+        this.$refs.scroll.forceUpdate();
+      });
+    },
+    loadMore() {
+      console.log("you are loadMore");
+      this.pageNo += 1;
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      param.showUserMacth = this.showUserMacth;
+      param.status = this.status;
+      this.getPageData(param).then(() => {
+        // this.$refs.scroll.forceUpdate();
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize);
+        });
+      });
+    },
+    /**获取分页比赛数据 */
+    getPageData(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+        param.showUserMacth = this.showUserMacth;
+        param.status = this.status;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/matchtool/homeMatch", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if ((dataResponse.code = "200")) {
+            console.log(dataResponse.data.homeResult, "getPageData---请求成功");
+            this.currPageSize = dataResponse.data.length;
+            if (dataResponse.data.homeResult == null) {
+              this.matchList = [];
+              this.$toast("暂无赛事信息");
+
+            } else if(dataResponse.data.homeResult.length > 0) {
+             this.matchList = this.matchList.concat(
+                dataResponse.data.homeResult
+              );
+              console.log(this.matchList, "首页赛事信息");
+            }
+            return this.matchList;
+          } 
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    clearMatchList(param){
+      console.log(param);
+      this.showUserMacth=param,
+      this.matchList=[];
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.match_list {
+  background-color: #fff;
+  padding-top: 1.6vw;
+}
+
+.match_item {
+  position: relative;
+  @extend .flex_hc;
+  margin-top: 1.3333vw;
+  padding: 3.2vw 0 3.2vw 4.5333vw;
+}
+
+.match_img {
+  position: relative;
+  width: 16vw;
+  height: 18.6667vw;
+  padding-bottom: 2.6667vw;
+  img {
+    width: 16vw;
+    height: 16vw;
+    border-radius: 50%;
+  }
+  .tag {
+    @extend .g_c_mid;
+    top: 12.5333vw;
+    width: 14.6667vw;
+    line-height: 4.8vw;
+    font-size: 2.6667vw;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    border-radius: 2.4vw;
+  }
+}
+
+.tag_purple {
+  @include getBgLinear(right, #6950fb, #b83af3);
+}
+
+.tag_grey {
+  @include getBgLinear(right, #b4b4b4, #cacaca);
+}
+
+.tag_red {
+  @include getBgLinear(right, #f54b64, #f78361);
+}
+
+.tag_green {
+  @include getBgLinear(right, #8aca00, #bee700);
+}
+
+.champion {
+  font-size: 3.4667vw;
+  color: #fe5049;
+}
+
+.match_info {
+  @extend .flex_justify;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  flex: 1;
+  -webkit-flex: 1;
+  height: 18.6667vw;
+  margin-left: 4.5333vw;
+  padding: 0.8vw 0;
+  .title {
+    @include t_nowrap(42.6667vw);
+    font-size: 4.2667vw;
+    font-weight: 600;
+    color: #333;
+  }
+  .times {
+    font-size: 3.4667vw;
+    color: #999;
+  }
+  .stage {
+    font-size: 3.4667vw;
+    color: #666;
+    span {
+      color: #ff7e00;
+    }
+  }
+}
+
+.team_logo {
+  position: absolute;
+  top: 4vw;
+  right: 2.6667vw;
+  @extend .flex_hc;
+  .court_icon,
+  .entry_icon {
+    width: 4.5333vw;
+    height: 4.5333vw;
+    margin-left: 1.0667vw;
+  }
+  .court_icon {
+    @include getBgImg("../../../assets/images/matchtool/court_icon.png");
+  }
+  .entry_icon {
+    @include getBgImg("../../../assets/images/matchtool/enter_icon.png");
+  }
+}
+</style>

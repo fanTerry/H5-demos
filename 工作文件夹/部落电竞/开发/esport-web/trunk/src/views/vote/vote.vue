@@ -1,0 +1,402 @@
+<template>
+  <section class="mod_vote">
+    <mod-title :titleTxt="'人气投票'"></mod-title>
+    <ul class="vote_tab">
+      <li :class="{'active':voteMark == index}" v-for="(item,index) in 10" :key="index" @click="voteMark = index">
+        总榜
+      </li>
+    </ul>
+    <div class="vote_list">
+      <div class="popular_con">
+        <div class="title">
+          <span class="popular_icon"></span><span>最具人气榜</span>
+        </div>
+        <ul class="popular_list">
+          <li class="popular_item" v-for="(item,index) in 10" :key='index'>
+            <div>
+              <span class="rank" v-if="index == 0 || index == 1 || index == 2"></span>
+              <span class="rank" v-else>{{index+1}}</span>
+              <img class="person" src="" alt="">
+              <span class="name">我去前面探探路，提莫队长</span>
+              <span class="num">30999900</span>
+            </div>
+            <a class="thumbs_up">
+              <span class="like_icon"></span>
+              <span>为他助威</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="contribution_con">
+        <div class="title">
+          <span class="contribution_icon"></span><span>粉丝贡献榜</span>
+          <a class="vote_rules">投票规则<span class="vote_rules_icon"></span></a>
+        </div>
+        <div class="banner"
+          :style="'background:url('+require('../../assets/images/home/banner.png')+') no-repeat center/cover'">
+          <p class="banner_title">2019DOTA2中法对抗赛投票</p>
+          <p class="tips">前10名有奖，第1名将获得限定DOTA雕塑及现场观赛机会</p>
+          <div class="player">
+            <img src="" alt="">
+            <span>鲸鱼为LGD助威200000星星</span>
+          </div>
+          <span class="sign"></span>
+          <p class="time">
+            助威剩余时间：<span>12</span>天<span>12</span>小时<span>09</span>分钟
+          </p>
+        </div>
+        <p class="rank_title">
+          <span class="tag_1">排名</span>
+          <span class="tag_2">粉丝</span>
+          <span class="tag_3">贡献星星数</span>
+          <span class="tag_4">获得奖励</span>
+        </p>
+        <ul class="contribution_list">
+          <li class="contribution_item" v-for="(item,index) in 10">
+            <span class="rank">{{index+1}}</span>
+            <img src="" alt="">
+            <span class="name">xiaomanyaoxiaomanyao</span>
+            <span class="num">456465575</span>
+            <span class="award">中法对抗赛旅行套餐中法对抗赛旅行套餐</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script>
+import modTitle from "../../components/title/title.vue";
+
+export default {
+  components: { modTitle },
+  props: [],
+  data() {
+    return {
+      voteMark: 0
+    };
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_icon";
+
+.mod_vote {
+  display: table;
+  margin: 30px auto 0;
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+    overflow: hidden;
+  }
+}
+
+.vote_tab {
+  background: linear-gradient(to top, rgba(50, 25, 30, 1), rgba(50, 25, 30, 0));
+  background: -ms-linear-gradient(
+    to top,
+    rgba(50, 25, 30, 1),
+    rgba(50, 25, 30, 0)
+  );
+  li {
+    display: inline-block;
+    padding: 24px 20px 16px 20px;
+    font-size: 14px;
+    color: #fedcd7;
+    &.active {
+      position: relative;
+      color: #f3d40c;
+      &::after {
+        content: "";
+        @extend .g_c_mid;
+        bottom: 0;
+        width: 28px;
+        height: 3px;
+        background-color: #f3d40c;
+      }
+    }
+  }
+}
+
+.vote_list {
+  display: block;
+  margin-top: 30px;
+  &::after {
+    content: "";
+    display: table;
+    overflow: hidden;
+    clear: both;
+  }
+  .title {
+    position: relative;
+    @extend .flex_hc;
+    padding: 13px 16px 12px 20px;
+    @include getBgImg("../../assets/images/home/vote_title_bg.png");
+    span {
+      font-size: 18px;
+      color: #fedcd7;
+      font-weight: bold;
+    }
+  }
+}
+
+.vote_rules {
+  @extend .g_v_mid;
+  right: 16px;
+  @extend .flex_hc;
+  font-size: 14px;
+  color: #754343;
+  .vote_rules_icon {
+    width: 14px;
+    height: 14px;
+    margin-left: 4px;
+    @include getBgImg("../../assets/images/home/vote_rules_icon.png");
+  }
+}
+
+.popular_icon,
+.contribution_icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.popular_con,
+.contribution_con {
+  float: left;
+  width: 605px;
+}
+
+.popular_item {
+  @extend .flex_v_justify;
+  height: 80px;
+  border-bottom: 1px solid #381d1f;
+  &:first-child {
+    .rank {
+      @include getBgImg("../../assets/images/home/rank_first.png");
+    }
+    .num {
+      font-weight: bold;
+    }
+  }
+  &:nth-child(2) {
+    .rank {
+      @include getBgImg("../../assets/images/home/rank_second.png");
+    }
+    .num {
+      font-weight: bold;
+    }
+  }
+  &:nth-child(3) {
+    .rank {
+      @include getBgImg("../../assets/images/home/rank_third.png");
+    }
+    .num {
+      font-weight: bold;
+    }
+  }
+  > div {
+    @extend .flex_hc;
+  }
+  .rank {
+    width: 34px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 18px;
+    color: #754343;
+    text-align: center;
+  }
+  .person {
+    width: 50px;
+    height: 50px;
+    margin-left: 30px;
+    object-fit: cover;
+    border-radius: 50%;
+    background-color: #fff;
+  }
+  .name {
+    width: 110px;
+    @include t_nowrap(110px);
+    margin-left: 20px;
+    font-size: 14px;
+    color: #754343;
+  }
+  .num {
+    margin-left: 30px;
+    font-size: 18px;
+    color: #fedcd7;
+  }
+  .thumbs_up {
+    @extend .flex_v_h;
+    width: 100px;
+    height: 40px;
+    color: #f7b54b;
+    border: 1px solid #b4863d;
+    border-image: linear-gradient(
+        0deg,
+        rgba(91, 49, 27, 1),
+        rgba(140, 84, 38, 1)
+      )
+      1 1;
+    border-image: -webkit-linear-gradient(
+        0deg,
+        rgba(91, 49, 27, 1),
+        rgba(140, 84, 38, 1)
+      )
+      1 1;
+    border-image: -ms-linear-gradient(
+        0deg,
+        rgba(91, 49, 27, 1),
+        rgba(140, 84, 38, 1)
+      )
+      1 1;
+    box-shadow: 0px 0px 7px 0px rgba(10, 2, 4, 0.4);
+  }
+  .like_icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 5px;
+    font-size: 14px;
+  }
+}
+
+.contribution_con {
+  float: right;
+  .banner {
+    position: relative;
+    height: 150px;
+    margin-top: 20px;
+    background-size: cover;
+    .banner_title {
+      padding: 28px 0 0 30px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fedcd7;
+    }
+    .tips {
+      padding: 15px 0 0 30px;
+      font-size: 12px;
+      color: #e4cdca;
+    }
+  }
+  .player {
+    @extend .flex_hc;
+    width: 60%;
+    height: 38px;
+    margin-top: 15px;
+    padding-left: 30px;
+    background: linear-gradient(
+      to right,
+      rgba(59, 18, 18, 0.2) 0%,
+      rgba(59, 18, 18, 0.8) 20% 45%,
+      rgba(59, 18, 18, 0) 100%
+    );
+    img {
+      width: 30px;
+      height: 30px;
+      margin-right: 13px;
+      border-radius: 50%;
+      background-color: #fff;
+    }
+    span {
+      font-size: 14px;
+      color: #f3d40c;
+    }
+  }
+  .sign {
+    position: absolute;
+    right: 15px;
+    top: 0;
+    width: 47px;
+    height: 50px;
+    @include getBgImg("../../assets/images/home/sign_icon.png");
+    background-position: center -8px;
+  }
+  .time {
+    position: absolute;
+    right: 15px;
+    bottom: 13px;
+    font-size: 14px;
+    color: #fff;
+    span {
+      color: #f3d40c;
+    }
+  }
+  .rank_title {
+    @extend .flex_hc;
+    height: 50px;
+    font-size: 14px;
+    color: #754343;
+    background: linear-gradient(
+      to top,
+      rgba(36, 24, 27, 0.8),
+      rgba(36, 24, 27, 0.4)
+    );
+    .tag_1 {
+      padding-left: 33px;
+    }
+    .tag_2 {
+      padding-left: 76px;
+    }
+    .tag_3 {
+      padding-left: 120px;
+    }
+    .tag_4 {
+      padding-left: 120px;
+    }
+  }
+}
+
+.contribution_item {
+  @extend .flex_hc;
+  height: 58px;
+  padding-left: 33px;
+  border-bottom: 1px solid #381d1f;
+  &:first-child,
+  &:nth-child(2),
+  &:nth-child(3) {
+    @include getBgImg("../../assets/images/home/contribution_bg.png");
+    background-position: left center;
+    background-size: auto 100%;
+  }
+  .rank {
+    width: 27px;
+    margin-right: 23px;
+    font-size: 14px;
+    color: #754343;
+    text-align: center;
+  }
+  img {
+    width: 30px;
+    height: 30px;
+    margin-right: 23px;
+    border-radius: 50%;
+    background-color: #fff;
+  }
+  .name {
+    width: 115px;
+    @include t_nowrap(115px);
+    margin-right: 30px;
+    font-size: 14px;
+    text-align: center;
+    color: #754343;
+  }
+  .num {
+    width: 77px;
+    margin-right: 83px;
+    font-size: 14px;
+    color: #754343;
+    text-align: center;
+  }
+  .award {
+    width: 126px;
+    font-size: 14px;
+    color: #fedcd7;
+    @include t_nowrap(126px);
+    text-align: center;
+  }
+}
+</style>

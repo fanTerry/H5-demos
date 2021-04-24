@@ -1,0 +1,186 @@
+// pages/index/index.js
+var service = require('../../service/CmsService.js')
+const app = getApp();
+var api = require('../../libs/http.js')
+Page({
+
+    /**
+     * 页面的初始数据
+     */
+    data: {
+        //栏目配置
+        subMenuList:[],
+        swiperOpt: {
+            indColor: "#fff",
+            indActColor: "#fea21b",//#075fe7
+        },
+        selectedTag:1,
+        swiperAdList: [],
+        showType:1,
+        pageNo:1,
+        pageSize:10,
+        newsList: [],
+        noDataFlag:false,
+        canShowVideo:false,
+    },
+
+    /**
+     * 生命周期函数--监听页面加载
+     */
+    onLoad: function (options) {
+
+        this.loadHeadData(this);
+        /*资讯流列表*/
+        this.setData({
+            pageNo:0,
+            selectedTag:1,
+            newsList:[],
+        });
+
+        service.loadCmsByPageApi(this);
+
+    },
+
+    /**
+     * 生命周期函数--监听页面初次渲染完成
+     */
+    onReady: function () {
+
+    },
+
+    /**
+     * 生命周期函数--监听页面显示
+     */
+    onShow: function () {
+        //子组件数据刷新
+       // this.selectComponent("#usrinfo_id").reflushData(app.getGlobalUserInfo());
+    },
+
+    /**
+     * 生命周期函数--监听页面隐藏
+     */
+    onHide: function () {
+
+    },
+
+    /**
+     * 生命周期函数--监听页面卸载
+     */
+    onUnload: function () {
+
+    },
+
+    /**
+     * 页面相关事件处理函数--监听用户下拉动作
+     */
+    onPullDownRefresh: function () {
+        this.loadHeadData(this);
+        this.setData({
+            pageNo:0,
+            selectedTag:this.data.selectedTag,
+            newsList:[],
+            noDataFlag:false,
+        });
+
+        service.loadCmsByPageApi(this);
+        wx.stopPullDownRefresh();
+    },
+
+    /**
+     * 页面上拉触底事件的处理函数
+     */
+    onReachBottom: function () {
+        console.log("加载下拉数据");
+        service.loadCmsByPageApi(this);
+    },
+
+    /**
+     * 用户点击右上角分享
+     */
+    onShareAppMessage: function () {
+
+    },
+
+    onMyEvent:function (e) {
+        console.log("切换栏目："+ e.detail.name);
+        if (this.data.selectedTag == e.detail.tag){
+            return;
+        }
+
+        this.setData({
+            pageNo:0,
+            selectedTag:e.detail.tag,
+            newsList:[],
+        });
+        var that = this;
+        var pageNo = that.data.pageNo+1;
+        var pageSize = that.data.pageSize;
+        var url = "/newlist";
+
+        api._post(url,{
+            pageNo:pageNo,
+            pageSize:pageSize,
+            contentType:that.data.selectedTag,
+        }).then(res => {
+            if(res.code=="200"){
+                var newdatas;
+                newdatas =res.data;
+                if (newdatas.length>0) {
+                    that.setData({
+                        newsList:newdatas,
+                        pageNo :  pageNo,
+                        noDataFlag:false,
+                    });
+                    console.log("数据渲染完毕",that.data.selectedTag);
+                }else if (pageNo==1) {
+                    // api._showToast("暂无数据",1);
+                }
+
+                if (that.data.newsList.length==0){
+                    that.setData({
+                        noDataFlag:true,
+                    });
+                }
+            }
+        }).catch(e => { })
+
+
+    },
+
+    loadHeadData:function(_self){
+
+        var that = _self;
+        var url = '/indexData';
+
+        /*广告位*/
+        api._post(url,{
+            contentType:1,  //默认推荐
+            noShowLoading: true,
+        }).then(res => {
+            if(res.code=="200"){
+                this.setData({
+                    canShowVideo:res.data.canShowVideo
+                })
+                var ads;
+                var channelList;
+                ads =res.data.adList;
+                channelList = res.data.channelList;
+                console.log("广告位数据",ads);
+                console.log("节目栏目",channelList);
+                if (ads.length > 0) {
+                    that.setData({
+                        swiperAdList: ads,
+                    });
+                }
+                if (channelList.length > 0) {
+                    that.setData({
+                        subMenuList: channelList,
+                    });
+                }
+            }
+        }).catch(e => { })
+
+    }
+
+
+})

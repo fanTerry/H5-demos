@@ -1,0 +1,79 @@
+<!--component/popup/store/exchange.wxml-->
+<view class="ui_pop" wx:if="{{step1Flag||step2Flag}}">
+  <!-- 兑换数量 -->
+  <view class="exchange_quantity" wx:if="{{step1Flag}}">
+    <a class="close" bindtap="closePop1"></a>
+    <view class="card" wx:if='{{goodsDetail.imageList&&goodsDetail.imageList.length>0}}'>
+      <image mode="aspectFill" src="{{goodsDetail.imageList[0]}}" alt=""></image>
+      <view>
+        <span>
+          <!-- <i class="star_coin"></i>-->￥{{goodsDetail.payScore}}</span>
+        <p>库存{{goodsDetail.stock?goodsDetail.stock:0}}件
+          <span class="noGoods_tips" wx:if='{{goodsDetail.stock==0}}'>（已抢光）</span>
+        </p>
+      </view>
+    </view>
+    <view class="exchange_num">
+      <span>兑换数量</span>
+      <view class="data">
+        <span class="reduce" bindtap="bindMinus"></span>
+        <input class="num" maxlength="2" bindinput='bindManual' type="number" value="{{finalNum}}"></input>
+        <span class="add" bindtap="bindPlus"></span>
+      </view>
+    </view>
+    <!-- <storeExchange></storeExchange>
+		<view class="order_remarks">
+			<span>订单备注</span>
+			<textarea v-model="remark" cols="30" rows="5" maxlength="50"
+				placeholder="选填,备注您的订单需求,50字以内">
+			</textarea>
+		</view> -->
+    <a class="exchange_btn" bindtap="toConfirmAddress">确定</a>
+  </view>
+
+  <!-- 填写收货地址 -->
+  <view class="receive_adress" wx:if='{{step2Flag&&needAddressFlag}}'>
+    <a class="close" bindtap='closePop2'></a>
+    <block wx:if='{{!hasDefaultAddress&&receiveAddress==null}}'>
+      <writeAddress bind:successSave="successSave"></writeAddress>
+    </block>
+    <block wx:if='{{hasDefaultAddress||receiveAddress!=null}}'>
+      <view class="title">确认订单</view>
+      <!-- 地址填写组件 -->
+      <navigator url="/pages/store/address/manage">
+        <locationAddress address="{{receiveAddress}}" showLinkIcon="{{true}}"></locationAddress>
+      </navigator>
+      <view class="order_remarks">
+        <span>订单备注</span>
+        <textarea value='{{remark}}'  bindinput="remarkInput" cols="30" rows="5" maxlength="50" placeholder="选填,备注您的订单需求,50字以内">
+        </textarea>
+      </view>
+      <view class="confirm_con">
+        <view>
+          <span class="num">共{{finalNum}}件，</span>
+          <span>合计：</span>
+          <span class="money">
+            <!-- <i class="star_coin"></i> -->
+            ￥{{(finalNum*goodsDetail.payScore)}}</span>
+          <a class="confirm_btn" bindtap='confimPayChange'>确定</a>
+        </view>
+      </view>
+    </block>
+  </view>
+  <!--虚拟卡购买-->
+  <section class="receive_adress" wx:if='{{step2Flag&&!needAddressFlag}}'>
+     <a class="close" bindtap='closePop2'></a>
+    <h3 class="title">确认订单</h3>
+    <view class="confirm_con">
+      <view>
+        <span class="num">共{{finalNum}}件，</span>
+        <span>合计：</span>
+        <span class="money">
+          <!--<i class="star_coin"></i>-->￥{{(finalNum*goodsDetail.payScore)}}</span>
+      <a class="confirm_btn" bindtap='confimPayChange'>确定</a>
+      </view>
+    </view>
+  </section>
+</view>
+<popUp id="dialog" price="{{finalNum*goodsDetail.payScore}}" unit='元' bind:confirm="handleConfirmDialog">
+</popUp>

@@ -1,0 +1,193 @@
+<template>
+  <div v-if="dataItem">
+    <div class="user_infor">
+      <div>
+        <img :src="dataItem.usrIcon" alt />
+        <div>
+          <div class="name">{{dataItem.usrName}}</div>
+          <p class="tips">
+            <span>#{{dataItem.floor}}</span>
+            <span>{{dataItem.commentTimeStr}}</span>
+          </p>
+        </div>
+      </div>
+      <template v-if="hotFlag==1">
+        <div class="follow_btn" @click="_toFollow">
+          <span v-if="!dataItem.followFlag">+ 关注</span>
+          <span v-else>已关注</span>
+        </div>
+      </template>
+    </div>
+    <div class="con">
+      <p class="txt">{{dataItem.content}}</p>
+      <div class="feedback_item">
+        <div :class="{'active':dataItem.upFlag}" @click="_toUp">
+          <i class="good_icon"></i>
+          <span>{{dataItem.ups}}</span>
+        </div>
+        <div @click="toReply(dataItem.commentId,dataItem.usrName)">
+          <i class="comment_icon"></i>
+          <span>{{dataItem.replies}}</span>
+        </div>
+        <!-- <div :class="{'active':cmsDetail.favoritesFlag}">
+                          <i class="collect_icon"></i>
+                          <span>{{cmsDetail.favorites}}</span>
+        </div>-->
+      </div>
+      <div class="follow_comment" v-if="subCommentListLen>0">
+        <p v-for="(item,index) in subCommentList" :key="index">
+          {{item.usrName}}：
+          <span>{{item.content}}</span>
+        </p>
+        <!-- <p>共12条回复></p> -->
+        <template v-if="subCommentListLen>showLen">
+          <p v-if="showMoreFlag" @click="_showOrHideMore">收起回复</p>
+          <p v-else @click="_showOrHideMore">查看更多回复</p>
+        </template>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+import localStorage from "../../libs/storages/localStorage";
+const COMPONENT_NAME = "article-discuss-item";
+export default {
+  name: COMPONENT_NAME,
+  components: {},
+  props: {
+    commentItem: Object,
+    hotFlag: Number
+  },
+  data() {
+    return {
+      showMoreFlag: false,
+      showLen: 4,
+      dataItem: Object, //页面渲染传进来的对象,操作这个
+      subCommentList: [],
+      subCommentListLen: 0 //当前评论子评论总条数
+    };
+  },
+  computed: {},
+  created() {},
+  mounted() {
+    var pageDataItem = this.commentItem; //当前页的数据
+    var storeUp = localStorage.get("comment_up_" + pageDataItem.commentId);
+    var storeFollow = localStorage.get("comment_follow_" + pageDataItem.usrId);
+    if (storeUp) pageDataItem.upFlag = true;
+    if (storeFollow) pageDataItem.followFlag = true;
+    this.reflushData(pageDataItem);
+  },
+  methods: {
+    toReply(commentId,commentUsrName){
+      this.$emit("toReplyFocus",commentId,commentUsrName);
+    },
+    /**关注/取消关注用户 */
+    _toFollow: function() {
+      var _self = this,
+        item = this.dataItem,
+        type = 0,
+        content = "关注成功";
+      var toFollowUsrId = item.usrId;
+      // var curUsrId = app.getGlobalUserInfo().usrId;
+      // if (curUsrId === toFollowUsrId) {
+      //   this.$toast("您不能关注自己", 3);
+      //   return;
+      // }
+      var storeFollow = localStorage.get("comment_follow_" + item.usrId); //获取全部关注的usrId
+      console.error(storeFollow, "storeFollow");
+      if (item.followFlag) {
+        type = 0; //当前是关注-->则type是要取消关注
+        item.ups -= 1;
+        content = "取消关注";
+        localStorage.remove("comment_follow_" + item.usrId); //删除取消关注的usrId
+      } else {
+        type = 1;
+        item.ups += 1;
+        localStorage.set("comment_follow_" + item.usrId, true); //新增关注的usrId
+      }
+      item.followFlag = !item.followFlag;
+      this.$post("/api/user/follow", {
+        type: type,
+        usrId: toFollowUsrId
+      }).then(res => {
+        if (res.code == "200" && res.data) {
+          //操作成功
+          this.$toast(content, 2);
+          this.dataItem = item;
+        }
+      });
+    },
+
+    /**赞或者取消赞 */
+    _toUp: function() {
+      var _self = this,
+        item = this.dataItem,
+        type = 0,
+        content = "点赞成功";
+      var storeUp = localStorage.get("comment_up_" + item.commentId); //获取全部点赞的comment_id
+      if (item.upFlag) {
+        type = 0; //当前是赞-->则type是要取消赞
+        item.ups -= 1;
+        content = "取消点赞";
+        localStorage.remove("comment_up_" + item.commentId); //删除取消赞的comment_id
+      } else {
+        type = 1;
+        item.ups += 1;
+        localStorage.set("comment_up_" + item.commentId, true); //新增赞的comment_id
+      }
+      item.upFlag = !item.upFlag;
+      this.$post("/api/cmsComment/ups", {
+        type: type,
+        id: item.commentId
+      }).then(res => {
+        console.log(res, "操作");
+        if (res.code == "200" && res.data) {
+          //操作成功
+          this.$toast(content, 2);
+          _self.dataItem = item;
+        }
+      });
+    },
+
+    /**收起或者查看更多 */
+    _showOrHideMore(e) {
+      var _self = this;
+      var nowFlag = !this.showMoreFlag,
+        subCommentList = JSON.parse(JSON.stringify(this.subCommentList));
+      this.showMoreFlag = nowFlag;
+      if (nowFlag) {
+        //true:展开更多,false 收起
+        this.subCommentList = this.dataItem.subCommentList; //所有子评论记录
+      } else {
+        this.subCommentList = subCommentList.splice(0, _self.showLen);
+      }
+    },
+
+    /**刷新组件的数据 */
+    getData(data) {
+      console.log(data, "刷新数据");
+      data.upFlag = this.dataItem.upFlag;
+      data.followFlag = this.dataItem.followFlag;
+      this.reflushData(data);
+    },
+    /**刷新当前组件数据 */
+    reflushData(data) {
+      var subCommentListCp = JSON.parse(JSON.stringify(data.subCommentList));
+      var subCommentListLen = 0;
+      if (data && data.subCommentList) {
+        subCommentListLen = data.subCommentList.length;
+      }
+      this.dataItem = data;
+      this.subCommentList = data.subCommentList;
+      this.subCommentListLen = subCommentListLen;
+      if (subCommentListLen >= this.showLen) {
+        this.subCommentList = subCommentListCp.splice(0, this.showLen);
+      }
+    }
+  },
+  watch: {}
+};
+</script>
+
+

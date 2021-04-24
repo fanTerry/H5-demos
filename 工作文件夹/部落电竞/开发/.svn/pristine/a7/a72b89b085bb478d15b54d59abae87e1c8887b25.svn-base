@@ -1,0 +1,1341 @@
+<template>
+  <div class='Page'>
+    <header class='mod_header'>
+      <div class="header_left" @click="showVoteRecoredPage()">
+        <p>往期君主</p>
+        <div class="king_img">
+          <img :src="currentKing|goldEmpireAward" alt="">
+        </div>
+      </div>
+      <div class="header_right">
+        <a class='rules_icon' @click="showRulesPage()"></a>
+        <a class='more_icon' @click="goUrlPage('goldEmpire/investRecord')"></a>
+        <div class="selecting">
+          <p class="time">正在投资<span>{{restStop}}</span></p>
+          <div class="bar">
+            <span class="bar_num" :style="'width:'+(25-restStop)*100/25+'%'"></span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="att_tips" v-if="showTipsFlag"><span>{{$t("message.attTips")}}</span></div>
+    <div class="att_tips" v-if="showTipsFlag"><span>请开始投注</span></div>
+    <div class='main'>
+      <!-- 性别当选 -->
+      <section class="mod_sex">
+        <ul>
+          <li class="male_select">
+            <div @click="betOn(1)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_15.png" alt="">
+              <p class="txt"><i class="male_icon"></i>男性当选</p>
+              <bet-money v-if="formData.trade[1]" :betNum=formData.trade[1]></bet-money>
+            </div>
+            <span class="odds">x <i>1.8</i></span>
+          </li>
+          <li class="no_select">
+            <div @click="betOn(21)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_13.png" alt="">
+              <p class="txt">无人当选</p>
+              <bet-money v-if="formData.trade[21]" :betNum=formData.trade[21]></bet-money>
+            </div>
+            <span class="odds">x <i>100</i></span>
+          </li>
+          <li class="female_select">
+            <div @click="betOn(2)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_14.png" alt="">
+              <p class="txt"><i class="female_icon"></i>女性当选</p>
+              <bet-money v-if="formData.trade[2]" :betNum=formData.trade[2]></bet-money>
+            </div>
+            <span class="odds">x <i>1.8</i></span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 党派当选 -->
+      <section class="mod_party">
+        <div class="party_item" @click="betOn(5)">
+          <img src="../../../assets/images/game/goldempire/grade/1002_16.png" alt="">
+          <p class="txt"><i class="male_icon"></i>男元老派</p>
+          <bet-money v-if="formData.trade[5]" :betNum=formData.trade[5]></bet-money>
+        </div>
+        <div class="party_item" @click="betOn(6)">
+          <img src="../../../assets/images/game/goldempire/grade/1002_17.png" alt="">
+          <p class="txt"><i class="male_icon"></i>男民主派</p>
+          <bet-money v-if="formData.trade[6]" :betNum=formData.trade[6]></bet-money>
+        </div>
+        <span class="odds">x <i>10.8</i></span>
+        <div class="party_item" @click="betOn(7)">
+          <img src="../../../assets/images/game/goldempire/grade/1002_18.png" alt="">
+          <p class="txt"><i class="female_icon"></i>女元老派</p>
+          <bet-money v-if="formData.trade[7]" :betNum=formData.trade[7]></bet-money>
+        </div>
+        <div class="party_item" @click="betOn(8)">
+          <img src="../../../assets/images/game/goldempire/grade/1002_19.png" alt="">
+          <p class="txt"><i class="female_icon"></i>女民主派</p>
+          <bet-money v-if="formData.trade[8]" :betNum=formData.trade[8]></bet-money>
+        </div>
+      </section>
+
+      <!-- 竞选者 -->
+      <section class="mod_campaigner">
+        <ul>
+          <li class="male_head">
+            <div class="item" @click="betOn(9)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_1.png" alt="">
+              <p class="txt">查理曼大帝</p>
+              <bet-money v-if="formData.trade[9]" :betNum=formData.trade[9]></bet-money>
+            </div>
+            <div class="item" @click="betOn(10)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_2.png" alt="">
+              <p class="txt">凯撒大帝</p>
+              <bet-money v-if="formData.trade[10]" :betNum=formData.trade[10]></bet-money>
+            </div>
+            <div class="item" @click="betOn(11)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_3.png" alt="">
+              <p class="txt">屋大维</p>
+              <bet-money v-if="formData.trade[11]" :betNum=formData.trade[11]></bet-money>
+            </div>
+          </li>
+          <li class="male_civilian">
+            <div class="item" @click="betOn(15)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_7.png" alt="">
+              <p class="txt">奥托大帝</p>
+              <bet-money v-if="formData.trade[15]" :betNum=formData.trade[15]></bet-money>
+            </div>
+            <div class="item" @click="betOn(16)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_8.png" alt="">
+              <p class="txt">查士丁尼</p>
+              <bet-money v-if="formData.trade[16]" :betNum=formData.trade[16]></bet-money>
+            </div>
+            <div class="item" @click="betOn(17)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_9.png" alt="">
+              <p class="txt">君士坦丁</p>
+              <bet-money v-if="formData.trade[17]" :betNum=formData.trade[17]></bet-money>
+            </div>
+          </li>
+        </ul>
+        <span class="odds">x <i>10.8</i></span>
+        <ul>
+          <li class="female_civilian">
+            <div class="item" @click="betOn(18)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_4.png" alt="">
+              <p class="txt">玛格丽特</p>
+              <bet-money v-if="formData.trade[18]" :betNum=formData.trade[18]></bet-money>
+            </div>
+            <div class="item" @click="betOn(19)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_5.png" alt="">
+              <p class="txt">维多利亚</p>
+              <bet-money v-if="formData.trade[19]" :betNum=formData.trade[19]></bet-money>
+            </div>
+            <div class="item" @click="betOn(20)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_6.png" alt="">
+              <p class="txt">伊丽莎白</p>
+              <bet-money v-if="formData.trade[20]" :betNum=formData.trade[20]></bet-money>
+            </div>
+          </li>
+          <li class="female_head">
+            <div class="item" @click="betOn(12)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_10.png" alt="">
+              <p class="txt">玛丽</p>
+              <bet-money v-if="formData.trade[12]" :betNum=formData.trade[12]></bet-money>
+            </div>
+            <div class="item" @click="betOn(13)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_11.png" alt="">
+              <p class="txt">叶卡捷琳娜</p>
+              <bet-money v-if="formData.trade[13]" :betNum=formData.trade[13]></bet-money>
+            </div>
+            <div class="item" @click="betOn(14)">
+              <img src="../../../assets/images/game/goldempire/grade/1002_12.png" alt="">
+              <p class="txt">伊莎贝拉</p>
+              <bet-money v-if="formData.trade[14]" :betNum=formData.trade[14]></bet-money>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 同场玩家-->
+      <section class="mod_stands">
+        <div class="item">
+          <span v-if="robotList.robotAwardNum0">+{{robotList.robotAwardNum0}}</span>
+          <img :src="robotList.imgList[0]|goldEmpireRobot" alt="">
+        </div>
+        <div class="item">
+          <span v-if="robotList.robotAwardNum1">+{{robotList.robotAwardNum1}}</span>
+          <img :src="robotList.imgList[1]|goldEmpireRobot" alt="">
+        </div>
+        <div class="item item_user">
+          <span v-if="awardNum">+{{awardNum}}</span>
+          <img v-if="userInfo" :src="userInfo.headimg|getDefaultImg('https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/robot_img/head_010.png')" alt="">
+        </div>
+        <div class="item">
+          <span v-if="robotList.robotAwardNum2">+{{robotList.robotAwardNum2}}</span>
+          <img :src="robotList.imgList[2]|goldEmpireRobot" alt="">
+        </div>
+        <div class="item">
+          <span v-if="robotList.robotAwardNum3">+{{robotList.robotAwardNum3}}</span>
+          <img :src="robotList.imgList[3]|goldEmpireRobot" alt="">
+        </div>
+      </section>
+
+      <a v-if="restStop && betConfirmFlag" class="bet_confirm" @click="submitOrder()">确认投注</a>
+
+      <!-- 投注金币动画元素 -->
+      <animate-gold :animationFlag=animationFlag :awardReflowList=awardReflowList></animate-gold>
+      <robot1 v-if="robotList.idList[0]" :animationFlag=robotList.robotAnimateFlag0 :awardReflowList=awardReflowList></robot1>
+      <robot2 v-if="robotList.idList[1]" :animationFlag=robotList.robotAnimateFlag1 :awardReflowList=awardReflowList></robot2>
+      <robot3 v-if="robotList.idList[2]" :animationFlag=robotList.robotAnimateFlag2 :awardReflowList=awardReflowList></robot3>
+      <robot4 v-if="robotList.idList[3]" :animationFlag=robotList.robotAnimateFlag3 :awardReflowList=awardReflowList></robot4>
+      <!-- 封面加载图 -->
+      <section class="loading_poster" v-show='showPoster'></section>
+    </div>
+    <footer class='mod_footer'>
+      <div class="mod_bet">
+        <div class="users">
+          <div class="txt"><i></i><span>我的金币</span></div>
+          <div class="gold_num"><span v-if="userInfo">{{newMyAsset?newMyAsset:userInfo.balance}}</span></div>
+        </div>
+        <div class="bet_list">
+          <ul>
+            <li :class="{active:roomInfo.currentFlag==index}" v-for="(item,index) in roomInfo.playItems" :key="index" @click="betBtnChange(index,item)">
+              <span>{{item}}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="delete" @click="cancleBet()">
+          <span>撤回</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- 开奖弹窗 -->
+    <div class="ui_pop" v-if="awardAnimateFlag || getAwardFlag">
+      <div class="open_award">
+        <p class="title">开奖</p>
+        <p class="tips">已故国王当选，带动男元老派和男性当选</p>
+        <div class="award_group">
+          <div class="group_list" :class="{active:awardAnimateFlag}">
+            <open-award-animate></open-award-animate>
+            <div class="award_item">
+              <div class="item" :class="{active:index == 1 }" v-for="(item,index) in awardInfo" :key="index">
+                <div>
+                  <img :src="item.grade|goldEmpireAward" alt="">
+                  <p class="txt"><i class="male_icon"></i>{{item.name}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <!-- 往期记录 -->
+    <vote-record ref='voteRecord' :lotteryRecordData=lotteryRecordData :recordListData=recordListData></vote-record>
+    <!-- 规则弹窗 -->
+    <rules ref='rules'></rules>
+  </div>
+</template>
+
+<script>
+import voteRecord from './voterecord.vue';
+import betMoney from './components/betNum.vue';
+import animateGold from './components/animateGold.vue';
+import robot1 from './components/robots/robot1.vue';
+import robot2 from './components/robots/robot2.vue';
+import robot3 from './components/robots/robot3.vue';
+import robot4 from './components/robots/robot4.vue';
+import openAwardAnimate from './components/openAwardAnimate.vue';
+import rules from './rules.vue';
+
+export default {
+  components: { voteRecord, betMoney, animateGold, openAwardAnimate, rules, robot1, robot2, robot3, robot4 },
+  props: [],
+  data() {
+    return {
+      userInfo: null,
+      newMyAsset: 0, //投注改变后的值
+      showPoster: false,
+      roomInfo: {
+        currentFlag: 0, //当前选中投注挡位标记
+        playItems: null, //房间档位
+        selectPlayItem: 0 //当前选中投注挡位值
+      },
+      showTipsFlag: true, //弹窗提示标记
+      betConfirmFlag: false, //投注按钮显示开关
+      currentKing: 21, //默认是无人当选
+      restStop: Number, //投资读秒时间
+      restTime: Number, //开奖读秒时间
+      getAwardFlag: false, //开奖标记
+      awardAnimateFlag: false, //播放开奖动画
+      robotList: {
+        //机器人数据系列
+        imgList: [], //图片
+        idList: [], //id
+        betList: [], //投注
+        robotAnimateFlag0: [], //动画记录
+        robotAnimateFlag1: [],
+        robotAnimateFlag2: [],
+        robotAnimateFlag3: [],
+        robotAwardNum0: 0, //中奖金额
+        robotAwardNum1: 0,
+        robotAwardNum2: 0,
+        robotAwardNum3: 0
+      }, //参与机器人
+      awardNum: 0, //中奖金额
+      issuse: null, //游戏期号
+      awardInfo: [], //中奖信息
+      lotteryRecordData: [], //开奖趋势
+      recordListData: [], //开奖记录
+      awardReflowList: {},
+      formData: {
+        //下单数据
+        gamecode: 'GOLDEMPIRE',
+        roomid: '1',
+        trade: {}
+      },
+      timer: {
+        //定时器
+        betTimer: null, //投资定时器
+        openAwardTimer: null, //开奖定时器
+        betRobots: null //机器人投注定时器
+      },
+      animationFlag: {}, //金币飞升动画标记
+      goldBack: {}, //中奖金币回流
+    };
+  },
+  watch: {
+    newMyAsset(newVal, oldVal) {
+      if (newVal < oldVal) {
+        console.log(12313, newVal, oldVal);
+      }
+    }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.showTipsFlag = false;
+    }, 2000);
+    this.getUserInfo(); //获取游戏信息
+    this.roomData(); //游戏房间
+    this.onPlayingGame(); //获取当前一期游戏信息
+    this.lotteryRecord(); //开奖趋势
+    this.recordList(); //开奖记录
+  },
+  methods: {
+    // 获取游戏信息
+    getUserInfo() {
+      return this.$post('/agency/api/member/getInfo')
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.userInfo = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    // 游戏房间
+    roomData() {
+      let form = new FormData();
+      form.append('gameCode', 'GOLDEMPIRE');
+      form.append('roomid', '1');
+      this.$post('/agency/api/gameRoom/roominfo', form)
+        .then(res => {
+          this.pageReady = true;
+          if (res.code == 200) {
+            this.roomInfo.playItems = res.data.amtlvl.split(',');
+            this.roomInfo.selectPlayItem = parseInt(this.roomInfo.playItems[0]);
+          } else {
+          }
+        })
+        .catch(error => {
+          console.log(error, '获取档位异常');
+        });
+    },
+    // 获取当前正在进行的游戏
+    onPlayingGame() {
+      let form = new FormData();
+      form.append('gameCode ', this.formData.gamecode);
+      this.$post('/agency/api/gameInfo/saleData', form)
+        .then(res => {
+          const dataResponse = res.data;
+          this.restStop = dataResponse.restStop;
+          this.restTime = dataResponse.restTiem;
+          this.issuse = dataResponse.issuse;
+          this.gamePlayer(); //游戏参与者
+          this.betRobots(); //投资机器人
+          if (this.restStop > 0) {
+            this.restTime = 5;
+            // 投资读秒定时器
+            this.betTimer();
+          } else if (this.restTime <= 5) {
+            this.awardAnimateFlag = true;
+            if (this.restTime > 0) {
+              this.openAwardInterval();
+            } else if (this.restTime == 1) {
+              this.getAwardInfo(); //获取开奖信息
+            } else if (this.restTime == 0) {
+              this.getAwardInfo(); //获取开奖信息
+              this.getAwardFlag = true; //显示开奖结果
+              setTimeout(() => {
+                this.onPlayingGame();
+                this.getAwardFlag = false;
+                this.awardAnimateFlag = false; //关掉弹层
+              }, 2000);
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error, '获取档位异常');
+        });
+    },
+    // 机器人投注定时器
+    betRobots() {
+      let form = new FormData();
+      form.append('issuse', this.issuse);
+      this.timer.betRobots = setInterval(() => {
+        this.$post('/agency/api/gameOrder/getRobotOrder', form)
+          .then(res => {
+            // this.robotList.betList = res.data;
+            let betListArray = res.data;
+            // 按照机器人的座次对投注进行新的排序
+            for (let i = 0; i < this.robotList.idList.length; i++) {
+              for (let j = 0; j < betListArray.length; j++) {
+                if (i == 0 && this.robotList.idList[0] == betListArray[j].id) {
+                  console.warn(j);
+                  for (let k = 0; k < betListArray[j].orders.length; k++) {
+                    this.$set(this.robotList.robotAnimateFlag0, betListArray[j].orders[k].grade, true);
+                    setTimeout(() => {
+                      this.$set(this.robotList.robotAnimateFlag0, betListArray[j].orders[k].grade, false);
+                    }, 1200);
+                  }
+                } else if (i == 1 && this.robotList.idList[1] == betListArray[j].id) {
+                  console.warn(j);
+                  for (let k = 0; k < betListArray[j].orders.length; k++) {
+                    this.$set(this.robotList.robotAnimateFlag1, betListArray[j].orders[k].grade, true);
+                    setTimeout(() => {
+                      this.$set(this.robotList.robotAnimateFlag1, betListArray[j].orders[k].grade, false);
+                    }, 1200);
+                  }
+                } else if (i == 2 && this.robotList.idList[2] == betListArray[j].id) {
+                  console.warn(j);
+                  for (let k = 0; k < betListArray[j].orders.length; k++) {
+                    this.$set(this.robotList.robotAnimateFlag2, betListArray[j].orders[k].grade, true);
+                    setTimeout(() => {
+                      this.$set(this.robotList.robotAnimateFlag2, betListArray[j].orders[k].grade, false);
+                    }, 1200);
+                  }
+                } else if (i == 3 && this.robotList.idList[3] == betListArray[j].id) {
+                  console.warn(j);
+                  for (let k = 0; k < betListArray[j].orders.length; k++) {
+                    this.$set(this.robotList.robotAnimateFlag3, betListArray[j].orders[k].grade, true);
+                    setTimeout(() => {
+                      this.$set(this.robotList.robotAnimateFlag3, betListArray[j].orders[k].grade, false);
+                    }, 1200);
+                  }
+                }
+              }
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }, 5000);
+    },
+    // 投资读秒定时器
+    betTimer() {
+      this.timer.betTimer = setInterval(() => {
+        this.restStop = this.restStop - 1;
+        if (this.restStop == 0) {
+          this.formData.trade = {}; //清除前端投注金币信息
+          this.awardAnimateFlag = true;
+          this.openAwardInterval();
+          clearInterval(this.timer.betTimer);
+          clearInterval(this.timer.betRobots);
+          this.timer.betTimer = null;
+          this.timer.betRobots = null;
+          return;
+        }
+      }, 1000);
+    },
+
+    // 开奖读秒定时器
+    openAwardInterval() {
+      this.timer.openAwardTimer = setInterval(() => {
+        this.restTime = this.restTime - 1;
+        if (this.restTime == 1) {
+          this.getAwardInfo();
+        } else if (this.restTime == 0) {
+          this.awardAnimateFlag = true;
+          this.getAwardFlag = true; //显示开奖结果
+          setTimeout(() => {
+            this.onPlayingGame();
+            this.getAwardFlag = false;
+            this.awardAnimateFlag = false; //关掉弹层
+          }, 2000);
+          clearInterval(this.timer.openAwardTimer);
+          this.timer.openAwardTimer = null;
+          return;
+        }
+      }, 1000);
+    },
+    // 下单
+    submitOrder() {
+      this.betConfirmFlag = false;
+      // 缓存当前余额
+      sessionStorage.setItem('lastResult', this.newMyAsset);
+      if (this.formData.trade.length == 0) {
+        return;
+      }
+      var grade = JSON.stringify(this.formData.trade)
+        .replace(/\"/g, '')
+        .replace(/\{/g, '')
+        .replace(/\}/g, '');
+      console.log(grade);
+      let form = new FormData();
+      form.append('gamecode ', this.formData.gamecode);
+      form.append('roomid', this.formData.roomid);
+      form.append('trade', grade);
+      return this.$post('/agency/api/gameOrder/addOrder', form)
+        .then(res => {
+          // console.log(res);
+          this.formData.trade = {};
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    // 投资时间截止请求开奖接口
+    getAwardInfo() {
+      let form = new FormData();
+      form.append('gameCode', 'GOLDEMPIRE');
+      form.append('issuse', this.issuse);
+      console.log(this.issuse);
+      return this.$post('/agency/api/gameInfo/openData', form)
+        .then(res => {
+          const dataResponse = res.data;
+          this.betConfirmFlag = false;
+          this.newMyAsset = dataResponse.balance;
+          this.awardInfo = [];
+          if (dataResponse.res.length == 3) {
+            console.log(this.awardInfo, dataResponse.res['0']);
+            this.awardInfo.push(dataResponse.res['0'], dataResponse.res['2'], dataResponse.res['1']);
+            this.currentKing = dataResponse.res[2].grade;
+          } else {
+            this.currentKing = dataResponse.res[0].grade;
+            this.awardInfo = dataResponse.res;
+          }
+          // 中奖投资项目
+          if (dataResponse.awardList.length != 0) {
+            setTimeout(() => {
+              this.awardNum = dataResponse.win;
+              for (let index = 0; index < dataResponse.awardList.length; index++) {
+                this.$set(this.awardReflowList, dataResponse.awardList[index].grade, true);
+                setTimeout(() => {
+                  this.$set(this.awardReflowList, dataResponse.awardList[index].grade, false);
+                  this.awardNum = 0;
+                }, 1200);
+              }
+            }, 3000);
+          }
+          // 机器人中奖项目
+          if (dataResponse.other.length != 0) {
+            setTimeout(() => {
+              for (let i = 0; i < this.robotList.idList.length; i++) {
+                for (let j = 0; j < dataResponse.other.length; j++) {
+                  if (i == 0 && dataResponse.other[j].id == this.robotList.idList[0]) {
+                    this.robotList.robotAwardNum0 = dataResponse.other[j].returnAmt;
+                    setTimeout(() => {
+                      this.robotList.robotAwardNum0 = 0;
+                    }, 1200);
+                  } else if (i == 1 && dataResponse.other[j].id == this.robotList.idList[1]) {
+                    this.robotList.robotAwardNum1 = dataResponse.other[j].returnAmt;
+                    setTimeout(() => {
+                      this.robotList.robotAwardNum1 = 0;
+                    }, 1200);
+                  } else if (i == 2 && dataResponse.other[j].id == this.robotList.idList[2]) {
+                    this.robotList.robotAwardNum2 = dataResponse.other[j].returnAmt;
+                    setTimeout(() => {
+                      this.robotList.robotAwardNum2 = 0;
+                    }, 1200);
+                  } else if (i == 3 && dataResponse.other[j].id == this.robotList.idList[3]) {
+                    this.robotList.robotAwardNum3 = dataResponse.other[j].returnAmt;
+                    setTimeout(() => {
+                      this.robotList.robotAwardNum3 = 0;
+                    }, 1200);
+                  }
+                }
+              }
+            }, 3000);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    gamePlayer() {
+      this.$get('/agency/api/gameInfo/getParticipant?issuse=' + this.issuse)
+        .then(res => {
+          const dataResponse = res.data;
+          for (let index = 0; index < dataResponse.length; index++) {
+            this.robotList.imgList[index] = dataResponse[index].headimg;
+            this.robotList.idList[index] = dataResponse[index].id;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    // 点击下注对象
+    betOn(key) {
+      if (this.restStop == 0) {
+        return;
+      }
+      this.betConfirmFlag = true;
+      if (this.newMyAsset) {
+        this.newMyAsset = this.newMyAsset - this.roomInfo.selectPlayItem;
+      } else {
+        this.newMyAsset = this.userInfo.balance - this.roomInfo.selectPlayItem;
+      }
+      if (this.formData.trade[key]) {
+        this.formData.trade[key] = this.formData.trade[key] + this.roomInfo.selectPlayItem;
+        this.$set(this.formData.trade, key, this.formData.trade[key]);
+      } else {
+        this.$set(this.formData.trade, key, this.roomInfo.selectPlayItem);
+      }
+      this.$set(this.animationFlag, key, true);
+      setTimeout(() => {
+        this.$set(this.animationFlag, key, false);
+      }, 1200);
+    },
+
+    // 撤销投注
+    cancleBet() {
+      this.betConfirmFlag = false;
+      this.formData.trade = {};
+      if (sessionStorage.getItem('lastResult')) {
+        // 投注了就会产生会话缓存，
+        this.newMyAsset = sessionStorage.getItem('lastResult');
+      } else {
+        // 若没有投注历史点击撤销  取得就是最初的值
+        this.newMyAsset = this.userInfo.balance;
+      }
+    },
+    //开奖趋势
+    lotteryRecord() {
+      this.$post('/agency/api/gameData/count')
+        .then(res => {
+          this.lotteryRecordData = res.data;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //开奖记录
+    recordList() {
+      this.$post('/agency/api/gameData/dataList')
+        .then(res => {
+          this.recordListData = res.data.records;
+          for (let index = 0; index < this.recordListData.length; index++) {
+            this.recordListData[index].res = this.recordListData[index].res.split('+');
+          }
+          this.currentKing = this.recordListData[0].res[2];
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    // 投注选项
+    betBtnChange(index, item) {
+      this.roomInfo.currentFlag = index;
+      this.roomInfo.selectPlayItem = parseInt(item);
+    },
+    goUrlPage(url) {
+      this.$router.push({
+        path: url
+      });
+    },
+    // 投资记录
+    showVoteRecoredPage() {
+      this.$refs.voteRecord.showPage(true);
+    },
+    // 投资记录
+    showRulesPage() {
+      this.$refs.rules.showPage(true);
+    },
+    
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      if (from.path == '/game') {
+        vm.showPoster = true;
+        setTimeout(() => {
+          vm.showPoster = false;
+        }, 3000);
+      }
+    });
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../../assets/common/_base';
+@import '../../../assets/common/_mixin';
+.Page {
+  overflow-y: auto;
+}
+
+.main {
+  position: relative;
+  flex: none;
+  -webkit-flex: none;
+  padding-top: 3.2vw;
+  padding-bottom: 15.7333vw;
+  @include getBgImg('../../../assets/images/game/goldempire/main_bg.png');
+  background-size: 100% 100%;
+}
+
+.bet_confirm {
+  @extend .g_c_mid;
+  position: fixed;
+  z-index: 11;
+  bottom: 17.6vw;
+  @include getBtn(39.7333vw, 12.2667vw, 5.3333vw, #fffaee, transparent, 12.2667vw);
+  padding-top: 2.6667vw;
+  line-height: 1;
+  @include getBgImg('../../../assets/images/game/goldempire/bet_confirm.png');
+}
+
+.loading_poster {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  background-image: url('../../../assets/images/game/goldempire/cover_logo.png'), url('../../../assets/images/game/goldempire/cover_plan.png');
+  background-size: 87.3333vw, cover;
+  background-position: 8.6667vw 2.6667vw, center;
+  background-repeat: no-repeat;
+}
+
+.att_tips {
+  @extend .g_c_mid;
+  position: fixed;
+  top: 21.3333vw;
+  z-index: 10;
+  width: 33.4667vw;
+  height: 15.0667vw;
+  padding-top: 5.3333vw;
+  text-align: center;
+  @include getBgImg('../../../assets/images/game/goldempire/detail_time.png');
+  &:nth-child(2) {
+    top: 62.4vw;
+  }
+  span {
+    font-size: 3.4667vw;
+    font-weight: bold;
+    background: linear-gradient(to bottom, rgba(247, 228, 173, 1) 0%, rgba(255, 253, 232, 1) 100%);
+    background: -webkit-linear-gradient(top, rgba(247, 228, 173, 1) 0%, rgba(255, 253, 232, 1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.mod_header {
+  @extend .flex_justify;
+  align-items: flex-end;
+  -webkit-align-items: flex-end;
+  flex: 1;
+  -webkit-flex: 1;
+  min-height: 25.3333vw;
+  padding-left: 1.4667vw;
+  @include getBgImg('../../../assets/images/game/goldempire/header_bg.png');
+  background-position: center bottom;
+}
+
+.header_left {
+  width: 33.4667vw;
+  height: 22.9333vw;
+  @include getBgImg('../../../assets/images/game/goldempire/old_king_bg.png');
+  p {
+    padding-top: 5.8667vw;
+    padding-left: 4vw;
+    font-size: 3.2vw;
+    color: #9cd6fe;
+  }
+  .king_img {
+    position: relative;
+    width: 26.1333vw;
+    height: 10.2667vw;
+    margin-left: 3.6vw;
+    @include getBgImg('../../../assets/images/game/goldempire/old_btn.png');
+    background-size: contain;
+    background-position: bottom center;
+    overflow: hidden;
+    img {
+      position: absolute;
+      top: -2.9333vw;
+      left: -1.4667vw;
+      width: 20.1333vw;
+      height: 18.9333vw;
+      object-fit: contain;
+    }
+  }
+}
+
+.header_right {
+  position: relative;
+  .more_icon {
+    position: absolute;
+    right: 1.7333vw;
+    top: -7.7333vw;
+    width: 13.2vw;
+    height: 9.7333vw;
+    @include getBgImg('../../../assets/images/game/goldempire/more_icon.png');
+    background-size: contain;
+  }
+  .rules_icon {
+    position: absolute;
+    right: 19.7333vw;
+    top: -7.7333vw;
+    width: 11.8667vw;
+    height: 9.7333vw;
+    @include getBgImg('../../../assets/images/game/goldempire/rules_icon.png');
+    background-size: contain;
+  }
+  .selecting {
+    width: 33.4667vw;
+    height: 16.9333vw;
+    padding-left: 2.4vw;
+    @include getBgImg('../../../assets/images/game/goldempire/selecting_bg.png');
+    background-size: contain;
+    background-position: bottom center;
+  }
+  .time {
+    padding-left: 1.0667vw;
+    padding-top: 5.2vw;
+    font-size: 3.2vw;
+    color: #9cd6fe;
+    span {
+      padding-left: 4.5333vw;
+      font-size: 3.7333vw;
+      font-weight: bold;
+      background: linear-gradient(to bottom, rgba(255, 246, 204, 1) 0%, rgba(255, 215, 105, 1) 33%, rgba(248, 163, 31, 1) 66%, rgba(255, 235, 99, 1) 100%);
+      background: -webkit-linear-gradient(top, rgba(255, 246, 204, 1) 0%, rgba(255, 215, 105, 1) 33%, rgba(248, 163, 31, 1) 66%, rgba(255, 235, 99, 1) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+  .bar {
+    width: 28.1333vw;
+    height: 3.8667vw;
+    padding: 0.4vw 1.0667vw 0.8vw;
+    @include getBgImg('../../../assets/images/game/goldempire/bar_bg.png');
+    background-size: contain;
+  }
+  .bar_num {
+    display: block;
+    height: 2.1334vw;
+    margin-top: 0.2667vw;
+    background-color: #2fd8ac;
+    border-radius: 2.6667vw;
+  }
+}
+
+.mod_sex {
+  ul {
+    @extend .flex_v_justify;
+    padding: 0 3.7333vw;
+  }
+  li {
+    > div {
+      position: relative;
+      height: 17.0667vw;
+      border-radius: 1.3333vw;
+    }
+  }
+  img {
+    @extend .g_c_mid;
+    top: -1.3333vw;
+    object-fit: contain;
+  }
+  .odds {
+    @extend .flex_v_h;
+    width: 11.7333vw;
+    height: 5.0667vw;
+    margin-top: 0.5333vw;
+    font-size: 3.4667vw;
+    color: #fff;
+    @include getBgImg('../../../assets/images/game/goldempire/odds_bg.png');
+    i {
+      font-weight: bold;
+    }
+  }
+  .txt {
+    @extend .g_c_mid;
+    @extend .flex_hc;
+    bottom: 0.5333vw;
+    padding: 0.6667vw 2.9333vw;
+    font-size: 3.4667vw;
+    border-radius: 4.8vw;
+    color: #fff;
+    white-space: nowrap;
+  }
+}
+.male_select,
+.female_select {
+  > div {
+    width: 32.9333vw;
+  }
+}
+
+.male_select {
+  > div {
+    background: linear-gradient(to bottom, #31c0db, #1b9bb6);
+    background: -webkit-linear-gradient(top, #31c0db, #1b9bb6);
+    img {
+      width: 17.7333vw;
+      height: 15.0667vw;
+    }
+  }
+  .txt {
+    background-color: #614249;
+  }
+}
+
+.male_icon {
+  width: 3.4667vw;
+  height: 3.4667vw;
+  @include getBgImg('../../../assets/images/game/goldempire/male_icon.png');
+  background-size: contain;
+}
+
+.female_select {
+  > div {
+    background: linear-gradient(to bottom, #e8c785, #dc9e5a);
+    background: -webkit-linear-gradient(top, #e8c785, #dc9e5a);
+    img {
+      width: 17.7333vw;
+      height: 18vw;
+    }
+  }
+  .odds {
+    margin-right: 0;
+    margin-left: auto;
+  }
+  .txt {
+    background-color: #745537;
+  }
+}
+
+.female_icon {
+  width: 2.4vw;
+  height: 3.4667vw;
+  @include getBgImg('../../../assets/images/game/goldempire/female_icon.png');
+  background-size: contain;
+}
+
+.no_select {
+  > div {
+    width: 21.7333vw;
+    background: linear-gradient(to bottom, #96e2a8, #80a367);
+    background: -webkit-linear-gradient(top, #96e2a8, #80a367);
+    img {
+      width: 17.7333vw;
+      height: 18vw;
+      top: -2.6667vw;
+    }
+  }
+  .odds {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .txt {
+    background-color: #274443;
+  }
+}
+
+.mod_party {
+  @extend .flex_v_h;
+  padding: 3.3333vw 3.7333vw 4.2667vw;
+  .party_item {
+    position: relative;
+    width: 18.1333vw;
+    height: 15.0667vw;
+    border-radius: 1.3333vw;
+    text-align: center;
+    &:first-child {
+      background: linear-gradient(to bottom, #21a1ba, #30aac1);
+      background: -webkit-linear-gradient(top, #21a1ba, #30aac1);
+    }
+    &:nth-child(2) {
+      margin: 0 2.4vw 0 1.6vw;
+      background: linear-gradient(to bottom, #60c892, #47af7c);
+      background: -webkit-linear-gradient(top, #60c892, #47af7c);
+    }
+    &:nth-child(4) {
+      margin: 0 2.4vw 0 1.6vw;
+      background: linear-gradient(to bottom, #e4d08a, #d8c277);
+      background: -webkit-linear-gradient(top, #e4d08a, #d8c277);
+    }
+    &:last-child {
+      background: linear-gradient(to bottom, #e8b89d, #e09693);
+      background: -webkit-linear-gradient(top, #e8b89d, #e09693);
+    }
+    img {
+      height: 15.0667vw;
+    }
+  }
+  .txt {
+    @extend .g_c_mid;
+    @extend .flex_hc;
+    bottom: 0.5333vw;
+    padding: 0.6667vw 0.8vw;
+    font-size: 3.2vw;
+    border-radius: 4.8vw;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.7);
+    white-space: nowrap;
+  }
+  .odds {
+    @extend .flex_v_h;
+    width: 11.7333vw;
+    height: 5.0667vw;
+    font-size: 3.4667vw;
+    color: #fff;
+    @include getBgImg('../../../assets/images/game/goldempire/odds_bg.png');
+    i {
+      font-weight: bold;
+    }
+  }
+}
+
+.mod_campaigner {
+  @extend .flex_v_justify;
+  padding: 0 5.0667vw;
+  ul {
+    @extend .flex_hc;
+  }
+  .item {
+    position: relative;
+    width: 16.5333vw;
+    height: 16.5333vw;
+    margin: 0.5333vw 0.9333vw;
+    text-align: center;
+    img {
+      @extend .g_c_mid;
+      bottom: 1.6vw;
+      width: 14.1333vw;
+    }
+  }
+  .txt {
+    @extend .g_c_mid;
+    @extend .flex_hc;
+    bottom: 0.5333vw;
+    padding: 0.6667vw 1.6vw;
+    font-size: 3.2vw;
+    border-radius: 4.8vw;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .odds {
+    @extend .flex_v_h;
+    width: 11.7333vw;
+    height: 5.0667vw;
+    font-size: 3.4667vw;
+    color: #fff;
+    @include getBgImg('../../../assets/images/game/goldempire/odds_bg.png');
+    i {
+      font-weight: bold;
+    }
+  }
+  .male_head {
+    .item {
+      @include getBgImg('../../../assets/images/game/goldempire/male_head_bg.png');
+    }
+    .txt {
+      background-color: #143c44;
+    }
+  }
+  .male_civilian {
+    .item {
+      @include getBgImg('../../../assets/images/game/goldempire/male_civilian.png');
+    }
+    .txt {
+      background-color: #133a2f;
+    }
+  }
+  .female_civilian {
+    .item {
+      @include getBgImg('../../../assets/images/game/goldempire/female_civilian.png');
+    }
+    .txt {
+      background-color: #413126;
+    }
+  }
+  .female_head {
+    .item {
+      @include getBgImg('../../../assets/images/game/goldempire/female_head_bg.png');
+    }
+    .txt {
+      background-color: #5d333a;
+    }
+  }
+}
+
+.mod_stands {
+  @extend .flex_v_justify;
+  padding: 0.5333vw 4.2667vw 0 4.6667vw;
+  .item {
+    position: relative;
+    width: 12.8vw;
+    height: 12.8vw;
+    padding: 0.5333vw;
+    border-radius: 50%;
+    @include getBgImg('../../../assets/images/game/goldempire/stands_bg.png');
+    &:nth-child(3) {
+      width: 18.1333vw;
+      height: 18.1333vw;
+      @include getBgImg('../../../assets/images/game/goldempire/stands_now.png');
+    }
+    span {
+      @extend .g_c_mid;
+      top: -2.6667vw;
+      font-size: 5.3333vw;
+      color: #fff;
+      text-align: center;
+    }
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+    }
+  }
+  .item_user {
+    padding: 2.1333vw 2.1333vw 2.1333vw 1.0667vw;
+  }
+}
+
+.mod_footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 10;
+  width: 100%;
+}
+
+.mod_bet {
+  @extend .flex_justify;
+  align-items: flex-end;
+  -webkit-align-items: flex-end;
+  height: 16.2667vw;
+  padding: 0.9333vw 1.7333vw;
+  @include getBgImg('../../../assets/images/game/goldempire/footer_bg.png');
+  background-size: contain;
+  .txt {
+    position: relative;
+    left: -1.6vw;
+    top: 2.1333vw;
+    @extend .flex;
+    i {
+      width: 11.7333vw;
+      height: 7.3333vw;
+      @include getBgImg('../../../assets/images/game/goldempire/gold_icon.png');
+    }
+    span {
+      position: relative;
+      left: -1.3333vw;
+      top: 0.2667vw;
+      font-size: 4.2667vw;
+      font-weight: bold;
+      background: linear-gradient(0deg, rgba(217, 162, 97, 1) 0%, rgba(224, 193, 120, 1) 53.6376953125%, rgba(255, 252, 214, 1) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+  .gold_num {
+    width: 32.8vw;
+    height: 9.2vw;
+    padding: 2.6667vw 0 0 3.3333vw;
+    font-size: 4vw;
+    font-weight: bold;
+    @include getBgImg('../../../assets/images/game/goldempire/gold_num_bg.png');
+    span {
+      background: linear-gradient(180deg, rgba(255, 246, 204, 1) 0%, rgba(255, 215, 105, 1) 37.3046875%, rgba(248, 163, 31, 1) 62.4267578125%, rgba(255, 235, 99, 1) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+  .bet_list {
+    ul {
+      @extend .flex;
+      align-items: flex-end;
+      -webkit-align-items: flex-end;
+    }
+    li {
+      @extend .flex_vc;
+      align-items: flex-end;
+      -webkit-align-items: flex-end;
+      width: 12.6667vw;
+      height: 13.6vw;
+      padding-bottom: 1.6vw;
+      @include getBgImg('../../../assets/images/game/goldempire/bet_bg.png');
+      &:nth-child(2) {
+        @include getBgImg('../../../assets/images/game/goldempire/bet_await.png');
+      }
+      &.active {
+        position: relative;
+        top: 0.5333vw;
+        width: 17.0667vw;
+        height: 24.4vw;
+        @include getBgImg('../../../assets/images/game/goldempire/bet_select.png');
+      }
+      span {
+        font-size: 3.4667vw;
+        font-weight: bold;
+        background: linear-gradient(to bottom, rgba(217, 162, 97, 1) 0%, rgba(224, 193, 120, 1) 53.6376953125%, rgba(255, 252, 214, 1) 100%);
+        background: -webkit-linear-gradient(top, rgba(217, 162, 97, 1) 0%, rgba(224, 193, 120, 1) 53.6376953125%, rgba(255, 252, 214, 1) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+  }
+  .delete {
+    position: relative;
+    top: 0.8vw;
+    width: 15.7333vw;
+    height: 15.3333vw;
+    padding-top: 9.3333vw;
+    @include getBgImg('../../../assets/images/game/goldempire/delete_bg.png');
+    text-align: center;
+    span {
+      font-size: 3.7333vw;
+      font-weight: bold;
+      background: linear-gradient(to bottom, rgba(255, 237, 113, 1) 0%, rgba(245, 249, 250, 1) 100%);
+      background: -webkit-linear-gradient(top, rgba(255, 237, 113, 1) 0%, rgba(245, 249, 250, 1) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+}
+
+.rest_time {
+  @extend .g_v_c_mid;
+  @include getCircle(53.3333vw, #46c4f9, #fff);
+  font-size: 6.6667vw;
+}
+
+.open_award {
+  position: relative;
+  top: -15%;
+  width: 100%;
+  height: 88.8vw;
+  padding: 31.3333vw 11.8vw 0;
+  @include getBgImg('../../../assets/images/game/goldempire/open_award_bg.png');
+  .title {
+    font-size: 10.6667vw;
+    color: #fffffa;
+    font-weight: bold;
+    text-align: center;
+  }
+  .tips {
+    padding-top: 8vw;
+    font-size: 3.4667vw;
+    font-weight: bold;
+    color: #e1ecf4;
+    text-align: center;
+  }
+  .award_group {
+    padding: 4.4vw 0 8vw;
+    overflow: hidden;
+  }
+  .group_list {
+    @extend .flex_hc;
+    display: inline-flex;
+    display: -webkit-inline-flex;
+    &.active {
+      animation: moveLeft 5s ease-in-out forwards;
+    }
+  }
+
+  .item {
+    position: relative;
+    width: 18.1333vw;
+    height: 15.0667vw;
+    margin: 0 3.6vw;
+    text-align: center;
+    &::before {
+      content: '';
+      opacity: 0;
+      @extend .g_v_c_mid;
+      z-index: 0;
+      width: 47.7333vw;
+      height: 48.1333vw;
+      @include getBgImg('../../../assets/images/game/goldempire/animate/shine_sprite.png');
+      background-position: 0 0;
+      background-size: 572.8vw;
+    }
+    &.active {
+      &::before {
+        opacity: 1;
+        animation: shining 2s steps(11) infinite;
+      }
+      > div {
+        opacity: 1;
+      }
+    }
+    > div {
+      position: relative;
+      z-index: 1;
+      border-radius: 1.3333vw;
+      opacity: 0.5;
+      background: linear-gradient(to bottom, #60c892, #47af7c);
+      background: -webkit-linear-gradient(top, #60c892, #47af7c);
+    }
+    img {
+      height: 15.0667vw;
+    }
+  }
+  .txt {
+    @extend .g_c_mid;
+    @extend .flex_hc;
+    bottom: 0.5333vw;
+    padding: 0.6667vw 0.8vw;
+    font-size: 3.2vw;
+    border-radius: 4.8vw;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.7);
+    white-space: nowrap;
+  }
+  .award_item {
+    @extend .flex_hc;
+  }
+}
+@keyframes moveLeft {
+  0% {
+    transform: translateX(0);
+    -webkit-transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-92.2%);
+    -webkit-transform: translateX(-92.2%);
+  }
+}
+
+@keyframes shining {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -525.0667vw 0;
+  }
+}
+
+
+</style>

@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "my-record-item" : "/modules/mypage/mywallet/myrecorditem/my-record-item",
+    "no-data": "/component/comm/no-data/no-data"
+  }
+}

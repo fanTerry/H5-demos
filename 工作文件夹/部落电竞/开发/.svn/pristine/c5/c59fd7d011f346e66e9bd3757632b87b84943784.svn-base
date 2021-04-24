@@ -1,0 +1,46 @@
+<div class="Page">
+	<div class="main">
+		<div class="nav">
+			<a v-for="(item,index) in tablist" :key="item" :class="{cur:mark === index}"
+				click="changeTab(index)">{{item}}</a>
+		</div>
+
+		<!-- <scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" pullingUp="onPullingUp"> -->
+		<!-- 营收记录 -->
+		<div class="sales_record" v-if="mark==0">
+			<scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" pullingUp="onPullingUp">
+				<ul>
+					<li v-for="(item,index) in recordList">
+						<div>
+							<p class="txt">收入</p>
+							<p class="time">{{item.createTime | getLastTimeStr}}</p>
+						</div>
+						<div class="num">+{{item.amount}}</div>
+					</li>
+				</ul>
+			</scroll>
+		</div>
+
+		<!-- 提现记录 -->
+		<div class="withdraw_record" v-else>
+			<scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" pullingUp="onPullingUp">
+
+				<ul>
+					<li v-for="(item,index) in recordList">
+						<div>
+							<p class="txt">提现</p>
+							<p class="time">{{item.createTime | getLastTimeStr}}</p>
+						</div>
+						<div class="tac">
+							<p class="num">{{item.amount}}</p>
+							<p class="status" v-if="item.status==1">审核中</p>
+							<p class="status" v-else-if="item.status==2">提现成功</p>
+							<p class="status" v-else-if="item.status==3">提现失败</p>
+						</div>
+					</li>
+				</ul>
+			</scroll>
+		</div>
+
+	</div>
+</div>

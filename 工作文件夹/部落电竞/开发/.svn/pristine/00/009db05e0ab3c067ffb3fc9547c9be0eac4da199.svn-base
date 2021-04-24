@@ -1,0 +1,105 @@
+<template>
+  <div class="Page allGuess">
+    <header class="mod_header">
+      <navBar :pageTitle='123'>
+        <div class="battle_team">
+          <div class="flex_hc">
+            <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/icon/avatar.png" alt="">
+            <span class="name">EDG</span>
+          </div>
+          <span class="vs">vs</span>
+          <div class="flex_hc">
+            <span class="name">IG</span>
+            <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/icon/avatar.png" alt="">
+          </div>
+        </div>
+      </navBar>
+    </header>
+    <div class="main">
+      <ul>
+        <li>
+          <betItem class="bet_item"></betItem>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index";
+import betItem from "./components/betItem";
+
+export default {
+  components: {
+    navBar,
+    betItem
+  },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang="scss">
+.allGuess {
+  background-color: #1f1212;
+  .back {
+    height: 40px !important;
+    &::before,
+    &::after {
+      background-color: #a26767 !important;
+    }
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.mod_header {
+}
+
+.nav_bar {
+  color: transparent !important;
+  background-color: #321919 !important;
+  line-height: 40px !important;
+}
+
+.battle_team {
+  @extend .g_v_c_mid;
+  @extend .flex_v_justify;
+  width: 280px;
+  height: 100%;
+  padding: 0 24px;
+  @include getBgImg("../../assets/images/guess/guess_title_bg.png");
+  img {
+    width: 27px;
+    height: 27px;
+    border-radius: 50%;
+  }
+  .name {
+    margin: 0 4px;
+    font-size: 14px;
+    color: #fedcd7;
+    @include t_nowrap(70px);
+  }
+  .vs {
+    @extend .g_v_c_mid;
+    font-size: 18px;
+    font-weight: bold;
+    font-style: italic;
+    color: #51423a;
+  }
+}
+
+.bet_item {
+  margin: 15px 10px 0;
+  padding: 25px 10px 30px;
+  background: linear-gradient(to right bottom, #482522, #32191e);
+  background: -webkit-linear-gradient(left top, #482522, #32191e);
+}
+</style>

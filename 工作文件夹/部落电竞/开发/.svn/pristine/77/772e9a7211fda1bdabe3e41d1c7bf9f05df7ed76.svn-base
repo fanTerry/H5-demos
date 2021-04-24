@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "expert-header": "/component/expert/expertheader/expert-header",
+    "pp-expert": "/component/popup/ppexpert/pp-expert",
+    "expertapplypage":  "/modules/expertpage/expertagreepage/expert-agree-page",
+    "expert-recommend": "/component/expert/expertrecommend/expert-recommend",
+    "pp-my": "/component/popup/ppmy/pp-my"
+  },
+  "navigationBarTitleText": "推荐详情"
+}

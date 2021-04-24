@@ -1,0 +1,10 @@
+<!--component/submenubar/submenu-bar.wxml-->
+<view class="tab_list">
+  <!-- <image class="sub-menu-icon" src="https://rs.esportzoo.com/svn/esport-res/mini/images/icon/menu.png" /> -->
+  <view class="list">
+    <view wx:for="{{titleArray}}" wx:key="" data-index="{{index}}" bindtap="changeTag" class="item {{item.contentType==selectedTag?'current':''}}">
+      {{item.name}}
+      <!-- 当前状态样式sub-menu-item-act -->
+    </view>
+  </view>
+</view>

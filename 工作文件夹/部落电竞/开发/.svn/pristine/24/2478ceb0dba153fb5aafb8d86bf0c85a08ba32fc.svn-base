@@ -1,0 +1,12 @@
+<!--component/store/address/address.wxml-->
+<view class="location_address">
+  <i class="location_icon"></i>
+  <view>
+    <p>
+      <span class="name">李艳</span>
+      <span class="phone_num">15992476894</span>
+    </p>
+    <p class="address">广东省深圳市福田区玉泉路3号麒麟花园A区商轩2310</p>
+  </view>
+  <span class="link_icon"></span>
+</view>

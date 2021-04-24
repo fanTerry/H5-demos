@@ -1,0 +1,8 @@
+/* pages/help/myFeedBack/myFeedBack.wxss */
+page{
+	height: 100%;
+}
+
+.myFkPage .cmt_list.detail li {
+	padding-bottom: 0 !important;
+}

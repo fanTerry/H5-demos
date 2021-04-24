@@ -1,0 +1,89 @@
+<template>
+  <div class="">
+
+    <router-link  to="/home/csgo" class="list-wrap"  >
+      <div class="list-img">
+        <img src="~assets/images/img.png" alt="">
+      </div>
+      <div class="list-text">
+        <p class="text-tag">#LOL掌上助手</p>
+        <p class="text-word">新起点！2019年TGA腾讯电竞运动会三月分站赛赛程公月分站赛赛程公布</p>
+        <p class="text-num">
+
+          <span><i class="num-icon icon-yanjing"></i><i class="num-number">1212</i></span>
+          <span><i class="num-icon icon-pinglun"></i><i class="num-number">121</i></span>
+        </p>
+      </div>
+    </router-link>
+
+  </div>
+</template>
+<script>
+  export default {
+    props: {
+      articleList:Array,
+    },
+    created () {
+     
+    },
+    methods: {
+
+    },
+    data () {
+      return {
+
+      }
+    },
+    mounted(){
+      
+    }
+  }
+</script>
+<style lang="less" scoped>
+.list-wrap{
+  border-top:1px solid #dddddd;
+  display:flex;
+  width: 718px;
+	height: 226px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+.list-img{
+  img{
+    width: 285px;
+    height: 183px;
+  }
+  margin-right: 26px;
+}
+.list-text{
+  font-family: SourceHanSansSC-Regular;
+  flex:1;
+  .text-tag{
+  	font-size: 18px;
+  	color: #a3a3a3;
+  }
+  .text-word{
+    font-size: 26px;
+    height: 94px;
+    margin:18px 0 10px;
+  	line-height: 32px;
+  	color: #000000;
+  }
+  .text-num{
+    span{
+      margin-right:28px;
+    }
+    .num-icon{
+      font-size:32px;
+    }
+    .num-number{
+      font-size: 24px;
+      display: inline-block;
+      transform: translateY(-3px);
+    }
+    i{
+      color: #a3a3a3;
+    }
+  }
+}
+</style>

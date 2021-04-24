@@ -1,0 +1,72 @@
+<!--pages/follow/follow.wxml-->
+<view class='follow-view'>
+  <!-- 顶部菜单栏 -->
+  <follow-top-menu menuArray='{{menuArr}}'></follow-top-menu>
+
+  <!-- 搜索框 -->
+  <view class='follow-search-view'>
+    <input class='f-s-input' placeholder="搜索话题" placeholder-class="f-s-input-ph" />
+  </view>
+	
+  <!-- 用户列表 -->
+	<!-- none类名隐藏模块，不展示 -->
+  <view class='follow-list-view none'>
+    <!-- 搜索结果列表 -->
+    <view class='follow-search-result-list'>
+      <expert-item wx:for="list"></expert-item>
+    </view>
+  
+    <view class='follow-list'>
+      <!-- 按字母搜索列表 -->
+      <view class='follow-search-letter-list'>
+        <view><i class='iconfont icon-sousuo f-s-l-icon'></i></view>
+        <view class='f-s-l-item' wx:for="{{letterArr}}">{{item}}</view>
+      </view>
+
+      <!-- 全部列表 -->
+      <follow-expert-list wx:for="list"></follow-expert-list>
+    </view>
+  </view>
+
+
+	<!-- 用户动态 -->
+	<view class="mod_dynamic">
+		<!-- 关闭按钮 -->
+		<i class="iconfont icon-guanbi"></i>
+
+		<!-- 顶部用户信息 -->
+		<view class="user_infor">
+			<view class="flex-v">
+				<image mode="aspectFill" src="/resources/images/avatar/cat.jpg"></image>
+				<view>
+					<view class="user_name">强主播欧阳向日葵</view>
+					<view class="dy_tips">转发动态</view>
+				</view>
+			</view>
+			<view class="follow">+<text>关注</text></view>
+			<!-- <view class="followed">已关注</view> -->
+		</view>
+
+		<!-- 分享和转发的动态 转发的动态加上dynamic_repeat--> 
+		<view class="ml-74 dynamic_share dynamic_repeat">
+			<view class="to_someone"><text>@欧阳长臂猿</text></view>
+			<view class="to_someone"><text>#欧阳长臂猿#</text>快来批一下哈~~皮皮皮!</view>
+			<image class="adver_img" mode="aspectFill" src="/resources/images/swiper1.png"></image>
+			<!-- <video class="adver_video" mode="aspectFill" src=""></video> -->
+			<view class="adver_title">北美LCS解说Zirene从拳头公司离职</view>
+		</view>
+
+		<!-- 底部发布动态时间 点赞和评论 -->
+		<view class="dynamic_num">
+			<view class="time">10分钟前</view>
+			<view>
+				<view class="active"><i class="iconfont icon-dianzan"></i><text>65652</text></view>
+				<view><i class="iconfont icon-pinglun"></i><text>65652</text></view>
+				<view><i class="iconfont icon-gengduo"></i></view>
+			</view>
+		</view>
+	</view>
+
+
+
+</view>

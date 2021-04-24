@@ -1,0 +1,219 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <h2>
+        <div class="back"></div>
+        钱包
+      </h2>
+      <div class="recharge">
+        <a class="recharge_btn">充值</a>
+        <div>
+          <p>金币余额</p>
+          <span>0000000,00</span>
+        </div>
+        <div>
+          <p>账户限额</p>
+          <span>000000,00</span>
+        </div>
+      </div>
+      <ul class="recharge_list">
+        <li class="active">金币明细</li>
+        <li>限额明细</li>
+        <li>充值明细</li>
+        <div class="game_list">
+          <span class="active">LOL</span>
+          <span>LOL</span>
+          <span>LOL</span>
+          <span>LOL</span>
+          <span>LOL</span>
+        </div>
+      </ul>
+    </header>
+
+    <div class="main">
+      <section class="bought_record">
+        <h3>2019年5月</h3>
+        <section class="record_list">
+          <div class="item">
+            <div class="flex_hc">
+              <img
+                src=""
+                alt=""
+              >
+              <div>
+                <p class="goods"><span>购买</span><span>XXXXXXXX</span></p>
+                <span class="time">2019-04-23 11:03:23</span>
+              </div>
+            </div>
+            <div class="tar">
+              <p class="cost">-67.23</p>
+              <span class="balance">余额5.43</span>
+            </div>
+            <span class="link"></span>
+          </div>
+        </section>
+
+      </section>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {};
+  },
+  methods: {},
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base.scss";
+@import "../../../assets/common/_mixin.scss";
+@import "../../../assets/common/_var.scss";
+
+.mod_header h2 {
+  background: none;
+}
+
+.recharge {
+  position: relative;
+  margin: 10px 5px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  @include getBgImg("../../../assets/images/user_center/wallet.png");
+  > div {
+    padding-bottom: 20px;
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
+  p {
+    font-size: 14px;
+    color: #fffe93;
+  }
+  span {
+    padding-top: 10px;
+    font-size: 21px;
+    color: #ffffff;
+  }
+  .recharge_btn {
+    position: absolute;
+    right: 5px;
+    bottom: 15px;
+    padding: 6px 25px;
+    font-size: 14px;
+    border-radius: 40px;
+    border: 1px solid #fff;
+    color: #fff;
+  }
+}
+.recharge_list {
+  position: relative;
+  @extend .flex_v_justify;
+  margin: 0 5px;
+  padding: 3px 20px 3px 10px;
+  border-radius: 8px;
+  background-color: #fff;
+  li {
+    position: relative;
+    padding: 8px 3px;
+    color: #818181;
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      transform: translate(100%, 50%);
+      -webkit-transform: translate(100%, 50%);
+      @include getTriangle(4px, currentColor, down);
+    }
+    &.active {
+      color: $color_main;
+      border-bottom: 1px solid currentColor;
+      &::after {
+        @include getTriangle(4px, currentColor, down);
+      }
+    }
+  }
+  .game_list {
+    @extend .flex_v_justify;
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    position: absolute;
+    z-index: 999;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    padding: 10px 5px;
+    border-radius: 8px 8px 0 0;
+    background-color: #fff;
+    span {
+      @extend .flex_v_h;
+      width: 20%;
+      height: 20px;
+      margin: 0 5px 10px;
+      color: #818181;
+      border: 1px solid #999;
+      border-radius: 20px;
+    }
+    .active {
+      color: $color_main;
+      border: 1px solid currentColor;
+    }
+  }
+}
+
+.bought_record {
+  margin: 0 5px;
+  .record_list {
+    border-radius: 8px;
+    background-color: #fff;
+  }
+  h3 {
+    padding: 15px 10px 10px;
+    color: #000;
+  }
+  .item {
+    position: relative;
+    padding: 15px 25px 15px 10px;
+    @extend .flex_v_justify;
+    @include getBorder(bottom, #e4e4e4);
+    &:last-child {
+      background: none;
+    }
+  }
+  .link {
+    position: absolute;
+    right: 15px;
+    @include getArrow(8px, rgba(0, 0, 0, 0.5), right);
+  }
+  img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .goods {
+    font-size: 14px;
+    padding-bottom: 4px;
+    color: #6d6d6d;
+    span {
+      padding-right: 10px;
+    }
+  }
+  .time,
+  .balance {
+    display: block;
+    color: #818181;
+  }
+  .cost {
+    padding-bottom: 3px;
+    font-size: 15px;
+    color: #3a3a3a;
+    font-weight: 500;
+  }
+}
+</style>

@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+		"locationAddress":"/component/store/address/address"
+	}
+}

@@ -1,0 +1,121 @@
+import utils from './libs/utils';
+
+/** 根据size格式化传入的对象
+ *  @param {string} val 需要格式化的字符串
+ *  @param {num} size 保留多少位
+ */
+exports.subStr = (val, size) => {
+    if (!val || val.length == 0 || val == undefined) {
+        return;
+    }
+    if (val.length > size) {
+        return val.substring(0, size) + '...';
+    } else {
+        return val;
+    }
+};
+
+/** 根据图片地址判断是否取默认图
+ *  @param {string} imgUrl 传入的图片地址
+ *  @param {string} defaultImg 默认显示的图片地址
+ */
+exports.getDefaultImg = (imgUrl, defaultImg) => {
+    if (!imgUrl) {
+        return defaultImg;
+    } else {
+        return imgUrl;
+    }
+};
+
+/** 格式化时间
+ *  @param {string} time 需要格式化的时间
+ *  @param {bool} friendly 是否是fromNow
+ */
+exports.getLastTimeStr = (time, friendly) => {
+    if (friendly) {
+        return utils.MillisecondToDate(time);
+    } else {
+        return utils.fmtDate(new Date(time), 'yyyy-MM-dd hh:mm');
+    }
+};
+
+/** 格式化数字->货币
+ *  @param {string} 数字
+ *  @param {numbeer} places 保留位数
+ */
+exports.formatMoney = (number, places, symbol, thousand, decimal) => {
+    number = number || 0;
+    places = !isNaN(places = Math.abs(places)) ? places : 2;
+    symbol = symbol !== undefined ? symbol : '￥';
+    thousand = thousand || ',';
+    decimal = decimal || '.';
+    var negative = number < 0 ? '-' : '',
+        i = parseInt(number = Math.abs(+number || 0).toFixed(places), 10) + '',
+        j = (j = i.length) > 3 ? j % 3 : 0;
+    return symbol + negative + (j ? i.substr(0, j) + thousand : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + thousand) + (places ? decimal + Math.abs(number - i).toFixed(places).slice(2) : '');
+};
+
+/** 格式化话题->前后加#号 */
+exports.formatTopic = (topicName) => {
+    if (!topicName) {
+        return '';
+    } else {
+        return '#' + topicName + '#';
+    }
+};
+
+/** 投注方案 */
+exports.betPlan = (status) => {
+    if (status === 1) {
+        return '待处理';
+    } else if (status === 2) {
+        return '申请成功';
+    } else if (status === 3) {
+        return '申请失败';
+    } else if (status === 4) {
+        return '投注成功';
+    } else if (status === 5) {
+        return '投注失败';
+    }
+};
+
+/** 开奖状态 0、待开奖，1、已中奖，2、未中奖 */
+exports.openStatus = (winStatus) => {
+    if (winStatus === 1) {
+        return '等待开奖';
+    } else if (winStatus === 2) {
+        return '猜中+';
+    } else if (winStatus === 0) {
+        return '未中奖';
+    }
+};
+
+/** 格式化时间
+ *  @param {string} time 需要格式化的时间
+ *  @param {bool} friendly 是否是fromNow
+ */
+exports.getQuizRecordTime = (time, friendly) => {
+    if (friendly) {
+        return utils.MillisecondToDate(time);
+    } else {
+        return utils.fmtDate(new Date(time), 'MM-dd hh:mm');
+    }
+};
+
+/** 比赛局数 */
+
+/** 比赛局数 */
+exports.gameFightNum = (fightNum, flag) => {
+    var gameNum = '';
+    if (flag) {
+        gameNum = fightNum.substring(12, fightNum.length);
+    } else {
+        gameNum = fightNum;
+    }
+
+    if (gameNum === '0') {
+        return '总场';
+    } else {
+        return '第' + gameNum + '局';
+    }
+};

@@ -1,0 +1,81 @@
+/* modules/articlepage/articlediscussitem/article-discuss-item.wxss */
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/base/clear.wxss";
+@import "/modules/articlepage/wxss/article.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+
+.article-discuss-item {
+  padding: 20rpx 0;
+}
+
+.article-content {
+  padding: 10rpx 0;
+  width: 640rpx;
+  font-size: 28rpx;
+}
+
+.article-c-item {
+  float: left;
+  font-size: 22rpx;
+  color: #aaa;
+
+  line-height: 30rpx;
+
+  position: relative;
+  padding-left: 30rpx;
+  margin-right: 20rpx;
+}
+.atc-c-i-i {
+  font-size: 24rpx;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.atc-c-i-i-m-v {
+  float: right;
+  line-height: 24rpx;
+}
+.atc-c-i-i-m {
+  color: #aaa;
+}
+
+.article-c-icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+.article-c-icon-m {
+  width: 30rpx;
+  height: 30rpx;
+  margin-right: 20rpx;
+}
+
+.article-d-discuss {
+  background: #efefef;
+  margin: 20rpx 0;
+  padding: 10rpx 30rpx;
+  border-radius: 10rpx;
+}
+.article-d-discuss-item {
+  padding-bottom: 5rpx;
+}
+.atc-d-d-n {
+  font-size: 28rpx;
+  color: #fea21b;
+}
+.atc-d-d-t {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.article-d-d-control {
+  text-align: center;
+  color: #aaa;
+  font-size: 22rpx;
+  margin-top: -20rpx;
+}
+.atc-d-d-i{
+  font-size: 24rpx;
+  padding-left: 5rpx;
+}

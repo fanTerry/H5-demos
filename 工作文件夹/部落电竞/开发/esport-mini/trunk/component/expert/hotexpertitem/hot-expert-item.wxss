@@ -1,0 +1,19 @@
+/* component/expert/hotexpertitem/hot-expert-item.wxss */
+.hot-expert-item {
+  float: left;
+  width: 130rpx;
+  text-align: center;
+
+  padding-top: 20rpx;
+  margin-right: 15rpx;
+}
+.userinfo-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+}
+
+.userinfo-name {
+  width: 130rpx;
+  font-size: 26rpx;
+}

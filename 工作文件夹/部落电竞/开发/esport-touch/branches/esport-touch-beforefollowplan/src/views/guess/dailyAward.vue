@@ -1,0 +1,77 @@
+<template>
+  <div class="ui_pop">
+    <div class="Page">
+      <a class='close' @click="close()"></a>
+      <p class="txt">预测正确，获得星星</p>
+      <p class="value">{{winPrize}}</p>
+      <a class="know" @click="close()">好的</a>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: ["winPrize"],
+  data() {
+    return {};
+  },
+
+  methods: {
+    close() {
+      this.$emit("closeDailyAward");
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.Page {
+  position: relative;
+  width: 77.4667vw;
+  height: 87.2vw;
+  @include getBgImg("../../assets/images/guess/congrats.png");
+  background-size: contain;
+  background-color: transparent;
+  text-align: center;
+}
+.close {
+  position: absolute;
+  right: 4.1333vw;
+  top: 7.4667vw;
+  width: 8vw;
+  height: 8vw;
+  border-radius: 50%;
+  @include getBgImg("../../assets/images/guess/close.png");
+}
+
+.txt {
+  margin-top: 37.6vw;
+  font-size: 4vw;
+  line-height: 4.5333vw;
+  color: #fff;
+}
+
+.value {
+  padding-top: 3.2vw;
+  font-size: 12vw;
+  line-height: 12.5333vw;
+  font-weight: bold;
+  color: #feff00;
+}
+
+.know {
+  display: block;
+  width: 44vw;
+  margin: 12.8vw auto 0;
+  font-size: 4vw;
+  line-height: 9.0667vw;
+  color: $color_main;
+  font-weight: bold;
+  background-color: #feff00;
+  border-radius: 3px;
+}
+</style>

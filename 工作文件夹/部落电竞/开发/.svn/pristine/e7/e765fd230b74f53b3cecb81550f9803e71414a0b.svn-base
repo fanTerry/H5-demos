@@ -1,0 +1,4 @@
+<!--component/comm/no-data/no-data.wxml-->
+<view class='no-data'>
+  <image class="no-data-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/iconimg/no-data.png" mode="aspectFill" />
+</view>

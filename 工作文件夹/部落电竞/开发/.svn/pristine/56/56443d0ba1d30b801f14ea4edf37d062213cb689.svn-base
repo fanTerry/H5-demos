@@ -1,0 +1,109 @@
+<template>
+   <section>
+    <div class="nav">
+      <ul>
+        <li v-for='(item, index) in tabs' :class="{active:index == num}" :key="index"
+              @click="tab(index)" :data-index='index'>
+            <span v-if="item">{{item}}</span>
+        </li>
+      </ul>
+    </div>
+      <div class="contents">
+        <recommend v-if="num==0"/>
+        <videos v-if="num==1"/>
+        <legends v-if="num==2"/>
+        <kings v-if="num==3"/>
+        <survival v-if="num==4"/>
+        <dota v-if="num==5"/>
+        <csgo v-if="num==6"/>
+      </div>
+
+
+
+
+
+
+    <List />
+    <Video />
+    <Footer />
+  </section>
+</template>
+
+<script>
+import recommend from "./recommend"
+import videos from "./video"
+import legends from "./legends"
+import kings from "./kings"
+import survival from "./survival"
+import dota from "./dota"
+import csgo from "./csgo"
+import Footer from "../../components/common/footer/index"
+import List from "../../components/home/list.vue"
+import SlideRender from "../../components/common/slide/slide-render"
+import Video from "../../components/home/video.vue"
+
+export default {
+  components: {
+    recommend,
+    videos,
+    legends,
+    kings,
+    survival,
+    dota,
+    csgo,
+    Footer,
+    List,
+    Video
+  },
+  data() {
+      return {
+        num: 0,
+        tabs: ['推荐','视频','英雄联盟','王者荣耀','绝地求生','DOTA2','CSGO'],
+      };
+  },
+  methods:{
+    tab(index){
+      console.log(index);
+
+      this.num=index
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.nav{
+  width: 100%;
+  overflow: auto;
+}
+ul {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  width: 450px;
+  li {
+    display: inline-block;
+    color: #818181;
+    padding: 23px;
+    border-bottom: 1px solid #ddd;
+    span {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      display: block;
+      font-size: 26px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    &:last-child {
+      margin-right: 0;
+    }
+    &.active {
+      color: #ff7e00;
+      border-bottom: 1px solid #ff7e00;
+    }
+  }
+}
+</style>

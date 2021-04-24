@@ -1,0 +1,105 @@
+.homePage {
+  background-color: rgb(255, 231, 131);
+}
+
+.mod_poster {
+  position: relative;
+  padding-bottom: 93.3%;
+	background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/poster.png") no-repeat center;
+	background-size: cover;
+}
+
+.start_answer_btn {
+	/* @extend .g_c_mid; */
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+  bottom: -42rpx;
+  width: 656rpx;
+  padding-bottom: 148rpx;
+	background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/start_answer_btn.png") no-repeat center;
+	background-size: cover;
+  
+}
+
+.start_answer_btn.active {
+	
+	background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/start_answer_active.png") no-repeat center;
+	background-size: cover;
+}
+.start_answer_btn::after {
+	content: "最先连对20道题即可领取";
+	position: absolute;
+	left: 168rpx;
+	top: -20rpx;
+	font-size: 26rpx;
+	color: #333;
+	white-space: nowrap;
+}
+
+.mod_award {
+  width: 94.4%;
+  height: 294rpx;
+  margin: 72rpx auto 28rpx;
+  padding-top: 16rpx;
+	background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/award_bg.png") no-repeat center;
+	background-size: cover;
+}
+.winner_scroll {
+  height: 76rpx;
+  overflow: hidden;
+}
+
+.winner_scroll swiper{
+	height: 100%;
+}
+
+.mod_award li {
+	/* @extend .flex_v_h; */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	
+}
+
+.mod_award li span {
+	font-size: 30rpx;
+	line-height: 80rpx;
+}
+.mod_award li .winner_name {
+	/* @include t_nowrap(110rpx); */
+	max-width: 220rpx;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	padding: 0 14rpx;
+	color: #fcff00;
+}
+
+.award_prize {
+  padding: 24rpx 0 0 250rpx;
+  
+}
+
+.award_prize p {
+	display: block;
+	padding-bottom: 10rpx;
+	font-size: 24rpx;
+	color: #999;
+}
+.award_prize .title {
+	padding-bottom: 20rpx;
+	font-size: 42rpx;
+	color: #ffea00;
+	/* @include t_nowrap(100%); */
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.award_prize .num {
+	padding-right: 6rpx;
+	color: #ffea00;
+}

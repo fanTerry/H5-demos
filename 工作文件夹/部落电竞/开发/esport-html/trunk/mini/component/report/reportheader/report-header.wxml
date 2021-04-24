@@ -1,0 +1,75 @@
+<!--component/report/reportheader/report-header.wxml-->
+<view class='report-main pr'>
+  <!-- 背景图 -->
+  <view class='report-main-bg-view'>
+    <image class='report-main-bg' src='/resources/images/image1.jpg' mode='width' />
+  </view>
+
+  <!-- 主要部分 -->
+  <view class='report-main-view'>
+
+    <!-- 右上角icon -->
+    <!-- <view class='report-main-head'>
+      <i class='iconfont icon-xiaoxi r-m-h-i'></i>
+      <i class='iconfont icon-gengduo r-m-h-i'></i>
+    </view> -->
+
+    <!-- 比赛名称 -->
+    <view class='report-main-title'>
+      <text>2019 KPL青春赛-小组赛</text>
+    </view>
+
+    <view class='report-main-info dsp-table'>
+      <!-- 第一列 -->
+      <view class='dsp-cell r-m-i-c1'>
+        <image class='report-info-img' src='/resources/images/logo/logo-we.png' mode='aspectFit' />
+        <view class='report-info-name'>
+          <text>WE</text>
+        </view>
+      </view>
+      <!-- 第二列 -->
+      <view class='dsp-cell r-m-i-c2'>
+        <!-- 未开始 -->
+        <!-- TODO:icon占位:铃铛 -->
+        <view class='report-info-time'>5月29日08:00 [BO3]</view>
+        <i class='iconfont icon-naozhong icon-bell '></i>
+        <!-- 进行中 -->
+        <!-- TODO:icon占位:视频 -->
+        <!-- <view class='report-info-score r-i-s-ing'>
+          <view class='dsp-cell r-i-score r-i-s-l'><text>1</text></view>
+          <view class='dsp-cell r-i-status'>
+            <view class='r-i-s-text'><text>第二局</text></view>
+            <view class='r-i-s-text'><text>进行中</text></view>
+          </view>
+          <view class='dsp-cell r-i-score r-i-s-r'><text>2</text></view>
+        </view>
+        <view class='report-watch-btn-view'>
+          <view class='r-w-btn'><i class='iconfont icon-shexiangji r-w-i-i'></i><text>观看直播</text></view>
+        </view> -->
+
+        <!-- 已结束 -->
+        <!-- <view class='report-info-score'>
+          <view class='dsp-cell r-i-score r-i-s-l'><text>1</text></view>
+          <view class='dsp-cell r-i-status'>
+            <text class='r-i-s-m'>-</text>
+          </view>
+          <view class='dsp-cell r-i-score r-i-s-r'><text>2</text></view>
+        </view>
+        <view class='report-info-info'>
+          <text>5月29日08:00 已结束</text>
+        </view> -->
+
+      </view>
+      <!-- 第三列 -->
+      <view class='dsp-cell r-m-i-c1'>
+        <image class='report-info-img' src='/resources/images/logo/logo-blg.png' mode='aspectFit' />
+        <view class='report-info-name'>
+          <text>BLG</text>
+        </view>
+      </view> 
+
+    </view>
+    
+  </view>
+
+</view>

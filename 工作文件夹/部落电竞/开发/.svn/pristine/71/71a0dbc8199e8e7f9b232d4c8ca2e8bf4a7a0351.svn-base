@@ -1,0 +1,742 @@
+<template>
+  <div class="ui_pop" v-if="loginShowType">
+    <!-- 微信登录 -->
+    <div class="login" v-if="codeType==1">
+      <p class="login_title">登录微信</p>
+      <img class="login_img" src="../../../assets/images/pop/red_bag.png" alt />
+      <p class="login_att">领取星星，参与竞猜</p>
+      <p class="login_tips">稀有皮肤、话费、Q币海量奖品等你拿</p>
+      <a class="login_btn" @click="codeLogin">立即登录</a>
+    </div>
+
+    <!-- 二维码扫一扫 -->
+    <div class="qrCode" v-if="codeType==2">
+      <a class="close" @click="loginClosePop"></a>
+      <img class="qrCode_img" v-bind:src="qrcodeUrl" alt />
+      <p class="qrCode_tips">
+        微信
+        <span>扫一扫</span>关注
+        <br />橘子电竞快速登陆
+      </p>
+    </div>
+  </div>
+</template>
+
+<script>
+import Vue from "vue";
+import localStorage from "../../../libs/storages/localStorage";
+import cookie from "../../../libs/common/cookie";
+import { mapGetters, mapActions } from "vuex";
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {
+      userInfo: null,
+      sceneStr: null,
+      qrcodeUrl: null,
+      websock: null,
+      wx_account_login_cookie_sid: null,
+      codeType: 0,
+      loginShowType: false
+    };
+  },
+  computed: {
+    ...mapGetters({
+      loginInfo: "getLoginPop",
+      userLoginType: "getLoginType",
+      userLoginShowType: "getLoginShowType",
+      userCodeType: "getCodeType",
+      wxuserInfo: "getUserInfo",
+      wxuserStarNum: "getstarNum"
+    }),
+    getLoginShowType() {
+      return this.userLoginShowType.state;
+    },
+    getCodeType() {
+      return this.userCodeType.state;
+    }
+  },
+  // 实时监听用户登录状态
+  watch: {
+    getLoginShowType(val) {
+      this.loginShowType = val;
+      console.log(val, "P用户登录状态");
+    },
+    getCodeType(val) {
+      this.codeType = val;
+      console.log(val, "p用户登录二维码状态");
+    }
+  },
+  methods: {
+    //用户登录
+    wxCodeLogin() {
+      return this.$post("/api/wxlogin/scanLogin")
+        .then(rsp => {
+          const dataResponse = rsp;
+          this.qrcodeUrl = dataResponse.qrcodeUrl;
+          this.sceneStr = dataResponse.sceneStr;
+          this.initWebSocket();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    initWebSocket() {
+      if ("WebSocket" in window) {
+        const wsuri = "ws://www.esportzoo.cn/websocket"; //ws地址
+        this.websock = new WebSocket(wsuri);
+        this.websock.onopen = this.websocketonopen;
+        this.websock.onerror = this.websocketonerror;
+        this.websock.onmessage = this.websocketonmessage;
+        this.websock.onclose = this.websocketclose;
+      } else {
+        alert("当前浏览器无法获取二维码，请更换浏览器");
+      }
+    },
+    websocketonopen() {
+      console.log("WebSocket连接成功");
+      // console.log(this.sceneStr);
+      this.websock.send(this.sceneStr);
+      // this.codeType = 2;
+      // this.loginShowType = true;
+      this.$store.dispatch("setLoginShowType", { state: true });
+      this.$store.dispatch("setCodeType", { state: 2 });
+    },
+    websocketonerror(e) {
+      //错误
+      console.log("WebSocket连接发生错误");
+      this.initWebSocket();
+    },
+    websocketonmessage(e) {
+      // console.log("数据开始接收");
+      // console.log(e.data); // 接收数据
+      this.userInfo = JSON.parse(e.data);
+      this.wx_account_login_cookie_sid = this.userInfo.sId;
+      cookie.setCookie(
+        "wx_account_login_cookie_sid",
+        this.wx_account_login_cookie_sid,
+        1
+      );
+      localStorage.set("user", this.userInfo);
+      //用户成功登录后改登录标志位true
+      this.$store.dispatch("setLoginPop", { state: true });
+      this.$store.dispatch("setLoginType", { state: 0 });
+
+      this.$store.dispatch("setUserInfo", { state: this.userInfo });
+      this.$store.dispatch("setstarNum", { state: this.userInfo.walletRec });
+      // this.codeType = 0;
+      // this.loginShowType = false;
+      this.$store.dispatch("setLoginShowType", { state: false });
+      this.$store.dispatch("setCodeType", { state: 0 });
+      this.$parent.queryYeYunPoints();
+      this.$parent.creditsExchangeShow();
+      this.$parent.checkUserSignStatus();
+      console.log("成功调用椰云");
+    },
+
+    websocketclose(e) {
+      console.log("WebSocket连接关闭", e); //关闭
+    },
+    //关闭弹窗
+    loginClosePop() {
+      // this.codeType = 0;
+      // this.loginShowType = false;
+      this.$store.dispatch("setLoginShowType", { state: false });
+      this.$store.dispatch("setCodeType", { state: 0 });
+    },
+
+    //跳转到扫码登录
+    codeLogin() {
+      this.wxCodeLogin();
+    },
+    //
+    loginOpenPop() {
+      console.log("调用方法");
+      this.codeType = 1;
+      this.loginShowType = true;
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.ui_pop > div {
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translate(25%, -25%);
+  -webkit-transform: translate(25%, -25%);
+  width: 40px;
+  height: 40px;
+}
+
+.login {
+  width: 403px;
+  height: 536px;
+  text-align: center;
+  @include getBgImg("../../../assets/images/pop/login_wx_bg.png");
+}
+
+.login_title {
+  padding-top: 72px;
+  font-size: 24px;
+  color: #ffdcd7;
+}
+
+.login_img {
+  width: 153px;
+  margin-top: 35px;
+}
+
+.login_att {
+  padding-top: 35px;
+  font-size: 24px;
+  color: #ffdcd7;
+}
+
+.login_tips {
+  padding-top: 19px;
+  font-size: 14px;
+  color: #ffbea3;
+}
+
+.login_btn {
+  display: inline-block;
+  width: 318px;
+  height: 48px;
+  margin-top: 26px;
+  line-height: 48px;
+  font-size: 16px;
+  color: #ffdcd7;
+  @include getBgImg("../../../assets/images/home/guess_now.png");
+}
+
+.qrCode {
+  width: 714px;
+  height: 387px;
+  @include getBgImg("../../../assets/images/pop/qrCode_bg.png");
+  .close {
+    right: 18px;
+    top: 23px;
+  }
+}
+
+.qrCode_img {
+  @extend .g_v_mid;
+  left: 72px;
+  width: 270px;
+  height: 270px;
+}
+
+.qrCode_tips {
+  @extend .g_v_mid;
+  right: 80px;
+  font-size: 30px;
+  line-height: 50px;
+  color: #fff;
+  text-align: center;
+  span {
+    color: #27c5d3;
+  }
+}
+
+.prize,
+.recharge {
+  width: 647px;
+  padding: 30px 20px 42px;
+  h2 {
+    position: relative;
+    padding-left: 22px;
+    font-size: 24px;
+    color: #fff6ea;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 1px;
+      left: 0;
+      width: 7px;
+      height: 24px;
+      background: linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -ms-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -webkit-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+    }
+  }
+  .prize_list {
+    padding-left: 8px;
+    overflow: hidden;
+  }
+  li {
+    float: left;
+    width: 130px;
+    padding-bottom: 20px;
+    margin: 40px 15px 0 0;
+    background-color: #fff;
+    box-shadow: 0px 6px 8px 0px rgba(0, 0, 0, 0.03);
+    text-align: center;
+    &:first-child {
+      img {
+        height: 50px;
+        margin: 22px auto;
+      }
+    }
+    &:nth-child(4) {
+      margin-right: 0;
+    }
+    &:last-child {
+      img {
+        height: 44px;
+        margin: 25px auto 26px;
+      }
+    }
+    &.recevied {
+      position: relative;
+      &::after {
+        content: "";
+        @extend .g_c_mid;
+        top: 23px;
+        width: 96px;
+        height: 96px;
+        @include getBgImg("../../../assets/images/home/recevied.png");
+      }
+      .prize_get_btn {
+        border: none;
+        color: #666;
+      }
+    }
+    p {
+      height: 21px;
+      font-size: 12px;
+      line-height: 21px;
+      color: #676767;
+      background-color: #edeeef;
+    }
+    img {
+      display: block;
+      height: 31px;
+      margin: 32px auto;
+    }
+  }
+  .prize_get_btn {
+    display: inline-block;
+    width: 94px;
+    line-height: 24px;
+    font-size: 12px;
+    color: #cea04a;
+    border: 2px solid #cea04a;
+    border-radius: 14px;
+  }
+}
+
+.recharge {
+  h2 {
+    @extend .flex;
+    align-items: flex-end;
+    > div {
+      @extend .flex_hc;
+      margin-left: 40px;
+      font-size: 14px;
+      color: #f3d40c;
+    }
+  }
+  .coin {
+    width: 20px;
+    height: 20px;
+    margin-right: 7px;
+  }
+  .num {
+    padding-left: 5px;
+  }
+  .cost_star {
+    padding-top: 14px;
+    font-size: 14px;
+    color: #666;
+  }
+  .prize_get_btn {
+    margin-top: 10px;
+  }
+}
+
+.guessRecord,
+.exchangeRecord {
+  width: 914px;
+  background-color: #311e1d;
+  h2 {
+    line-height: 90px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff6ea;
+    text-align: center;
+  }
+  h3 {
+    @extend .flex;
+    font-size: 0;
+    .all {
+      position: relative;
+      &::after {
+        content: "";
+        margin-left: 4px;
+        @include getTriangle(4px, #7f5c51, down);
+        border-width: 8px 4px 0 4px;
+      }
+    }
+    .detail,
+    .order_detail {
+      width: 190px;
+    }
+  }
+  .time,
+  .content,
+  .all,
+  .detail,
+  .order_time,
+  .order_num,
+  .goods_name,
+  .order_status,
+  .order_detail {
+    display: inline-block;
+    margin-right: 1px;
+    padding-left: 20px;
+    font-size: 14px;
+    color: #7f5c51;
+    line-height: 40px;
+    background-color: #221518;
+  }
+  .time,
+  .result {
+    width: 180px;
+    padding-left: 40px;
+  }
+  .content {
+    width: 391px;
+    padding: 0 20px;
+    @include t_nowrap(100%);
+  }
+  .all {
+    width: 150px;
+  }
+  .detail {
+    width: 166px;
+    margin-right: 0;
+  }
+  .money {
+    padding-left: 20px;
+  }
+  .number {
+    padding-left: 73px;
+  }
+  .order_time {
+    width: 180px;
+    padding-left: 40px;
+  }
+  .order_num {
+    width: 190px;
+  }
+  .goods_name {
+    width: 200px;
+    padding: 0 20px;
+    @include t_nowrap(100%);
+  }
+  .order_status {
+    width: 150px;
+  }
+  .order_detail {
+    width: 166px;
+    text-decoration: underline;
+  }
+}
+
+.guessRecord_con,
+.exchangeRecord_con {
+  background-color: #130c0e;
+}
+
+.guessRecord_list,
+.exchangeRecord_list {
+  height: 340px;
+  margin-right: 4px;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    margin-right: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #453130;
+  }
+  .time,
+  .content,
+  .all,
+  .detail,
+  .order_time,
+  .order_num,
+  .goods_name,
+  .order_status,
+  .order_detail {
+    margin-top: 1px;
+    line-height: 50px;
+    color: #ffdcd7;
+    background-color: #311e1d;
+  }
+  .detail {
+    color: #f3d40c;
+    &.up {
+      color: #ffdcd7;
+      &::after {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-width: 1px 0 0 1px;
+        border-style: solid;
+        border-color: #ffdcd7;
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform-origin: bottom;
+        -webkit-transform-origin: bottom;
+        -ms-transform-origin: bottom;
+        margin-left: 4px;
+        vertical-align: middle;
+      }
+    }
+  }
+  .order_num,
+  .order_detail {
+    color: #f3d40c;
+  }
+}
+
+.guessRecord_item,
+.exchangeRecord_item {
+  position: relative;
+}
+
+.guessRecord_detail {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 1;
+  width: 100%;
+  font-size: 0;
+  color: #ffdcd7;
+  background-color: #221518;
+  p {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 51px;
+  }
+  span {
+    color: #f3d40c;
+  }
+}
+
+.orderDetails {
+  @extend .g_v_c_mid;
+  position: absolute !important;
+  width: 908px;
+  height: 465px;
+
+  h2 {
+    line-height: 90px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff6ea;
+    text-align: center;
+    &::after {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        rgba(103, 62, 61, 0),
+        rgba(103, 62, 61, 1),
+        rgba(103, 62, 61, 0)
+      );
+      background: -webkit-linear-gradient(
+        90deg,
+        rgba(103, 62, 61, 0),
+        rgba(103, 62, 61, 1),
+        rgba(103, 62, 61, 0)
+      );
+      background: -ms-linear-gradient(
+        90deg,
+        rgba(103, 62, 61, 0),
+        rgba(103, 62, 61, 1),
+        rgba(103, 62, 61, 0)
+      );
+    }
+  }
+  .close_btn {
+    @extend .flex_v_h;
+    margin: 68px auto 0;
+    width: 460px;
+    height: 50px;
+    font-size: 18px;
+    color: #f5b457;
+    border: 3px solid #f5b457;
+  }
+}
+
+.orderDetails_con {
+  @extend .flex_v_h;
+  margin-top: 38px;
+  img {
+    width: 260px;
+    height: 190px;
+    margin-right: 30px;
+    object-fit: contain;
+  }
+  p {
+    padding: 4px 0 10px;
+    font-size: 14px;
+    color: #ffdcd7;
+    &:last-child {
+      padding-bottom: 4px;
+    }
+  }
+}
+
+.confirm_pay,
+.orderDetails,
+.recharge,
+.prize,
+.qrCodePay,
+.payStatus {
+  background: linear-gradient(-16deg, rgba(42, 24, 28, 1), rgba(52, 32, 29, 1));
+  background: -webkit-linear-gradient(
+    -16deg,
+    rgba(42, 24, 28, 1),
+    rgba(52, 32, 29, 1)
+  );
+  background: -ms-linear-gradient(
+    -16deg,
+    rgba(42, 24, 28, 1),
+    rgba(52, 32, 29, 1)
+  );
+  box-shadow: 0px 0px 15px 0px rgba(10, 2, 4, 0.5);
+}
+
+.confirm_pay {
+  @extend .g_v_c_mid;
+  position: absolute !important;
+  width: 415px;
+  text-align: center;
+  padding-bottom: 17px;
+
+  h3 {
+    font-size: 20px;
+    line-height: 56px;
+    color: #fff;
+    font-weight: bold;
+    background-color: #f5b457;
+  }
+  p {
+    padding-top: 58px;
+    font-weight: bold;
+    color: #fefefe;
+    font-size: 14px;
+  }
+  a {
+    @extend .flex_v_h;
+    margin: 47px auto 0;
+    width: 118px;
+    height: 38px;
+    color: #f5b457;
+    border: 3px solid #f5b457;
+  }
+}
+
+.qrCodePay {
+  @extend .g_v_c_mid;
+  position: absolute !important;
+  @extend .flex_v_h;
+  width: 647px;
+  height: 300px;
+  text-align: center;
+  .left {
+    padding: 30px 33px 40px;
+    background-color: rgba(94, 158, 66, 1);
+    p {
+      font-size: 16px;
+      color: #fff;
+    }
+    img {
+      width: 133px;
+      height: 133px;
+    }
+  }
+  .right {
+    margin-left: 80px;
+    span {
+      font-size: 20px;
+      color: #fff;
+    }
+    p {
+      padding-top: 50px;
+      font-size: 14px;
+      color: #fff;
+    }
+    a {
+      @extend .flex_v_h;
+      margin: 47px auto 0;
+      width: 118px;
+      height: 38px;
+      color: #f5b457;
+      border: 3px solid #f5b457;
+    }
+  }
+}
+
+.payStatus {
+  @extend .g_v_c_mid;
+  position: absolute !important;
+  @extend .flex_v_h;
+  width: 415px;
+  height: 230px;
+  color: #fff;
+  .title {
+    @extend .flex_hc;
+    font-size: 20px;
+  }
+  p {
+    padding-top: 30px;
+    font-size: 14px;
+  }
+  span {
+    width: 45px;
+    height: 45px;
+    margin-right: 15px;
+  }
+  .recharge_btn {
+    @extend .flex_v_h;
+    margin: 20px auto 0;
+    width: 158px;
+    height: 38px;
+    color: #f5b457;
+    border: 3px solid #f5b457;
+  }
+}
+</style>

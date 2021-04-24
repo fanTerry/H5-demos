@@ -1,0 +1,233 @@
+
+<template>
+  <div class="Page">
+    <div class="main">
+      <div class="nav">
+        <a v-for="(item,index) in tablist" :key="item" :class="{cur:mark === index}"
+          @click="changeTab(index)">{{item}}</a>
+      </div>
+
+      <!-- <scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" @pullingUp="onPullingUp"> -->
+      <!-- 营收记录 -->
+      <div class="sales_record" v-if="mark==0">
+        <scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" @pullingUp="onPullingUp">
+          <ul>
+            <li v-for="(item,index) in recordList">
+              <div>
+                <p class="txt">收入</p>
+                <p class="time">{{item.createTime | getLastTimeStr}}</p>
+              </div>
+              <div class="num">+{{item.amount}}</div>
+            </li>
+          </ul>
+        </scroll>
+      </div>
+
+      <!-- 提现记录 -->
+      <div class="withdraw_record" v-else>
+        <scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" @pullingUp="onPullingUp">
+
+          <ul>
+            <li v-for="(item,index) in recordList">
+              <div>
+                <p class="txt">提现</p>
+                <p class="time">{{item.createTime | getLastTimeStr}}</p>
+              </div>
+              <div class="tac">
+                <p class="num">{{item.amount}}</p>
+                <p class="status" v-if="item.status==1">审核中</p>
+                <p class="status" v-else-if="item.status==2">提现成功</p>
+                <p class="status" v-else-if="item.status==3">提现失败</p>
+              </div>
+            </li>
+          </ul>
+        </scroll>
+      </div>
+
+    </div>
+  </div>
+</template>
+
+<script>
+import { getLastTimeStr } from "../../../libs/utils";
+import Scroll from "../../../components/common/scroll";
+import wxApi from "../../../libs/weixinShare";
+export default {
+  components: {
+    Scroll
+  },
+  filters: {
+    getLastTimeStr(time) {
+      return getLastTimeStr(time, false);
+    }
+  },
+  props: [],
+  data() {
+    return {
+      mark: 0,
+      tablist: ["营收记录", "提现记录"],
+      requestParam: {
+        recordType: 0,
+        pageSize: 10,
+        pageNo: 1
+      },
+      recordList: [],
+      currPageSize: 0,
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "到底啦~" }
+      }
+    };
+  },
+  mounted() {
+    this.getRecordList();
+    this.wxShare();
+  },
+  methods: {
+    wxShare() {
+      let option = {
+        title: "一战到底，答题赢大奖", // 分享标题, 请自行替换
+        desc: "在这里要么暴露智商，要么赢取大奖，你敢来挑战吗？", // 分享描述
+        imgUrl:
+          "https://rs.esportzoo.com/svn/esport-res/mini/images/icon/hongbao.png", // 分享图标, 请自行替换，需要绝对路径
+        link:
+          "https://m.esportzoo.com/hd/hd101/home?agentId=10006&biz=1&clientType=7"
+      };
+      wxApi.wxRegister(option);
+    },
+    changeTab(index) {
+      console.log(index);
+      this.mark = index;
+      this.requestParam.recordType = index;
+      this.requestParam.pageNo = 1;
+      this.recordList = [];
+      this.getRecordList();
+    },
+    getRecordList(param) {
+      if (!param) {
+        param = this.requestParam;
+      }
+      return this.$post("/api/hd101/incomeRecord", param)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            if (dataResponse.data.recordList) {
+              this.currPageSize = dataResponse.data.recordList.length;
+              this.recordList = this.recordList.concat(
+                dataResponse.data.recordList
+              );
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+      if (this.currPageSize < this.requestParam.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+
+    /** 上拉加载*/
+    loadMore() {
+      this.requestParam.pageNo += 1;
+      let param = {};
+      param.pageNo = this.requestParam.pageNo;
+      param.pageSize = this.requestParam.pageSize;
+      param.recordType = this.requestParam.recordType;
+
+      this.getRecordList(param).then(data => {
+        this.$refs.scroll.forceUpdate();
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  background-color: rgb(255, 231, 131);
+}
+.main {
+  @include getBgImg("../../../assets/images/hd/hd101/rule_lists_bg.png");
+  background-position: top center;
+  background-size: 100% auto;
+}
+
+.nav {
+  @extend .flex;
+  padding: 4.5vw 5.3vw 0;
+  a {
+    flex: 1;
+    -webkit-flex: 1;
+    font-size: 4.5vw;
+    line-height: 15.2vw;
+    color: #fff;
+    text-align: center;
+    &.cur {
+      position: relative;
+      color: #fcff00;
+      &::after {
+        content: "";
+        @extend .g_c_mid;
+        bottom: 1.1vw;
+        width: 9.9vw;
+        height: 1.1vw;
+        border-radius: 2px;
+        background-color: #fcff00;
+      }
+    }
+  }
+}
+
+.sales_record,
+.withdraw_record {
+  height: 119vw;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  li {
+    @extend .flex_v_justify;
+    height: 20vw;
+    margin: 0 2.8vw;
+    padding: 0 4vw;
+    @include getBorder(bottom, #eee);
+    &:last-child {
+      background: none;
+    }
+  }
+  .time,
+  .status {
+    padding-top: 4vw;
+    font-size: 3.5vw;
+    color: #999;
+  }
+  // .num {
+  //   font-size: 5.6vw;
+  // }
+  .txt,
+  .num {
+    font-size: 4.8vw;
+  }
+  .tac {
+    text-align: center;
+  }
+}
+
+.sales_record .num {
+  color: #40b7a5;
+}
+</style>

@@ -1,0 +1,62 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-07-23 11:41:47
+ * @LastEditTime: 2020-07-23 11:49:05
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /esport-touch/src/views/guess/share.vue
+--> 
+<template>
+  <div class='Page'>
+    <div class='main'>
+      <div class="qr_code">
+        <img :src="qrCode" alt="">
+      </div>
+      <p class="tips">财运好不好，全在这一秒</p>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {
+      qrCode: ''
+    };
+  },
+  created() {
+    this.qrCode = this.$route.query.qrCode;
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../assets/common/_base';
+@import '../../assets/common/_mixin';
+
+.main {
+  @include getBgImg('../../assets/images/guess/share_bg.png');
+}
+
+.qr_code {
+  margin: 114.2667vw auto 0;
+  width: 39.7333vw;
+  height: 38.6667vw;
+  @include getBgImg('../../assets/images/guess/qr_code_bg.png');
+  background-size: contain;
+  img {
+    margin: 3.3333vw 4vw;
+    object-fit: contain;
+  }
+}
+
+.tips {
+  padding-top: 4.2667vw;
+  font-size: 3.4667vw;
+  color: #fff;
+  text-align: center;
+}
+</style>

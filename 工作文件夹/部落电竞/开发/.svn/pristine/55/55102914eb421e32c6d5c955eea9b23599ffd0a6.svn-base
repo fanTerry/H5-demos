@@ -1,0 +1,140 @@
+<template>
+  <div class="match_info">
+    <a class='close'></a>
+    <h3>创建赛事信息确认</h3>
+    <div class="pop_list">
+      <div class="pop_item">
+        <span>选择游戏：</span>
+        <p>和平精英</p>
+      </div>
+      <div class="pop_item">
+        <span>赛事名称：</span>
+        <p>小橘子创建的和平精英比赛</p>
+      </div>
+      <div class="pop_item">
+        <span>参赛队伍数：</span>
+        <p>16</p>
+      </div>
+      <div class="pop_item">
+        <span>每队人数：</span>
+        <p>5</p>
+      </div>
+      <div class="pop_item">
+        <span>赛事模式：</span>
+        <p>淘汰制</p>
+      </div>
+      <div class="pop_item">
+        <span>报名时间</span>
+        <p>2019.12.14 19:00</p>
+      </div>
+      <div class="pop_item">
+        <span>比赛时间</span>
+        <p>2019.12.14 21:00</p>
+      </div>
+      <div class="pop_item">
+        <span>赛程轮次：</span>
+        <p>3</p>
+      </div>
+      <div class="pop_item pop_match_round">
+        <span>第1轮</span>
+        <p>2019.12.14 21:00</p>
+      </div>
+      <div class="pop_item pop_award_tips">
+        <span>奖励说明：</span>
+        <p>获胜的那支队伍，队员可获得王者荣耀皮肤一件。</p>
+      </div>
+    </div>
+    <a class='next_btn' @click="goUrlPage('/matchTool/room')">创建比赛</a>
+  </div>
+</template>
+
+<script>
+import navBar from "components/header/nav_bar/index.vue";
+
+export default {
+  components: {
+    navBar
+  },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {
+    goUrlPage(url) {
+      this.$router.push({
+        path: url,
+        query: {}
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.match_info {
+  position: relative;
+  width: 92vw;
+  margin: 28vw auto 0;
+  padding-bottom: 6.9333vw;
+  background-color: #fff;
+  border: 1px #979797 inset;
+  border-radius: 1.0667vw;
+  color: #333;
+  .close {
+    position: absolute;
+    right: 3.2vw;
+    top: 3.2vw;
+    width: 4.2667vw;
+    height: 4.2667vw;
+    @include getBgImg("../../../assets/images/matchtool/close.png");
+  }
+  h3 {
+    line-height: 14.6667vw;
+    font-size: 4.5333vw;
+    text-align: center;
+    @include getBorder(bottom, #e6e6e6);
+  }
+  .pop_list {
+    padding-top: 2.4vw;
+  }
+  .pop_item {
+    @extend .flex_v_justify;
+    padding: 2.4vw 5.3333vw;
+    font-size: 4vw;
+    span {
+      font-weight: 600;
+    }
+  }
+  .pop_match_round {
+    background-color: #f4f4f4;
+    padding-left: 9.3333vw;
+    background-color: #f4f4f4;
+  }
+  .pop_award_tips {
+    display: block;
+    padding: 0;
+    span {
+      display: block;
+      padding: 2.4vw 5.3333vw;
+    }
+    p {
+      padding: 2.4vw 5.3333vw 4.8vw;
+      line-height: 5.6vw;
+      background-color: #f4f4f4;
+    }
+  }
+  .next_btn {
+    display: block;
+    margin: 6.9333vw 4vw 0;
+    line-height: 11.7333vw;
+    font-size: 4.5333vw;
+    color: #fff;
+    text-align: center;
+    border-radius: 11.7333vw;
+    @include getBgLinear(right, #ee701d, #f5951d);
+  }
+}
+</style>

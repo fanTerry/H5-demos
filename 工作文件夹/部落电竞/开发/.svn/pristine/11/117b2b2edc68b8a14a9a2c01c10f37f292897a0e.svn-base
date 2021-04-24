@@ -1,0 +1,32 @@
+// component/feedbackList/feedbackList.js
+Component({
+	/**
+	 * 组件的属性列表
+	 */
+	properties: {
+		"dataList":Array,
+		"type":Number
+	},
+
+	/**
+	 * 组件的初始数据
+	 */
+	data: {
+
+	},
+
+	/**
+	 * 组件的方法列表
+	 */
+	methods: {
+		goToDetail(id) {
+      console.log("id", id);
+      if (this.data.type == 2) {
+        return;
+			}
+			wx.navigateTo({
+				url: '/helpcenter/feedBackDetail?qid=' + id,
+			})
+    },
+	}
+})

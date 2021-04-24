@@ -1,0 +1,16 @@
+/* component/report/reportbanner/report-banner.wxss */
+
+.report-banner {
+  width: 730rpx;
+  height: 180rpx;
+  margin: 20rpx auto;
+}
+.report-banner-swiper {
+  width: 730rpx;
+  height: 180rpx;
+}
+.r-b-swiper-image {
+  width: 730rpx;
+  height: 180rpx;
+  border-radius: 10rpx;
+}

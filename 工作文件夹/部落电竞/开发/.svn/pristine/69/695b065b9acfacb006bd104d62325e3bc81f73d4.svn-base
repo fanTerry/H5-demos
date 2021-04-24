@@ -1,0 +1,221 @@
+<template>
+  <section class="tabbar">
+    <ul>
+      <li @click="gotoAddress({path: '/home', query: {}})"
+        :class="{cur:($route.path.indexOf('/guess')==-1&&($route.path.indexOf('/home')!== -1 || $route.path=='/')) &&  matchToolFlag != true}">
+        <i class="home"></i>
+        <span>首页</span>
+      </li>
+      <li @click="gotoAddress({path: '/match', query: {}})"
+        :class="{cur:$route.path.indexOf('match')!== -1 || matchToolFlag == true}">
+        <i class="match"></i>
+        <span>赛事</span>
+      </li>
+      <li @click="gotoAddress({path: '/recommend', query: {}})"
+        :class="{cur:$route.path.indexOf('community')!== -1 || topicListFlag == true || $route.path.indexOf('recommend')!== -1}">
+        <i class="community"></i>
+        <span>发现</span>
+      </li>
+      <!-- <li v-if='showFlag' @click="gotoAddress({path: '/store', query: {}})"
+        :class="{cur:$route.path.indexOf('store')!== -1}">
+        <i class="store"></i>
+        <span>商城</span>
+      </li> -->
+      <li v-if='showFlag &&inviteCodeType' @click="gotoAddress({path: '/guess/home', query: {}})"
+        :class="{cur:$route.path.indexOf('/guess/home')!== -1}">
+        <i class="guess"></i>
+        <span>预测</span>
+      </li>
+      <!-- <li @click="gotoAddress({path: '/expert', query: {}})" :class="{cur:$route.path.indexOf('expert')!== -1}">
+        <i class="expert"></i>
+        <span>专家</span>
+      </li> -->
+      <li @click="gotoAddress({path: '/userCenter', query: {}})" :class="{cur:$route.path.indexOf('userCenter')!== -1}">
+        <i class="user_center"></i>
+        <span>我的</span>
+        <p class="tips_num" v-if="messageNum">{{messageNum > 99?'···':messageNum}}</p>
+      </li>
+    </ul>
+  </section>
+</template>
+
+<script>
+export default {
+  props: ["topicListFlag", "matchToolFlag"],
+  data() {
+    return {
+      showFlag: false,
+      messageNum: 0,
+      inviteCodeType: false
+    };
+  },
+  mounted() {
+    this.queryInviteCodeType();
+    if (this.$route.query.agentId == 1004) {
+      this.showFlag = false;
+    }
+    //只有H5账号密码登录才能显示预测
+    var clientType = this.$route.query.clientType;
+    var biz = this.$route.query.biz;
+    if (clientType == 6 && biz == 1) {
+      this.showFlag = true;
+    }
+    if (!this.$route.meta.keepAlive) {
+      this.getMessageNum();
+    }
+  },
+  activated() {
+    this.getMessageNum();
+  },
+  methods: {
+    queryInviteCodeType() {
+       this.$post("/api/user/queryInviteCodeType")
+        .then(rsp => {
+           console.log(dataResponse,"结果");
+          const dataResponse = rsp;
+          if (dataResponse.code == "200" && dataResponse.data) {
+           this.inviteCodeType=true;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      
+    },
+
+    gotoAddress(path) {
+      this.$router.push(path);
+    },
+    //获取未读相关信息数量
+    getMessageNum() {
+      let param = {};
+      this.$post("/api/usercenter/ucIndexdata", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log("个人中心首页--setHeader---请求成功");
+            this.messageNum = parseInt(dataResponse.data.messageNum);
+            console.log(this.messageNum);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  components: {}
+};
+</script>
+
+<style lang='scss'>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+.tabbar {
+  color: #a4a2a5;
+  ul {
+    @extend .flex_hc;
+    justify-content: space-around;
+    -webkit-justify-content: space-around;
+    padding: 6px 0;
+  }
+  li {
+    position: relative;
+    flex: 1;
+    -webkit-flex: 1;
+  }
+  i {
+    display: block;
+    width: 21px;
+    height: 21px;
+    margin: 0 auto;
+  }
+  span {
+    display: block;
+    font-size: 10px;
+    padding-top: 2px;
+    text-align: center;
+  }
+  .tips_num {
+    @extend .flex_v_h;
+    position: absolute;
+    right: 20px;
+    top: -5px;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    color: #fff;
+    background-color: #ff0000;
+    border-radius: 50%;
+  }
+}
+
+.cur {
+  color: #ff7e00;
+
+  .home {
+    @include getBgImg("../../assets/images/home/home_cur.png");
+    background-size: 100% auto;
+  }
+  .match {
+    @include getBgImg("../../assets/images/match/match_cur.png");
+    background-size: 100% auto;
+  }
+  .follow {
+    @include getBgImg("../../assets/images/follow/follow_cur.png");
+    background-size: 100% auto;
+  }
+  .community {
+    @include getBgImg("../../assets/images/community/community_cur.png");
+    background-size: 100% auto;
+  }
+  .store {
+    @include getBgImg("../../assets/images/store/store_cur.png");
+    background-size: 100% auto;
+  }
+  .guess {
+    @include getBgImg("../../assets/images/guess/guess_cur.png");
+    background-size: 100% auto;
+  }
+  .expert {
+    @include getBgImg("../../assets/images/expert/expert_cur.png");
+    background-size: 100% auto;
+  }
+  .user_center {
+    @include getBgImg("../../assets/images/user_center/user_center_cur.png");
+    background-size: 100% auto;
+  }
+}
+
+.home {
+  @include getBgImg("../../assets/images/home/home.png");
+  background-size: 100% auto;
+}
+.match {
+  @include getBgImg("../../assets/images/match/match.png");
+  background-size: 100% auto;
+}
+.follow {
+  @include getBgImg("../../assets/images/follow/follow.png");
+  background-size: 100% auto;
+}
+.community {
+  @include getBgImg("../../assets/images/community/community.png");
+  background-size: 100% auto;
+}
+.store {
+  @include getBgImg("../../assets/images/store/store.png");
+  background-size: 100% auto;
+}
+.guess {
+  @include getBgImg("../../assets/images/guess/guess.png");
+  background-size: 100% auto;
+}
+.expert {
+  @include getBgImg("../../assets/images/expert/expert.png");
+  background-size: 100% auto;
+}
+.user_center {
+  @include getBgImg("../../assets/images/user_center/user_center.png");
+  background-size: 100% auto;
+}
+</style>

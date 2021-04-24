@@ -1,0 +1,150 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <nav-bar :pageTitle="'意见反馈'"></nav-bar>
+    </header>
+    <div class="main">
+      <div class="title_tip h90"><i class="icon_ask"></i>请选择问题场景<a @click="toMyFanKui()">我的反馈</a></div>
+      <ul class="questionList">
+        <li @click="toFanKuiWrite()">
+          <a href="javascript:;">攒豆加油站<span>赠送乐豆未到账</span><i></i></a>
+        </li>
+        <li @click="toFanKuiWrite()">
+          <a href="javascript:;">购买乐豆<span>购买乐豆未到账</span><i></i></a>
+        </li>
+        <li @click="toFanKuiWrite()">
+          <a href="javascript:;">小游戏<span>返奖问题</span><i></i></a>
+        </li>
+        <li @click="toFanKuiWrite()">
+          <a href="javascript:;">PK赛<span>无法进入PK赛</span><i></i></a>
+        </li>
+        <li @click="toFanKuiWrite()">
+          <a href="javascript:;">抓娃娃<span>抓到娃娃但未中奖</span><i></i></a>
+        </li>
+        <li @click="toFanKuiWrite()">
+          <a href="javascript:;">扭蛋机<span>赠送乐豆未到账</span><i></i></a>
+        </li>
+        <li @click="toFanKuiWrite()">
+          <a href="javascript:;">购买乐豆<span>运费支付问题</span><i></i></a>
+        </li>
+        <li @click="toFanKuiWrite()">
+          <a href="javascript:;">其他<i></i></a>
+        </li>
+      </ul>
+    </div>
+
+    <footer class="mod_footer">
+
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index.vue";
+
+export default {
+  components: { navBar },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {
+    toFanKuiWrite() {
+      this.$router.push({
+        path: "/helpCenter/fanKuiWrite",
+        query: ""
+      });
+    },
+    toMyFanKui() {
+      this.$router.push({
+        path: "/helpCenter/fanKuiMy",
+        query: ""
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+.title_tip {
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 0.8rem;
+  line-height: 0.8rem;
+  padding: 0 0.3rem;
+  font-size: 0.26rem;
+  color: #666;
+}
+.title_tip.h90 {
+  height: 0.9rem;
+  line-height: 0.9rem;
+}
+.title_tip a {
+  position: absolute;
+  top: 50%;
+  right: 0.3rem;
+  margin-top: -0.22rem;
+  color: #e47b32;
+  border: 0.02rem solid #e47b32;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border-radius: 0.4rem;
+  line-height: 0.44rem;
+  height: 0.44rem;
+  padding: 0 0.14rem;
+}
+.questionList {
+  background: #fff;
+  padding: 0 0.25rem;
+  -webkit-box-shadow: 0 0.04rem 0.2rem rgba(245, 245, 245, 0.1);
+  box-shadow: 0 0.04rem 0.2rem rgba(245, 245, 245, 0.1);
+}
+.questionList li {
+  border-bottom: 0.01rem solid #e5e5e5;
+}
+.questionList li:last-child {
+  border: none;
+}
+.questionList li a {
+  position: relative;
+  display: block;
+  height: 1rem;
+  line-height: 1rem;
+  padding-left: 0.1rem;
+  font-size: 0.3rem;
+  color: #333;
+  outline: none;
+}
+.questionList li a i {
+  position: absolute;
+  top: 0.36rem;
+  right: 0.05rem;
+  width: 0.15rem;
+  height: 0.28rem;
+  background: url("../../assets/images/help/icon_right.png");
+  background-size: cover;
+}
+.questionList li a span {
+  float: right;
+  padding-right: 0.5rem;
+  font-size: 0.26rem;
+  line-height: inherit;
+  color: #999;
+}
+.questionList li .answer {
+  font-size: 0.28rem;
+  color: #999;
+  line-height: 0.4rem;
+  padding: 0.35rem;
+  border-top: 0.01rem solid #e5e5e5;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+</style>

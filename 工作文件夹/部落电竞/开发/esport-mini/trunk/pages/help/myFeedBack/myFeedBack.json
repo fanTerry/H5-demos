@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "feedback-list":"/component/feedbackList/feedbackList"
+  },
+  "navigationBarTitleText": "我的反馈"
+}

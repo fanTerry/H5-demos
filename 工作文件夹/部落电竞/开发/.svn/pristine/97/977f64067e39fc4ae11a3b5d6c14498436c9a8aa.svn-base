@@ -1,0 +1,49 @@
+.c_red{
+	color: #FF444D;
+}
+
+.c_orange{
+	color: #FEA21B;
+}
+
+.c_yellow{
+	color: #FFFC00;
+}
+
+.c_black{
+	color: #000;
+}
+
+.c_aaa{
+	color: #aaa;
+}
+
+.bg_fff{
+	background-color: #fff;
+}
+
+.pt20{
+	padding-top: 40rpx;
+}
+
+.pl10{
+	padding-left: 20rpx;
+}
+
+.pr5{
+	padding-right: 10rpx;
+}
+
+
+.fs15{
+	font-size: 30rpx;
+}
+
+.fs17{
+	font-size: 34rpx;
+}
+
+
+.tac{
+	text-align: center;
+}

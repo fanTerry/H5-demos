@@ -1,0 +1,153 @@
+/* modules/expertpage/wxss/expert-comm.wxss */
+
+.expert-menu {
+  border-radius: 30rpx;
+  border: solid 2rpx #ddd;
+  
+  background: #f5f6f8;
+  margin-right: 20rpx;
+}
+.e-m-item {
+  display: inline-block;
+  padding: 10rpx 15rpx;
+  font-size: 26rpx;
+  line-height: 32rpx;
+
+  color: #a3a3a3;
+}
+.e-m-l {
+  border-radius: 30rpx 0 0 30rpx;
+}
+.e-m-r {
+  border-radius: 0 30rpx 30rpx 0;
+}
+.e-m-item-cur {
+  color: #fff;
+  background: #007bff;
+}
+
+.expert-menu-view {
+  width: 710rpx;
+  padding: 20rpx 10rpx;
+  margin: 10rpx auto;
+  background: #fff;
+  border-radius: 15rpx;
+}
+.expert-menu-center {
+  width: 600rpx;
+  margin: 0 auto;
+}
+.e-m-c-item {
+  padding: 10rpx 0;
+  width: 200rpx;
+  text-align: center;
+}
+
+.expert-plan {
+  width: 710rpx;
+  padding: 10rpx;
+  margin: 10rpx auto;
+
+  background: #fff;
+  border-radius: 15rpx;
+
+  position: relative;
+}
+
+.expert-no-plan {
+  width: 670rpx;
+  padding: 20rpx;
+  margin: 10rpx auto 0 auto;
+
+  background: #f6f7fc;
+  border-radius: 15rpx;
+
+  text-align: center;
+  font-size: 24rpx;
+  color: #818181;
+}
+
+.expert-plan-blur {
+  filter: blur(3px);
+}
+
+.expert-plan-button {
+  padding: 20rpx 0 10rpx 0;
+  text-align: center;
+}
+
+.expert-title {
+  display: inline-block;
+  padding-left: 20rpx;
+  line-height: 32rpx;
+
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+  border-left: solid 8rpx #0f87ff;
+  margin: 10rpx auto;
+}
+.e-t-icon {
+  font-size: 30rpx;
+  font-weight: normal;
+  padding-right: 10rpx;
+}
+
+.expert-plan-expert-info {
+  padding: 10rpx 0;
+}
+.e-p-e-c1 {
+  width: 620rpx;
+}
+.e-p-name-view {
+  padding: 0 10rpx;
+  color: #666;
+}
+.e-p-name {
+  font-size: 28rpx;
+}
+.e-p-block {
+  display: inline-block;
+  width: 60rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  border-radius: 50%;
+
+  color: #fff;
+  text-align: center;
+}
+.block-gray {
+  background: #cecece;
+}
+.block-red {
+  background: #d70c1f;
+}
+.expert-plan-hide {
+  width: 710rpx;
+  height: 100%;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  background: rgba(255, 255, 255, 0.95);
+}
+.expert-plan-buy {
+  width: 710rpx;
+  padding-top: 40rpx;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  text-align: center;
+}
+.e-p-b-text {
+  font-size: 26rpx;
+  color: #1a80f2;
+}
+.e-p-b-image {
+  width: 112rpx;
+  height: 80rpx;
+}
+

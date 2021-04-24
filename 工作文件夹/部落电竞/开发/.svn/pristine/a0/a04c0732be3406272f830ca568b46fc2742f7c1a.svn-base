@@ -1,0 +1,12 @@
+/* component/comm/no-data/no-data.wxss */
+
+.no-data {
+  width: 730rpx;
+  padding: 50rpx 0;
+  margin: 20rpx auto;
+  text-align: center;
+ }
+.no-data-img {
+  width: 387rpx;
+  height: 383rpx;
+}

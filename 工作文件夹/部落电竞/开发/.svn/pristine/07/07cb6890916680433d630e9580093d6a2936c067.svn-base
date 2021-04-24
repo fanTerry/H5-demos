@@ -1,0 +1,171 @@
+<template>
+  <!-- betAcross是横向竞猜模式，如猜冠军,猜MVP -->
+  <!-- betMore是更多竞猜专用 -->
+  <div class="bet" :class="{'betAcross':betAcross,'betMore':betMore}">
+    <div>
+      <p class="bet_title">选择竞猜金额</p>
+      <div class="bet_num">
+        <span class="active">2000</span>
+        <span>5000</span>
+        <span>1万</span>
+        <input type="text" placeholder="自定义">
+      </div>
+    </div>
+    <div>
+      <div class="bet_forecast">
+        <span>预测奖金<i class="num">2000</i></span>
+        <div class="user_assets"><span class="coin"></span>110000</div>
+      </div>
+      <a class="bet_now" @click="quizImmediately"><span>立即竞猜</span></a>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: ["betAcross", "betMore","userInfo"],
+  data() {
+    return {};
+  },
+  methods: {
+    quizImmediately() {
+      console.log(this.userInfo);
+      console.log("成功连接竞猜");
+      if (this.userInfo == null) {
+        console.log("用户为空");
+        this.userLogin();
+      } else {
+        console.log("用户已登录");
+      }
+    },
+    userLogin() {
+      console.log("调用登录方法");
+      this.$emit("wxLogin");
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_icon";
+
+.bet {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  padding: 15px 12px;
+  font-size: 14px;
+  color: #6e4c47;
+  background: #201217;
+  border: 1px solid #5e3b23;
+  .bet_title {
+    text-align: left;
+  }
+  .bet_num {
+    @extend .flex_hc;
+    margin: 15px auto;
+    border: 1px solid #5e3b23;
+    span,
+    input {
+      width: 78px;
+      height: 46px;
+      line-height: 46px;
+      border-right: 1px solid #5e3b23;
+      color: #fedcd7;
+      text-align: center;
+      &.active {
+        background: linear-gradient(135deg, #f7d064, #8a5a26);
+        background: -ms-linear-gradient(135deg, #f7d064, #8a5a26);
+      }
+    }
+    input {
+      border: none;
+      &::-webkit-input-placeholder {
+        color: #fedcd7;
+      }
+    }
+  }
+  .num {
+    padding-left: 10px;
+  }
+  .bet_forecast {
+    @extend .flex_v_justify;
+  }
+  .user_assets {
+    @extend .flex_hc;
+    margin-left: 25px;
+    color: #f3d40c;
+    font-weight: bold;
+    .coin {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+  }
+  .bet_now {
+    display: block;
+    width: 100%;
+    height: 48px;
+    margin-top: 15px;
+    font-size: 18px;
+    line-height: 48px;
+    text-align: center;
+    @include getBgImg("../../assets/images/home/guess_now.png");
+    span {
+      font-weight: bold;
+      -webkit-text-stroke: 1px undefined;
+      text-stroke: 1px undefined;
+      background: linear-gradient(
+        0deg,
+        rgba(255, 220, 215, 1) 0.2685546875%,
+        rgba(255, 242, 240, 1) 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+}
+
+.betAcross {
+  &,
+  > div {
+    @extend .flex_hc;
+  }
+  .bet_num {
+    margin-left: 20px;
+  }
+  .bet_forecast {
+    margin-left: 65px;
+  }
+  .bet_now {
+    width: 240px;
+    margin-top: 0;
+    margin-left: 50px;
+  }
+}
+
+.betMore {
+  @extend .flex_v_justify;
+  .bet_forecast {
+    justify-content: flex-end;
+    -webkit-justify-content: flex-end;
+    -ms-justify-content: flex-end;
+  }
+  .bet_now {
+    width: 250px;
+  }
+  .bet_num {
+    margin-top: 20px;
+    margin-bottom: 0;
+    span {
+      width: 51px;
+    }
+    input {
+      width: 92px;
+    }
+  }
+}
+</style>

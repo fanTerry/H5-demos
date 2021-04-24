@@ -1,0 +1,267 @@
+<template>
+  <div class="Page">
+    <div class="main">
+      <div class="count_tips">{{quetionTime}}</div>
+      <div class="rank_title">
+        第<span class="num">{{subjectNum}}</span>题
+      </div>
+      <div class="title">{{currSubject.name}}</div>
+      <div class="option_group">
+        <!-- 答对加active -->
+        <div :class="{'active': index == active}" v-for="(item ,index) in currSubject.hdSubjectOptions"
+          @click="verigyAswer(item.id,index)">
+
+          {{index==0?'A.':index==1?'B.':index==2?'C.':'D.'}} {{item.name}}</div>
+        <!-- <div class="">B. WE</div> -->
+      </div>
+    </div>
+    <!-- 答题倒计时提醒 -->
+    <div class="pop_count_att" :class="{'none':prepareDialog}">
+      <div class="tips">
+        <p>每题限时10秒</p>
+        <p>每次续命操作限时1分钟</p>
+        <p>准备好了吗?</p>
+      </div>
+      <div class="count">{{prepareTime}}</div>
+    </div>
+    <!-- 弹窗集合组件 -->
+    <pops ref="popRef"></pops>
+
+    <!-- <footer class="mod_footer">
+      <tabs></tabs>
+    </footer> -->
+  </div>
+</template>
+
+<script>
+import tabs from "./components/tabs";
+import pops from "./components/pops";
+import wxApi from "../../../libs/weixinShare";
+
+export default {
+  components: { tabs, pops },
+  props: [],
+  data() {
+    return {
+      quetionTime: 10,
+      prepareTime: 3,
+      prepareDialog: false,
+      currSubject: {},
+      subjectNum: 1,
+      active: null,
+      subjectParam: {
+        hdUserLogId: "", //参与流水ID
+        subjectLogId: "", //答题流水ID
+        subjectId: "" //题目ID
+      },
+      showPopType: 0
+    };
+  },
+  mounted() {
+    this.wxShare();
+    this.subjectParam.hdUserLogId = this.$route.query.hdUserLogId;
+    this.subjectParam.subjectId = this.$route.query.subjectId;
+    this.subjectParam.subjectLogId = this.$route.query.subjectLogId;
+
+    this.prepareDialogCountDonwn();
+  },
+  methods: {
+    wxShare() {
+      let option = {
+        title: "我在参加答题活动,赢大奖,快帮帮我鸭鸭鸭", // 分享标题, 请自行替换
+        desc: "一站到底答题活动", // 分享描述
+        imgUrl:
+          "https://rs.esportzoo.com/svn/esport-res/mini/images/game/dlq.jpg" // 分享图标, 请自行替换，需要绝对路径
+      };
+      console.log(option);
+      wxApi.wxRegister(option);
+    },
+
+    verigyAswer(subjectId, index) {
+      //选择的答案ID
+      this.active = index;
+      console.log(subjectId);
+      //校对答案并返回下一道题目
+      let param = this.subjectParam
+      param.userOptionIdList = subjectId
+       this.$post("/api/subject/verifyAnswer", param)
+        .then(rsp => {
+          console.log(rsp, "verigyAswer");
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.currSubject = dataResponse.data;
+            this.subjectParam.subjectId = this.currSubject.id;
+            this.active = null
+            // clearTimeout(this.subjectTimeCountDown())
+            this.quetionTime =10
+            // this.subjectTimeCountDown();
+          } else if (dataResponse.code == "2222") {
+            this.$toast("答案错误，答题结束");
+            this.$refs.popRef.answerWrong(this.subjectParam.subjectLogId);
+          } else if (dataResponse.code == "1111") {
+            this.$toast("题目完结，无下一道题目");
+          } else {
+            this.$toast("答题出现异常");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    getFirstSubject() {
+      let param = this.subjectParam;
+      // param.hdUserLogId = this.hdUserLogId
+      // param.subjectId = this.subjectId
+      // param.subjectLogId = this.subjectLogId
+      this.$post("/api/subject/startGame", param)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.currSubject = dataResponse.data;
+            this.subjectTimeCountDown();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    /**
+     * 答题计时器
+     */
+    subjectTimeCountDown() {
+      let _self = this;
+      setTimeout(() => {
+        _self.quetionTime--;
+        if (_self.quetionTime == 0) {
+          console.log("时间到");
+          this.$toast("时间到，答题结束");
+          clearTimeout();
+        } else {
+          _self.subjectTimeCountDown();
+        }
+      }, 1000);
+    },
+
+    prepareDialogCountDonwn() {
+      let _self = this;
+      setTimeout(() => {
+        _self.prepareTime--;
+        if (_self.prepareTime == 0) {
+          _self.prepareDialog = true;
+          _self.getFirstSubject();
+        } else {
+          _self.prepareDialogCountDonwn();
+        }
+      }, 1000);
+    }
+  },
+  wxShare() {
+    let option = {
+      title: "我在参加答题活动,赢大奖,快帮帮我鸭鸭鸭", // 分享标题, 请自行替换
+      desc: "一站到底答题活动", // 分享描述
+      imgUrl: "https://rs.esportzoo.com/svn/esport-res/mini/images/game/dlq.jpg" // 分享图标, 请自行替换，需要绝对路径
+    };
+    console.log(option);
+    wxApi.wxRegister(option);
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  background-color: rgb(255, 231, 131);
+}
+
+.main {
+  @include getBgImg("../../../assets/images/hd/hd101/answering_bg.png");
+  background-size: 100% auto;
+  background-position: top center;
+}
+
+.count_tips {
+  width: 19.7vw;
+  height: 19.7vw;
+  line-height: 19.7vw;
+  border-radius: 50%;
+  margin: 4.8vw auto 0;
+  font-size: 12vw;
+  font-family: "PangMenZhengDao";
+  color: #ffe783;
+  text-align: center;
+  background-color: #e97542;
+  box-shadow: 0 5px 0 0 rgba($color: #000000, $alpha: 0.12);
+}
+
+.rank_title {
+  padding-top: 7.9vw;
+  font-size: 4.5vw;
+  color: #fff;
+  text-align: center;
+  .num {
+    padding: 0 5px;
+    color: #fcff00;
+  }
+}
+
+.title {
+  padding: 10vw 10.7vw 0;
+  font-size: 4.3vw;
+  line-height: 7.4vw;
+}
+
+.option_group {
+  padding-top: 1.3vw;
+  > div {
+    width: 82.4vw;
+    margin: 3.2vw auto 0;
+    padding: 4.5vw 0 5.6vw 5.9vw;
+    font-size: 4.5vw;
+    line-height: 3.5vw;
+    color: #fff;
+    @include getBgImg("../../../assets/images/hd/hd101/option_bg.png");
+    background-size: 100% 100%;
+    &.active {
+      @include getBgImg("../../../assets/images/hd/hd101/option_active.png");
+      background-size: 100% 100%;
+    }
+  }
+}
+
+.pop_count_att {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  background: rgb(255, 231, 131);
+}
+
+.tips {
+  padding-top: 138px;
+  text-align: center;
+  p {
+    padding-top: 10px;
+    font-size: 18px;
+    color: #333;
+  }
+}
+
+.count {
+  width: 164px;
+  margin: 48px auto 0;
+  border-radius: 50%;
+  font-size: 112px;
+  line-height: 164px;
+  font-family: "PangMenZhengDao";
+  text-align: center;
+  color: #ffe783;
+  background-color: #e97542;
+}
+</style>

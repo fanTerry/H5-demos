@@ -1,0 +1,278 @@
+/**
+ * 所有http请求-->promise
+ */
+const Promise = require('./bluebird')
+const baseUrl = 'https://api.esportzoo.com'; //请求接口地址,方便测试请求
+const webSocketUrl = 'https://api.esportzoo.com:9090';
+const heroDota2ImgUrlPrefix = 'https://rs.esportzoo.com/upload/league/hero/dota2/'; //dota2英雄前缀
+const heroLoLImgUrlPrefix = 'https://rs.esportzoo.com/upload/league/champion/'; //LOL英雄前缀
+const matchDataLiveJsonUrl = 'https://rs.esportzoo.com/upload/interface/matchdata/match_live_';
+const matchEventLiveJsonUrl = 'https://rs.esportzoo.com/upload/interface/matchdata/event_live_';
+var strUtil = require('../libs/strUtil');
+const http = ({
+  url = '',
+  param = {},
+  ...other
+} = {}) => {
+  console.log(param, 'param for http');
+  console.log(url, 'url for http');
+  // if (!param.noShowLoading) {//有传值不显示,默认都显示
+  //     wx.showLoading({
+  //         title: '正在加载'
+  //     });
+  // }
+  //设置渠道号
+  var agentId = getApp().globalData.agentId;
+  var clientType = getApp().globalData.clientType;
+  if (!param.agentId) {
+    param.agentId = agentId;
+    console.log("http请求渠道号", agentId);
+  }
+  if (!param.clientType) {
+    param.clientType = clientType;
+    console.log("http请求clientType", clientType);
+  }
+  let timeStart = Date.now();
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: getUrl(url),
+      data: param,
+      ...other,
+      complete: (res) => {
+        // if (!param.noShowLoading) {
+        //     wx.hideLoading();
+        // }
+        console.log(`耗时${Date.now() - timeStart}`);
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(res.data)
+        } else if (res.statusCode === 401) { //需要登录的但是,用户未登录
+          var showAuthPage = false;
+          var returnUrl = 'pages/index/index'
+          if (param.showAuthPage) {
+            returnUrl = param.returnUrl;
+            showAuthPage = true;
+            console.log(returnUrl, '需要授权当前传入的地址');
+            _doLogin(showAuthPage, returnUrl).then(res => { // 重新登录 并且重复之前请求
+              _postAuth(url, param).then(res => {
+                resolve(res)
+              })
+            })
+          }
+
+        } else {
+          reject(res)
+        }
+      }
+    })
+  })
+}
+
+const getUrl = (url) => {
+  var apiDomain = !getApp().globalData.apiDomain ? baseUrl : getApp().globalData.apiDomain;
+  console.log(apiDomain, 'apiDomain');
+  if (url.indexOf('://') == -1) {
+    url = apiDomain + url;
+  }
+  return url
+}
+
+// get方法
+const _get = (url, param = {}) => {
+  return http({
+    url,
+    param,
+    header: {
+      'content-type': 'json'
+    }
+  })
+}
+
+const _post = (url, param = {}) => {
+  return http({
+    url,
+    param,
+    method: 'post',
+    header: {
+      'content-type': 'application/x-www-form-urlencoded' //POST请求
+    }
+  })
+}
+
+/**带sid的post请求 */
+const _postAuth = (url, param = {}) => {
+  var sid = wx.getStorageSync('sid');
+  if (sid) {
+    param.sid = sid;
+  }
+  console.log(sid, 'sid');
+  return http({
+    url,
+    param,
+    method: 'post',
+    header: {
+      'content-type': 'application/x-www-form-urlencoded' //POST请求
+    }
+  })
+}
+
+const _put = (url, param = {}) => {
+  return http({
+    url,
+    param,
+    method: 'put',
+    header: {
+      'content-type': 'json'
+    }
+  })
+}
+
+const _delete = (url, param = {}) => {
+  return http({
+    url,
+    param,
+    method: 'put',
+    header: {
+      'content-type': 'json'
+    }
+  })
+}
+
+const _doLogin = (showDialog, returnUrl) => {
+  return new Promise(function(resolve, reject) {
+    wx.getSetting({
+      success(res) {
+        console.log(res.authSetting['scope.userInfo'], '是否授权')
+        if (!res.authSetting['scope.userInfo']) {
+          console.log('当前用户未授权');
+          if (showDialog) {
+            returnUrl = strUtil.base64encode(returnUrl);
+            wx.navigateTo({
+              url: '/pages/auth/index?returnUrl=' + returnUrl
+            })
+          }
+        } else {
+          console.log('用户已经授权');
+          wx.login({
+            success: function(loginRes) {
+              if (loginRes) {
+                //获取用户信息
+                wx.getUserInfo({
+                  withCredentials: true, //非必填  默认为true
+                  success: function(infoRes) {
+                    //请求服务端的登录接口
+                    _post('/login', {
+                      code: loginRes.code, //临时登录凭证
+                      rawData: infoRes.rawData, //用户非敏感信息
+                      signature: infoRes.signature, //签名
+                      encrypteData: infoRes.encryptedData, //用户敏感信息
+                      iv: infoRes.iv //解密算法的向量
+                    }).then(res => {
+                      console.log(res, 'login success');
+                      if (res.code == 200) {
+                        wx.setStorageSync('userInfo', JSON.stringify(res.data));
+                        wx.setStorageSync('sid', res.data.sid);
+                        resolve(res);
+                      }
+                    }).catch(e => {})
+                  }
+
+                });
+              } else {}
+            }
+          });
+        }
+
+      },
+      fail: function(error) {
+        reject(error);
+      }
+    })
+  });
+}
+
+/**content:内容,times秒,支持小数, icon需要的图标,不传则无图片*/
+const _showToast = (content, times, icon) => { /**icon:success,loading,none */
+  var iconFlag = 'none';
+  if (icon) iconFlag = icon;
+  if (!times) times = 2.5;
+  wx.showToast({
+    title: content,
+    icon: iconFlag,
+    duration: times * 1000
+  })
+}
+
+/**_self:当前需要设置值的页面,times秒,支持小数*/
+const _toSetReady = (_self, times) => {
+  setTimeout(function() {
+    _self.setData({
+      ready: true
+    });
+  }, times * 1000);
+}
+
+/*获取当前页url*/
+function getCurrentPageUrl() {
+  var pages = getCurrentPages() //获取加载的页面
+  var currentPage = pages[pages.length - 1] //获取当前页面的对象
+  var url = currentPage.route //当前页面url
+  return '/' + url
+}
+
+/*获取当前页带参数的url*/
+function getCurrentPageUrlWithArgs() {
+  var pages = getCurrentPages() //获取加载的页面
+  var currentPage = pages[pages.length - 1] //获取当前页面的对象
+  var url = currentPage.route //当前页面url
+  var options = currentPage.options //如果要获取url中所带的参数可以查看options
+
+  //拼接url的参数
+  var urlWithArgs = url + '?'
+  for (var key in options) {
+    var value = options[key]
+    urlWithArgs += key + '=' + value + '&'
+  }
+  urlWithArgs = urlWithArgs.substring(0, urlWithArgs.length - 1)
+
+  return '/' + urlWithArgs
+}
+
+
+module.exports = {
+  baseUrl,
+  _get,
+  _post,
+  _postAuth,
+  _put,
+  _delete,
+  _showToast,
+  webSocketUrl,
+  heroDota2ImgUrlPrefix,
+  heroLoLImgUrlPrefix,
+  matchDataLiveJsonUrl,
+  matchEventLiveJsonUrl,
+  _toSetReady,
+  getCurrentPageUrl: getCurrentPageUrl,
+  getCurrentPageUrlWithArgs: getCurrentPageUrlWithArgs
+}
+
+/**
+ * const api = require('../../libs/http.js')
+
+// 单个请求
+api._get('list').then(res => {
+  console.log(res)
+}).catch(e => {
+  console.log(e)
+})
+
+// 一个页面多个请求
+Promise.all([
+  api._get('list'),
+  api._get(`detail/${id}`)
+]).then(result => {
+  console.log(result)
+}).catch(e => {
+  console.log(e)
+})
+ */

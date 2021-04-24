@@ -1,0 +1,54 @@
+<view class="Page">
+	<view class="main">
+		<view class="nav">
+			<a wx:for="{{tablist}}" wx:key="index" data-index="{{index}}" class="{{mark === index?'cur':''}}"
+				bindtap="tabChange">{{item}}</a>
+		</view>
+		<!-- 奖励榜单 -->
+		<view class="award_list swiper" wx:if="{{!mark}}">
+				<swiper autoplay="true" interval="1000" duration="1000" vertical="true" easing-function='linear' circular='{{true}}' display-multiple-items='9'> 
+						<block wx:for="{{awardUserInfo}}">
+							<swiper-item>
+								<li class="swiper-item" wx:if='{{item.giftType == 5}} && {{item.showType == 0}}'>
+									<image src="{{item.icon}}" alt=""></image>
+									<span class="user_name">{{item.userName}}</span>
+									<span>获得 {{item.amount}}元现金</span>
+									<!-- <span wx:if="item.showType == 2">营收 {{item.amount}} 元</span> -->
+								</li>
+								<li class="swiper-item"   wx:elif='{{item.showType == 2}}'  >
+									<image src="{{item.icon}}" alt=""></image>
+									<span class="user_name">{{item.userName}}</span>
+									<!-- <span wx:if="item.showType == 0 && item.giftType == 5">获得 {{item.amount}}元现金</span> -->
+									<span>营收 {{item.amount}} 元</span>
+								</li>
+							</swiper-item>
+						</block>
+				</swiper>
+		</view>
+
+		<!-- 活动规则 -->
+		<view class="rule_list" wx:if='{{mark}}'>
+			<ul>
+				<li><span>1.</span> 系统随机20题一战到底，无门槛参与答题。</li>
+				<li><span>2.</span> 分享后产生的收益归分享人所有，满3毛可提现。</li>
+				<li><span>3.</span> 奖项与规则：
+					<view>一等奖（详见首页）-最先连对20题</view>
+					<view>二等奖（10元微信红包）-连对19题及以上</view>
+					<view>三等奖（1元微信红包）-连对16题及以上</view>
+				</li>
+				<li><span>4.</span>获奖者可联系橘子电竞微信客服：jzdj08
+				</li>
+				<!-- <li><span>5.</span> 橘子电竞官方商城1星星等值1元人民币，可累计不可提现，须在两日内消费，否则系统将判定失效收回。
+				</li>
+				<li><span>6.</span> 橘子电竞（可检索微信订阅号、服务号），通过菜单进入官网及商城。</li>
+				<li><span>7.</span> 客服微信：jzdj08。</li>-->
+				<li>PS ·本活动最终解释权归主办方所有。</li>
+				<image class="qrcode" src="https://daily-rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/qrcode.png" alt=""></image>
+			</ul>
+		</view>
+	</view>
+
+	<footer class="mod_footer">
+		<tabs flagNum="{{flagNum}}"></tabs>
+	</footer>
+</view>

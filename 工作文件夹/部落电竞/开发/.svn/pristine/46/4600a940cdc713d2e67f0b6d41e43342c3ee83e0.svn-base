@@ -1,0 +1,262 @@
+
+<template>
+  <div class="Page">
+    <div class="main">
+      <div class="nav">
+        <a v-for="(item,index) in tablist" :key="index" :class="{cur:mark === index}"
+          @click="tabChange(index)">{{item}}</a>
+      </div>
+      <!-- 奖励榜单 -->
+      <div class="award_list swiper-container" v-show="!mark">
+        <ul class="swiper-wrapper">
+          <li class="swiper-slide" v-for="(item,index) in awardUserInfo" :key="index">
+            <img :src="item.icon" alt="">
+            <span class="user_name">{{item.userName}}</span>
+            <span v-if="item.showType == 0">获得 {{item.amount}}
+              {{item.subjectFristPrize?'元现金':'星星'}}</span>
+            <span v-if="item.showType == 2">营收 {{item.amount}} 元</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 活动规则 -->
+      <div class="rule_list" v-show='mark'>
+        <h3>提示：商城1星星 = 1元rmb</h3>
+        <ul>
+          <li><span>1.</span> 系统随机20题一战到底，最先全部连对的玩家（含续命）即可领取今日头奖。</li>
+          <li><span>2.</span> 挑战者在每轮答题过程中有两次续命机会，每天总计有两轮答题机会。</li>
+          <li><span>3.</span> 一等奖(详见首页)，最先连对20题(含续命);
+            <br>二等奖（20星星），最先连对19题及以上(含续命)；
+            <br>三等奖(10星星)，最先连对16题及以上(含续命)；
+            <br>四等奖(5星星)，最先连对14题及以上(含续命)。
+          </li>
+          <li><span>4.</span> 分享后产生的收益归分享人所有，个人营收满3毛即可提现。</li>
+          <li><span>5.</span> 橘子电竞官方商城1星星等值1元人民币，可累计不可提现，须在两日内消费，否则系统将判定失效收回。
+          </li>
+          <li><span>6.</span> 橘子电竞（可检索微信订阅号、服务号），通过菜单进入官网及商城。</li>
+          <li><span>7.</span> 客服微信：jzdj08。</li>
+          <li>PS ·本活动最终解释权归主办方所有。</li>
+          <div class="qrcodeWrap">
+            <img class="qrcode" src="../../../assets/images/hd/hd101/qrcode.png" alt="">
+          </div>
+        </ul>
+      </div>
+    </div>
+
+    <footer class="mod_footer">
+      <tabs></tabs>
+    </footer>
+  </div>
+</template>
+
+
+<script>
+import tabs from "./components/tabs";
+import Swiper from "swiper";
+import wxApi from "../../../libs/weixinShare";
+export default {
+  components: {
+    tabs
+  },
+  props: [],
+  data() {
+    return {
+      mark: 0,
+      tablist: ["奖励榜单", "活动规则"],
+      swiper: Object,
+      awardUserInfo: {}
+      // firstGiftStatus: {}
+    };
+  },
+  mounted() {
+    this.getAwardUserInfo().then(() => {
+      this.$nextTick(() => {
+        this.initSwiper();
+      });
+    });
+    this.wxShare();
+  },
+  methods: {
+    wxShare() {
+      let option = {
+        title: "一战到底，答题赢大奖", // 分享标题, 请自行替换
+        desc: "在这里要么暴露智商，要么赢取大奖，你敢来挑战吗？", // 分享描述
+        imgUrl:
+          "https://rs.esportzoo.com/svn/esport-res/mini/images/icon/hongbao.png", // 分享图标, 请自行替换，需要绝对路径
+        link:
+          "https://m.esportzoo.com/hd/hd101/home?agentId=10006&biz=1&clientType=7"
+      };
+      wxApi.wxRegister(option);
+    },
+    getAwardUserInfo() {
+      let param = {};
+      param.showUser = false;
+      return this.$post("/api/hd101/listUserGift", param)
+        .then(rsp => {
+          console.log(rsp, param);
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.awardUserInfo = dataResponse.data;
+            let str = [];
+            this.awardUserInfo.forEach((item, index) => {
+              if (item.showType == 0) {
+                str[index] = JSON.parse(item.giftProp);
+                item.subjectFristPrize = str[index].subjectFristPrize;
+              } else {
+                str[index] = null;
+                item.subjectFristPrize = str[index];
+              }
+            });
+            console.log(this.awardUserInfo);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    initSwiper() {
+      this.swiper = new Swiper(".swiper-container", {
+        loop: true,
+        speed: 1000,
+        autoplay: true,
+        autoplayDisableOnInteraction: false,
+        // autoplay: {
+        //   enabled: true,
+        //   delay: 0,
+        //   disableOnInteraction: false
+        // },
+        slidesPerView: 9,
+        direction: "vertical",
+        observer: true,
+        observeParents: true
+      });
+    },
+    tabChange(index) {
+      this.mark = index;
+      this.swiper.destroy(false);
+      if (this.mark == 0) {
+        this.initSwiper();
+      }
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  background-color: rgb(255, 231, 131);
+}
+.main {
+  @include getBgImg("../../../assets/images/hd/hd101/rule_lists_bg.png");
+  background-position: top center;
+  background-size: 100% auto;
+}
+
+.nav {
+  @extend .flex;
+  padding: 4.5vw 5.3vw 0;
+  a {
+    flex: 1;
+    -webkit-flex: 1;
+    font-size: 4.5vw;
+    line-height: 15.2vw;
+    color: #fff;
+    text-align: center;
+    &.cur {
+      position: relative;
+      color: #fcff00;
+      &::after {
+        content: "";
+        @extend .g_c_mid;
+        bottom: 1.1vw;
+        width: 9.9vw;
+        height: 1.1vw;
+        border-radius: 2px;
+        background-color: #fcff00;
+      }
+    }
+  }
+}
+
+.award_list,
+.rule_list {
+  padding: 1.6vw 6.4vw 0;
+  height: 110vw;
+  overflow: hidden;
+  li {
+    @extend .flex_hc;
+    padding-top: 2.7vw;
+    font-size: 4vw;
+    line-height: 5.9vw;
+    color: #333;
+  }
+  img {
+    width: 6.7vw;
+    height: 6.7vw;
+    margin-right: 3.2vw;
+    border-radius: 50%;
+  }
+  .user_name {
+    width: 112px;
+    @include t_nowrap(112px);
+    line-height: 1.2;
+    margin-right: 1.6vw;
+    color: #e97542;
+  }
+}
+
+.award_list li {
+  white-space: nowrap;
+}
+
+.rule_list {
+  padding-left: 7.7vw;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  h3 {
+    padding-top: 2vw;
+    font-size: 4vw;
+    color: #e97542;
+  }
+  li {
+    position: relative;
+    margin-top: 2.7vw;
+    padding-top: 0;
+    padding-left: 5.3vw;
+    span {
+      position: absolute;
+      left: 0;
+      top: 0;
+      line-height: inherit;
+    }
+  }
+  .qrcodeWrap {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 30px auto 0;
+    background: url("../../../assets/images/hd/hd101/qrcode.png") no-repeat
+      center center;
+    background-size: contain;
+  }
+  .qrcodeWrap img {
+    position: absolute;
+    left: -75px;
+    top: -75px;
+    width: 150px;
+    height: 150px;
+    display: block;
+    border: none;
+    border-radius: 0;
+    opacity: 0; /*visibility:hidden*/
+  }
+}
+
+.swiper-wrapper {
+  transition-timing-function: linear !important;
+  -webkit-transition-timing-function: linear !important;
+}
+</style>

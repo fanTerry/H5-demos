@@ -1,0 +1,8 @@
+<!--component/popup/ppexpert/expertrechitem/expert-rech-item.wxml-->
+
+<!-- 当前状态样式e-r-i-act -->
+<view class='expert-rech-item'>
+  <view class='e-r-i-coins'><text>1000金币</text></view>
+  <view class='e-r-i-cost-b'><text>¥95</text></view>
+  <view class='e-r-i-cost-a'><text>¥100</text></view>
+</view>

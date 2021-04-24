@@ -1,0 +1,35 @@
+package com.esportzoo.esport.constant;
+
+/**
+ * 定义缓存key和时长TimeLong key定义原则上采用 "mi_" 开头(区分现接口)
+ * TimeLong大于一分钟的请使用'分钟设置方法：setMinutes(long minutes)和小时设置方法:setHour(long Hour)'
+ *
+ *
+ */
+public class CachedKeyAndTimeLong {
+
+	/** 存放用户信息的有效期 **/
+	public static final int MEMBER_MEMCACHE_EXP = 24 * 60 * 60;
+
+	/** 一分钟 **/
+	public static final Integer MINUTES = 60;
+
+	/** 定义所有key开头 **/
+	public static final String BASE_PREFIX = "esport_interface_";
+
+	/** 组装KEY **/
+	public static final String buildKey(String key) {
+		return BASE_PREFIX.concat(key);
+	}
+
+	/** 分钟设置方法 */
+	public static final Integer setMinutes(int minutes) {
+		return minutes * MINUTES;
+	}
+
+	/** 小时设置方法 */
+	public static final Integer setHour(int Hour) {
+		return Hour * MINUTES * MINUTES;
+	}
+
+}

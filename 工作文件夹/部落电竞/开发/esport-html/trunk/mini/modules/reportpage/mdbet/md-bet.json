@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "report-banner": "/component/report/reportbanner/report-banner",
+    "report-list": "/component/reportlist/report-list"
+  }
+}

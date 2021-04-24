@@ -1,0 +1,19 @@
+<!--modules/mypage/mywallet/myrecorditem/my-record-item.wxml-->
+<view class='my-record-item'>
+  
+  <view class='dsp-cell'>
+    <view class='my-record-tag m-r-t-gray'><text>CS</text></view>
+  </view>
+
+  <view class='my-record-detail dsp-cell'>
+    <view class='m-r-d-text'><text>购买 XXXXXXX XXXXXXXX</text></view>
+    <view class='m-r-d-time'><text>2019.04.23  11:03:22</text></view>
+  </view>
+
+  <view class='my-record-money dsp-cell clear'>
+    <i class="iconfont icon-xiangyou m-r-m-icon fr"></i>
+    <view class='m-r-m-num'><text>-1167.23</text></view>
+    <view class='m-r-m-money'><text>余额 5.43</text></view>
+  </view>
+
+</view>

@@ -1,0 +1,20 @@
+
+
+const home = () => import('./views/home/home.vue');
+
+
+const routers = [{
+    path: '/',
+    component: home
+}, {
+    path: '/home',
+    name: 'home',
+    component: home,
+    meta: { keepAlive: true, shareTitle: '橘子电竞-资讯', shareDesc: '风靡国内外的资讯，多种比赛，超多专家入驻，观看比赛必备', shareImgUrl: 'https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg' }
+}, {
+    path: '*',
+    component: home
+}
+];
+
+export default routers;

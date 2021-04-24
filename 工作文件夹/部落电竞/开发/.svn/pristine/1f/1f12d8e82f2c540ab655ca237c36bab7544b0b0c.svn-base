@@ -1,0 +1,12 @@
+<!--component/store/address/address.wxml-->
+<view class="location_address">
+  <i class="location_icon"></i>
+  <view>
+    <p>
+      <span class="name">{{address.receiverName}}</span>
+      <span class="phone_num">{{address.receiverPhone}}</span>
+    </p>
+    <p class="address">{{address.receiverProvince}} {{address.receiverCity}} {{address.receiverDistrict}} {{address.receiverAddress}}</p>
+  </view>
+  <span class="link_icon" wx:if="{{showLinkIcon}}"></span>
+</view>

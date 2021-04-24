@@ -1,0 +1,119 @@
+/* modules/store/order/orderDetails.wxss */
+
+page {
+  height: 100%;
+}
+
+.main {
+  line-height: 1;
+}
+
+.main >view {
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #fff;
+  }
+
+.order_details {
+  margin-top: 8px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  font-size: 14px;
+  color: #333;
+}
+
+.order_name {
+  display: flex;
+  padding-bottom: 6px;
+}
+
+.goods_img {
+  width: 85px;
+  height: 85px;
+  margin-right: 15px;
+}
+
+.goods_img image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.goods_info {
+  flex: 1;
+  -webkit-flex: 1;
+  padding-top: 10px;
+}
+
+.goods_info p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 5px;
+}
+
+.goods_info   .num {
+  color: #999;
+}
+
+.goods_name  span {
+  display: inline-flex;
+  align-items: center;
+	font-size: 14px;
+}
+
+.goods_name  .name {
+  display: inline-block;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.order_info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+}
+
+.order_info .copy {
+  position: relative;
+  display: inline-block;
+  padding: 4px 10px;
+  margin-right: 12px;
+  color: #fea21b;
+}
+
+.order_info .copy:before {
+  content: "";
+  pointer-events: none;
+  box-sizing: border-box;
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  left: 0;
+  top: 0;
+  border-radius: 24px;
+  border: 1px solid #fea21b;
+  -webkit-transform: scale(0.5);
+  -webkit-transform-origin: 0 0;
+  transform: scale(0.5);
+  transform-origin: 0 0;
+}
+
+.pay_title, .pay_money {
+  display: inline-flex;
+  display: -webkit-inline-flex;
+  align-items: center;
+  -webkit-align-items: center;
+  font-size: 16px;
+}
+
+.star_coin {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}

@@ -1,0 +1,131 @@
+.ruleListPage {
+	height: 100%;
+  background-color: rgb(255, 231, 131);
+}
+.ruleListPage .main {
+	height: 100%;
+	background: url('https://daily-rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/rule_lists_bg.png') no-repeat top center;
+  background-size: 100% 98%;
+}
+
+.nav {
+	/* @extend .flex; */
+	display: flex;
+  padding: 34rpx 40rpx 0;
+}
+
+.nav a {
+	flex: 1;
+	-webkit-flex: 1;
+	font-size: 34rpx;
+	line-height: 100rpx;
+	color: #fff;
+	text-align: center;
+}
+
+.nav a.cur {
+	position: relative;
+	color: #fcff00;
+}
+
+.nav a.cur::after {
+	content: "";
+	/* @extend .g_c_mid; */
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: 8rpx;
+	width: 74rpx;
+	height: 8rpx;
+	border-radius: 4rpx;
+	background-color: #fcff00;
+}
+
+.award_list,
+.rule_list {
+  padding: 24rpx 48rpx 40rpx;
+  height: 76%;
+  overflow: hidden;
+}
+
+.award_list li,
+.rule_list li {
+	/* @extend .flex_hc; */
+	display: flex;
+	align-items: center;
+	padding-top: 20rpx;
+	font-size: 30rpx;
+	line-height: 44rpx;
+	color: #333;
+}
+.award_list li image,
+.rule_list li image{
+	width: 50rpx;
+	height: 50rpx;
+	margin-right: 24rpx;
+	border-radius: 50%;
+}
+.user_name {
+	width: 224rpx;
+	/* @include t_nowrap(112px); */
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	line-height: 1.2;
+	margin-right: 12rpx;
+	color: #e97542;
+}
+
+.award_list li {
+  white-space: nowrap;
+}
+
+.award_list swiper{
+	height: 100%;
+}
+
+
+/* .award_list swiper-item{
+	height: 90rpx !important;
+} */
+
+.rule_list {
+  padding-left: 58rpx;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+.rule_list h3 {
+	padding-top: 15rpx;
+	font-size: 30rpx;
+	color: #e97542;
+}
+
+
+.rule_list li {
+	position: relative;
+	display: block;
+	margin-top: 20rpx;
+	padding-top: 0;
+	padding-left: 40rpx;
+}
+
+.rule_list li span {
+	position: absolute;
+	left: 0;
+	top: 0;
+	line-height: inherit;
+}
+
+
+.rule_list .qrcode {
+	position: relative;
+	display: block;
+	width: 300rpx;
+	height: 300rpx;
+	margin: 40rpx auto 0;
+	background: url(https://daily-rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/qrcode.png) no-repeat center
+		center;
+	background-size: contain;
+	border-radius: 0;
+}

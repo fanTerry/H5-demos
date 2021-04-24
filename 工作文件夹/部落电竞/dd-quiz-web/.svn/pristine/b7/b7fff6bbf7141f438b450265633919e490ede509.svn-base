@@ -1,0 +1,64 @@
+<template>
+  <div class="tab_con">
+    <div v-for="(item,index) in tabList" :key="index" class="tabs"
+      :class="[item.class,{cur:$route.path.indexOf(item.link)!== -1}]"
+      @click="gotoAddress({path: item.link, query: {}},index)"></div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {
+      tabList: [
+        { link: "/hd/hd101/home", class: "rank_record" },
+        { link: "/hd/hd101/ruleslist", class: "rules_lists" },
+        { link: "/hd/hd101/userwallet", class: "user_wallet" }
+      ]
+    };
+  },
+  methods: {
+    gotoAddress(path, index) {
+      this.$router.push(path);
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../../assets/common/_base";
+@import "../../../../assets/common/_mixin";
+
+.rank_record {
+  @include getBgImg("../../../../assets/images/hd/hd101/rank_record.png");
+  &.cur {
+    @include getBgImg("../../../../assets/images/hd/hd101/rank_record_cur.png");
+  }
+}
+.rules_lists {
+  @include getBgImg("../../../../assets/images/hd/hd101/rules_lists.png");
+  &.cur {
+    @include getBgImg("../../../../assets/images/hd/hd101/rules_lists_cur.png");
+  }
+}
+.user_wallet {
+  @include getBgImg("../../../../assets/images/hd/hd101/user_wallet.png");
+  &.cur {
+    @include getBgImg("../../../../assets/images/hd/hd101/user_wallet_cur.png");
+  }
+}
+.tab_con {
+  @extend .flex;
+  .tabs {
+    flex: 1;
+    -webkit-flex: 1;
+    height: 16.8vw;
+    margin: 0 2px;
+    border-bottom: 2px solid #333;
+    background-size: 100% 100%;
+    box-sizing: content-box;
+  }
+}
+</style>

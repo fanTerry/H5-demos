@@ -1,0 +1,255 @@
+<template>
+  <section class="mod_match_guess">
+    <mod-title :titleTxt="'赛事竞猜'" :showTab='true' :showPageTab='true'>
+      <ul class="tab">
+        <li :class="{active:leagueTab==-1}" @click="changeLeague(null,-1)">全部比赛</li>
+        <li :class="{active:leagueTab==index}" @click="changeLeague(item.leagueId,index)"
+          v-for="(item,index) in leagueList" :key="index">{{item.leagueName}}</li>
+      </ul>
+      <div class="page_tab">
+        <span class="left_icon" @click="previousPage()" v-if="requestParam.totalPages>1"></span>
+        <ul>
+          <li @click="changePage(index+1)" :class="{active:requestParam.pageNo==(index+1)}"
+            v-for="(item ,index) in requestParam.totalPages" :key="index">{{index+1}}</li>
+        </ul>
+        <span class="right_icon" @click="nextPage()" v-if="requestParam.totalPages>1"></span>
+      </div>
+    </mod-title>
+    <div class="match_con">
+      <ul class="match_screen">
+        <!-- 每一屏只显示一页 -->
+        <li class="match_page">
+          <ul class="match_list">
+            <!-- 每一页插8个数据 -->
+            <guess-item :matchIndex='index' :matchInfo="item" :currIndex="currIndex" v-for="(item,index) in matchList" :key="index"
+              @openMore='openMore'>
+            </guess-item>
+            <more-guess :matchMoreMark='matchMoreMark' :morePlayList="morePlayList"></more-guess>
+          </ul>
+        </li>
+      </ul>
+      <div class="to_left_page" @click="previousPage()" v-if="requestParam.pageNo!=1"></div>
+      <div class="to_right_page" @click="nextPage()" v-if="requestParam.pageNo!=requestParam.totalPages"></div>
+    </div>
+  </section>
+</template>
+
+<script>
+import modTitle from "../../components/title/title.vue";
+import guessItem from "./components/guess_item.vue";
+import moreGuess from "./components/more_guess.vue";
+import { mapGetters, mapActions } from "vuex";
+export default {
+  components: { guessItem, moreGuess, modTitle },
+  props: [],
+  data() {
+    return {
+      matchMoreMark: Number,
+      matchList: [], //赛事列表
+      morePlayList: [], //更多玩法列表
+      leagueList: [], //联赛列表
+      leagueTab: -1,
+      currSpList: "", //用于刷新赔率
+      currIndex:null,
+      requestParam: {
+        pageNo: 1,
+        pageSize: 8,
+        totalPages: 0,
+        leagueId: null
+      }
+    };
+  },
+  computed: {},
+  mounted() {
+    this.getIndexMatchData();
+    this.getLeagueList();
+    //30秒刷新一次
+    let that = this;
+    setInterval(() => {
+      that.getIndexMatchData();
+    }, 30000);
+  },
+  methods: {
+    openMore(matchId, index) {
+      this.getMorePlayByMatchId(matchId);
+      this.currIndex = index
+      if (this.matchMoreMark == index) {
+        this.matchMoreMark = -1;
+        
+      } else {
+        this.matchMoreMark = index;
+      }
+
+      console.log(this.matchMoreMark, index);
+    },
+
+    changePage(pageNo) {
+      this.requestParam.pageNo = pageNo;
+
+      this.getIndexMatchData();
+    },
+    previousPage() {
+      if (this.requestParam.pageNo == 1) {
+        return;
+      }
+      this.requestParam.pageNo -= 1;
+      this.getIndexMatchData();
+    },
+    nextPage() {
+      if (this.requestParam.pageNo == this.requestParam.totalPages) {
+        return;
+      }
+      this.requestParam.pageNo += 1;
+      this.getIndexMatchData();
+    },
+
+    changeLeague(leagueId, index) {
+      if (this.leagueTab == index) {
+        return;
+      }
+      this.leagueTab = index;
+      if (leagueId) {
+        this.requestParam.leagueId = leagueId;
+      } else {
+        this.leagueTab = -1;
+        this.requestParam.leagueId = null;
+      }
+      this.requestParam.pageNo = 1;
+      this.getIndexMatchData();
+    },
+
+    getLeagueList() {
+      return this.$post("/api/quiz/match/leagueList")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.leagueList = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    getIndexMatchData() {
+      let param = {};
+      param = this.requestParam;
+      return this.$post("/api/quiz/match/indexQuizMatch", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse.data.dataList);
+            this.matchList = dataResponse.data.dataList;
+            this.requestParam.totalPages = dataResponse.data.totalPages;
+            this.requestParam.pageNo = dataResponse.data.pageNo;
+            this.createSpList();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    createSpList() {
+      this.currSpList = [];
+      this.matchList.forEach(matchInfo => {
+        if (matchInfo.quizMathGame.id) {
+          this.currSpList = this.currSpList + matchInfo.quizMathGame.id + ",";
+        }
+      });
+      console.log("获取赔率列表", this.currSpList);
+    },
+
+    updateMatchSp() {},
+
+    getMorePlayByMatchId(matchId) {
+      let param = {};
+      param.matchId = matchId;
+      param.playNo = 1001;
+      return this.$post("/api/quiz/match/gameList", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log("更多玩法");
+            this.morePlayList = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }
+};
+</script>
+
+
+<style lang='scss' scoped>
+@import "../../assets/common/_mixin";
+@import "../../assets/common/_base";
+
+.mod_match_guess {
+  display: table;
+  margin: 30px auto 0;
+}
+
+.match_con {
+  position: relative;
+  .match_screen {
+    width: 1240px;
+    padding-top: 15px;
+  }
+  .to_left_page,
+  .to_right_page {
+    @extend .g_v_mid;
+    width: 54px;
+    height: 134px;
+  }
+  .to_left_page {
+    left: -54px;
+    @include getBgImg("../../assets/images/home/to_left_page.png");
+  }
+  .to_right_page {
+    right: -54px;
+    @include getBgImg("../../assets/images/home/to_right_page.png");
+  }
+  .match_list {
+    position: relative;
+    width: 1240px;
+    &::after {
+      content: "";
+      clear: both;
+      overflow: hidden;
+      display: table;
+    }
+    h3 {
+      position: relative;
+      padding-left: 10px;
+      font-size: 14px;
+      font-weight: normal;
+      color: #ffdcd7;
+      &::after {
+        content: "";
+        @extend .g_v_mid;
+        left: 0;
+        width: 4px;
+        height: 14px;
+        background: linear-gradient(
+          to bottom,
+          rgba(246, 215, 75, 1),
+          rgba(197, 69, 4, 1)
+        );
+        background: -ms-linear-gradient(
+          to bottom,
+          rgba(246, 215, 75, 1),
+          rgba(197, 69, 4, 1)
+        );
+        background: -webkit-linear-gradient(
+          to bottom,
+          rgba(246, 215, 75, 1),
+          rgba(197, 69, 4, 1)
+        );
+      }
+    }
+  }
+}
+</style>

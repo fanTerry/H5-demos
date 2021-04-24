@@ -1,0 +1,61 @@
+<!--modules/memberpaycenter/member-pay-center.wxml-->
+<!-- 会员支付中心页 -->
+
+<view class='member-pay-center'>
+  
+  <!-- 顶部背景图 -->
+  <view class='member-info-bg-view'>
+    <image class="member-info-bg" src="/resources/images/member-info-bg.jpg" mode="aspectFill" />
+  </view>
+  
+  <!-- 头像昵称基础信息部分 -->
+  <view class='member-info clear'>
+    <user-avatar class="m-i-avatar fl" showSize="150"></user-avatar>
+      <view class='m-i-name'><text>再添一丁Anne</text></view>
+      <view class='m-i-note'><text>未开通会员</text></view>
+  </view>
+
+  <!-- 开通会员列表 -->
+  <view class='member-pay-section'>
+    <view class='member-pay-title'>
+      <text class='m-p-title'>会员开通</text><text class='m-p-note'>(限时特价中)</text>
+    </view>
+
+    <view class='member-pay-list clear'>
+      <member-pay-item wx:for="abcdef"></member-pay-item>
+    </view>
+  </view>
+
+  <!-- 运营广告位 -->
+  <report-banner></report-banner>
+
+  <!-- 会员权益 -->
+  <view class='member-pay-section'>
+    <view class='m-p-question'>
+      <text class='m-p-quest'>常见问题</text>
+      <i class="iconfont icon-aixin m-p-icon "></i>
+    </view>
+    <view class='member-pay-c-title clear'>
+      <text class='m-p-title m-p-title-bg'>会员权益</text>
+    </view>
+
+    <!-- member-right -->
+    <view class='member-right-view'>
+      <image class="member-right" src="/resources/images/member-right.jpg" mode="aspectFill" />
+    </view>
+
+    <view class='member-right-agree'>
+      <label class="m-r-label">
+        <i class='iconfont icon-shoucang'></i>我已阅读同意<text class='m-r-deal'>《专家解读和推荐服务协议》</text>
+      </label>
+    </view>
+
+    <view class='member-right-button'>
+      <text>立即开通</text>
+    </view>
+
+  </view>
+
+
+</view>
+

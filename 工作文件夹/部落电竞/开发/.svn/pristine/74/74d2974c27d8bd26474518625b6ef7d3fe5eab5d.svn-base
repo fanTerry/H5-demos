@@ -1,0 +1,29 @@
+<!--component/expert/expertrecommend/expert-recommend.wxml-->
+<wxs src="../../../utils/tools.wxs" module="tools" />
+<!-- 推荐选项-胜负 -->
+
+<!-- <view class='expert-info-title'>
+  <view class='expert-title'><i class='iconfont icon-shoucang e-t-icon'></i>推荐选项·胜负</view>
+</view> -->
+
+<view class='expert-recommend-view'>
+  <view  wx:for="{{matchItem}}" wx:key='' class='expert-recommend dsp-table'>
+    <view class='dsp-cell e-r-c1'>
+      <image class='report-info-img' src='{{item.homeTeamLogo?item.homeTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFit' />
+       <view class='e-r-d-text'>
+        <text>{{tools.sub(item.homeTeamName)}}</text>
+      </view>
+    </view>
+    <view class='dsp-cell e-r-detail'>
+      <view class='e-r-d-title'><text>{{item.leagueName}}</text></view>
+      <view class='e-r-d-vs'><text>VS</text></view>
+      <view class='e-r-d-title'><text><block wx:for="{{item.matchTime}}" wx:key="">{{item}}\t</block>\t{{item.statusDescription}}</text></view>
+    </view>
+    <view class='dsp-cell e-r-c1'>
+      <image class='report-info-img' src='{{item.awayTeamLogo?item.awayTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFit' />
+      <view class='e-r-d-text'>
+        <text>{{tools.sub(item.awayTeamName)}}</text>
+      </view>
+    </view>
+  </view>
+</view>

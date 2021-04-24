@@ -1,0 +1,96 @@
+<!--modules/mypage/myrecharge/my-recharge.wxml-->
+<!-- 个人中心二级页面：充值页 -->
+<view class="main">
+	<!-- 第一行：基础数据 -->
+	<view class='user_card'>
+		<view class="super_vip_icon">
+			<image mode="aspectFill" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/super_vip.png"></image>超级会员
+		</view>
+
+		<view class="user_infor">
+			<image mode="aspectFill" src="{{userInfo!=null?userInfo.avatarUrl:'http://m.doo8.com/assets/img/default_user.jpg'}}"></image>
+			<view>
+				<view class='name'>拥有星星数量</view>
+				<!-- <view class='tips'>{{myBalance}}</view> -->
+			</view>
+		</view>
+		
+		<view class="star_coin">可用星星<image src='https://rs.esportzoo.com/svn/esport-res/mini/images/my/star_coin.png' mode='aspectFill'></image></view>
+		<view class="money_num">{{myBalance}}</view>
+	</view>
+
+	<!-- 第二行：充值列表 -->
+	<view class='recharge_list'><!--<text class='adver'>笔笔抽惊喜 购币赠加币</text>-->
+		<view class="title">购买数量</view>
+		<view class="list">
+			<!-- 选中加上类名"active" -->
+			<view class="item {{item==selectedAmount ? 'active' : ''}}" wx:for="{{chargeAmoumtList}}" catchtap='selectChargeAmount' data-amount="{{item}}">
+				<!-- <view class="most_worthy">最值</view>
+				<view class="give_more">多送</view> -->
+				<view class="num">
+					<image  class="star_coin" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/star_coin.png" mode="aspectFill"></image>
+					<text class="amount">{{item}}</text>
+					<!-- 作颜色展示 选中状态为c_yellow-->
+					<!-- <text class="c_red">+10</text><text class="c_aaa">=20</text><text class="c_yellow">30</text> -->
+				</view>
+				<view class="price">
+					<!-- <text class="original">${{item}}</text> -->
+					<text class="discount">${{item}}</text>
+				</view>
+			</view>
+		</view>
+		
+		<!-- 选中样式：m-r-i-act -->
+		<!-- <view class='my-recharge-item clear {{item==selectedAmount ? "m-r-i-act" : ""}}' 
+					wx:for="{{chargeAmoumtList}}" catchtap='selectChargeAmount' data-amount="{{item}}">
+			<view class='m-r-i-unit fl'>¥</view>
+			<view class='m-r-i-money'>{{item}}</view>
+		</view> -->
+
+	</view>
+
+	<view class="rules">
+		<view class="title">温馨提示：</view>
+		<view class="txt">
+			<text>1、</text>
+			<view class="p">星币只可消费，不可提款。</view>
+		</view>
+		<view class="txt">
+			<text>2、</text>
+			<view class="p">购买金币免手续费。</view>
+		</view>
+		<view class="txt">
+			<text>3、</text>
+			<view class="p">购买金币为App store应用内购买，使用的Apple id必须与下载橘子电竞时的Apple id相同。</view>
+		</view>
+		<view class="txt">
+			<text>4、</text>
+			<view class="p">客服邮件<text class="a">Service@OESport.com</text></view>
+		</view>
+	</view>
+
+	<view class="question">
+		<view class="title">常见问题1</view>
+		<view class="p">我是回答我是回答，我是回答我是回答我是回答我是回答。我是回答我是回答我是回答我是回答。我是回答</view>
+	</view>
+
+	<view class="mod_footer bg_fff">
+		<view class="confirm_pay">
+				确认支付：<text class="c_black">￥</text><text class="c_orange">{{selectedAmount}}</text>
+				<view class="confirm"  catchtap='confirmCharge'>确认支付</view>
+		</view>
+	</view>
+	
+
+	<!-- 第四行：充值按钮 -->
+	<!-- <view class='my-recharge-btn-view'>
+		<view class='my-recharge-btn-text'>
+			<text class='m-r-b-text'>确认支付：</text><text class='m-r-b-unit'>¥</text><text class='m-r-b-money'>{{selectedAmount}}</text>
+		</view>
+
+		<view class='my-recharge-btn' catchtap='confirmCharge'><text>确认支付</text></view>
+	</view> -->
+
+	<!-- 第五行：支付方式选择弹框 -->
+	<!--<pp-my></pp-my>-->
+</view>

@@ -1,0 +1,112 @@
+<wxs src="../../utils/tools.wxs" module="tools" />
+<view class="{{myClass}}">
+  <slot></slot>
+  <ul>
+    <!-- <h3>7月18日 周日</h3> -->
+    <block wx:if="{{type==1}}">
+      <li class="goods_item" wx:for="{{listGoods}}" bindtap="bindViewTap" data-index="{{index}}" >
+          <view class="goods_img">
+						<i class="no_goods_icon" wx:if="{{item.stock==0}}"></i>
+            <image mode="aspectFit" src="{{item.image}}" alt=""></image>
+          </view>
+          <view class="goods_info">
+            <!-- <i class="rank_first"></i> -->
+            <view class="goods_title">
+              <span class="goods_name">{{item.name}}</span>
+              <!-- <span class="tag">待发货</span> -->
+            </view>
+            <!-- <view class="goods_grade">王者</view> -->
+            <!-- <i class='goods_recommend'>推荐</i> -->
+            <!-- <i class='goods_discount'>折扣</i>
+            <i class='goods_new'>新品</i> -->
+            <p class="discount_price" wx:if="{{item.referencePrice&&item.referencePrice>item.payScore}}">
+              ￥{{item.referencePrice}}
+            </p>
+            <view class="goods_detail">
+              <span class="mark">
+                <!-- <i class="star_coin"></i> -->
+                ￥{{item.payScore}}
+              </span>
+              <!-- <span>合计：<i class="star_coin"></i><span class="num">56098</span>人购买</span> -->
+              <span>
+                <span class="num">{{item.purchases?item.purchases:"0"}}</span>
+                人购买
+              </span>
+            </view>
+          </view>
+      </li>
+    </block>
+
+
+    <block wx:if="{{type==2||type==3}}">
+      <li class="goods_item" wx:for="{{listGoods}}" bindtap="bindViewTap" data-index="{{index}}">
+        <view class="goods_img">
+					<i class="no_goods_icon" wx:if="{{item.stock==0}}"></i>
+          <image mode="aspectFit" src="{{item.image}}" alt=""></image>
+        </view>
+        <view class="goods_info">
+        <block wx:if="{{type==3&&band==3}}">
+          <i class="rank_first" wx:if="{{index==0}}"></i>
+          <i class="rank_second" wx:if="{{index==1}}"></i>
+          <i class="rank_third" wx:if="{{index==2}}"></i>
+         </block> 
+          <view class="goods_title">
+            <span class="goods_name">{{item.name}}</span>
+            <!-- <span class="tag">待发货</span> -->
+          </view>
+          <!-- <view class="goods_grade">王者</view> -->
+          <i class='goods_recommend' wx:if="{{item.label==1}}" >推荐</i>
+           <i class='goods_new' wx:elif="{{item.label==2}}">新品</i>
+          <i class='goods_discount' wx:elif="{{item.label==3}}">折扣</i>
+         <p class="discount_price" wx:if="{{item.referencePrice&&item.referencePrice>item.payScore}}">
+            ￥{{item.referencePrice}}
+          </p>
+          <view class="goods_detail">
+            <span class="mark">
+              <!-- <i class="star_coin"></i> -->
+              ￥{{item.payScore}}
+            </span>
+            <span>
+              <!-- <i class="star_coin"></i> -->
+             <span class="num">{{item.purchases?item.purchases:"0"}}</span>
+              人购买
+            </span>
+          </view>
+        </view>
+
+      </li>
+    </block>
+
+
+    <block wx:if="{{type==4}}">
+      <li class="goods_item" wx:for="{{listGoods}}" wx:key="" bindtap="goToOrderDetail" data-orderid="{{item.orderId}}">
+        <view class="goods_img">
+          <image mode="aspectFit" src="{{item.goodImg}}" alt=""></image>
+        </view>
+        <view class="goods_info">
+          <!-- <i class="rank_first"></i> -->
+          <view class="goods_title">
+            <span class="goods_name">{{item.goodsName}}</span>
+            <span class="tag">{{item.orderStausDec}}</span>
+          </view>
+          <!-- <view class="goods_grade">王者</view>
+          <i class='goods_recommend'>推荐</i>
+          <i class='goods_discount'>折扣</i>
+          <i class='goods_new'>新品</i> 
+          <p class="discount_price">￥600</p>-->
+          <view class="goods_detail">
+            <span class="mark">
+              <!-- <i class="star_coin"></i> -->
+              {{item.quantity}}件商品
+            </span>
+            <span>
+              合计：
+              <!-- <i class="star_coin"></i> -->
+              <span class="num">￥{{item.scoreTotal}}</span>
+            </span>
+          </view>
+        </view>
+      </li>
+    </block>
+  </ul>
+</view>

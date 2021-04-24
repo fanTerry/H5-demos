@@ -1,0 +1,143 @@
+package com.esportzoo.esport.manager;
+
+import com.esportzoo.common.redisclient.RedisClient;
+import com.esportzoo.esport.client.service.cms.CmsContentServiceClient;
+import com.esportzoo.esport.constant.CachedKeyAndTimeLong;
+import com.esportzoo.esport.constants.CacheType;
+import com.esportzoo.esport.domain.UserConsumer;
+import com.esportzoo.esport.vo.MemberSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.connection.DataType;
+import org.springframework.stereotype.Component;
+
+import java.util.Set;
+
+@Component("cachedManager")
+public class CachedManager {
+
+	/*@Autowired
+	private MemcachedClient memcachedClient;*/
+	private transient static final Logger logger = LoggerFactory.getLogger(CachedManager.class);
+	
+	@Autowired
+	private RedisClient redisClient;
+
+	@Autowired
+	private RedisClientManager redisClientManager;
+
+	@Autowired
+	@Qualifier("cmsContentServiceClient")
+	private CmsContentServiceClient cmsContentServiceClient;
+
+	public static final String CACHE_KEY_REMOVE_REPEAT_LIST = "cache_key_remove_repeat_list";
+	public static final String CACHE_KEYID_LIST = "cache_keyid_list";
+
+	public <T> T get(final String key){
+		return redisClient.getObj(key);
+	}
+	
+	public boolean setNx(final String key, final int expireTimeInSecond, final String value){
+		return redisClient.setNX(key, value, expireTimeInSecond);
+	}
+	
+	public <T> boolean set(final String key, final int expireTimeInSecond, final Object value){
+		return redisClient.setObj(key, expireTimeInSecond, value);
+	}
+	
+	public void delete(final String key){
+		redisClient.del(key);
+	}
+
+	/**
+	 * 缓存用户信息有效
+	 * 
+	 * @param member
+	 * @param sid
+	 */
+	public void cachedMemberSession(UserConsumer member, String sid){
+
+		final String key = CachedKeyAndTimeLong.buildKey(sid);
+		MemberSession mSession = new MemberSession();
+		mSession.setMember(member);
+		mSession.setLastTime(String.valueOf(System.currentTimeMillis()));
+		redisClient.setObj(key, CachedKeyAndTimeLong.MEMBER_MEMCACHE_EXP, mSession);
+	}
+	
+	/**
+	 * 取缓存的 member
+	 * @param sid
+	 * @return
+	 */
+	public MemberSession getCachedMemberSession(String sid){
+		
+		final String key = CachedKeyAndTimeLong.buildKey(sid);
+		return redisClient.getObj(key);
+	}
+
+
+	/**
+	 * 利用Redis排重 ，例如根据用户ID排重统计文章阅读是
+	 * @param type 排重类型，资讯文章，视频，专家文章等等 {@link com.esportzoo.esport.constants.CacheType}
+	 * @param keyId 储存的key，一般为要统计的目标 例如文章ID
+	 * @param targetId 排重列表 例如用户ID
+	 */
+	public void cacheSet(Integer type, String keyId, String targetId) {
+		/*存储文章ID*/
+		CacheType cacheType = CacheType.valueOf(type);
+		String typeKey = CACHE_KEYID_LIST + cacheType.getDescription();
+		redisClientManager.sAdd(typeKey, keyId);
+		String key = CACHE_KEY_REMOVE_REPEAT_LIST + cacheType.getDescription() + keyId;
+		if (redisClientManager.hasKey(key)){
+			DataType dataType = redisClientManager.type(key);
+			if (!dataType.code().equals("set")){
+				redisClientManager.delete(key);
+			}
+		}
+		try {
+			redisClientManager.sAdd(key, targetId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * 获取排重集合的元素个数
+	 * @param type
+	 * @param keyId
+	 * @return
+	 */
+	public Long getCacheSetSize(Integer type, String keyId){
+		Long aLong = 0L;
+		try {
+			CacheType cacheType = CacheType.valueOf(type);
+			String key = CACHE_KEY_REMOVE_REPEAT_LIST + cacheType.getDescription() + keyId;
+			if (redisClientManager.hasKey(key)){
+				aLong = redisClientManager.sSize(key);
+			}
+		} catch (Exception e) {
+			logger.error("缓存获取文章阅读数出错，{}",e.getMessage());
+			e.printStackTrace();
+		}
+		return aLong;
+	}
+
+	/**
+	 * 获取key列表的元素集合
+	 * @param type
+	 * @param keyId
+	 * @return
+	 */
+	public Set<String> getCacheSet(Integer type, String keyId){
+		CacheType cacheType = CacheType.valueOf(type);
+		String key = CACHE_KEY_REMOVE_REPEAT_LIST + cacheType.getDescription() ;
+		return redisClientManager.setMembers(key);
+	}
+	
+	
+	
+	
+}

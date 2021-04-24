@@ -1,0 +1,199 @@
+<template>
+  <div class="Page matchToolPage">
+    <header class="mod_header">
+      <nav-bar :pageTitle="'首页'"></nav-bar>
+      <div class="nav_list">
+        <ul>
+          <li :class="{active:tabIndex == index}" @click="switchTab(index)" v-for="(item,index) in dataList"
+            :key="index">{{item}}</li>
+        </ul>
+      </div>
+    </header>
+    <div class="main" id='mainId'>
+      <mescroll ref="mescroll" @downCallback="downCallback" @upCallback="upCallback" @mescrollInit="mescrollInit">
+        <match-list :matchInfoList="matchInfoList"></match-list>
+      </mescroll>
+    </div>
+    <footer class="mod_footer">
+
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "components/header/nav_bar/index.vue";
+import navList from "components/header/nav_list/index.vue";
+import matchList from "./components/matchlist.vue";
+import mescroll from "../../components/common/mescroll.vue";
+export default {
+  components: { navBar, navList, matchList, mescroll },
+  props: [],
+  data() {
+    return {
+      createFlag: false, // 是否可以创建赛事，
+      tabIndex: 0,
+      currPageSize: 10,
+      dataList: ["赛事列表", "我的赛事", "创建赛事", "我的营地"],
+      toolMatchParam: {
+        pageNo: 1,
+        pageSize: 10,
+        status: 0, //初始加载首页赛事信息，剔除无效赛事
+        showUserMacth: false // false展示所有赛事信息，true展示个人参赛信息
+      },
+      mescroll: null,
+      mescrollConfig: {
+        warpId: "mainId", //设置置顶时，必须设置父容器ID
+        hasToTop: true //默认不开启回到顶部项
+      },
+      matchInfoList: [] //赛事信息
+    };
+  },
+  created() {},
+  mounted() {
+    this.$refs.mescroll.config = this.mescrollConfig;
+    this.checkCanCreateMatch();
+  },
+  methods: {
+    checkCanCreateMatch() {
+      return this.$post("/api/matchtool/canCreateMatch")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.createFlag = dataResponse.data;
+            if (this.createFlag == false) {
+              this.dataList[2] = null;
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    switchTab(index) {
+      this.tabIndex = index;
+      if (index == 1) {
+        this.toolMatchParam.showUserMacth = true;
+      } else if (index == 0) {
+        this.toolMatchParam.showUserMacth = false;
+      } else if (index == 2 && this.createFlag == true) {
+        this.$router.push({
+          path: "/matchTool/createMatch",
+          query: {}
+        });
+      } else if ((index == 2 && this.createFlag == false) || index == 3) {
+        this.$router.push({
+          path: "/community",
+          query: {}
+        });
+      }
+      this.downCallback();
+    },
+
+    mescrollInit(mescroll) {
+      this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
+      this.mescroll.setBounce(true);
+    },
+    downCallback() {
+      console.log("下拉刷新");
+      let param = {};
+      this.toolMatchParam.pageNo = 1;
+      param = this.toolMatchParam;
+      this.matchInfoList = [];
+      this.currPageSize = 10;
+      this.getPageData(param).then(() => {
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize);
+        });
+      });
+    },
+    upCallback() {
+      console.log("上拉加载更多6666");
+      this.loadMore();
+    },
+    loadMore() {
+      console.log("you are loadMore6666");
+      this.toolMatchParam.pageNo += 1;
+      let param = {};
+      param = this.toolMatchParam;
+      console.log(param, "传入的参数888");
+      this.getPageData(param).then(() => {
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize);
+        });
+      });
+    },
+    /**获取分页比赛数据 */
+    getPageData(param) {
+      if (!param) {
+        param = {};
+        param = this.toolMatchParam;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/matchtool/homeMatch", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if ((dataResponse.code = "200")) {
+            console.log(dataResponse, "getPageData---请求成功");
+            if (dataResponse.data.homeResult == null) {
+              // this.matchList = [];
+              this.$toast("暂无赛事信息");
+            } else if (dataResponse.data.homeResult.length > 0) {
+              this.currPageSize = dataResponse.data.homeResult.length;
+              console.log(this.currPageSize, "当前页");
+              this.matchInfoList = this.matchInfoList.concat(
+                dataResponse.data.homeResult
+              );
+              console.log(this.matchInfoList, "首页赛事信息");
+            }
+            return this.matchInfoList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.matchToolPage {
+  .nav_bar .back {
+    display: none;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+
+.nav_list {
+  background-color: #f4f4f4;
+  height: 11.7333vw;
+  overflow: hidden;
+  ul {
+    height: calc(100% + 6px);
+    padding: 0 1.6vw;
+    overflow-x: scroll;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  li {
+    display: inline-block;
+    padding: 0 2vw;
+    font-size: 5.3333vw;
+    line-height: 11.7333vw;
+    font-weight: bold;
+    color: #ccc;
+    &.active {
+      color: #333;
+    }
+  }
+}
+
+.main {
+  // padding-bottom: 20px;
+}
+</style>

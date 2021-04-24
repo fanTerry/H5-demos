@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "report-process-item": "/component/reportlist/reportprocessitem/report-process-item",
+    "report-result-item": "/component/reportlist/reportresultitem/report-result-item",
+    "report-item": "/component/reportlist/reportitem/report-item"
+  }
+}

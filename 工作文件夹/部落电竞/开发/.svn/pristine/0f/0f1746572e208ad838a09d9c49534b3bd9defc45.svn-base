@@ -1,0 +1,49 @@
+/* component/reportlist/report-list.wxss */
+@import "/resources/wxss/base/clear.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+@import "/resources/wxss/base/icon.wxss";
+
+.report-list {
+  position: relative;
+  
+}
+.report-item {
+  width: 710rpx;
+  padding: 0 10rpx 10rpx;
+  margin: 0 auto;
+
+  background: #fff;
+  border-radius: 15rpx;
+}
+.report-list-time {
+  width: 710rpx;
+  font-size: 24rpx;
+  margin: 20rpx auto;
+}
+.report-list-name {
+  width: 710rpx;
+  margin: 20rpx auto;
+  font-weight: bold;
+  text-align: right;
+}
+
+.report-list-detail {
+  width: 710rpx;
+  padding: 10rpx;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 15rpx;
+}
+.r-p-l-n-text {
+  display: inline-block;
+  padding-left: 5rpx;
+  font-size: 28rpx;
+  line-height: 50rpx;
+}
+.r-p-l-n-sub-text {
+  float: right;
+  font-size: 24rpx;
+  line-height: 55rpx;
+  padding-right: 20rpx;
+}
+

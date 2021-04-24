@@ -1,0 +1,113 @@
+/* component/userinfobar/userinfo-bar.wxss */
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+.userinfo {
+  padding: 15rpx 0; 
+  height: 80rpx;
+  overflow: hidden;
+  background: #1745a3;
+}
+
+.userinfo-avatar {
+  width: 50rpx;
+  height: 50rpx;
+  line-height: 100rpx;
+
+  margin-top: 8rpx;
+  margin-left: 20rpx;
+  margin-right: 10rpx;
+
+  border: solid 1rpx #fff;
+  border-radius: 50%;
+}
+.u-a-report {
+  margin-top: -5rpx;
+}
+
+
+.userinfo-input {
+  width: 380rpx;
+  height: 50rpx;
+  background: #fff;
+
+  padding-left: 50rpx;
+  padding-right: 20rpx;
+
+  border: solid 1rpx #1745a3;
+  border-radius: 30rpx;
+}
+.userinfo-input-ph {
+  color: #aaa;
+}
+
+.userinfo-icon{
+  float: left;
+  color: #fff;
+
+  margin-left: 30rpx;
+}
+.ui-i-i-m {
+  font-size: 52rpx;
+}
+.ui-i-i-e {
+  font-size: 50rpx;
+}
+
+.ui-i-ss {
+  position: absolute;
+
+  left: 10rpx;
+  top: 18rpx;
+}
+
+.userinfo-image{
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.ui-num {
+  min-width: 28rpx;
+  height: 28rpx;
+  padding: 2rpx;
+
+  font-size: 24rpx;
+  font-weight: bold;
+
+  line-height: 26rpx;
+  border-radius: 20rpx;
+  
+  position: absolute;
+  top: -2rpx;
+  right: -10rpx;
+  color: #fff;
+  text-align: center;
+  background: #f00;
+}
+
+
+.ub-nav-list {
+  width: 550rpx;
+  height: 80rpx;
+}
+.ub-nav-item {
+  position: relative;
+  padding: 0 20rpx 10rpx;
+  
+  line-height: 80rpx;
+
+  text-align: center;
+  float: left;
+  color: #77f3fd;
+}
+.ub-n-i-cur {
+  color: #fff;
+  border-bottom: solid 5rpx #77f3fd;
+}
+
+.ui-nav-i {
+  font-size: 40rpx;
+  color: #fff;
+}
+
+

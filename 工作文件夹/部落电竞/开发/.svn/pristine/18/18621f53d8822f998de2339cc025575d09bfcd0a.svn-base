@@ -1,0 +1,68 @@
+/* modules/expertpage/expertpage/expert-page.wxss */
+
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/base/display.wxss";
+@import "/resources/wxss/base/clear.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+@import "/modules/expertpage/wxss/expert-base.wxss";
+@import "/modules/expertpage/wxss/expert-comm.wxss";
+@import "/component/reportlist/reportexpertitem/report-expert-item.wxss";
+
+.expert-report-trend {
+  width: 730rpx;
+  margin: 10rpx auto;
+
+  display: grid;
+  grid-template-columns: 242rpx 2rpx 242rpx 2rpx 242rpx;
+  grid-template-rows: auto 2rpx auto 2rpx;
+
+}
+.e-r-box {
+  text-align: center;
+  background: #fff;
+  padding: 15rpx;
+
+  color: #818181;
+  font-size: 28rpx;
+  line-height: 36rpx;
+}
+.t1 {
+  grid-column: 1 / 2; 
+  grid-row: 1 / 4;
+
+  padding-top: 60rpx;
+  border-radius:  15rpx 0 0 15rpx;
+}
+.t2 {
+  grid-column: 3 / 4; 
+  grid-row: 1 / 2;
+}
+.t3 {
+  grid-column: 5 / 6; 
+  grid-row: 1 / 2;
+  border-radius:  0 15rpx 0 0;
+}
+.t4 {
+  grid-column: 3 / 4; 
+  grid-row: 3 / 4;
+}
+.t5 {
+  grid-column: 5 / 6; 
+  grid-row: 3 / 4;
+  border-radius:  0 0 15rpx 0;
+}
+.t-red {
+  color: #cd0000;
+}
+
+
+
+/* 覆盖样式 */
+.report-expert-detail {
+  padding: 10rpx 10rpx 10rpx 0;
+}
+/* 覆盖样式 */
+.expert-info-title-trend {
+  margin: 20rpx auto;
+}

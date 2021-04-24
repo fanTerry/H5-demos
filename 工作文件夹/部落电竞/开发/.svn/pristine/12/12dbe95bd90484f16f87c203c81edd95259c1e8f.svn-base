@@ -1,0 +1,68 @@
+/* component/popup/ppexpert/pp-expert.wxss */
+
+@import "/resources/wxss/loading.wxss";
+@import "/resources/wxss/base/display.wxss";
+@import "/component/popup/wxss/popup.wxss";
+
+
+.pp-expert-content {
+  height: 340rpx;
+}
+.pp-expert-note {
+  text-align: center;
+  padding-bottom: 20rpx;
+}
+.pp-e-n-text {
+  font-size: 26rpx;
+  color: #999;
+}
+.pp-e-n-num {
+  color: #ea8c00;
+}
+.pp-e-n-coin {
+  color: #333;
+}
+
+.pp-expert-net-error {
+  text-align: center;
+  padding-top: 80rpx;
+}
+.pp-e-n-e-image {
+  width: 200rpx;
+  height: 120rpx;
+}
+.pp-e-n-e-text {
+  font-size: 28rpx;
+  line-height: 30rpx;
+  color: #4595f4;
+}
+
+.pp-expert-tip {
+  width: 690rpx;
+  height: 340rpx;
+
+  position: absolute;
+  left: 20rpx;
+
+  border-radius: 15rpx;
+  background: rgba(0, 0, 0, 0.8);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+}
+.pp-tip {
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: bold;
+}
+.pp-tip-icon {
+  color: #ff7c19;
+  padding-right: 10rpx;
+}
+.pp-tip-ing {
+  font-size: 24rpx;
+  position: absolute;
+}

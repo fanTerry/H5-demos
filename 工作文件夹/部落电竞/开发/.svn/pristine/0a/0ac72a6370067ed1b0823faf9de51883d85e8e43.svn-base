@@ -1,0 +1,43 @@
+// component/popup/ppmy/pp-my.js
+Component({
+  /**
+   * 组件的属性列表
+   */
+  properties: {
+    items: Array,
+  },
+
+  /**
+   * 组件的初始数据
+   */
+  data: {
+    showDialog: false, 
+    choosedValue: 1,
+  },
+
+  /**
+   * 组件的方法列表
+   */
+  methods: {
+    show() {
+      this.setData({
+        showDialog: true
+      })
+    },
+    hide() {
+      this.setData({
+        showDialog: false
+      })
+    },
+    radioChange(e) {
+      this.setData({
+        choosedValue: e.detail.value
+      })
+      console.log(this.data.choosedValue, '选择的支付方式')
+    },
+    confirmPay() {
+      //触发确认支付回调
+      this.triggerEvent("confirm", this.data.choosedValue)
+    }
+  }
+})

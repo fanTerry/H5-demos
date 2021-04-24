@@ -1,0 +1,853 @@
+<template>
+  <div class="ui_pop" v-if="showType">
+   
+   
+
+    <!-- 竞猜记录 -->
+    <div class="guessRecord" v-if="type == 4">
+      <a class="close" @click="closePop"></a>
+      <h2>竞猜记录</h2>
+      <div class="guessRecord_con">
+        <h3>
+          <span class="time">竞猜时间</span>
+          <span class="content">竞猜内容</span>
+          <span class="all">全部竞猜</span>
+          <span class="detail">详情</span>
+        </h3>
+        <ul class="guessRecord_list">
+          <li class="guessRecord_item" v-for="(item,index) in 10" :key="index">
+            <div class="flex_hc">
+              <span class="time">2018-06-07 18:12</span>
+              <span class="content">A VS B 的对战结果是？|IG(1.42)</span>
+              <span class="all">未中奖</span>
+              <a class="detail" :class="{'up':index == RecordMark}"
+                @click='guessRecordClick(index)'>{{index == RecordMark?"收起详情":"展开详情"}}</a>
+            </div>
+            <div class="guessRecord_detail" v-if="RecordMark == index">
+              <p class="result">比赛结果<span>JDG</span></p>
+              <p class="money">竞猜金额 X 奖励倍数：<span>100竞猜币 X 1.42</span></p>
+              <p class="number">竞猜编号：<span>P18XXXXXXXXXXX</span></p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    
+</template>
+
+<script>
+import Vue from "vue";
+import QRCode from "qrcodejs2";
+
+export default {
+  components: { QRCode },
+  props: ["type", "showType", "qrcodeUrl"],
+
+  data() {
+    return {
+      prizeDay: [],
+      RecordMark: Number,
+      showOrderDetails: false,
+      rechargeConfirmMark: false,
+      qrCodePayMark: false,
+      payStatusMark: false,
+      payType: Number,
+
+      signGiftList: [], //签到礼品
+      signTips:false,
+
+      chargeMoneyList: [], //充值金额列表
+      currChargeItem: null //当前选择的充值选项
+    };
+  },
+  methods: {
+    closePop() {
+      this.$emit("closePop");
+    },
+
+    //去签到
+    getPrize(index) {
+      return this.$post("/api/Sign/signIn")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log("签到");
+            this.signGiftList[index].receiveStatus = true;
+          } else {
+            this.$toast(dataResponse.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //弹窗提示
+    showMessage(msg) {
+      this.$toast(msg);
+    },
+    guessRecordClick(index) {
+      if (this.RecordMark == index) {
+        this.RecordMark = -1;
+      } else {
+        this.RecordMark = index;
+      }
+    },
+    //用户扫码登录
+    codeLogin() {
+      this.$emit("login");
+    },
+    rechargePrize(index) {
+      this.currChargeItem = this.chargeMoneyList[index];
+      this.rechargeConfirmMark = true;
+    },
+    toQrcodePay(money) {
+      let param = {};
+      param.chargeAmount = money;
+      param.chargeWay = 5;
+      return this.$post("/api/h5charge/tocharge", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse);
+            let link = dataResponse.data.requestUrl;
+            this.rechargeConfirmMark = false;
+            this.qrCodePayMark = true;
+
+            this.$nextTick(function() {
+              this.qrcode(link);
+            });
+
+            
+          }else if(dataResponse.code == 9999){
+            this.$toast(dataResponse.message)
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    qrcode(link) {
+      //生成二维码
+      console.log(link);
+      let url = link
+      let qrcode = new QRCode("qrcode", {
+        width: 133,
+        height: 133, // 高度
+        text: url, // 二维码内容
+        // render: 'canvas' ,   // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
+        // background: '#f0f',   // 背景色
+        // foreground: '#ff0'    // 前景色
+      });
+    }
+
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_icon";
+
+.ui_pop > div {
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translate(25%, -25%);
+  -webkit-transform: translate(25%, -25%);
+  width: 40px;
+  height: 40px;
+}
+
+.pop_tips {
+  @extend .g_v_c_mid;
+  width: 215px;
+  padding: 20px 0;
+  text-align: center;
+  p {
+    font-size: 14px;
+    color: #fff;
+  }
+  span {
+    display: block;
+    padding-top: 20px;
+    font-size: 20px;
+    color: #f6b70d;
+  }
+}
+
+.login {
+  width: 403px;
+  height: 536px;
+  text-align: center;
+  @include getBgImg("../../assets/images/pop/login_wx_bg.png");
+}
+
+.login_title {
+  padding-top: 72px;
+  font-size: 24px;
+  color: #ffdcd7;
+}
+
+.login_img {
+  width: 153px;
+  margin-top: 35px;
+}
+
+.login_att {
+  padding-top: 35px;
+  font-size: 24px;
+  color: #ffdcd7;
+}
+
+.login_tips {
+  padding-top: 19px;
+  font-size: 14px;
+  color: #ffbea3;
+}
+
+.login_btn {
+  display: inline-block;
+  width: 318px;
+  height: 48px;
+  margin-top: 26px;
+  line-height: 48px;
+  font-size: 16px;
+  color: #ffdcd7;
+  @include getBgImg("../../assets/images/home/guess_now.png");
+}
+
+.qrCode {
+  width: 714px;
+  height: 387px;
+  @include getBgImg("../../assets/images/pop/qrCode_bg.png");
+  .close {
+    right: 18px;
+    top: 23px;
+  }
+}
+
+.qrCode_img {
+  @extend .g_v_mid;
+  left: 72px;
+  width: 270px;
+  height: 270px;
+}
+
+.qrCode_tips {
+  @extend .g_v_mid;
+  right: 80px;
+  font-size: 30px;
+  line-height: 50px;
+  color: #fff;
+  text-align: center;
+  span {
+    color: #27c5d3;
+  }
+}
+
+.prize,
+.recharge {
+  width: 647px;
+  padding: 30px 20px 42px;
+  h2 {
+    position: relative;
+    padding-left: 22px;
+    font-size: 24px;
+    color: #fff6ea;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 1px;
+      left: 0;
+      width: 7px;
+      height: 24px;
+      background: linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -ms-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -webkit-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+    }
+  }
+  .prize_list {
+    padding-left: 8px;
+    overflow: hidden;
+  }
+  li {
+    float: left;
+    width: 130px;
+    padding-bottom: 20px;
+    margin: 40px 15px 0 0;
+    background-color: #fff;
+    box-shadow: 0px 6px 8px 0px rgba(0, 0, 0, 0.03);
+    text-align: center;
+    &:first-child {
+      img {
+        height: 50px;
+        margin: 22px auto;
+      }
+    }
+    &:nth-child(4) {
+      margin-right: 0;
+    }
+    &:last-child {
+      img {
+        height: 44px;
+        margin: 25px auto 26px;
+      }
+    }
+    &.recevied {
+      position: relative;
+      &::after {
+        content: "";
+        @extend .g_c_mid;
+        top: 23px;
+        width: 96px;
+        height: 96px;
+        @include getBgImg("../../assets/images/home/recevied.png");
+      }
+      .prize_get_btn {
+        border: none;
+        color: #666;
+      }
+    }
+    p {
+      height: 21px;
+      font-size: 12px;
+      line-height: 21px;
+      color: #676767;
+      background-color: #edeeef;
+    }
+    img {
+      display: block;
+      height: 31px;
+      margin: 32px auto;
+    }
+  }
+  .prize_get_btn {
+    display: inline-block;
+    width: 94px;
+    line-height: 24px;
+    font-size: 12px;
+    color: #cea04a;
+    border: 2px solid #cea04a;
+    border-radius: 14px;
+  }
+}
+
+.recharge {
+  h2 {
+    @extend .flex;
+    align-items: flex-end;
+    > div {
+      @extend .flex_hc;
+      margin-left: 40px;
+      font-size: 14px;
+      color: #f3d40c;
+    }
+  }
+  .coin {
+    width: 20px;
+    height: 20px;
+    margin-right: 7px;
+  }
+  .num {
+    padding-left: 5px;
+  }
+  .cost_star {
+    padding-top: 14px;
+    font-size: 14px;
+    color: #666;
+  }
+  .prize_get_btn {
+    margin-top: 10px;
+  }
+}
+
+.guessRecord,
+.exchangeRecord {
+  width: 914px;
+  background-color: #311e1d;
+  h2 {
+    line-height: 90px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff6ea;
+    text-align: center;
+  }
+  h3 {
+    @extend .flex;
+    font-size: 0;
+    .all {
+      position: relative;
+      &::after {
+        content: "";
+        margin-left: 4px;
+        @include getTriangle(4px, #7f5c51, down);
+        border-width: 8px 4px 0 4px;
+      }
+    }
+    .detail,
+    .order_detail {
+      width: 190px;
+    }
+  }
+  .time,
+  .content,
+  .all,
+  .detail,
+  .order_time,
+  .order_num,
+  .goods_name,
+  .order_status,
+  .order_detail {
+    display: inline-block;
+    margin-right: 1px;
+    padding-left: 20px;
+    font-size: 14px;
+    color: #7f5c51;
+    line-height: 40px;
+    background-color: #221518;
+  }
+  .time,
+  .result {
+    width: 180px;
+    padding-left: 40px;
+  }
+  .content {
+    width: 391px;
+    padding: 0 20px;
+    @include t_nowrap(100%);
+  }
+  .all {
+    width: 150px;
+  }
+  .detail {
+    width: 166px;
+    margin-right: 0;
+  }
+  .money {
+    padding-left: 20px;
+  }
+  .number {
+    padding-left: 73px;
+  }
+  .order_time {
+    width: 180px;
+    padding-left: 40px;
+  }
+  .order_num {
+    width: 190px;
+  }
+  .goods_name {
+    width: 200px;
+    padding: 0 20px;
+    @include t_nowrap(100%);
+  }
+  .order_status {
+    width: 150px;
+  }
+  .order_detail {
+    width: 166px;
+    text-decoration: underline;
+  }
+}
+
+.guessRecord_con,
+.exchangeRecord_con {
+  background-color: #130c0e;
+}
+
+.guessRecord_list,
+.exchangeRecord_list {
+  height: 340px;
+  margin-right: 4px;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    margin-right: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #453130;
+  }
+  .time,
+  .content,
+  .all,
+  .detail,
+  .order_time,
+  .order_num,
+  .goods_name,
+  .order_status,
+  .order_detail {
+    margin-top: 1px;
+    line-height: 50px;
+    color: #ffdcd7;
+    background-color: #311e1d;
+  }
+  .detail {
+    color: #f3d40c;
+    &.up {
+      color: #ffdcd7;
+      &::after {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-width: 1px 0 0 1px;
+        border-style: solid;
+        border-color: #ffdcd7;
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform-origin: bottom;
+        -webkit-transform-origin: bottom;
+        -ms-transform-origin: bottom;
+        margin-left: 4px;
+        vertical-align: middle;
+      }
+    }
+  }
+  .order_num,
+  .order_detail {
+    color: #f3d40c;
+  }
+}
+
+.guessRecord_item,
+.exchangeRecord_item {
+  position: relative;
+}
+
+.guessRecord_detail {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 1;
+  width: 100%;
+  font-size: 0;
+  color: #ffdcd7;
+  background-color: #221518;
+  p {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 51px;
+  }
+  span {
+    color: #f3d40c;
+  }
+}
+
+.orderDetails {
+  @extend .g_v_c_mid;
+  position: absolute !important;
+  width: 908px;
+  height: 465px;
+
+  h2 {
+    line-height: 90px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff6ea;
+    text-align: center;
+    &::after {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        rgba(103, 62, 61, 0),
+        rgba(103, 62, 61, 1),
+        rgba(103, 62, 61, 0)
+      );
+      background: -webkit-linear-gradient(
+        90deg,
+        rgba(103, 62, 61, 0),
+        rgba(103, 62, 61, 1),
+        rgba(103, 62, 61, 0)
+      );
+      background: -ms-linear-gradient(
+        90deg,
+        rgba(103, 62, 61, 0),
+        rgba(103, 62, 61, 1),
+        rgba(103, 62, 61, 0)
+      );
+    }
+  }
+  .close_btn {
+    @extend .flex_v_h;
+    margin: 68px auto 0;
+    width: 460px;
+    height: 50px;
+    font-size: 18px;
+    color: #f5b457;
+    border: 3px solid #f5b457;
+  }
+}
+
+.orderDetails_con {
+  @extend .flex_v_h;
+  margin-top: 38px;
+  img {
+    width: 260px;
+    height: 190px;
+    margin-right: 30px;
+    object-fit: contain;
+  }
+  p {
+    padding: 4px 0 10px;
+    font-size: 14px;
+    color: #ffdcd7;
+    &:last-child {
+      padding-bottom: 4px;
+    }
+  }
+}
+
+.confirm_pay,
+.orderDetails,
+.recharge,
+.prize,
+.qrCodePay,
+.payStatus,
+.pointsExchange,
+.pop_tips {
+  background: linear-gradient(-16deg, rgba(42, 24, 28, 1), rgba(52, 32, 29, 1));
+  background: -webkit-linear-gradient(
+    -16deg,
+    rgba(42, 24, 28, 1),
+    rgba(52, 32, 29, 1)
+  );
+  background: -ms-linear-gradient(
+    -16deg,
+    rgba(42, 24, 28, 1),
+    rgba(52, 32, 29, 1)
+  );
+  box-shadow: 0px 0px 15px 0px rgba(10, 2, 4, 0.5);
+}
+
+.confirm_pay {
+  @extend .g_v_c_mid;
+  position: absolute !important;
+  width: 415px;
+  text-align: center;
+  padding-bottom: 17px;
+
+  h3 {
+    font-size: 20px;
+    line-height: 56px;
+    color: #fff;
+    font-weight: bold;
+    background-color: #f5b457;
+  }
+  p {
+    padding-top: 58px;
+    font-weight: bold;
+    color: #fefefe;
+    font-size: 14px;
+  }
+  a {
+    @extend .flex_v_h;
+    margin: 47px auto 0;
+    width: 118px;
+    height: 38px;
+    color: #f5b457;
+    border: 3px solid #f5b457;
+  }
+}
+
+.qrCodePay {
+  @extend .g_v_c_mid;
+  position: absolute !important;
+  @extend .flex_v_h;
+  width: 647px;
+  height: 324px;
+  text-align: center;
+  .left {
+    padding: 30px 33px 40px;
+    background-color: rgba(94, 158, 66, 1);
+    p {
+      padding-bottom: 20px;
+      font-size: 16px;
+      color: #fff;
+    }
+    img {
+      width: 133px;
+      height: 133px;
+    }
+  }
+  .right {
+    margin-left: 80px;
+    span {
+      font-size: 20px;
+      color: #fff;
+    }
+    p {
+      padding-top: 50px;
+      font-size: 14px;
+      color: #fff;
+    }
+    a {
+      @extend .flex_v_h;
+      margin: 47px auto 0;
+      width: 118px;
+      height: 38px;
+      color: #f5b457;
+      border: 3px solid #f5b457;
+    }
+  }
+}
+
+.payStatus {
+  @extend .g_v_c_mid;
+  position: absolute !important;
+  @extend .flex_v_h;
+  width: 415px;
+  height: 230px;
+  color: #fff;
+  .title {
+    @extend .flex_hc;
+    font-size: 20px;
+  }
+  p {
+    padding-top: 30px;
+    font-size: 14px;
+  }
+  span {
+    width: 45px;
+    height: 45px;
+    margin-right: 15px;
+  }
+  .recharge_btn {
+    @extend .flex_v_h;
+    margin: 20px auto 0;
+    width: 158px;
+    height: 38px;
+    color: #f5b457;
+    border: 3px solid #f5b457;
+  }
+}
+
+.pointsExchange {
+  width: 647px;
+  height: 446px;
+  padding: 30px;
+  h2 {
+    position: relative;
+    padding-left: 22px;
+    font-size: 24px;
+    color: #fff6ea;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 1px;
+      left: 0;
+      width: 7px;
+      height: 24px;
+      background: linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -ms-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+      background: -webkit-linear-gradient(
+        to bottom,
+        rgba(246, 215, 75, 1),
+        rgba(197, 69, 4, 1)
+      );
+    }
+    span {
+      padding-left: 20px;
+      font-size: 14px;
+      color: #54433c;
+    }
+  }
+}
+
+.pointsExchange_con {
+  width: 240px;
+  margin: 58px auto 0;
+  text-align: center;
+  .star {
+    width: 50px;
+    height: 50px;
+    @include getBgImg("../../assets/images/pop/star_icon.png");
+  }
+  .exchange_icon {
+    width: 40px;
+    height: 40px;
+    @include getBgImg("../../assets/images/pop/exchange_points.png");
+  }
+  .exchange_tips {
+    @extend .flex_v_justify;
+    padding-top: 32px;
+    padding-left: 7px;
+    font-size: 18px;
+    color: #ffdcd7;
+  }
+  .star_balance {
+    padding-top: 55px;
+    font-size: 14px;
+    color: #ffbea3;
+  }
+  .exchange_num {
+    width: 100%;
+    margin-top: 10px;
+    line-height: 46px;
+    font-size: 14px;
+    color: #fff;
+    text-align: center;
+    border: 1px solid #3e2428;
+    background-color: #231416;
+  }
+  .exchange_btn {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    line-height: 42px;
+    font-size: 18px;
+    color: #5a3e39;
+    border: 3px solid currentColor;
+    &.active {
+      color: #f5b457;
+    }
+  }
+  input::-webkit-input-placeholder {
+    /* Chrome/Opera/Safari */
+    color: #3e2428;
+  }
+  input::-moz-placeholder {
+    /* Firefox 19+ */
+    color: #3e2428;
+  }
+  input:-ms-input-placeholder {
+    /* IE 10+ */
+    color: #3e2428;
+  }
+  input:-moz-placeholder {
+    /* Firefox 18- */
+    color: #3e2428;
+  }
+}
+</style>

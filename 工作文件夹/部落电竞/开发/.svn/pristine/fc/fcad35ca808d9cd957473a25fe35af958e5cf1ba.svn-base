@@ -1,0 +1,84 @@
+@import "iconfont.css";
+@import "_base";
+@import "_mixin";
+@import "_var";
+
+html,body,#app{
+    height: 100%;
+}
+
+// 页面采用弹性盒子布局
+.Page{
+    @extend .flex;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+    height: 100%;
+    background-color: #F5F4F3;
+}
+
+// 公用头部栏
+.mod_header{
+    position: relative;
+    h2 {
+        position: relative;
+        padding: 0 40px;
+        font-size: 16px !important;
+        line-height: 40px;
+        color: #000; 
+        font-weight: normal;
+        text-align: center;
+        @include getBorder(bottom, #ddd);
+        @include t_nowrap(100%);
+    } 
+}
+
+
+// 内容主体可滑动区域
+.main{
+    flex: 1;
+    -webkit-flex: 1;
+    // overflow: hidden;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+// 公用页面头部栏背景
+.header_nav_list{
+    background: linear-gradient(-15deg,#FFA904,#FF782F);
+}
+
+
+
+// 关注按钮
+.follow_btn,.followed_btn{
+    @extend .flex_v_h;
+    width: 60px;
+    height: 24px;
+    color: $color_main;
+    @include getRadiusBorder($color_main,all,24px);
+}
+
+.followed_btn{
+    color: #AFAFAF;
+    @include getRadiusBorder(#AFAFAF,all,24px);
+}
+
+
+// 通用星币图片
+.star_coin{
+    @include getBgImg('../images/user_center/star_coin.png');
+}
+
+
+// iphoneX,iphone Xs max适配
+@media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2){
+    .mod_header{
+        padding-top: constant(safe-area-inset-top) !important;
+        padding-top: env(safe-area-inset-top) !important;
+    }
+    .mod_footer{
+        padding-bottom: constant(safe-area-inset-bottom) !important;
+        padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+}

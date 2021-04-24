@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "mem-news-item": "/component/report/memnewsitem/mem-news-item"
+  }
+}

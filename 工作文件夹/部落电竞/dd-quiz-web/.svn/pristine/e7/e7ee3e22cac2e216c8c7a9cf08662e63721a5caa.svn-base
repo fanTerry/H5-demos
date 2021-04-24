@@ -1,0 +1,39 @@
+package com.esportzoo.esport.vo.user;
+
+import java.io.Serializable;
+
+import com.esportzoo.esport.connect.request.BaseRequest;
+
+/**
+ * @author tingting.shen
+ * @date 2019/07/16
+ */
+public class PhoneLoginRequest extends BaseRequest implements Serializable {
+
+	private static final long serialVersionUID = -5400899366108042333L;
+	
+	private String accountOrPhone;
+	private String password;
+	private Integer biz;
+	
+	
+	public String getAccountOrPhone() {
+		return accountOrPhone;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public Integer getBiz() {
+		return biz;
+	}
+	public void setAccountOrPhone(String accountOrPhone) {
+		this.accountOrPhone = accountOrPhone;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public void setBiz(Integer biz) {
+		this.biz = biz;
+	}
+
+}

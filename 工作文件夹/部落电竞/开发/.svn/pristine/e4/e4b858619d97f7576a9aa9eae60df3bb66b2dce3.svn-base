@@ -1,0 +1,106 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar pageTitle="实名认证"></navBar>
+    </header>
+    <div class="main">
+      <section>
+        <label for="real_name">真实姓名</label>
+
+        <input id="real_name" type="text" maxlength="5" placeholder="请输入真实姓名" @blur="scrollToTop">
+      </section>
+
+      <section>
+        <label for="ID_num">身份证号</label>
+        <input id="ID_num" type="text" placeholder="请输入身份证号码" maxlength="18" @blur="scrollToTop">
+      </section>
+      <div style='background-color: #fff;margin-top: 10px;'>
+        <phone-send-code ref='phoneSend' :time="60" btnTxt="保存" @doConfirm="toDoConfirm"
+          @getSendPhoneCode="getSendPhoneCode">
+        </phone-send-code>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar/index";
+import phoneSendCode from "../../../components/user_info/phoneSendCode.vue";
+export default {
+  components: {
+    navBar,
+    phoneSendCode
+  },
+  data() {
+    return {};
+  },
+  created() {},
+  methods: {
+    scrollToTop: function() {
+      setTimeout(function() {
+        window.scrollTo(0, 0);
+        console.log("回滚");
+      }, 100);
+    },
+    //处理接收验证码
+    getSendPhoneCode() {},
+    //处理提交绑定
+    toDoConfirm() {}
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+
+section {
+  position: relative;
+  @extend .flex_hc;
+  @include getBorder(bottom, rgba(0, 0, 0, 0.1));
+  height: 44px;
+  margin-top: 10px;
+  padding: 0 20px;
+  font-size: 14px;
+  background-color: #fff;
+  label {
+    width: 65px;
+    line-height: 44px;
+  }
+  input {
+    flex: 1;
+    -webkit-flex: 1;
+    line-height: 44px;
+    border: none;
+  }
+}
+.personal_sign {
+  align-items: flex-start;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  height: initial;
+  padding: 15px 20px;
+  label {
+    line-height: 1;
+  }
+  textarea {
+    margin-top: 10px;
+    width: 100%;
+    padding-top: 5px;
+    line-height: 16px;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+.submit_btn {
+  display: block;
+  margin: 20px 20px 25px;
+  padding: 15px;
+  font-size: 18px;
+  color: #fff;
+  border-radius: 8px;
+  text-align: center;
+  background-color: $color_main;
+}
+</style>

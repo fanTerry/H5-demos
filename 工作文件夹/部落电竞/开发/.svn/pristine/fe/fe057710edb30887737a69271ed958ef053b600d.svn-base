@@ -1,0 +1,117 @@
+<template>
+  <div class='Page'>
+    <header class='mod_header'>
+      <nav-bar :pageTitle="'我的银行卡'"></nav-bar>
+    </header>
+    <div class='main'>
+      <p class="title">新增卡</p>
+      <p class="tips">为保障账户资金安全，仅可绑定实名认证用户本人的银行卡</p>
+      <p class="info_input">持卡人：{{trueName}}</p>
+      <p class="info_input">开卡行：{{bank}}</p>
+      <p class="info_input">卡号码：{{accountNo}}</p>
+      <div class='next_btn'>
+        <a @click="goBack()">上一步</a>
+        <a @click="bindCard()">确定绑卡</a>
+      </div>
+    </div>
+    <footer class='mod_footer'>
+
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from '../../../../components/header/nav_bar/index.vue';
+export default {
+  components: {
+    navBar
+  },
+  props: [],
+  data() {
+    return {
+      trueName: null,
+      accountNo: null,
+      bank: null
+    };
+  },
+  created() {
+    this.trueName = this.$route.params.trueName;
+    this.accountNo = this.$route.params.accountNo;
+    this.bank = this.$route.params.bank;
+    console.log(this.trueName, this.accountNo, this.bank, '确认信息');
+  },
+  methods: {
+    //确认绑卡
+    bindCard() {
+      let param = {};
+      param.bankNo = this.accountNo;
+      console.log('参数', param);
+      this.$post('/api/usercenter/confirmBindCard', param)
+        .then(rsp => {
+          let response = rsp.data;
+          if (rsp.code === '200') {
+            this.$toast('银行卡绑定成功!');
+            setTimeout(() => {
+              this.$router.go(-2);
+            }, 3 * 1000);
+          } else {
+            this.$toast(rsp.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    goBack() {
+      this.$router.go(-1);
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../../../assets/common/_base';
+@import '../../../../assets/common/_mixin';
+
+.title {
+  padding-top: 10.6667vw;
+  font-size: 5.3333vw;
+  line-height: 5.8667vw;
+  text-align: center;
+  color: #fff;
+}
+
+.tips {
+  padding: 3.2vw 4.2667vw 10.6667vw;
+  font-size: 3.7333vw;
+  line-height: 5.3333vw;
+  color: #fff;
+}
+
+.info_input,
+.input {
+  @extend .flex_hc;
+  width: 91.4667vw;
+  height: 10.6667vw;
+  margin: 0 auto 2.1333vw;
+  padding: 0 4.2667vw;
+  border-radius: 0.5333vw;
+  font-size: 4vw;
+  color: rgba(255, 255, 255, 0.5);
+  background-color: #242330;
+}
+
+.input {
+  color: #999;
+  background-color: #fff;
+}
+
+.next_btn {
+  @extend .flex_v_justify;
+  margin: 62.1333vw 4.2667vw 0;
+  a {
+    @include getBtn(44vw, 10.4vw, 4vw, #fff, $color_main, 1.3333vw);
+    border: 1px solid #3d3b51;
+  }
+}
+</style>

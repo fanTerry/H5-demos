@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "pp-my": "/component/popup/ppmy/pp-my",
+    "charge": "/component/popup/charge/charge"
+  }
+}

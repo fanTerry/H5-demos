@@ -1,0 +1,669 @@
+<template>
+  <div class="Page guessPage">
+    <header class="mod_header">
+      <!-- <div ref='leagueTab' class="league_tab" @click="showLeagueType = !showLeagueType">
+        <h2 :class="{active:showLeagueType}">{{tabValue}}</h2>
+        <ul v-if="showLeagueType">
+          <li @click="changeLeague(null,-1,$event)">全部比赛</li>
+          <li @click="changeLeague(item.leagueId,index,$event)" v-for="(item,index) in leagueList" :key="index">
+            {{item.leagueName}}</li>
+        </ul>
+      </div> -->
+      <div class="navBar">
+        <div class="users">
+          <img :src="userInfo.icon|getDefaultImg(globalConst.userDefaultIcon)" alt="">
+          <div>
+            <p class="user_name">{{userInfo?userInfo.nickName:'未登录'}}</p>
+            <p class="user_assets">星星: {{userInfo.ableRecScore}}&nbsp;&nbsp;&nbsp;&nbsp;椰云分: {{userInfo.yeYunPoints}}
+            </p>
+          </div>
+        </div>
+        <div class="herf_gather">
+          <a class="get_icon" :class="{active:showGetList}" @click="showGetList = !showGetList">
+            <ul v-if="showGetList">
+              <li @click="goUrlPage('/recharge')">星星充值</li>
+              <li @click="showSignType = true">签到领星星</li>
+              <li @click="showExchangeType = true">兑换椰子分</li>
+            </ul>
+          </a>
+          <a class="exchange_icon" @click="goToYeYunPage()"></a>
+          <a class="record_icon" :class="{active:showRecordList}" @click="showRecordList = !showRecordList">
+            <ul v-if="showRecordList">
+              <li @click="goUrlPage('/guess/record')">竞猜记录</li>
+              <li @click="goUrlPage('/wallet')">星星流水</li>
+              <li @click="goUrlPage('/guess/rules')">规则说明</li>
+            </ul>
+          </a>
+        </div>
+      </div>
+    </header>
+    <!-- banner广告 -->
+
+    <!-- <div class="main" id="main" @scroll="onScroll()"> -->
+    <div class="main" id="mainId">
+
+      <mescroll ref="mescroll" @downCallback="downCallback" @upCallback="upCallback" @mescrollInit="mescrollInit">
+        <!-- 运营位 -->
+        <banner ref="banner" class="banner" v-if="bannerUrl.length > 0 " :adList='bannerUrl'></banner>
+        <nav class="match_tab">
+          <ul class="list">
+            <li :class="{'active':!requestParam.videoGameId}" @click="changeGame(0,$event)">全部</li>
+            <li :class="{'active':requestParam.videoGameId==item.index}" v-for=" (item, index) in gameList" :key="index"
+              @click="changeGame(item.index,$event)">{{item.description}}
+            </li>
+          </ul>
+        </nav>
+        <ul class="guess_list" id="guess_list" v-if="matchList.length != 0">
+          <guess-item class="guess_item" :type=1 :matchInfo="item" v-for="(item,index) in matchList" :key="index">
+          </guess-item>
+        </ul>
+        <!-- 没有数据时展示 -->
+        <div class="no_data" v-if="noData">
+          <div>
+            <span class="no_data_icon"></span>
+            <p class="tips">暂时没有新的比赛</p>
+          </div>
+        </div>
+      </mescroll>
+    </div>
+
+    <exchange-pop v-if="showExchangeType" @closeExchangePop='showExchangeType = false'></exchange-pop>
+    <sign-pop v-if="showSignType" @closeSignPop='showSignType = false'></sign-pop>
+  </div>
+</template>
+
+<script>
+import guessItem from "./components/guessItem.vue";
+import exchangePop from "../pointsExchange.vue";
+import { mapGetters, mapActions } from "vuex";
+import mescroll from "../../../components/common/mescroll";
+import banner from "../../../components/header/banner/swiper.vue";
+import signPop from "../sign.vue";
+
+export default {
+  components: {
+    guessItem,
+    exchangePop,
+    mescroll,
+    banner,
+    signPop
+  },
+  props: [],
+  data() {
+    return {
+      noData: false,
+      tabValue: "全部比赛",
+      showLeagueType: false,
+      showRecordList: false,
+      showGetList: false,
+      showExchangeType: false,
+      showSignType: false,
+      itemNum: 10,
+      matchList: [], //赛事列表
+      morePlayList: [], //更多玩法列表
+      currSpList: "", //用于刷新赔率
+      currPageSize: 10,
+      requestParam: {
+        pageNo: 1,
+        pageSize: 10,
+        totalPages: 0,
+        leagueId: null,
+        videoGameId: null
+      },
+      gameList: [],
+      loadMore: true, //加载更多
+      stopReapeat: false,
+      bannerUrl: [] // 广告
+    };
+  },
+  created() {},
+  computed: {
+    ...mapGetters({
+      getBetData: "getBetData",
+      userInfo: "getUserInfo"
+    })
+  },
+  watch: {
+    getBetData(val) {
+      if (val.toReflushBalance) {
+        //投注完刷新余额
+        this.getUserWallet();
+      }
+    }
+  },
+  mounted() {
+    //屏蔽app处理
+    if (this.$route.query.clientType == 3) {
+      this.$router.push({
+        path: "/home",
+        query: {}
+      });
+    }
+    //竞猜banner广告
+    this.getBannerUrl();
+    this.getUserWallet();
+    // this.getIndexMatchData();
+    this.queryYeYunPoints();
+    // this.getLeagueList();
+    this.getGameList();
+    document.addEventListener("click", e => {
+      console.log(e.target);
+      let getIcon = document.querySelector(".get_icon");
+      let recordIcon = document.querySelector(".record_icon");
+      let leagueTab = document.querySelector(".league_tab");
+      if (getIcon && !getIcon.contains(e.target)) {
+        this.showGetList = false;
+      }
+      if (recordIcon && !recordIcon.contains(e.target)) {
+        this.showRecordList = false;
+      }
+      if (leagueTab && !leagueTab.contains(e.target)) {
+        this.showLeagueType = false;
+      }
+    });
+  },
+
+  methods: {
+    ...mapActions(["setUserInfo"]),
+    mescrollInit(mescroll) {
+      this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
+      // this.mescroll.setBounce(true)//允许iOS回弹,相当于配置up的isBounce为true
+    },
+    downCallback() {
+      console.log("下拉刷新");
+      // this.refresh(true);
+      // this.mescroll.setPageNum(2);
+      this.matchList = [];
+      this.requestParam.pageNo = 1;
+      this.getIndexMatchData().then(data => {
+        this.mescroll.endSuccess(this.currPageSize, this.loadMore);
+      });
+    },
+    upCallback() {
+      console.log("上拉加载更多");
+      console.log("loadmore");
+      this.requestParam.pageNo += 1;
+      this.getIndexMatchData().then(data => {
+        this.mescroll.endSuccess(this.currPageSize, this.loadMore);
+      });
+    },
+    /**获取游戏列表 */
+    getGameList() {
+      return this.$post("/api/quiz/match/videoGames")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.gameList = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    changeGame(videoGameId, e) {
+      if (videoGameId == 0) {
+        this.requestParam.videoGameId = null;
+      } else {
+        this.requestParam.videoGameId = videoGameId;
+      }
+      this.requestParam.pageNo = 1;
+      this.matchList = [];
+      this.getIndexMatchData();
+      this.scrollTarget(e.currentTarget.previousElementSibling);
+    },
+    scrollTarget(target) {
+      if (!target) {
+        return;
+      }
+      var thisLeft = target.offsetLeft - 10;
+      console.log(thisLeft, "thisLeft");
+      $(".list").animate({ scrollLeft: thisLeft }, 500);
+    },
+    /**联赛筛选 */
+    changeLeague(leagueId, index, e) {
+      if (this.leagueTab == index) {
+        return;
+      }
+      this.tabValue = e.target.innerHTML;
+      console.log(e.target.innerHTML);
+      this.leagueTab = index;
+      if (leagueId) {
+        this.requestParam.leagueId = leagueId;
+      } else {
+        this.leagueTab = -1;
+        this.requestParam.leagueId = null;
+      }
+      this.requestParam.pageNo = 1;
+      this.matchList = [];
+      this.getIndexMatchData();
+      // this.clearOpenMore();
+    },
+
+    /**获取联赛列表 */
+    getLeagueList() {
+      return this.$post("/api/quiz/match/leagueList")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.leagueList = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getIndexMatchData() {
+      let param = {};
+      param = this.requestParam;
+      return this.$post("/api/quiz/match/indexQuizMatch", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          this.stopReapeat = false;
+          if (dataResponse.code == 200) {
+            let dataList = dataResponse.data.dataList;
+            if (dataList) {
+              this.currPageSize = dataList.length;
+            }
+            this.loadMore = dataResponse.data.hasNext;
+            this.matchList = this.matchList.concat(dataList);
+            this.requestParam.totalPages = dataResponse.data.totalPages;
+            this.requestParam.pageNo = dataResponse.data.pageNo;
+            this.createSpList();
+          }
+          if (this.matchList.length > 0) {
+            console.log("0000000000");
+            this.noData = false;
+          } else {
+            this.noData = true;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    createSpList() {
+      this.currSpList = [];
+      this.matchList.forEach(matchInfo => {
+        if (matchInfo.quizMathGame.id) {
+          this.currSpList = this.currSpList + matchInfo.quizMathGame.id + ",";
+        }
+      });
+      console.log("获取赔率列表", this.currSpList);
+    },
+    goUrlPage(url) {
+      this.$router.push({
+        path: url,
+        query: {}
+      });
+    },
+    onScroll() {
+      //可滚动容器的高度
+      let innerHeight = document.querySelector("#guess_list").clientHeight;
+      //屏幕尺寸高度
+      let outerHeight = document.querySelector("#mainId").clientHeight;
+      //可滚动容器超出当前窗口显示范围的高度
+      let scrollTop = document.querySelector("#main").scrollTop;
+      if (innerHeight < outerHeight + scrollTop + 30) {
+        //加载更多操作
+        if (!this.loadMore) {
+          return;
+        }
+        if (this.stopReapeat) {
+          return;
+        }
+        this.stopReapeat = true;
+        console.log("loadmore");
+        this.requestParam.pageNo += 1;
+        this.getIndexMatchData();
+      }
+    },
+    //查询设置用户钱包
+    getUserWallet() {
+      return this.$post("/api/starNum/queryStarNum")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse.data.ableRecScore, "获取用户的星星");
+            this.setUserInfo({
+              ...this.userInfo,
+              recScore: dataResponse.data.recScore,
+              giftRecScore: dataResponse.data.giftRecScore,
+              ableRecScore: dataResponse.data.ableRecScore,
+              nickName: dataResponse.data.nickName,
+              icon: dataResponse.data.icon
+            });
+            console.log(this.userInfo);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //查询椰云积分
+    queryYeYunPoints() {
+      return this.$post("/api/yeYunUser/yeYunUserInfo")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse.data, "获得用户椰云积分");
+            this.setUserInfo({
+              ...this.userInfo,
+              yeYunPoints: dataResponse.data.score
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    dataRefresh() {
+      this.queryYeYunPoints();
+      this.getUserWallet();
+    },
+    // 跳转到椰云积分商城
+    goToYeYunPage() {
+      this.$post("/api/yeYunUser/getYeYunIndex")
+        .then(rsp => {
+          const dataResponse = rsp;
+          let yeYunUrl = dataResponse.message;
+          console.log(yeYunUrl);
+          window.location.href = yeYunUrl;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    //竞猜banner广告
+    getBannerUrl() {
+      let param = { typeStr: "7" };
+      return this.$post("/api/getAdList", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse, "广告位置");
+            this.bannerUrl = dataResponse.data.adList7;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //跳转地址
+    toUrl(url) {
+      console.log(url, "跳转地址");
+      window.open(url, "_blank");
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.guessPage {
+  .swiper-pagination {
+    bottom: 2.6667vw;
+    left: initial;
+    right: 4vw;
+    width: auto;
+  }
+  .swiper-pagination-bullet {
+    background: rgba(255, 255, 255, 0.4);
+  }
+  .swiper-pagination-bullet-active {
+    background-color: #fff;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  background-color: #1f1212;
+}
+
+.main {
+  overflow: auto;
+}
+
+.mod_header {
+  background-color: #321919;
+  h2 {
+    line-height: 11.73vw;
+    font-size: 4.8vw;
+    font-weight: normal;
+    color: #fedcd7;
+    text-align: center;
+    &::after {
+      content: "";
+      position: relative;
+      top: 3px;
+      margin-left: 1.8vw;
+      @include getTriangle(5px, #fedcd7, down);
+    }
+    &.active {
+      &::after {
+        position: relative;
+        top: -3px;
+        @include getTriangle(5px, #fedcd7, up);
+      }
+    }
+  }
+}
+
+.banner {
+  height: 36vw;
+  margin: 2.6667vw;
+}
+
+.match_tab {
+  margin: 2.6667vw 2.6667vw 0;
+  height: 8.5333vw;
+  overflow: hidden;
+  ul {
+    @extend .flex;
+    height: calc(100% + 6px);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  li {
+    @extend .flex_v_h;
+    flex: none;
+    -webkit-flex: none;
+    width: 19.4667vw;
+    height: 8.5333vw;
+    font-size: 4vw;
+    color: #fedcd7;
+    background-color: #4e2823;
+    border-radius: 3px;
+    margin-right: 1.0667vw;
+    @include getRadiusBorder(#6d3932, all, 6px);
+    &.active {
+      background-color: #ba3129;
+      @include getRadiusBorder(#fb564d, all, 6px);
+    }
+  }
+}
+
+.league_tab {
+  position: relative;
+  ul {
+    @extend .g_c_mid;
+    position: absolute;
+    z-index: 10;
+    top: 100%;
+    width: 100%;
+    background-color: #4c2723;
+    box-shadow: 0 14px 14px 0px rgba(0, 0, 0, 0.5);
+    &::after {
+      content: "";
+      @extend .g_c_mid;
+      top: -9px;
+      @include getTriangle(5px, #4c2723, up);
+    }
+  }
+  li {
+    line-height: 10.67vw;
+    font-size: 4.8vw;
+    color: #ffe9e9;
+    @include getBorder(bottom, #703b35);
+    text-align: center;
+    &:last-child {
+      background: none;
+    }
+  }
+}
+
+.navBar {
+  @extend .flex_v_justify;
+  height: 10.67vw;
+  padding: 0 5.33vw 0 2.67vw;
+  @include getBorder(top, #4e261e);
+}
+
+.users {
+  @extend .flex_hc;
+  img {
+    width: 8vw;
+    height: 8vw;
+    margin-right: 2.67vw;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+.user_name {
+  font-size: 2.9333vw;
+  color: #fedcd7;
+}
+
+.user_assets {
+  padding-top: 1.07vw;
+  font-size: 2.6667vw;
+  color: #86564e;
+  white-space: nowrap;
+}
+
+.herf_gather {
+  @extend .flex_hc;
+  a {
+    width: 5.87vw;
+    height: 5.87vw;
+    margin-right: 6.4vw;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+.guess_list {
+  padding: 0 2.67vw 8vw;
+}
+
+.no_data {
+  @extend .flex_v_h;
+  margin-top: 40vw;
+  text-align: center;
+  .tips {
+    padding-top: 2.67vw;
+    font-size: 3.73vw;
+    color: #fedcd7;
+  }
+}
+
+.no_data_icon {
+  display: inline-block;
+  width: 9.07vw;
+  height: 9.07vw;
+  @include getBgImg("../../../assets/images/guess/no_data_icon.png");
+  background-size: 100% 100%;
+}
+
+.exchange_icon {
+  @include getBgImg("../../../assets/images/guess/exchange_icon.png");
+}
+
+.record_icon,
+.get_icon {
+  position: relative;
+  @include getBgImg("../../../assets/images/guess/record_icon.png");
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2.67vw;
+    right: -2.4vw;
+    @include getTriangle(1.07vw, #d6a638, down);
+  }
+  &.active {
+    &::after {
+      top: 1.33vw;
+      transform: rotate(180deg);
+      -webkit-transform: rotate(180deg);
+      transform-origin: center;
+      -webkit-transform-origin: center;
+    }
+  }
+  ul {
+    @include getRadiusBorder(#d6564f, all, 6px);
+    position: absolute;
+    right: -3.2vw;
+    top: 6.93vw;
+    z-index: 10;
+    width: 18.67vw;
+    border-radius: 3px;
+    background-color: #ba3129;
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0.27vw;
+      right: 3.47vw;
+      transform: translateY(-100%);
+      -webkit-transform: translateY(-100%);
+      @include getTriangle(1.33vw, #ba3129, up);
+    }
+  }
+  li {
+    line-height: 10.67vw;
+    font-size: 3.2vw;
+    color: #ffeaea;
+    text-align: center;
+    @include getBorder(bottom, #d6564f);
+    &:last-child {
+      background: none;
+    }
+  }
+}
+.con {
+  height: 110px;
+  margin-top: 8px;
+  overflow: hidden;
+  .list {
+    height: calc(100% + 6px);
+    white-space: nowrap;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .item {
+    display: inline-block;
+    margin-right: 8px;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+  img {
+    width: 250px;
+    height: 110px;
+    border-radius: 4px;
+    object-fit: cover;
+  }
+}
+.get_icon {
+  @include getBgImg("../../../assets/images/guess/get_icon.png");
+}
+
+.link_icon {
+  @include getBgImg("../../../assets/images/guess/link_icon.png");
+}
+</style>

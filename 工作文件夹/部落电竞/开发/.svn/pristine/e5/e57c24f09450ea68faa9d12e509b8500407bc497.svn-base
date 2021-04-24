@@ -1,0 +1,36 @@
+$color_main:#ff9800;
+$color_red:#D60C1F;
+$black_50:rgba(0,0,0,.5);
+$bg_blue:#46C4F9;
+$bg_pink:#E36986;
+$bg_orange:#ff9800;
+
+
+.c_black_50{
+    color: $black_50;
+}
+
+.c_orange{
+    color: $color_main;
+}
+
+.bg_blue{
+    background-color: $bg_blue;
+}
+
+.bg_pink{
+    background-color: $bg_pink;
+}
+
+.bg_orange{
+    background-color: $bg_orange;
+}
+
+
+.fs12{
+    font-size: 12px;
+}
+
+.c_red{
+    color: $color_red;
+}

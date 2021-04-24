@@ -1,0 +1,13 @@
+.no_data {
+  text-align: center;
+}
+
+.no_data img {
+  width: 286rpx;
+}
+
+.no_data p {
+  padding-top: 40rpx;
+  font-size: 28rpx;
+  color: #999;
+}

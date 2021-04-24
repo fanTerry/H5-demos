@@ -1,0 +1,130 @@
+<template>
+  <div class="ui_pop">
+    <div class="Page">
+      <h3>焦点赛事<a class='close' @click="closePop"></a></h3>
+      <bet-item></bet-item>
+      <div class="exchange_btn">
+        <!-- 加disabled置为不可点击 -->
+        <a>选择一个支持的选项</a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import betItem from "../../components/betItem.vue";
+
+export default {
+  components: { betItem },
+  props: [],
+  data() {
+    return {
+      showFlag: true
+    };
+  },
+  mounted() {
+    this.getHotGame();
+  },
+  methods: {
+    closePop() {
+      this.showFlag = false;
+    },
+    getHotGame() {
+      return this.$post("/api/quiz/match/recommendGameList")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.leagueList = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }
+};
+</script>
+
+
+<style lang='scss' scoped>
+@import "../../../../assets/common/_base";
+@import "../../../../assets/common/_mixin";
+
+.Page {
+  width: 94.6667vw;
+  height: 84vw;
+  background: #391a1c;
+}
+
+h3 {
+  position: relative;
+  width: 100%;
+  line-height: 8.8vw;
+  font-size: 4.8vw;
+  font-weight: normal;
+  text-align: center;
+  color: #fedcd7;
+  background-color: #482527;
+}
+
+.close {
+  position: absolute;
+  right: 2.67vw;
+  top: 1.6vw;
+  width: 5.33vw;
+  height: 5.33vw;
+  @include getBgImg("../../../../assets/images/guess/close.png");
+  background-size: contain;
+}
+
+.pop_tips {
+  @extend .g_v_c_mid;
+  width: 57.33vw;
+  padding: 5.33vw 0;
+  text-align: center;
+  background-color: #34201d;
+  p {
+    font-size: 3.73vw;
+    color: #fff;
+  }
+  span {
+    display: block;
+    padding-top: 5.33vw;
+    font-size: 5.33vw;
+    color: #f6b70d;
+  }
+}
+.prize_get_btn {
+  display: inline-block;
+  width: 14.9333vw;
+  margin-top: 3.2vw;
+  line-height: 4.2667vw;
+  font-size: 3.4667vw;
+  font-weight: bold;
+  color: #fff300;
+  border: 0.5333vw solid #fff300;
+  border-radius: 5.3333vw;
+}
+
+.exchange_btn {
+  margin: 0 2.6667vw;
+  padding: 2.67vw 0 4vw;
+  @include getBgImg("../../../../assets/images/guess/shadow.png");
+  background-size: 100% auto;
+  background-position: top center;
+  text-align: center;
+  a {
+    display: block;
+    margin: 0 auto;
+    border-radius: 3px;
+    line-height: 8.8vw;
+    font-size: 3.73vw;
+    color: #fedcd7;
+    background: linear-gradient(to bottom, #df2f26, #86171a);
+    background: -webkit-linear-gradient(top, #df2f26, #86171a);
+  }
+  .disabled {
+    opacity: 0.2;
+  }
+}
+</style>

@@ -1,0 +1,21 @@
+<!--modules/reportpage/mdodds/md-odds.wxml-->
+
+<!-- 赛程banner运营位置 -->
+<report-banner></report-banner>
+
+<!-- 赔率菜单栏 -->
+<report-sub-menu></report-sub-menu>
+
+<!-- 赔率列表一 -->
+<view class='section md-odds-list'>
+  <view wx:for="ab" wx:key="">
+    <odd-lock-item></odd-lock-item>
+  </view>
+</view>
+
+<!-- 赔率列表二 -->
+<view class='section md-odds-list'>
+  <view wx:for="ab" wx:key="">
+    <odd-result-item></odd-result-item>
+  </view>
+</view>

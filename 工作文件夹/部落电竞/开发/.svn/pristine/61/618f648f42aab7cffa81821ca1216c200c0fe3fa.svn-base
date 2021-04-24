@@ -1,0 +1,126 @@
+<template>
+  <div class='Page pullNewsPage'>
+    <header class='mod_header'>
+      <nav-bar :pageTitle='"专属拉新海报"'></nav-bar>
+    </header>
+    <div class='main'>
+      <ul class="list">
+        <li class="item" v-for="(item,index) in 10" :key="index">
+          <div class="poster" :style="'background-image:url(' + '../../assets/images/guess/share_bg.png'+')'">
+            <img src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3794688268,3669560702&fm=26&gp=0.jpg" alt="">
+            <p class="tips">财运好不好，全在这一秒</p>
+          </div>
+          <a @click="">点击下载</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="ui_pop" :class="{active:true}" :style="'background-image:url(' + '../../assets/images/guess/share_bg.png'+')'">
+      <div class="qr_code">
+        <img :src="qrCode" alt="">
+        <p class="tips">财运好不好，全在这一秒</p>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script>
+import navBar from '../../../components/header/nav_bar/index.vue';
+
+export default {
+  components: { navBar },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang="scss">
+.pullNewsPage {
+  .back {
+    &::before,
+    &::after {
+      background-color: #fff !important;
+    }
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import '../../../assets/common/_base';
+@import '../../../assets/common/_mixin';
+
+.mod_header {
+  background-color: #3d3b51;
+  .nav_bar {
+    color: #fff;
+  }
+}
+
+.list {
+  @extend .flex_v_justify;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  padding: 4.2667vw 10vw 0;
+}
+
+.item {
+  margin-bottom: 4.2667vw;
+  a {
+    display: block;
+    @include getBtn(21.3333vw, 7.7333vw, 3.2vw, #fff, $color_item, 0.5333vw);
+    margin-top: 3.2vw;
+  }
+}
+
+.poster {
+  position: relative;
+  width: 21.3333vw;
+  height: 37.8667vw;
+  text-align: center;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  img {
+    width: 13.3333vw;
+    margin-top: 14.6667vw;
+    object-fit: contain;
+    clip-path: polygon(15% 5%, 95% 5%, 95% 85%, 85% 95%, 5% 95%, 5% 15%);
+    -webkit-clip-path: polygon(15% 5%, 95% 5%, 95% 85%, 85% 95%, 5% 95%, 5% 15%);
+  }
+  .tips {
+    padding-top: 2.4vw;
+    font-size: 0.8vw;
+    color: #fff;
+    text-align: center;
+  }
+}
+
+.ui_pop {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.qr_code {
+  @extend .g_c_mid;
+  bottom: 17.0667vw;
+  margin: 0 auto;
+  img {
+    width: 39.7333vw;
+    object-fit: contain;
+    clip-path: polygon(15% 5%, 95% 5%, 95% 85%, 85% 95%, 5% 95%, 5% 15%);
+    -webkit-clip-path: polygon(15% 5%, 95% 5%, 95% 85%, 85% 95%, 5% 95%, 5% 15%);
+  }
+  .tips {
+    padding-top: 2.4vw;
+    font-size: 3.4667vw;
+    color: #fff;
+    text-align: center;
+  }
+}
+</style>

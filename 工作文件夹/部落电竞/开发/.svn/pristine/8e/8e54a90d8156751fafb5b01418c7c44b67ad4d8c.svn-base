@@ -1,0 +1,288 @@
+/* pages/usercenter/user_center.wxss */
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+.main {
+	line-height: 1;
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/my/my_asset_bg.png') no-repeat top center;
+  background-size: 100% auto;
+}
+
+.business_column, .fans_column,.module_view{
+  margin: 0 10rpx 20rpx;
+  border-radius: 16rpx;
+  background-color: #fff;
+}
+
+.user_info {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 40rpx 20rpx;
+	margin-top: 40rpx;
+}
+
+.user_info .name {
+  max-width: 300rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+  font-size: 40rpx;
+  padding-bottom: 20rpx;
+  font-weight: 500;
+  color: #fff;
+}
+
+.user_info .tips {
+  max-width: 300rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+  color: #fffeaf;
+}
+
+.user_img {
+  position: relative;
+  flex: none;
+  width: 120rpx;
+  height: 120rpx;
+  margin-right: 20rpx;
+}
+
+.user_img image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.vip_player {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 40rpx;
+  top: 60rpx;
+  font-size: 28rpx;
+  color: #fff;
+}
+
+.vip_player span {
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 10rpx;
+  background: url('https: //rs.esportzoo.com/svn/esport-res/mini/images/my/super_vip.png') no-repeat top center;
+  background-size: cover;
+}
+
+.login_btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 20rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  border-radius: 68rpx;
+  color: #ff7e00;
+  background-color: #fff;
+}
+
+.business_column {
+  box-shadow: 0 0 3px #ddd;
+}
+
+.business_column ul {
+  display: flex;
+  align-items: center;
+	flex-wrap: wrap;
+  padding: 20rpx 0;
+}
+
+.business_column li {
+  width: 25%;
+	padding: 10rpx 0;
+  text-align: center;
+}
+
+.business_column li button{
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	font-size: 13px;
+	line-height: 1.2;
+	color: #333;
+	background: none;
+	border: none;
+}
+
+.business_column li button::after{
+	display: none;
+}
+
+.business_column li span {
+  display: block;
+  width: 60rpx;
+  height: 60rpx;
+  margin: 0 auto 16rpx;
+}
+
+.wallet_icon {
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/my/wallet_icon.png') no-repeat top center;
+  background-size: cover;
+}
+
+.expert_icon {
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/my/expert_icon.png') no-repeat top center;
+  background-size: cover;
+}
+
+.recharge_icon {
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/my/recharge_icon.png') no-repeat top center;
+  background-size: cover;
+}
+
+.payment_icon {
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/my/payment_icon.png') no-repeat top center;
+  background-size: cover;
+}
+
+.service_icon {
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/my/service_icon.png') no-repeat top center;
+  background-size: cover;
+}
+
+.my_order_icon{
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/my/my_order_icon.png') no-repeat top center;
+  background-size: cover;
+}
+
+.confirm_phone_icon{
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/my/confirm_phone_icon.png') no-repeat top center;
+  background-size: cover;
+}
+
+.fans_column {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 70rpx;
+  color: #757575;
+}
+
+.fans_column > view {
+  text-align: center;
+}
+
+.fans_column .num {
+	display: block;
+	margin: 0 auto 10rpx;
+	font-weight: bold;
+  font-size: 28rpx;
+}
+
+.fans_column .weibo_icon, .fans_column .follow_icon, .fans_column .fans_icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.fans_column .icon-dianzan {
+  font-size: 40rpx;
+  color: #ff7e00;
+}
+
+.weibo_icon {
+  background: url('https: //rs.esportzoo.com/svn/esport-res/mini/images/my/weibo_icon.png') no-repeat top center;
+  background-size: cover;
+}
+
+.follow_icon {
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/my/follow_icon.png') no-repeat top center;
+  background-size: cover;
+}
+
+.fans_icon {
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/my/fans_icon.png') no-repeat top center;
+  background-size: cover;
+}
+
+.module_section {
+  padding: 0 20rpx;
+}
+
+.module_section h3 {
+  padding-top: 20rpx;
+  color: #a3a3a3;
+}
+
+.module_section .bind_phoneNum {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 0;
+}
+
+.module_section .firewall_icon {
+  width: 70px;
+  height: 70px;
+  margin-right: 10px;
+  background: url('https: //rs.esportzoo.com/svn/esport-res/mini/images/my/firewall_icon.png') no-repeat top center;
+  background-size: cover;
+}
+
+.module_section .bind {
+  font-size: 32rpx;
+  color: #3e3e3e;
+}
+
+.module_section .phone {
+  padding-top: 20rpx;
+  font-size: 26rpx;
+  color: #8a8a8a;
+}
+
+.module_section .confirm_tips {
+  padding-top: 20rpx;
+  color: #a3a3a3;
+}
+
+.module_section .confirm_btn {
+  /* @include getBorder(top, rgba(#000, 0.1)); */
+  padding: 20rpx 0;
+}
+
+.module_section .confirm_btn a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 220rpx;
+  height: 80rpx;
+  margin: 0 auto;
+  font-size: 28rpx;
+  border-radius: 20px;
+  color: #fff;
+  background-color: #ff7e00;
+}
+
+.module_section .vip_tips {
+  padding-top: 30rpx;
+  font-size: 28rpx;
+}
+
+.module_section .vip_tips span {
+  padding: 0 6rpx;
+  color: #ec9805;
+}
+
+.module_section .gift {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  text-align: center;
+  padding: 20rpx 0 40rpx;
+}
+
+.module_section .gift image {
+  display: block;
+  width: 140rpx;
+  height: 140rpx;
+  margin: 0 auto 10rpx;
+}

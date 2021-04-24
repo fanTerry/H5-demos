@@ -1,0 +1,127 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-04-18 13:09:03
+ * @LastEditTime: 2020-04-20 13:46:04
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /esport-touch/index.html
+ -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>枫叶电竞</title>
+    <meta name="referrer" content="origin" />
+    <meta name="viewport"
+        content="viewport-fit=cover,width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <!-- <meta name="referrer" content="no-referrer" /> -->
+    <link rel="shortcut icon" type="image/x-icon"
+        href="https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg" rel="external nofollow" />
+    <script>if (("standalone" in window.navigator) && window.navigator.standalone) {
+
+            var noddy, remotes = false;
+
+            document.addEventListener('click', function (event) {
+
+                noddy = event.target;
+
+                while (noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+
+                    noddy = noddy.parentNode;
+
+                }
+
+                if ('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes)) {
+
+                    event.preventDefault();
+
+                    document.location.href = noddy.href;
+
+                }
+
+            }, false);
+
+        }</script>
+</head>
+
+<script>
+    // var _mtac = {"senseHash":0};
+
+    var _mtac = {};
+    (function () {
+        var mta = document.createElement("script");
+        mta.src = "https://pingjs.qq.com/h5/stats.js?v2.0.4";
+        mta.setAttribute("name", "MTAH5");
+        mta.setAttribute("sid", "500692602");
+        mta.setAttribute("cid", "500695952");
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(mta, s);
+    })();
+    document.addEventListener("plusready", function () {
+        var webview = plus.webview.currentWebview();
+        plus.key.addEventListener("backbutton", function () {
+            webview.canBack(function (e) {
+                if (e.canBack) {
+                    webview.back();
+                } else {
+                    webview.close(); //hide,quit按手机返回键直接退出APP
+                    //plus.runtime.quit();
+                }
+            });
+        });
+    });
+    //解决iOS回退页面不刷新问题
+    let u = navigator.userAgent;
+    let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+    console.log("ios", isiOS);
+    if (isiOS) {
+        window.onpageshow = function (event) {
+            if (event.persisted) {
+                let url = window.location.href;
+                if (url.search("guess/home") != -1 || url.search("\/\\?") != -1) {
+                    window.location.reload();
+                }
+            }
+        };
+    }
+
+
+</script>
+
+
+
+<body>
+    <div id="app" v-cloak>
+        <!-- <keep-alive include='home,match'>
+        <router-view ></router-view>
+      </keep-alive> -->
+        <transition name="router-fade" mode="out-in">
+            <keep-alive>
+                <router-view v-if="$route.meta.keepAlive"></router-view>
+            </keep-alive>
+        </transition>
+        <transition name="router-fade" mode="out-in">
+            <router-view v-if="!$route.meta.keepAlive"></router-view>
+        </transition>
+    </div>
+    <!-- built files will be auto injected -->
+</body>
+
+</html>
+<style lang="scss">
+    /* @import './style/common'; */
+
+    .router-fade-enter-active,
+    .router-fade-leave-active {
+        transition: opacity 0.3s;
+    }
+
+    .router-fade-enter,
+    .router-fade-leave-active {
+        opacity: 0;
+    }
+</style>

@@ -1,0 +1,27 @@
+/* pages/index/index.wxss */
+
+.index-section {
+  width: 710rpx;
+  padding: 10rpx;
+  margin: 10rpx auto;
+
+  background: #fff;
+  border-radius: 15rpx;
+}
+
+.main{
+	position: relative;
+}
+
+.refresh_btn{
+	width: 124rpx;
+	height: 124rpx;
+	border-radius: 50%;
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/refresh_btn.png') no-repeat center;
+	background-size: cover;
+
+	position: fixed;
+	z-index: 10;
+	right: 40rpx;
+	bottom: 100rpx;
+}

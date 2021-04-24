@@ -1,0 +1,94 @@
+/* component/userinfo/user_info.wxss */
+
+.user_info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 40rpx 28rpx 0;
+}
+
+.user_info>view {
+  display: flex;
+  align-items: center;
+}
+
+.user_img {
+  position: relative;
+  width: 56rpx;
+  height: 56rpx;
+  margin-right: 20rpx;
+}
+
+.user_img .active::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translate(30%, -30%);
+  width: 18rpx;
+  height: 18rpx;
+  border: 1rpx solid #fff;
+  border-radius: 50%;
+  background-color: #ff3b30;
+}
+
+image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.name {
+  max-width: 300rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+  font-size: 26rpx;
+  padding-bottom: 10rpx;
+  font-weight: bold;
+  color: #000;
+}
+
+.tips span {
+  padding-right: 20rpx;
+  font-size: 20rpx;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* 关注按钮 */
+
+.follow_btn, .followed_btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120rpx;
+  height: 48rpx;
+  color: #fea21b;
+}
+
+.follow_btn:before, .followed_btn:before {
+  content: "";
+  pointer-events: none;
+  box-sizing: border-box;
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  left: 0;
+  top: 0;
+  border-radius: 24px;
+  border: 1px solid #fea21b;
+  -webkit-transform: scale(0.5);
+  -webkit-transform-origin: 0 0;
+  transform: scale(0.5);
+  transform-origin: 0 0;
+}
+
+.followed_btn {
+  color: #afafaf;
+}
+
+.followed_btn:before {
+  border: 1px solid #afafaf;
+}

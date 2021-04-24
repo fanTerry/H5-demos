@@ -1,0 +1,197 @@
+<!--pages/my/my.wxml-->
+<!-- 我的 -->
+
+<view class='my-view'>
+  <!-- 第一行：基础信息 -->
+  <view class='my-info-view clear'>
+    <user-avatar class="m-i-avatar fl" showSize="150" userImgUrl="{{userInfo.icon==null?'https://rs.esportzoo.com/svn/esport-res/mini/images/icon/avatar.png':userInfo.icon}}"></user-avatar>
+    <view class='my-info-m fl'>
+      <view class='m-i-name'>{{userInfo.nickName==null?'请登录':userInfo.nickName}}</view>
+      <!-- <view class='m-i-intro'>简介:
+          <text class='m-i-i-tag'>{{userInfo.intro==null?'':userInfo.intro}}</text> -->
+          <!--<text class='m-i-i-tag'>难逢敌手</text>-->
+          <!--<text class='m-i-i-tag'>千发百中</text>-->
+      <!-- </view> -->
+    </view>
+
+    <!--  <navigator url="/modules/memberpaycenter/member-pay-center?userId={{userInfo.usrId}}">
+          <view class='my-info-r fl'>
+
+              <i class='iconfont icon-xiaolian m-i-icon'></i>
+              <text class='m-i-member'>会员</text>
+              <i class='m-i-signal'></i>
+
+          </view>
+      </navigator>-->
+  </view>
+
+  <!-- 第二行：关注信息 -->
+  <view class='my-info-follow'>
+    <view class='my-info-item' bindtap='toFollowTab'>
+      <view class='m-i-num'><text>{{userInfo.followers==null?0:userInfo.followers}}</text></view>
+      <view class='m-i-subt'><text>关注</text></view>
+    </view>
+  
+
+    <view class='my-info-item'>
+      <view class='m-i-num'><text>{{userInfo.fans==null?0:userInfo.fans}}</text></view>
+      <view class='m-i-subt'><text>粉丝</text></view>
+    </view>
+
+
+     <view class='my-info-item'>
+
+              <view class='m-i-num'>
+                  <text>{{userInfo.upSum==null?0:userInfo.upSum}}</text>
+              </view>
+              <view class='m-i-subt'>
+                  <text>点赞</text>
+              </view>
+
+     </view>
+
+  </view>
+
+  <!-- 第三行：功能列表 -->
+  <view class='my-info-section clear'>
+<!--    <view class='my-info-func-i'>
+      <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon1.png" mode="aspectFill" />
+      <view class='m-i-f-text'><text>我的相册</text></view>
+    </view>
+
+    <view class='my-info-func-i'>
+      <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon2.png" mode="aspectFill" />
+      <view class='m-i-f-text'><text>我的故事</text></view>
+    </view>
+
+    <view class='my-info-func-i'>
+      <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon3.png" mode="aspectFill" />
+      <view class='m-i-f-text'><text>我的赞</text></view>
+    </view>
+
+    <view class='my-info-func-i'>
+      <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon4.png" mode="aspectFill" />
+      <view class='m-i-f-text'><text>粉丝服务</text></view>
+    </view>-->
+
+      <navigator url="/modules/mypage/mywallet/my-wallet?userId={{userInfo.usrId}}">
+           <button class='my-info-func-i' disabled="{{disabled}}" hover-class="other-button-hover"> 
+              <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon5.png" mode="aspectFill"/>
+              <view class='m-i-f-text'>
+                  <text>钱包</text>
+              </view>
+          </button>
+      </navigator>
+      <!--   <view class='my-info-func-i'>
+           <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon6.png" mode="aspectFill" />
+           <view class='m-i-f-text'><text>运动</text></view>
+         </view>
+
+         <view class='my-info-func-i'>
+           <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon7.png" mode="aspectFill" />
+           <view class='m-i-f-text'><text>粉丝头条</text></view>
+         </view>-->
+
+
+      <navigator url="/modules/expertpage/expertapplypage/expert-apply-page?nickName={{userInfo.nickName}}" wx:if="{{userInfo.hasExpertApply}}">
+          <button class='my-info-func-i' disabled="{{disabled}}" hover-class="other-button-hover"> 
+             
+              <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon14.png" mode="aspectFill"/>
+              <view class='m-i-f-text'>
+                  <text>达人申请</text>
+              </view>
+              <!--<button class='m-i-f-text' open-type="contact" bindcontact="handleContact">客服中心</button>-->
+          </button>
+      </navigator>
+     
+      <navigator url="/modules/mypage/myrecharge/my-recharge?returnUrl=/pages/my/my"  wx:if="{{userInfo.chargeFlag}}">
+         <button class='my-info-func-i' disabled="{{disabled}}" hover-class="other-button-hover"> 
+             
+              <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon13.png" mode="aspectFill"/>
+              <view class='m-i-f-text'>
+                  <text>充值</text>
+              </view>
+          </button>
+      </navigator>
+
+      <navigator url="/modules/expertpage/paidarticlepage/paid-article-page">
+          <button class='my-info-func-i' disabled="{{disabled}}" hover-class="other-button-hover">
+
+              <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon12.png" mode="aspectFill"/>
+              <view class='m-i-f-text'>
+                  <text>文章</text>
+              </view>
+          </button>
+      </navigator>
+
+			<navigator url="/modules/expertpage/paidarticlepage/paid-article-page">
+          <button class='my-info-func-i' disabled="{{disabled}}" hover-class="other-button-hover">
+
+              <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/store/user_icon.png" mode="aspectFill"/>
+              <view class='m-i-f-text'>
+                  <text>我的兑换</text>
+              </view>
+          </button>
+      </navigator>
+
+      <button class='my-info-func-i' open-type="contact" bindcontact="handleContact" disabled="{{disabled}}" hover-class="other-button-hover">
+
+          <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon8.png" mode="aspectFill"/>
+          <view class='m-i-f-text'>
+              <text>客服中心</text>
+          </view>
+      </button>
+
+      <button class='my-info-func-i' open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber" hover-class="other-button-hover">
+
+          <image class="m-i-f-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon8.png" mode="aspectFill"/>
+          <view class='m-i-f-text'>
+              <text>同步手机号</text>
+          </view>
+      </button>
+
+  </view>
+
+
+  <!-- 第四行：账号与安全 -->
+<!--  <view class='my-info-section'>
+    <view class='my-info-title'>
+      <text>账号与安全</text>
+    </view>
+    <view class='my-info-content clear'>
+      <image class="m-i-s-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon9.png" mode="aspectFill" />
+      <view class='m-i-s-t1'>你绑定得手机是 <text>151*****456</text> 吗？</view>
+      <view class='m-i-s-t2'><text>手机换号可能导致无法正常使用程序</text></view>
+      <view class='m-i-s-t3'><text>请确认是否已经换号</text></view>
+    </view>
+    <view class='my-info-btn'>
+      <text>立即确认</text>
+    </view>
+  </view>-->
+
+  <!-- 第五行：签到领红包 -->
+<!--
+  <view class='my-info-section'>
+    <view class='my-info-title'>
+      <text>签到领红包</text>
+    </view>
+    <view class='my-info-title-packet'>
+      您有一个 <text class='m-i-t-orange'>会员</text><text class='m-i-t-blue'>新手</text><text class='m-i-t-red'>生日</text> 福利待领
+    </view>
+    <view class='my-info-content my-info-packet clear'>
+      <view class='my-info-p-item'>
+        <image class="m-i-p-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon10.png" mode="aspectFill" />
+        <view class='m-i-p-text'><text>1000竞猜币</text></view>
+      </view>
+      <view class='my-info-p-item'>
+        <image class="m-i-p-img" src="https://rs.esportzoo.com/svn/esport-res/mini/images/my/m-i-icon11.png" mode="aspectFill" />
+        <view class='m-i-p-text'><text>小积分赚豪礼</text></view>
+      </view>
+    </view>
+    <view class='my-info-btn'>
+      <text>立即打开</text>
+    </view>
+  </view>
+-->
+
+</view>

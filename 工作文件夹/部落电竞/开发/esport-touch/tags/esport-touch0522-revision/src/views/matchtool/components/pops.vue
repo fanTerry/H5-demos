@@ -1,0 +1,74 @@
+<template>
+  <div class="ui_pop">
+    <div class="pops">
+      <h3>{{popTitle}}</h3>
+      <div class="btn_box">
+        <a class="confirm_btn" @click="confirm()">确定</a>
+        <a class="cancel_btn" v-if="!hideCancel" @click="cancel()">取消</a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: ["popTitle", "hideCancel"],
+  data() {
+    return {};
+  },
+  methods: {
+    cancel() {
+      this.$emit("cancel");
+    },
+    confirm() {
+      this.$emit("confirm");
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.ui_pop {
+  background: transparent;
+}
+
+.pops {
+  width: 92vw;
+  height: 42.6667vw;
+  padding-top: 8.6667vw;
+  border: 1px solid rgba(205, 233, 255, 0.2);
+  border-radius: 1.0667vw;
+  background-color: rgba(0, 0, 0, 0.8);
+  h3 {
+    font-size: 4.8vw;
+    color: #fff;
+    font-weight: normal;
+    text-align: center;
+  }
+  .btn_box {
+    @extend .flex_v_h;
+    margin-top: 9.0667vw;
+    a {
+      @extend .flex_v_h;
+      width: 40vw;
+      height: 11.7333vw;
+      margin: 0 2vw;
+      font-size: 4.5333vw;
+      font-weight: 600;
+      border-radius: 5.8667vw;
+    }
+  }
+  .confirm_btn {
+    @include getBgLinear(right, #ee701d, #f5951d);
+    color: #fff;
+  }
+  .cancel_btn {
+    color: #ff7e00;
+    border: 0.4vw solid currentColor;
+  }
+}
+</style>

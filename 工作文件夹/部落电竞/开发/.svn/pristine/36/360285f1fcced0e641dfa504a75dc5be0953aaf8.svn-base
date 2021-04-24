@@ -1,0 +1,48 @@
+<!--component/popup/store/exchange.wxml-->
+<view class="ui_pop">
+    <!-- 兑换数量 -->
+    <view class="exchange_quantity">
+      <a class="close"></a>
+      <view class="card">
+        <image mode="aspectFill" src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1860037186,2129045815&fm=26&gp=0.jpg"
+          alt=""></image>
+        <span><i class="star_coin"></i>399.00</span>
+      </view>
+      <view class="exchange_num">
+        <span>兑换数量</span>
+        <view class="data">
+          <span class="reduce"></span>
+          <span class="num">2</span>
+          <span class="add"></span>
+        </view>
+      </view>
+      <a class="exchange_btn">确定</a>
+    </view>
+
+    <!-- 填写收货地址 -->
+    <view class="receive_adress">
+      <a class="close"></a>
+      <view class="title">请添加一个收货地址</view>
+      <view>
+        <label for="receive_user">收货人</label>
+        <input type="text" id="receive_user" placeholder=""></input>
+      </view>
+      <view>
+        <label for="phone_num">手机号码</label>
+        <input type="text" id="phone_num" placeholder=""></input>
+      </view>
+      <view>
+        <label>所在地区</label>
+        <span class="choose">请选择<i></i></span>
+      </view>
+      <view class="detail_adress">
+        <span>详细地址：</span>
+        <textarea name="" id="" cols="30" rows="5" placeholder="详细地址：如道路、门牌号、小区、楼栋号、单元室等">
+        </textarea>
+      </view>
+      <view class="set_address">
+        <span><i class="select"></i>设置为默认地址</span>
+      </view>
+      <a class="exchange_btn">确定</a>
+    </view>
+  </view>

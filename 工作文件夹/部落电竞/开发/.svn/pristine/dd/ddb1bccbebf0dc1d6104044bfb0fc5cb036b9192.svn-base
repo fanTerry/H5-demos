@@ -1,0 +1,35 @@
+<view class="Page">
+	<view class="main">
+		<!-- 答题海报 -->
+		<view class="mod_poster">
+			<!-- 选中加active -->
+			<a class="start_answer_btn {{show == true?'active':''}}" bindtap="joinHdSubject"></a>
+			<!-- href="/hd/hd101/answering"  -->
+		</view>
+		<!-- 中奖模块 -->
+		<view class="mod_award">
+			<view class="winner_scroll swiper-container">
+				<ul class="swiper-wrapper">
+					<li v-for="item in giftInfo.giftWinnerList" class="swiper-slide">
+
+						<span>恭喜</span>
+						<span class="winner_name">{{item.userName}}</span>
+						<span v-if="item.showType==0">喜中 {{item.giftNum}}星星 {{item.giftName}}</span>
+						<span v-else-if="item.showType==1">营收 {{item.giftNum}}元 </span>
+
+					</li>
+				</ul>
+			</view>
+			<view class="award_prize">
+				<p class="title">{{giftInfo.hdGiftName}}</p>
+				<p>数量：<span class="num">{{giftInfo.giftRemainder}}</span>个</p>
+				<p>时间：{{giftInfo.playTime}}</p>
+			</view>
+		</view>
+	</view>
+	<footer class="mod_footer">
+		<tabs ></tabs>
+	</footer>
+	<!-- 弹窗集合组件 -->
+	<!-- <pops bind:joinHdSubject="joinHdSubject"></pops> -->
+</view>

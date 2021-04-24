@@ -1,0 +1,8 @@
+<!--modules/store/list/goodsList.wxml-->
+<view class="mod_header">
+	<submenu-bar></submenu-bar>
+</view>
+
+<view class="main">
+	<goods-list myClass='{{myClass}}'></goods-list>
+</view>

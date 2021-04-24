@@ -1,0 +1,23 @@
+/* modules/mypage/my-comm.wxss */
+
+.m-w-i-title {
+  font-size: 26rpx;
+  /* color: #cfecff; */
+  color: #fff;
+}
+.m-w-i-num {
+  font-size: 36rpx;
+  font-weight: bold;
+  line-height: 36rpx;
+  color: #fff;
+}
+
+.my-section {
+  width: 710rpx;
+  padding: 10rpx;
+  margin: 10rpx auto;
+
+  background: #fff;
+  border-radius: 15rpx;
+}
+

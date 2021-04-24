@@ -1,0 +1,31 @@
+<!--pages/expert/paid-article-page.wxml-->
+  <!-- 头部菜单栏 -->
+  <!-- <userinfo-bar showType="2"></userinfo-bar> -->
+  <!-- 广告banner -->
+  <expert-banner wx:if="{{adList.length>0}}" adList="{{adList}}"></expert-banner>
+
+  <!-- 热门达人列表 -->
+  <view class='expert-title-view'>
+    <text class='expert-title'>热门达人</text>
+    <view class='expert-more'>
+     <!-- <text>全部</text>
+      <i class='iconfont icon-yousanjiaoxiangyoumianxing e-m-i'></i>-->
+    </view>
+  </view>
+
+  <view class='hot-expert-list'>
+    <movable-area class="hot-expert-mov-area">
+      <movable-view class="hot-expert-mov-view" x="0" y="0" direction="horizontal">
+        <hot-expert-item wx:for="{{recExpertList}}"  wx:key="" recExpert="{{item}}" ></hot-expert-item>
+      </movable-view>
+    </movable-area>
+  </view>
+
+  <!-- 热门推荐列表 -->
+  <view class='expert-title-view'>
+    <text class='expert-title'>热门文章</text>
+  </view>
+
+  <view class=''>
+    <report-expert-item wx:for="{{articleList}}" wx:key='' expertArticle="{{item}}"></report-expert-item>
+  </view>

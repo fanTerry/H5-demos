@@ -1,0 +1,94 @@
+/* modules/expertpage/expertapplypage/expert-apply-page.wxss */
+
+@import "/resources/wxss/base/display.wxss";
+@import "/resources/wxss/base/clear.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+.expert-apply-section {
+  width: 730rpx;
+  margin: 20rpx auto;
+
+  background: #fff;
+  /* border-radius: 15rpx; */
+}
+.expert-apply-note {
+  color: #f36100;
+  font-size: 24rpx;
+  
+  padding: 20rpx 40rpx;
+  background: #f3e9c3;
+  /* border-radius: 15rpx 15rpx 0 0; */
+}
+
+.expert-apply-line {
+  padding: 10rpx 0;
+  margin: 0 20rpx;
+}
+.e-a-l-bb {
+  border-bottom: solid 2rpx #ddd;
+}
+.e-a-title {
+  font-size: 26rpx;
+  font-weight: bold;
+  line-height: 50rpx;
+  width: 160rpx;
+}
+.e-a-input {
+  width: 530rpx;
+  font-size: 24rpx;
+  text-align: left;
+}
+.e-a-input-gh {
+  font-size: 24rpx;
+}
+.e-a-icon {
+  color: #818181;
+  font-size: 28rpx;
+  padding-left: 5rpx;
+}
+.e-a-s2 {
+  padding: 20rpx;
+}
+.e-a-textarea-v {
+  height: 120rpx;
+  overflow: hidden;
+}
+.e-a-textarea {
+  width: 690rpx;
+  height: 120rpx;
+  font-size: 24rpx;
+}
+
+.e-a-title-gray {
+  font-size: 26rpx;
+  line-height: 50rpx;
+  color: #333;
+}
+.e-a-sub-note {
+  font-size: 22rpx;
+  color: #818181;
+}
+.e-a-s-n-green {
+  color: #74c588;
+}
+.e-a-button {
+  display: block;
+  font-size: 42rpx;
+  padding: 20rpx 0;
+  margin: 0 20rpx;
+  border-radius: 15rpx;
+  color: #fff;
+  text-align: center;
+
+  background: #0f87ff;
+}
+.e-a-l-apply {
+  height: 100rpx;
+}
+.e-a-s3 {
+  padding: 40rpx 0;
+}
+.expert-add-image {
+  width: 182rpx;
+  height: 113rpx;
+}

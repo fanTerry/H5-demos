@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "bigimage-swiper": "/component/bigimageswiper/bigimage-swiper",
+		"storeExchange":"/component/popup/store/exchange",
+    "popAlert": "/component/popup/pop_alert"
+	},
+  "navigationBarTitleText": "商品详情"
+}

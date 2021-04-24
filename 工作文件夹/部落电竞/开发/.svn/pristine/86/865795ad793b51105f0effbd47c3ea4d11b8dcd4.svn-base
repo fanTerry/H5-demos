@@ -1,0 +1,44 @@
+<div class="Page">
+	<div class="main">
+		<div class="header">
+			<image class="user_img" src="{{userInfo.icon}}" alt=""></image>
+			<span class="user_name">{{userInfo.nickName}}</span>
+			<a bindtap="toRecordList">营收与提现记录</a>
+		</div>
+		<view class="user_account">
+			<view>
+				<p class="account_num">{{userInfo.historyIncome}}</p>
+				<p>历史总额</p>
+			</view>
+			<div class="account_detail">
+				<div>
+					<p class="num">{{userInfo.todayGetMoney}}</p>
+					<p>现金余额</p>
+				</div>
+				<div>
+					<p class="num">{{userInfo.todayIncome}}</p>
+					<p>今日营收</p>
+				</div>
+			</div>
+			<a class="withdraw_btn" bindtap="getMoney()"></a>
+		</view>
+		<div class="answer_record">
+			<h3>顶上战绩</h3>
+			<ul>
+				<block wx:for="{{answerRecord}}">
+					<li data-index="{{index}}" wx:if="{{item.giftType == 5}}">
+						<span>{{toDateMD(item.createTime)}}</span>
+						<span>连续答对{{item.num}}道题获得</span>
+						<span class="num" > {{item.amount}} 元现金</span>
+					</li>
+				</block>
+			</ul>
+		</div>
+	</div>
+	<footer class="mod_footer">
+		<tabs flagNum='{{flagNum}}'></tabs>
+	</footer>
+
+	<!-- 弹窗集合组件 -->
+	<!-- <pops ref="propRef"></pops> -->
+</div>

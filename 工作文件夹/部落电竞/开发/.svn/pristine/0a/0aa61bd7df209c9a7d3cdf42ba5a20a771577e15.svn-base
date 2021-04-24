@@ -1,0 +1,103 @@
+const home = () => import('./views/home/index.vue');
+const match = () => import('./views/match/index.vue');
+const follow = () => import('./views/follow/index.vue');
+const expert = () => import('./views/expert/index.vue');
+const userCenter = () => import('./views/user_center/index.vue');
+const wallet = () => import('./views/user_center/wallet');
+const recharge = () => import('./views/user_center/recharge');
+const login = () => import('./views/user_center/login');
+const register = () => import('./views/user_center/register/index.vue');
+const registerUserinfo = () => import('./views/user_center/register/userInfo');
+const homeDetail = () => import('./views/home/detail');
+const matchDetail = () => import('./views/match/detail');
+const expertHome = () => import('./views/expert/home');
+const expertApply = () => import('./views/expert/apply');
+const userArticle = () => import('./views/user_center/article');
+const articleDetail = () => import('./views/expert/articleDetail');
+const resetPasswordValidCode = () => import('./views/user_center/resetPassword/validCode.vue');
+const resetPasswordConfirm = () => import('./views/user_center/resetPassword/confirm.vue');
+
+
+
+const routers = [{
+    path: '/',
+    component: home
+}, {
+    path: '/home',
+    name: 'home',
+    component: home
+}, {
+    path: '/match',
+    name: 'match',
+    component: match
+}, {
+    path: '/homeDetail/:id',
+    name: 'homeDetail',
+    component: homeDetail,
+    meta: { requiresAuth: true }
+}, {
+    path: '/follow',
+    component: follow,
+    meta: { requiresAuth: true }
+}, {
+    path: '/expert',
+    component: expert,
+    meta: { requiresAuth: true }
+}, {
+    path: '/userCenter',
+    component: userCenter,
+    meta: { requiresAuth: true }
+}, {
+    path: '/wallet',
+    component: wallet,
+    meta: { requiresAuth: true }
+}, {
+    path: '/recharge',
+    component: recharge,
+    meta: { requiresAuth: true }
+}, {
+    path: '/login',
+    name: 'login',
+    component: login
+}, {
+    path: '/register',
+    component: register
+}, {
+    path: '/registerUserinfo',
+    name: 'registerUserinfo',
+    component: registerUserinfo
+}, {
+    path: '/matchDetail/:matchId',
+    name: 'matchDetail',
+    meta: { requiresAuth: true },
+    component: matchDetail
+}, {
+    path: '/expertHome',
+    component: expertHome,
+    meta: { requiresAuth: true }
+}, {
+    path: '/expertApply',
+    component: expertApply,
+    meta: { requiresAuth: true }
+}, {
+    path: '/userArticle',
+    component: userArticle,
+    meta: { requiresAuth: true }
+}, {
+    path: '/articleDetail',
+    component: articleDetail,
+    meta: { requiresAuth: true }
+}, {
+    path: '/resetPassword',
+    component: resetPasswordValidCode
+}, {
+    path: '/resetPasswordConfirm',
+    name: 'resetPasswordConfirm',
+    component: resetPasswordConfirm
+}, {
+    path: '*',
+    component: home
+}
+];
+
+export default routers;

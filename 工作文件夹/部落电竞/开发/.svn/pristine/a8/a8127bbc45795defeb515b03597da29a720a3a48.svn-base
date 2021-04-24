@@ -1,0 +1,70 @@
+<template>
+  <div>
+    <Xgplayer ref="player" :config="{id: videoId,
+        url:videoUrl,
+        poster:poster,
+        playsinline: true,
+        'x5-video-player-type': 'h5',
+        'x5-video-player-fullscreen': 'false',
+        fluid: true,
+        //playbackRate: [0.5, 0.75, 1, 1.5, 2],
+          }" @player="initPlay($event,videoId)" />
+  </div>
+</template>
+
+<script>
+import Xgplayer from "xgplayer-vue";
+// import "xgplayer-mp4";
+export default {
+  components: {
+    Xgplayer
+  },
+  props: ["videoUrl", "poster", "videoId"],
+  data() {
+    return {
+      player: null,
+      id: Number
+    };
+  },
+  mounted() {
+    let that = this;
+    this.$bus.$on("videoPause", videoId => {
+      console.log("监听视频暂停事件", videoId);
+      //关闭其他的弹出
+      if (videoId != that.id) {
+        if (that.player.hasStart) {
+          that.player.pause();
+        }
+      }
+    });
+  },
+  created() {},
+  beforeDestroy() {
+    this.$bus.$off("videoPause");
+  },
+  methods: {
+    /**
+     * 初始化播放器实例
+     */
+    initPlay(e, videoId) {
+      this.player = e;
+      console.log("初始化播放器");
+      console.log(this.player);
+      this.id = videoId;
+      //监听播放事件
+      let that = this;
+      this.player.on("play", function() {
+        //暂停其他视频的播放
+        that.pauSeOther();
+      });
+    },
+    pauSeOther() {
+      console.log("暂停其他视频");
+      this.$bus.$emit("videoPause", this.id);
+    }
+  }
+};
+</script>
+
+<style>
+</style>

@@ -1,0 +1,24 @@
+<!--component/chatedit/chat-edit.wxml-->
+<view class='article-page-edit {{textareaFocus ? "article-page-edit-focus" : ""}}'>
+  
+  <!-- 输入框部分 -->
+  <view class='dsp-cell'>
+    <view class='atc-e-t-view {{textareaFocus ? "atc-e-t-view-focus" : ""}}'>
+      <textarea wx:if='{{textareaFocus}}' bindblur='bindDTextAreaBlur' class='atc-e-t atc-e-t-focus' placeholder="我来发表一点意见吧" placeholder-class	='atc-e-t-ph' auto-focus='{{textareaFocus}}' cursor-spacing='100' fixed />
+      <text wx:else class='atc-e-text' bindtouchstart='bindDTextAreaFocus'>我来发表一点意见吧</text>
+    </view>
+  </view>
+
+  <!-- 表情发送部分 -->
+  <!-- <view class='dsp-cell'>
+    <i class='iconfont icon-xiaolian atc-p-c-icon'></i>
+  </view> -->
+
+  <!-- 发送部分 -->
+  <view class='dsp-cell a-p-e-send-view'>
+    <button class='a-p-e-send-button'>
+      <text class='a-p-e-send'>发送</text>
+    </button>
+  </view>
+
+</view>

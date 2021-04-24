@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "popAlert": "/component/popup/pop_alert"
+  },
+  "navigationBarTitleText": "我的购买"
+}

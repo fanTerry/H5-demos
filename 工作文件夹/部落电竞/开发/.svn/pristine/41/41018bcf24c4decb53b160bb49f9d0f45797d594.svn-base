@@ -1,0 +1,168 @@
+@import '/resources/wxss/base/display';
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/base/clear.wxss";
+@import '/resources/wxss/base/common';
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+page {
+  font-family: -apple-system,
+                 BlinkMacSystemFont,
+                 'Segoe UI',
+                 'Roboto',
+                 'Droid Sans',
+                 'Helvetica Neue',
+                 'Helvetica',
+                 'Arial',
+                 sans-serif;
+  word-wrap: break-word;
+  background-color: #f3f2f0;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 重置button样式 */
+
+button{
+  background: none;
+  border: none;
+  outline: none;
+}
+
+.button-hover{
+  color: #333;
+  background: transparent;
+}
+
+button::after{
+  display: none;
+}
+
+/* 统一的底部撑开空层 */
+
+.blank {
+  width: 750rpx;
+  height: 150rpx;
+  margin: 0 auto;
+}
+
+/* 隐藏 */
+
+.none {
+  display: none !important;
+}
+
+/* 公用遮罩 */
+
+.mask {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 99;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* 容器模块 */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* 头部模块 */
+
+.mod_header {
+}
+
+ /* 页面采用弹性盒子布局 */
+.Page{
+    display: flex;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+    height: 100%;
+    line-height: 1;
+    background-color: #F4F4F4;
+}
+
+/* 内容模块 */
+
+.main {
+  flex: 1;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 底部模块 */
+
+.mod_footer {
+}
+
+.star_coin{
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/wallet/star_coin.png') no-repeat center;
+  background-size: cover;
+}
+
+
+ /* 关注按钮 */
+.follow_btn,.followed_btn{
+    display: flex;
+		align-items: center;
+		justify-content: space-between;
+    width: 120rpx;
+    height: 48rpx;
+    color: #FEA21B;
+}
+
+.follow_btn:before, .followed_btn:before {
+    content: "";
+    pointer-events: none;
+    box-sizing: border-box;
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    left: 0;
+    top: 0;
+    border-radius: 24px;
+    border: 1px solid #FEA21B;
+    -webkit-transform: scale(0.5);
+    -webkit-transform-origin: 0 0;
+    transform: scale(0.5);
+    transform-origin: 0 0;
+}
+
+.followed_btn{
+    color: #AFAFAF;
+}
+
+.followed_btn:before{
+	border: 1px solid #AFAFAF; 
+}
+
+/* 弹窗公用模板 */
+
+.ui_pop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+/* iphoneX、XR适配 */
+
+@media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+       only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+  .mod_footer {
+    /* padding-bottom: 68rpx; */
+  }
+}

@@ -1,0 +1,45 @@
+const home = () => import('./views/home/index.vue');
+const match = () => import('./views/match/index.vue');
+const follow = () => import('./views/follow/index.vue');
+const expert = () => import('./views/expert/index.vue');
+const userCenter = () => import('./views/user_center/index.vue');
+const homeDetail = () => import('./views/home/detail');
+const matchDetail = () => import('./views/match/detail');
+const expertHome = () => import('./views/expert/home');
+
+const routers = [{
+    path: '/',
+    component: home
+}, {
+    path: '/home',
+    component: home
+}, {
+    path: '/match',
+    component: match
+}, {
+    path: '/homeDetail/:id',
+    name: 'homeDetail',
+    component: homeDetail
+}, {
+    path: '/follow',
+    component: follow
+}, {
+    path: '/expert',
+    component: expert
+}, {
+    path: '/userCenter',
+    component: userCenter
+}, {
+    path: '/matchDetail/:matchId',
+    name: 'matchDetail',
+    component: matchDetail
+}, {
+    path: '/expertHome',
+    component: expertHome
+}, {
+    path: '*',
+    component: home
+}
+];
+
+export default routers;

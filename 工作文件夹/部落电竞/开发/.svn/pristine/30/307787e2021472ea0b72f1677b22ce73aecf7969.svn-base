@@ -1,0 +1,79 @@
+<!--modules/reportpage/reportpage/report-page.wxml-->
+
+<!-- 赛程详情占位  -->
+<report-header></report-header>
+
+<!-- 顶部栏显示 -->
+<view class='page-head dsp-none'>
+  <view class='dsp-cell'>
+    <image class='page-icon' src='/resources/images/icon/back.png' mode='aspectFit' />
+  </view>
+
+  <!-- 标题 -->
+  <view class='dsp-cell page-title'>
+    <text>常驻标题驻留位置未上拉的时候显示“详  情”</text>
+  </view>
+</view>
+
+
+<!-- 赛程导航列表::暂时保留 -->
+<!-- 当前状态样式r-menu-item-cur -->
+<!-- <view class='report-menu'>
+  <movable-area class="r-menu-mov-area">
+    <movable-view class="r-menu-mov-view" x="0" y="0" direction="horizontal">
+      <view wx:for="{{menuArray}}" wx:key="">
+        <text class="r-menu-item">{{item}}</text>
+      </view>
+    </movable-view>
+  </movable-area>
+</view> -->
+
+<!-- 新的：赛程导航列表 -->
+<!-- 当前状态样式r-menu-item-cur -->
+<view class='report-menu-new'>
+  <movable-area class="r-menu-n-mov-area">
+    <movable-view class="r-menu-n-mov-view" x="0" y="0" direction="horizontal">
+      <view class="r-menu-n-item-view" wx:for="{{menuArray}}" wx:key="">
+        <text class=''>{{item}}</text>
+      </view>
+    </movable-view>
+  </movable-area>
+</view>
+
+
+<!-- 1. 聊天室显示开始 -->
+<view class='md-chats-view section '>
+  <view class='md-chats-note'>
+    <text>!! 欢迎来到评论区，任何传播违法、违规、低俗等不良信息的行为将被封号。</text>
+  </view>
+</view>
+
+<!-- 聊天输入框 -->
+<chat-edit class=''></chat-edit>
+<!-- 1. 聊天室显示结束 -->
+
+<!-- 2. 数据显示开始 -->
+<md-data class='dsp-none'></md-data>
+<!-- 2. 数据显示结束 -->
+
+<!-- 3. 会员专享显示开始 -->
+<md-member class='dsp-none'></md-member>
+<!-- 3. 会员专享显示结束 -->
+
+<!-- 4. 图文直播显示开始 -->
+<md-charts class='dsp-none'></md-charts>
+<!-- 4. 图文直播显示结束 -->
+
+<!-- 5. 专家显示开始 -->
+<md-expert class='dsp-none'></md-expert>
+<!-- 5. 专家显示结束 -->
+
+<!-- 6. 赔率页面显示开始 -->
+<md-odds class='dsp-none'></md-odds>
+<!-- 6. 赔率页面显示结束 -->
+
+<!-- 7. 竞猜投注显示开始 -->
+<md-bet class='dsp-none'></md-bet>
+<!-- 7. 竞猜投注显示结束 -->
+
+<view class='blank'></view>

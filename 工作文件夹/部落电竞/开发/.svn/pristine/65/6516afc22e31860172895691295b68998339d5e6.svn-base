@@ -1,0 +1,14 @@
+<!--modules/reportpage/mdmember/md-member.wxml-->
+<!-- 会员专享 -->
+
+<view class='md-member'>
+
+  <view class='md-member-img-v'>
+    <image class='md-member-img' src='/resources/images/image7.png' mode='width' />
+  </view>
+
+  <view class='md-member-news-list'>
+    <mem-news-item wx:for="abcde"></mem-news-item>
+  </view>
+
+</view>

@@ -1,0 +1,144 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar pageTitle="设置密码" :type="'1'"></navBar>
+    </header>
+
+    <div class="main">
+      <!-- <div class="user_name">
+        <input type="text" placeholder="用户名4-14位，只能是字母数字下划线汉字" v-model="account">
+      </div> -->
+      <div class="user_pwd">
+        <input type="password" placeholder="请输入6-15位字母数字密码" v-model="password">
+      </div>
+      <div class="user_pwd">
+        <input type="password" placeholder="请重复输入密码" v-model="repetPassword">
+      </div>
+      <!-- disabled置灰态 -->
+      <a class="register_btn" @click="register">注册</a>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from '../../../../components/header/nav_bar/index';
+import jsencrypt from '../../../../libs/jsencrypt-rsa.js';
+
+export default {
+  data() {
+    return {
+      phone: '',
+      code: '',
+      // account: "",
+      password: '',
+      repetPassword: ''
+    };
+  },
+  mounted() {
+    if (this.$route.params && this.$route.params.phone) {
+      this.phone = this.$route.params.phone;
+      this.code = this.$route.params.code;
+    }
+  },
+  methods: {
+    register() {
+      if (this.phone == '') {
+        this.$toast('手机号为空');
+        return;
+      }
+      if (this.code == '') {
+        this.$toast('验证码为空');
+        return;
+      }
+      // if (this.account == "") {
+      //   this.$toast("账号为空");
+      //   return;
+      // }
+      // if (!/^[A-Za-z0-9\u4e00-\u9fa5_]{4,14}$/.test(this.account)) {
+      //   this.$toast("账号只能是4-14位字母数字下划线汉字");
+      //   return;
+      // }
+      if (this.password == '') {
+        this.$toast('密码为空');
+        return;
+      }
+      if (!/^([a-zA-Z0-9]){6,15}$/.test(this.password)) {
+        this.$toast('密码只能是6-15位字母数字');
+        return;
+      }
+      if (this.repetPassword == '') {
+        this.$toast('重复密码为空');
+        return;
+      }
+      if (this.password != this.repetPassword) {
+        this.$toast('两次输入的密码不一样');
+        return;
+      }
+      let encryPassword1 = jsencrypt.encryptPwd(this.password);
+      let encryPassword2 = encryPassword1;
+      let param = {
+        phone: this.phone,
+        code: this.code,
+        // account: this.account,
+        password: encryPassword1,
+        repetPassword: encryPassword2,
+        inviteCode: this.$route.query.inviteCode
+      };
+      this.$post('/api/regist/phoneRegister/', param)
+        .then(dataResponse => {
+          if (dataResponse.code != '200') {
+            this.$toast(dataResponse.message);
+            return;
+          }
+          this.$toast('注册成功');
+          this.$router.push({
+            name: 'login'
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  components: {
+    navBar
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../../../assets/common/_mixin';
+@import '../../../../assets/common/_base';
+@import '../../../../assets/common/_var';
+
+.main {
+  padding-top: 25px;
+  .user_name,
+  .user_pwd {
+    @extend .flex_v_justify;
+    margin: 0 20px;
+    @include getBorder(bottom, #e7e7e7);
+    input {
+      height: 55px;
+      flex: 1;
+      -webkit-flex: 1;
+      border: none;
+      font-size: 15px;
+      color: #fff;
+    }
+  }
+  .register_btn {
+    display: block;
+    margin: 20px 20px 25px;
+    padding: 15px;
+    font-size: 18px;
+    color: #fff;
+    border-radius: 0.5333vw;
+    text-align: center;
+    background-color: $color_btn;
+    &.disabled {
+      opacity: 0.5;
+    }
+  }
+}
+</style>

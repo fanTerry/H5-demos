@@ -1,0 +1,213 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar pageTitle='话题搜索'></navBar>
+    </header>
+    <div class="main">
+      <div class="mod_search">
+        <div class="search_con">
+          <input ref="searchInput" type="text" @focus="searchFlag =true" placeholder="搜索话题" @keyup.enter="serach()"
+            v-model="searchVal">
+          <i class="search"></i>
+          <span class="clear" @click="searchVal=''"></span>
+        </div>
+        <span @click="gotoTopic()">取消</span>
+      </div>
+      <p class="att_tips" v-if="followList.length==0 &&!searchFlag ">暂无搜索结果</p>
+      <!-- 搜索结果 -->
+      <div class="search_result" id='scrollId' v-if="!searchFlag">
+        <topic :topicItem="item" v-for="(item,index) in followList" :key="index" v-model="searchVal"></topic>
+      </div>
+      <!-- 搜索记录 -->
+      <div class="search_record" v-if="searchFlag">
+        <div class="title">
+          <span>我搜过的</span>
+          <span class="delete_icon" @click="deleteRecord()"></span>
+        </div>
+        <ul class="recode_tag">
+          <li v-for="(item,index) in recordList" :key="index" @click="serach(item)">{{item}}</li>
+
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<script>
+import navBar from "../../components/header/nav_bar/index";
+import topic from "../../components/user_follow/topic";
+import localStorage from "../../libs/storages/localStorage";
+
+export default {
+  components: {
+    navBar,
+    topic
+  },
+  props: [],
+  data() {
+    return {
+      followList: [],
+      searchVal: "",
+      recordList: [],
+      searchFlag: true
+    };
+  },
+  mounted() {
+    let arry = localStorage.get("recordList");
+    if (arry) {
+      this.recordList = arry;
+    }
+    // arry = localStorage.get("topicList")
+    //  if (arry) {
+    //   this.followList = arry;
+    // }
+    this.$wxApi.wxRegister({
+      title: "赢加竞技-发现",
+      desc: "发现兴趣话题，找到志同道合的小伙伴~",
+      imgUrl:
+        "http://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg"
+    });
+  },
+  methods: {
+    serach(searchVal) {
+      if (searchVal) {
+        console.log("-----", searchVal);
+        this.searchVal = searchVal;
+      }
+      this.$refs.searchInput.blur();
+      let self = this;
+      console.log(this.searchVal);
+      this.followList = [];
+      //添加查找记录
+      let updatRecord = true;
+      this.recordList.forEach(element => {
+        if (element == this.searchVal) {
+          updatRecord = false;
+        }
+      });
+      if (updatRecord) {
+        if (this.recordList.length > 9) {
+          this.recordList.shift();
+        }
+        this.recordList.push(this.searchVal);
+        localStorage.set("recordList", this.recordList);
+      }
+
+      //查找匹配的话题
+      let target = this.searchVal;
+      let topicList = localStorage.get("topicList");
+      console.log("000", topicList);
+
+      for (var key in topicList) {
+        let array = topicList[key];
+        array.forEach(el => {
+          if (el.name.search(target) != -1) {
+            self.followList.push(el);
+          }
+        });
+      }
+      if (this.followList.length == 0) {
+      }
+      this.searchFlag = false;
+      console.log(this.followList);
+    },
+    deleteRecord() {
+      this.recordList = [];
+      localStorage.remove("recordList");
+    },
+    gotoTopic() {
+      this.$router.push({
+        path: "/topic",
+        query: {}
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+@import "../../assets/common/_var";
+
+.att_tips {
+  margin: 10px 0;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+  background-color: #fff;
+}
+
+.mod_search {
+  @extend .flex_v_justify;
+  margin-top: 8px;
+  padding: 12px 15px 24px;
+  color: $color_main;
+  background-color: #fff;
+}
+
+.search_con {
+  position: relative;
+  @extend .flex;
+  width: 84.5%;
+  input {
+    flex: 1;
+    height: 24px;
+    padding-left: 30px;
+    border-radius: 24px;
+    background-color: #f0efee;
+    border: none;
+  }
+  .search {
+    @extend .g_v_mid;
+    left: 7px;
+    width: 16px;
+    height: 16px;
+    @include getBgImg("../../assets/images/home/search.png");
+  }
+  .clear {
+    @include getClose(9px, #999);
+    @extend .g_v_mid;
+    right: 5px;
+    border: 1px solid #999;
+    border-radius: 50%;
+  }
+}
+
+.search_record {
+  padding: 0 15px;
+  background-color: #fff;
+  .title {
+    @extend .flex_v_justify;
+    color: #999;
+    font-size: 14px;
+  }
+  .delete_icon {
+    width: 16px;
+    height: 16px;
+    @include getBgImg("../../assets/images/follow/recycle_icon.png");
+  }
+  .recode_tag {
+    @extend .flex_hc;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    li {
+      margin: 0 8px 8px 0;
+      padding: 0 12px;
+      font-size: 14px;
+      line-height: 28px;
+      color: #333;
+      border-radius: 4px;
+      background-color: #f6f6f6;
+    }
+  }
+}
+
+.search_result {
+  position: relative;
+  padding-left: 10px;
+  background-color: #fff;
+}
+</style>

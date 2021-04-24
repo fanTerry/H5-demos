@@ -1,0 +1,193 @@
+//app.js
+var Promise = require('/libs/bluebird')
+var mta = require('/libs/mta_analysis.js')
+var api = require('/libs/http.js')
+App({
+  onLaunch: function () {
+    //this.checkSessionAndLogin();
+    // 添加腾讯统计
+    mta.App.init({
+      "appID": "500693605",
+      "autoReport": true,
+      "statParam": true,
+      "ignoreParams": [],
+    });
+    var _self = this;
+    var obLaunch = wx.getLaunchOptionsSync();
+    // console.log("小程序启动参数",obLaunch);
+    //设置渠道号
+    var agentId = obLaunch.query.agentId;
+    if (agentId) {
+      _self.globalData.agentId = agentId;
+    }
+    console.log("渠道号：" + _self.globalData.agentId);
+
+    var env = obLaunch.query.env;
+    if (env && env == "daily") {
+      _self.globalData.apiDomain = "https://daily-api.esportzoo.com";
+    } else if (env && env == "beta") {
+      _self.globalData.apiDomain = "https://beta-api.esportzoo.com";
+    }
+
+  },
+
+  /**查询用户是否授权 */
+  isAuthUserInfo: function (showDialog) {
+    var _self = this;
+    return new Promise(function (resolve, reject) {
+      wx.getSetting({
+        success(res) {
+          console.log(res.authSetting['scope.userInfo'], '是否授权')
+          if (!res.authSetting['scope.userInfo']) {
+            console.log('当前用户未授权');
+            _self.globalData.isAuth = false;
+            if (showDialog) {
+              wx.navigateTo({
+                url: '/pages/auth/index'
+              })
+            }
+          } else {
+            console.log('用户已经授权');
+            _self.globalData.isAuth = true;
+          }
+          resolve(res);
+        },
+        fail: function (error) {
+          reject(error);
+        }
+      })
+    });
+
+  },
+
+  /**是否登录-还未测试*/
+  isLogin() {
+    var value = wx.getStorageSync('userData');
+    if (value) {
+      let userData = JSON.parse(value);
+      if (userData && userData['usrId']) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  /**检查登录态是否过期,并登录,若要校验需前判断是否已经授权,此处不做处理,授权需要button绑定 */
+  checkSessionAndLogin() {
+    var _self = this;
+    _self.isAuthUserInfo().then(function (res) {
+      wx.checkSession({
+        success: function () {
+          console.log('当前用户session未过期');//session_key 未过期，并且在本生命周期一直有
+        },
+        fail: function () { // session_key 已经失效，需要重新执行登录流程
+          console.log('用户session已经过期');
+          if (!_self.globalData.isAuth) {
+            console.log('用户未授权');
+            return;
+          }
+          //用户授权后拉取用户信息
+          _self.doLogin();
+        }
+      })
+    })
+
+  },
+
+  /**是否有用户信息 */
+  hasUsrInfo: function () {
+    console.log(this.globalData.userInfo.usrId, 'this.globalData.userInfo.usrId');
+    if (this.globalData.userInfo.usrId) {
+      return true;
+    } else {
+      return false;
+    }
+  },
+
+  /**刷新缓存中用户信息 */
+  setGlobalUserInfo: function (user) {
+    wx.setStorageSync("userInfo", user);
+  },
+
+  /**获取用户信息 */
+  getGlobalUserInfo: function () {
+    var storeUsr = wx.getStorageSync("userInfo");
+    if (!storeUsr) {
+      console.log("无法获取到用户信息");
+      return null;
+    } else {
+      return JSON.parse(storeUsr);
+    }
+  },
+
+  /**获取用户Id */
+  getGlobalUserId: function () {
+    var storeUsr = this.getGlobalUserInfo();
+    if (!storeUsr) {
+      console.log("无法获取到用户Id");
+      return null;
+    } else {
+      return storeUsr.usrId;
+    }
+  },
+
+  /**调用登录接口 */
+  doLogin: function () {
+    var _self = this;
+    wx.login({
+      success: function (loginRes) {
+        if (loginRes) {
+          //获取用户信息
+          wx.getUserInfo({
+            withCredentials: true,//非必填  默认为true
+            success: function (infoRes) {
+              console.log(infoRes, '>>>');
+              //请求服务端的登录接口
+              api._post('/login', {
+                code: loginRes.code,//临时登录凭证
+                rawData: infoRes.rawData,//用户非敏感信息
+                signature: infoRes.signature,//签名
+                encrypteData: infoRes.encryptedData,//用户敏感信息
+                iv: infoRes.iv//解密算法的向量
+              }).then(res => {
+                console.log(res, 'login success');
+                if (res.code == 200) {
+                  _self.globalData.userInfo = res.data;
+                  wx.setStorageSync('userInfo', JSON.stringify(res.data));
+                  wx.setStorageSync('usrId', res.data.usrId);
+                } else {
+                  wx.showToast({
+                    title: '登录失败',
+                    duration: 2000
+                  })
+                }
+              }).catch(e => {
+                wx.showToast({
+                  title: e,
+                  duration: 2000
+                })
+              })
+            }
+          });
+        } else {
+
+        }
+      }
+    });
+  },
+  globalData: {
+    userInfo: {//用户信息
+      avatarUrl: '',
+      nickName: '',
+      usrId: null,
+      country: '',
+      city: '',
+      province: '',
+      gender: 0
+    },
+    isAuth: false,//是否授权
+    agentId: 10005,//默认渠道号 10005 友宝 100102 
+    apiDomain: 'https://daily-api.esportzoo.com', //默认调用线上接口
+    // apiDomain: 'http://haitao-m.esportzoo.com:8080', //默认调用线上接口
+  }
+})

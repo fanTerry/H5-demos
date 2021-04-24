@@ -1,0 +1,76 @@
+/* modules/mypage/mywallet/myrecorditem/my-record-item.wxss */
+
+@import "/resources/wxss/base/display.wxss";
+@import "/resources/wxss/base/clear.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+
+.my-record-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 0;
+  overflow: hidden;
+  border-bottom: solid 2rpx #ddd;
+}
+.my-record-tag {
+  width: 80rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+
+  font-size: 34rpx;
+  color: #fff;
+  text-align: center;
+  border-radius: 50%;
+
+  margin: 0 20rpx;
+}
+
+.m-r-t-gray {
+  background: #888;
+}
+.m-r-t-blue {
+  background: #4a84ef;
+}
+.m-r-t-red {
+  background: #ff8b8c;
+}
+.m-r-t-green {
+  background: #91b27d;
+}
+.my-record-detail {
+  width: 420rpx;
+}
+.m-r-d-text {
+  font-size: 30rpx;
+  color: #333;
+}
+.m-r-d-time {
+  font-size: 26rpx;
+  color: #666;
+}
+.my-record-money {
+  width: 200rpx;
+  overflow: hidden;
+  text-align: right;
+}
+.m-r-m-num {
+  font-size: 34rpx;
+  font-weight: bold;
+  /* margin-top: 25rpx; */
+}
+.m-r-m-money {
+  font-size: 26rpx;
+  color: #666;
+  /* line-height: 30rpx; */
+}
+.m-r-m-icon {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 140rpx;
+  margin-left: 10rpx;
+}
+
+.c_orange{
+	color: #fea21b;
+}

@@ -1,0 +1,35 @@
+package com.esportzoo.esport.connect.response.charge;
+
+import java.io.Serializable;
+
+/**
+ * @author tingting.shen
+ * @date 2019/05/21
+ */
+public class ChargePageResponse implements Serializable {
+
+	private static final long serialVersionUID = -3576840973250550766L;
+	
+	/** 可用的推荐币 */
+	private String ableRecScore;
+	
+	/** 可用的充值金额列表 */
+	private String[] chargeAmountList;
+
+	public String getAbleRecScore() {
+		return ableRecScore;
+	}
+
+	public String[] getChargeAmountList() {
+		return chargeAmountList;
+	}
+
+	public void setAbleRecScore(String ableRecScore) {
+		this.ableRecScore = ableRecScore;
+	}
+
+	public void setChargeAmountList(String[] chargeAmountList) {
+		this.chargeAmountList = chargeAmountList;
+	}
+
+}

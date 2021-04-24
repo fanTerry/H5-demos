@@ -1,0 +1,104 @@
+<template>
+  <div class="rank_icon">
+    <i class="icon"></i>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  mounted() {
+    this.drag();
+  },
+  methods: {
+    drag() {
+      let maxW = document.body.clientWidth;
+      let maxH = document.body.clientHeight;
+      // document.querySelector("body").style.width = maxW;
+      let target = document.querySelector(".icon");
+      let startX = 0;
+      let startY = 0;
+      console.log(target.clientWidth);
+      target.addEventListener("touchstart", function(e) {
+        startX = e.targetTouches[0].pageX - this.offsetLeft;
+        startY = e.targetTouches[0].pageY - this.offsetTop;
+      });
+      target.addEventListener("touchmove", function(e) {
+        e.preventDefault();
+        let leftX = e.targetTouches[0].pageX - startX;
+        let topY = e.targetTouches[0].pageY - startY;
+        let thisW = e.targetTouches[0].target.clientWidth;
+        let thisH = e.targetTouches[0].target.clientHeight;
+        console.log(thisW, thisH);
+
+        if (leftX <= 0) {
+          leftX = 0;
+        }
+
+        if (leftX >= maxW - thisW) {
+          leftX = maxW - thisW;
+        }
+
+        if (topY <= 0) {
+          topY = 0;
+        }
+
+        if (topY >= maxH - thisH) {
+          topY = maxH - thisH;
+        }
+
+        this.style.left = leftX + "px";
+        this.style.top = topY + "px";
+      });
+      target.addEventListener("touchend", function(e) {
+        if(this)
+        console.log(12313);
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.rank_icon {
+  @extend .flex_v_h;
+  position: fixed;
+  right: 0;
+  bottom: 35.2vw;
+  width: 13.8667vw;
+  height: 13.8667vw;
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 6.9333vw 0px 0px 6.9333vw;
+  }
+  &::before {
+    background: transparent;
+    filter: blur(20px);
+  }
+  &::after {
+    background: rgba(50, 25, 25, 0.94);
+    border: 0.1333vw solid #41221e;
+    box-shadow: 0px 0px 4.6667vw 0px rgba(0, 0, 0, 0.5);
+    border-radius: 6.9333vw 0px 0px 6.9333vw;
+  }
+}
+.icon {
+  position: relative;
+  z-index: 1;
+  width: 10.6667vw;
+  height: 10.6667vw;
+  @include getBgImg("../../../assets/images/hd/rank/rank_icon.png");
+}
+</style>

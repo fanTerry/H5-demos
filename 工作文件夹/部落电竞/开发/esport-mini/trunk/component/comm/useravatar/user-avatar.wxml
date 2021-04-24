@@ -1,0 +1,13 @@
+<!--component/comm/useravatar/user-avatar.wxml-->
+
+<!-- avatar100大小 -->
+<view wx:if="{{showSize==100}}" class='user-avatar-view u-a-v100'>
+  <image class="user-avatar u-a100" src="{{userImgUrl}}" mode="aspectFill" />
+  <!--<i class="user-signal"></i>-->
+</view>
+
+<!-- avatar150大小 -->
+<view wx:if="{{showSize==150}}" class='user-avatar-view u-a-v150'>
+  <image class="user-avatar u-a150" src="{{userImgUrl}}" mode="aspectFill" />
+  <!--<i class="user-signal"></i>-->
+</view>

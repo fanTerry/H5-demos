@@ -1,0 +1,92 @@
+package com.esportzoo.esport.domain;
+
+import java.io.Serializable;
+
+public class NewsListVo implements Serializable {
+
+	private static final long serialVersionUID = 2189919457649913054L;
+
+	private Long aricleId;
+	private Integer type;
+	private String imageSrc;
+	private String tag ;
+	private String detail ;
+	private Long seeNum ;
+	private Long discussNum ;
+	private Long ups;
+	private String titleImg;
+
+
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public String getImageSrc() {
+		return imageSrc;
+	}
+
+	public void setImageSrc(String imageSrc) {
+		this.imageSrc = imageSrc;
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+
+	public String getDetail() {
+		return detail;
+	}
+
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
+
+	public Long getSeeNum() {
+		return seeNum;
+	}
+
+	public void setSeeNum(Long seeNum) {
+		this.seeNum = seeNum;
+	}
+
+	public Long getDiscussNum() {
+		return discussNum;
+	}
+
+	public void setDiscussNum(Long discussNum) {
+		this.discussNum = discussNum;
+	}
+
+	public Long getAricleId() {
+		return aricleId;
+	}
+
+	public void setAricleId(Long aricleId) {
+		this.aricleId = aricleId;
+	}
+
+	public Long getUps() {
+		return ups;
+	}
+
+	public void setUps(Long ups) {
+		this.ups = ups;
+	}
+
+	public String getTitleImg() {
+		return titleImg;
+	}
+
+	public void setTitleImg(String titleImg) {
+		this.titleImg = titleImg;
+	}
+}

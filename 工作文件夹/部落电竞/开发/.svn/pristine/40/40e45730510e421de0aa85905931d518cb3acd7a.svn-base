@@ -1,0 +1,10 @@
+<!--modules/store/list/goodsList.wxml-->
+<view class="mod_header">
+	<submenu-bar titleArray="{{subMenuList}}" selectedTag="{{orderStatus}}" bindmyevent="switchTab"></submenu-bar>
+</view>
+
+<view class="main">
+	<goods-list myClass='{{myClass}}' listGoods="{{orderList}}" type='{{goodType}}'></goods-list>
+</view>
+
+<no-data  wx:if="{{noDataFlag}}" ></no-data>

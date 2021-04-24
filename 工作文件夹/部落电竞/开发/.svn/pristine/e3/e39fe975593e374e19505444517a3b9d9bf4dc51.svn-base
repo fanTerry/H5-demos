@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "expert-header": "/component/expert/expertheader/expert-header",
+    "report-expert-item": "/component/reportlist/reportexpertitem/report-expert-item"
+  },
+  "navigationBarTitleText": "达人主页"
+}

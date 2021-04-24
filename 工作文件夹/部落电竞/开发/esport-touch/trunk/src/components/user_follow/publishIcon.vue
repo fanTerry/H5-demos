@@ -1,0 +1,178 @@
+<template>
+  <div>
+    <a class="release_btn" @click="showPublishPop()"></a>
+    <div class="ui_pop" :class="{fadeToTop:showPublish}" @click="closePublishPop()">
+      <i class="down_icon"></i>
+      <div class="tab">
+        <div class="active" @click="toPublish(3)">
+          <i class="txt_icon"></i>
+          <p>发布图文</p>
+        </div>
+        <div @click="toPublish(5)">
+          <i class="video_icon"></i>
+          <p>发布视频</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    topicName: String,
+    topicId: String
+  },
+  data() {
+    return {
+      showPublish: false
+    };
+  },
+  mounted() {
+    this.drag();
+    // 阻止ios系统下弹窗拉起，底部仍会滑动的问题
+    let publishPop = document.getElementsByClassName('ui_pop')[0];
+    publishPop.ontouchmove = function(e) {
+      e.preventDefault();
+    };
+  },
+  methods: {
+    toPublish(type) {
+      this.showPublish = false;
+      // if(this.topicName){
+
+      // }else{
+
+      // }
+      let queryParam = {
+        type: type,
+        topicName: this.topicName
+      };
+      if (this.topicId) {
+        queryParam.topicId = this.topicId;
+      }
+      console.log('this.topicId', this.topicId);
+      this.$router.push({
+        name: 'publishEssays',
+        query: queryParam
+      });
+    },
+    drag() {
+      let maxW = document.body.clientWidth;
+      let maxH = document.body.clientHeight;
+      // document.querySelector("body").style.width = maxW;
+      let target = document.querySelector('.release_btn');
+      let startX = 0;
+      let startY = 0;
+
+      target.addEventListener('touchstart', function(e) {
+        startX = e.targetTouches[0].pageX - this.offsetLeft;
+        startY = e.targetTouches[0].pageY - this.offsetTop;
+      });
+      target.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        let leftX = e.targetTouches[0].pageX - startX;
+        let topY = e.targetTouches[0].pageY - startY;
+        let thisW = e.targetTouches[0].target.clientWidth;
+        let thisH = e.targetTouches[0].target.clientHeight;
+
+        if (leftX <= 0) {
+          leftX = 0;
+        }
+
+        if (leftX >= maxW - thisW) {
+          leftX = maxW - thisW;
+        }
+
+        if (topY <= 0) {
+          topY = 0;
+        }
+
+        if (topY >= maxH - thisH) {
+          topY = maxH - thisH;
+        }
+
+        this.style.left = leftX + 'px';
+        this.style.top = topY + 'px';
+      });
+      target.addEventListener('touchend', function(e) {});
+    },
+    showPublishPop() {
+      this.showPublish = true;
+      this.$emit('filterBlur', true);
+      console.log(12333333);
+    },
+    closePublishPop() {
+      this.showPublish = false;
+      this.$emit('filterBlur', false);
+    }
+  },
+
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../assets/common/_base.scss';
+@import '../../assets/common/_mixin.scss';
+@import '../../assets/common/var.scss';
+
+.release_btn {
+  position: fixed;
+  right: 1.3333vw;
+  bottom: 42.6667vw;
+  z-index: 100;
+  width: 12.2667vw;
+  height: 12.2667vw;
+  @include getBgImg('../../assets/images/follow/release_icon.png');
+  background-size: 28px;
+  background-color: $color_btn;
+  border: 1px solid #fff;
+  border-radius: 50%;
+}
+
+.ui_pop {
+  transform: translateY(100%);
+  -webkit-transform: translateY(100%);
+  .tab {
+    @extend .g_v_c_mid;
+    @extend .flex_v_justify;
+    width: 100%;
+    padding: 0 20vw;
+    div {
+      text-align: center;
+      &.active {
+        color: $color_main;
+      }
+    }
+    p {
+      margin-top: 5.3333vw;
+      font-size: 4.8vw;
+      color: #333;
+    }
+    i {
+      display: block;
+      width: 21.3333vw;
+      height: 21.3333vw;
+    }
+  }
+}
+
+.txt_icon {
+  @include getBgImg('../../assets/images/follow/txt_icon.png');
+  background-size: contain;
+}
+
+.video_icon {
+  @include getBgImg('../../assets/images/follow/video_icon.png');
+  background-size: contain;
+}
+
+.down_icon {
+  @extend .g_c_mid;
+  top: 5.7333vw;
+  width: 8vw;
+  height: 8vw;
+  @include getBgImg('../../assets/images/follow/down_icon.png');
+}
+</style>

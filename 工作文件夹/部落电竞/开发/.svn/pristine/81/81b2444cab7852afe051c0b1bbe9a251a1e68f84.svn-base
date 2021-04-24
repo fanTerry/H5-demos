@@ -1,0 +1,75 @@
+@import '/resources/wxss/base/display';
+@import '/resources/wxss/base/common';
+
+page {
+	font-family: -apple-system, BlinkMacSystemFont,'Segoe UI','Roboto', 'Droid Sans','Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  word-wrap: break-word;
+  background-color: #f3f2f0;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: #333;
+
+	
+}
+
+/* 统一的底部撑开空层 */
+.blank {
+  width: 750rpx;
+  height: 150rpx;
+  margin: 0 auto;
+}
+
+/* 隐藏 */
+.none{
+	display: none !important;
+}
+
+/* 公用遮罩 */
+.mask{
+	width: 100%;
+	height: 100%;
+
+	position: fixed;
+	left: 0;
+	top: 0;
+	z-index: 99;
+
+	background-color: rgba(0, 0, 0, .7);
+}
+
+/* 容器模块 */
+.container{
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+/* 头部模块 */
+.mod_header{
+
+}
+
+/* 内容模块 */
+.main{
+	flex: 1;
+	overflow-y: scroll;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* 底部模块 */
+.mod_footer{
+
+}
+
+
+
+
+
+/* iphoneX、XR适配 */
+
+@media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+       only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+	.mod_footer{
+		padding-bottom: 68rpx;
+	}
+}

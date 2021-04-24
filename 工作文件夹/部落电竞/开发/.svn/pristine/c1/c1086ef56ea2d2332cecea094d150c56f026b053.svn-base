@@ -1,0 +1,17 @@
+/* component/newslist/newsvideoitem/news-video-item.wxss */
+@import "/resources/wxss/base/clear.wxss";
+@import "/component/newslist/wxss/news-item.wxss";
+
+.news-video-item {
+  width: 710rpx;
+  margin: 0 auto;
+  border-top: solid 1rpx #ddd;
+  padding: 20rpx 0;
+}
+.news-video {
+  width: 710rpx;
+  height: 410rpx;
+}
+.news-video-sub {
+  padding-top: 10rpx;
+}

@@ -1,0 +1,394 @@
+<template>
+  <div class="Page guessRecord">
+    <header class="mod_header">
+      <navBar></navBar>
+      <ul>
+        <li :class="{active:tabFlag == index}" @click="queryRecord(index)" v-for="(item,index) in tabList" :key="index">
+          {{item}}</li>
+      </ul>
+    </header>
+    <div class="main">
+      <scroll ref="scroll" :scrollbar="scrollbar" :pullDownRefresh="pullDownRefresh" :pullUpLoad="pullUpLoad" :startY="0" @pullingUp="onPullingUp" @pullingDown="onPullingDown">
+        <ul class="record_list">
+          <li class="record_item" v-for="(item,index) in recordList" :key="index" @click="show(index)">
+            <div class="title">
+              <!-- 预测内容 主队、客队-->
+              <span class="team">{{item.homeTeamName}} VS {{item.awayTeamName}}</span>
+              <!--局数、玩法 -->
+              <p class="bet_title">[{{item.matchNo| gameFightNum(true)}} {{item.playName}}]</p>
+              <i class="show_icon" :class="{active:showDetails == index}"></i>
+            </div>
+            <div class="bet_info">
+              <!-- 预测时间 预测金额 -->
+              <div>{{item.createTime | getQuizRecordTime}} 投{{item.cost}}星星 </div>
+              <span class="bingo" v-if="item.winStatus==2 && item.quizOrderStatus!=6 "><i>+{{item.prize}}星星</i>
+                派奖中</span>
+              <span class="bingo" v-else-if="item.winStatus==2 && item.quizOrderStatus==6 "><i>+{{item.prize}}星星</i>
+                已派奖</span>
+              <span class="waiting" v-else-if="item.winStatus==0 && item.status==4">等待开奖</span>
+              <span class="waiting" v-else-if="item.winStatus==0 && item.status!=4">{{item.status |betPlan}}</span>
+              <span class="failed" v-else>{{item.winStatus |winStatus}}</span>
+            </div>
+            <div class="details" v-if="showDetails === index">
+              <p class="match_info">{{item.homeTeamName}} VS
+                {{item.awayTeamName}} （{{item.startTime | getQuizRecordTime}}）</p>
+              <p>下单：{{item.option}} {{item.betSp}} </p>
+              <p v-if="item.answer">赛果：
+                <span>{{item.answer}}</span>
+              </p>
+              <p>方案编号：<span>{{item.planNo}}</span></p>
+              <p>方案状态：
+                <span v-if='item.rejectDesc'>{{item.rejectDesc}}</span>
+                <span v-else>{{item.status |betPlan}}</span>
+              </p>
+            </div>
+          </li>
+        </ul>
+
+        <!-- 没有数据时展示 -->
+        <noData v-if="noData" :imgUrl="imgUrl" :text="'暂无预测记录'"> </noData>
+
+        <!-- <div class="no_data" v-if="noData">
+          <div>
+            <span class="no_data_icon"></span>
+            <p class="tips">暂无预测记录</p>
+          </div>
+        </div> -->
+      </scroll>
+    </div>
+    <footer class="mod_footer">
+      <a class="return_home" @click="goUrlPage('/guess/home')">返回预测</a>
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from '../../components/header/nav_bar/index.vue';
+import Scroll from '../../components/common/scroll.vue';
+import noData from '../../components/no_data/index.vue';
+
+import { getQuizRecordTime } from '../../libs/utils';
+export default {
+  components: { navBar, Scroll, noData },
+  props: [],
+  filters: {
+    getQuizRecordTime(time) {
+      return getQuizRecordTime(time, false);
+    }
+  },
+  data() {
+    return {
+      noData: false,
+      tabList: ['待开奖', '全部', '中奖'],
+      imgUrl: require('../../assets/images/guess/no_data_icon.png'),
+      tabFlag: 0,
+      showDetails: null, //下标
+      type: 1,
+      recordList: [], //查询用户预测记录
+      currPageSize: 0,
+      recordQueryParam: {
+        pageNo: 1,
+        pageSize: 10,
+        winStatus: null //初始加载全部预测记录
+      },
+      // 下拉组件相关
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 50, stop: 20, txt: '刷新成功' },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: '加载更多', noMore: '到底啦~' }
+      }
+    };
+  },
+
+  mounted() {
+    let test = '{"code":4007, "msg": "方案已取消,用户限额原因"}';
+    console.log(JSON.parse(test)['msg']);
+    //屏蔽app处理
+    if (this.$route.query.clientType == 3) {
+      // this.$router.push({
+      //   path: "/home",
+      //   query: {}
+      // });
+    }
+    this.quizzesPopRecord(null);
+    this.$wxApi.wxRegister({
+      title: '王者KPL预测',
+      desc: '免费领预测星星，预测赢百万好礼~',
+      imgUrl: 'http://rs.esportzoo.com/svn/esport-res/ddquiz/images/logo/dd_logo.png'
+    });
+  },
+  methods: {
+    goUrlPage(url) {
+      this.$router.push({
+        path: url,
+        query: {}
+      });
+    },
+
+    show(index) {
+      if (this.showDetails == index) {
+        this.showDetails = null;
+      } else {
+        this.showDetails = index;
+      }
+    },
+
+    onPullingUp() {
+      console.log('you are onPullingUp');
+      if (this._isDestroyed) {
+        return;
+      }
+      if (this.currPageSize < this.recordQueryParam.pageSize) {
+        console.log('currPageSize', this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+    onPullingDown() {
+      console.log('下拉刷新');
+      if (this._isDestroyed) {
+        return;
+      }
+      this.recordList = [];
+      this.recordQueryParam.pageNo = 1;
+      this.quizzesPopRecord(this.recordQueryParam).then(() => {
+        this.$refs.scroll.forceUpdate();
+      });
+    },
+
+    queryRecord(index) {
+      console.log(index, 66666666);
+      this.tabFlag = index;
+      this.recordList = [];
+      if (index == 0) {
+        index = index - 1;
+      } else if (index == 1) {
+        index = null;
+      }
+      this.recordQueryParam.pageNo = 1;
+      this.recordQueryParam.pageSize = 10;
+      this.recordQueryParam.winStatus = index;
+      this.quizzesPopRecord(this.recordQueryParam);
+    },
+
+    //查询预测记录
+    quizzesPopRecord(param) {
+      return this.$post('/api/quiz/record/recordPage', param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse, '查询预测记录');
+            if (dataResponse.data.length > 0) {
+              console.log('查询预测记录1');
+              this.currPageSize = dataResponse.data.length;
+              this.recordList = this.recordList.concat(dataResponse.data);
+            }
+            if (this.recordList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+            return this.recordList;
+          }
+        })
+        .catch(error => {
+          console.log(error, '查询兑奖记录失败');
+        });
+    },
+    /** 上拉加载*/
+    loadMore() {
+      this.recordQueryParam.pageNo += 1;
+      let param = {};
+      param.pageNo = this.recordQueryParam.pageNo;
+      param.pageSize = this.recordQueryParam.pageSize;
+      param.winStatus = this.recordQueryParam.winStatus;
+      this.quizzesPopRecord(param).then(data => {
+        this.$refs.scroll.forceUpdate();
+      });
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.guessRecord {
+  .back {
+    &::before,
+    &::after {
+      background-color: #fff !important;
+    }
+  }
+  .nav_bar {
+    min-height: 44px;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import '../../assets/common/_base';
+@import '../../assets/common/_mixin';
+
+.mod_header {
+  @include getBgImg('../../assets/images/guess/guess_record_bg.png');
+  background-size: 30.1333vw auto;
+  background-position: top center;
+  background-color: transparent;
+  ul {
+    @extend .flex_v_justify;
+    margin-top: 19.7333vw;
+    padding: 0 22.6667vw;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  li {
+    padding: 4.5333vw 0;
+    font-size: 3.7333vw;
+    color: rgba(255, 255, 255, 0.5);
+    border-radius: 3px;
+    &.active {
+      position: relative;
+      color: #fff;
+      &::after {
+        content: '';
+        @extend .g_c_mid;
+        bottom: 1.0667vw;
+        width: 4vw;
+        height: 1.0667vw;
+        border-radius: 0.8vw;
+        background-color: #fff;
+      }
+    }
+  }
+}
+.nav_bar {
+  color: #fedcd7 !important;
+}
+
+.record_list {
+  padding: 0 4.2667vw;
+}
+
+.record_item {
+  position: relative;
+  margin-bottom: 2.67vw;
+  background-color: #fff;
+  border-radius: 1.3333vw;
+}
+.title {
+  padding: 3.2vw 10.67vw 0 3.2vw;
+  line-height: 4.5333vw;
+}
+.team {
+  font-size: 3.73vw;
+  line-height: 4.2667vw;
+  color: #333;
+}
+.bet_title {
+  padding-top: 1.0667vw;
+  font-size: 3.7333vw;
+  line-height: 4.53vw;
+  color: #d23840;
+}
+.show_icon {
+  position: absolute;
+  right: 3.6vw;
+  top: 4.4vw;
+  width: 3.2vw;
+  height: 3.2vw;
+  transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  @include getArrow(2.1333vw, #999, down);
+  &.active {
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+  }
+}
+
+.bet_info {
+  @extend .flex_v_justify;
+  padding: 4.2667vw 0 4.2667vw 3.2vw;
+  color: #666;
+  > div {
+    font-size: 2.9333vw;
+    line-height: 3.4667vw;
+  }
+}
+
+.waiting,
+.failed,
+.bingo {
+  padding: 0.8vw 2.1333vw;
+  font-size: 2.9333vw;
+  border-radius: 0.8vw 0 0 0.8vw;
+}
+
+.waiting {
+  color: #fff;
+  background-color: #ff9da3;
+}
+.failed {
+  color: #fff;
+  background-color: #aaa;
+}
+.bingo {
+  color: #fff;
+  background-color: #cd373f;
+  i {
+    padding-right: 0.8vw;
+    color: #feff00;
+  }
+}
+
+.details {
+  position: relative;
+  padding: 3.2vw;
+  background-color: #912d32;
+  border-radius: 0 0 1.3333vw 1.3333vw;
+  &::after {
+    content: '';
+    position: absolute;
+    top: -3.7333vw;
+    left: 8.4vw;
+    @include getTriangle(2vw, #912d32, up);
+  }
+  p {
+    padding-top: 2.4vw;
+    font-size: 2.9333vw;
+    color: #fff;
+  }
+  .match_info {
+    padding-top: 0;
+    font-size: 3.7333vw;
+    line-height: 4.2667vw;
+  }
+}
+
+.mod_footer {
+  background-color: #fff;
+}
+
+.return_home {
+  display: block;
+  width: 35.47vw;
+  margin: 2.13vw auto;
+  border-radius: 9.07vw;
+  line-height: 9.07vw;
+  font-size: 4vw;
+  color: #fff;
+  text-align: center;
+  background-color: #d53941;
+  border-radius: 0.8vw;
+}
+
+.no_data_icon {
+  display: inline-block;
+  width: 9.07vw;
+  height: 9.07vw;
+  @include getBgImg('../../assets/images/guess/no_data_icon.png');
+  background-size: 100% 100%;
+}
+</style>

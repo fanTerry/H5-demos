@@ -1,0 +1,8 @@
+<!--component/expert/hotexpertitem/hot-expert-item.wxml-->
+<wxs src="../../../utils/tools.wxs" module="tools" />
+<view class='hot-expert-item'>
+    <navigator url='/modules/expertpage/expertpage/expert-page?id={{recExpert.userId}}'>
+        <image class="userinfo-avatar" src="{{recExpert.avatarImgUrl}}" mode="aspectFill"/>
+    </navigator>
+  <view class='userinfo-name'><text>{{tools.subSize(recExpert.nickName,4)}}</text></view>
+</view>

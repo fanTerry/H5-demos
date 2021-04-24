@@ -1,0 +1,16 @@
+<!--component/popup/pop_alert.wxml-->
+<view class="ui_pop" wx:if="{{showPop}}">
+  <view class="contact_customService" wx:if="{{type==1}}">
+		<p>{{content}}</p>
+    <view class="btn_con">
+      <a class="confirm_btn" bindtap="confirm">确定</a>
+    </view>
+  </view>
+ <view class="contact_customService" wx:if="{{type==2}}">
+    <p>{{content}}</p>
+    <view class="btn_con">
+      <a class="confirm_btn" bindtap="cancel">{{btnTxt1?btnTxt1:'取消'}}</a>
+      <a class="confirm_btn" bindtap="confirm">{{btnTxt2?btnTxt2:'确定'}}</a>
+    </view>
+  </view>
+</view>

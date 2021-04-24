@@ -1,0 +1,797 @@
+<template>
+  <div
+    class="Page homeDetail_Page"
+    v-if="cmsDetail != null"
+  >
+    <header class="mod_header">
+      <div
+        class="back"
+        @click="$router.back(-1);"
+      ></div>
+      <h2>
+        资讯详情
+        <span class="more"></span>
+      </h2>
+      <figure
+        class="figure_film"
+        v-if="type==2"
+      >
+        <video
+          @click="playVideo($event,id)"
+          :src="cmsDetail.content"
+          :poster="cmsDetail.titleImg"
+          controls
+        ></video>
+        <span class="more"></span>
+        <!-- <div class="film_handle">
+          <span class="close_barrage active"></span>
+          <span class="open_barrage"></span>
+          <div class="comment_input">
+            <span class="comment_btn"></span>
+            <input type="text" placeholder="说一说" />
+            <span class="clean"></span>
+          </div>
+          <a href>发送</a>
+        </div>-->
+      </figure>
+    </header>
+    <div class="main">
+      <scroll
+        ref="scroll"
+        :scrollbar="scrollbar"
+        :pullUpLoad="pullUpLoad"
+        :startY="0"
+        @pullingUp="onPullingUp"
+      >
+        <section class="mod_userInfo">
+          <div class="user_infor">
+            <div>
+              <img
+                :src="cmsDetail.authorIcon"
+                alt
+              />
+              <div>
+                <div class="name">{{cmsDetail.authorName==null?'橘子电竞':cmsDetail.authorName}}</div>
+                <p class="tips">
+                  <span>{{cmsDetail.authorFans}}粉丝</span>
+                  <span>{{cmsDetail.authorViews}}阅读</span>
+                </p>
+              </div>
+            </div>
+            <div
+              class="follow_btn"
+              @click="operateFollow"
+            >
+              <span v-if="!cmsDetail.followFlag">+关注</span>
+              <span v-else>已关注</span>
+            </div>
+          </div>
+          <div class="infor_title">
+            <h2>{{cmsDetail.title}}</h2>
+            <p class="tips">
+              <span>{{cmsDetail.channelName}}</span>
+              <span>{{cmsDetail.publishTimeStr}}</span>
+            </p>
+          </div>
+          <section
+            class="parag_message"
+            v-if="type==1"
+          >
+            <article v-html="cmsDetail.content">{{cmsDetail.content}}</article>
+            <div class="c_black_50">本文禁止转载或摘编</div>
+          </section>
+          <div class="feedback_item">
+            <div
+              :class="{'active':cmsDetail.upFlag}"
+              @click="operateUp"
+            >
+              <i class="good_icon"></i>
+              <span>{{cmsDetail.ups}}</span>
+            </div>
+            <div @click="bindFocus">
+              <i class="comment_icon"></i>
+              <span>{{cmsDetail.comments}}</span>
+            </div>
+            <div :class="{'active':cmsDetail.favoritesFlag}">
+              <i class="collect_icon"></i>
+              <span>{{cmsDetail.favorites}}</span>
+            </div>
+            <div>
+              <i class="share_icon"></i>
+              <span>65652</span>
+            </div>
+            <div>
+              <i class="reward_icon"></i>
+              <span>65652</span>
+            </div>
+          </div>
+          <!-- <div class="game_items">
+            <span class="bg_blue">LOL</span>
+            <span class="bg_pink">CS</span>
+            <span class="bg_orange">刺激战场</span>
+          </div>-->
+        </section>
+        <section class="parag_comments">
+          <h2>
+            评论
+            <span>#{{cmsDetail.comments}}</span>
+          </h2>
+          <template v-if="upTopCommentList.length>0">
+            <div
+              class="item"
+              v-for="(dataItem) in upTopCommentList"
+              :key="dataItem.commentId"
+            >
+              <article-discuss-item
+                :ref="'myChildHot'+dataItem.commentId"
+                :commentItem="dataItem"
+                :hotFlag="1"
+                @toReplyFocus="replyFocus"
+              ></article-discuss-item>
+            </div>
+            <div class="more_hot_comments">以上是热门评论</div>
+          </template>
+          <div
+            class="item"
+            v-for="(dataItem) in commentList"
+            :key="dataItem.commentId"
+          >
+            <article-discuss-item
+              :ref="'myChild'+dataItem.commentId"
+              :commentItem="dataItem"
+              :hotFlag="0"
+              @toReplyFocus="replyFocus"
+            ></article-discuss-item>
+          </div>
+        </section>
+      </scroll>
+    </div>
+    <footer class="mod_footer">
+      <div class="comment_footer">
+        <div class="comment_input">
+          <span class="comment_btn"></span>
+          <input
+            type="text"
+            :placeholder="placeholder"
+            @focus="bindFocus"
+            @blur="bindBlur"
+            ref="inputVal"
+            v-model="contentValue"
+          />
+          <span class="clean"></span>
+        </div>
+        <div
+          v-show="sendBtnFlag"
+          @click="saveComment"
+        >发送</div>
+        <div
+          class="feedback_item"
+          v-show="!sendBtnFlag"
+        >
+          <div
+            :class="{'active':cmsDetail.upFlag}"
+            @click="operateUp"
+          >
+            <i class="good_icon"></i>
+            <span>{{cmsDetail.ups}}</span>
+          </div>
+          <div>
+            <i class="comment_icon"></i>
+            <span>{{cmsDetail.comments}}</span>
+          </div>
+          <div :class="{'active':cmsDetail.favoritesFlag}">
+            <i class="collect_icon"></i>
+            <span>{{cmsDetail.favorites}}</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script>
+import localStorage from "../../../libs/storages/localStorage";
+import articleDiscussItem from "components/article/article-discuss-item";
+import Scroll from "components/common/scroll";
+import { getData } from "../../../libs/dom";
+export default {
+  components: {
+    articleDiscussItem,
+    Scroll
+  },
+  data() {
+    return {
+      type: "", //资讯类型:1:长文,2:视频
+      cmsDetail: null,
+      pageNo: 1,
+      pageSize: 10,
+      totalPages: 1,
+      id: null,
+      commentList: [],
+      upTopCommentList: [],
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "到底啦~" }
+      },
+      sendBtnFlag: false,
+      contentValue: "",
+      replyFatherCommentId: null,
+      placeholder: "说点什么..."
+    };
+  },
+  computed: {},
+  created() {},
+  mounted() {
+    if (this.$route.query && this.$route.query.type) {
+      this.type = this.$route.query.type;
+    }
+    this.id = this.$route.params.id;
+    this.getCmsDetail();
+    this.getCommentPage(this);
+    console.log(this.$route.params.id, "this.id");
+  },
+  methods: {
+    replyFocus(commentId, commentUsrName) {
+      console.log(commentId, commentUsrName);
+      var fatherCommentId = commentId; //要回复的评论
+      var replyfathername = commentUsrName;
+      this.replyFatherCommentId = commentId;
+      this.placeholder = "回复" + replyfathername;
+      this.bindFocus();
+    },
+    bindFocus() {
+      console.log("获取焦点");
+      this.sendBtnFlag = true;
+      this.$refs.inputVal.focus();
+    },
+    bindBlur() {
+      //console.log("bindBlur");
+      // console.log(this.$refs.scroll,this.$refs.scroll.scrollHeight);
+      //this.$refs.scroll.scrollTop = this.$refs.scroll.scrollHeight
+    },
+    /**封装发表评论需要的参数(包括评论和回复) */
+    getSaveCommentParam: function(_self) {
+      var fatherCommentId = _self.replyFatherCommentId;
+      var content = _self.contentValue;
+      var params = {
+        commentLevel: 1, //评论层级
+        contentId: _self.id,
+        contentTypeId: _self.cmsDetail.typeId,
+        comment: content,
+        noShowLoading: true
+      };
+      if (fatherCommentId) {
+        params.commentParentId = fatherCommentId;
+        params.commentRootId = fatherCommentId;
+        params.commentLevel = 2;
+      }
+      console.log(params, "评论的参数");
+      return params;
+    },
+    /**保存评论 */
+    saveComment: function(e) {
+      console.log(e, "保存");
+      var _self = this;
+      var fatherCommentId = this.replyFatherCommentId;
+      var params = _self.getSaveCommentParam(_self);
+      var curCmsDetail = _self.cmsDetail;
+      this.$post("/api/cmsComment/publish", params)
+        .then(res => {
+          console.log(res.data.commentId, "评论返回值");
+          if (res.code == "200" && res.data) {
+            this.$toast("评论成功", 2);
+            if (!fatherCommentId) {
+              //一级评论刷新评论列表,拿第一页渲染
+              curCmsDetail.comments += 1;
+              _self.contentValue = "";
+              _self.replyFatherCommentId = null;
+              _self.commentList = [];
+              _self.pageNo = 1;
+              _self.cmsDetail = curCmsDetail;
+              _self.getCommentPage(_self);
+            } else {
+              console.log(fatherCommentId, "二级评论怎么处理");
+              console.log(this.$refs);
+              var myChildVal = "myChild" + fatherCommentId;
+              var myChildHotVal = "myChildHot" + fatherCommentId;
+              //console.log(this.$refs[myChildVal]);
+              this.$refs[myChildVal][0].getData(res.data);
+              if (this.$refs[myChildHotVal]) {
+                this.$refs[myChildHotVal][0].getData(res.data);
+              }
+              _self.contentValue = "";
+              _self.replyFatherCommentId = null;
+              _self.placeholder = "说点什么...";
+            }
+          } else {
+            this.$toast("评论失败,稍后重试", 2);
+          }
+          return null;
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    onPullingUp() {
+      if (this.pageNo > this.totalPages) {
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.getCommentPage(this).then(res => {
+          this.$refs.scroll.forceUpdate();
+        });
+      }
+    },
+    getCmsDetail() {
+      this.$post("/api/cmsContent/detail/" + this.id)
+        .then(dataResponse => {
+          if ((dataResponse.code = "200")) {
+            this.cmsDetail = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getCommentPage(_self) {
+      var pageNo = _self.pageNo;
+      var pageSize = _self.pageSize;
+      if (pageNo != 1 && pageNo > _self.totalPages) {
+        return;
+      }
+      let param = {
+        pageNo: pageNo,
+        pageSize: pageSize,
+        contentId: _self.id //当前资讯id
+      };
+      return this.$post("/api/cmsComment/list", param)
+        .then(res => {
+          if (res.code == "200") {
+            var resData = res.data.commentList;
+            _self.totalPages = res.data.totalPages;
+            if (_self.pageNo == 1) {
+              _self.commentList = resData;
+            } else {
+              _self.commentList = _self.commentList.concat(resData);
+            }
+            _self.pageNo = _self.pageNo + 1;
+          }
+        })
+        .catch(e => {});
+    },
+    /**关注/取消关注用户 */
+    operateFollow: function() {
+      var _self = this,
+        type = 0,
+        content = "关注成功";
+      var toFollowUsrId = _self.cmsDetail.authorId;
+      // var curUsrId = app.getGlobalUserInfo().usrId;
+      // console.log(app.getGlobalUserInfo(), toFollowUsrId)
+      // if (curUsrId === toFollowUsrId) {
+      //   this.$toast("您不能关注自己", 3);
+      //   return;
+      // }
+      var curCmsDetail = _self.cmsDetail;
+      if (curCmsDetail.followFlag) {
+        type = 0; //当前是关注-->则type是要取消关注
+        content = "取消关注";
+        localStorage.remove("detail_follow_" + _self.cmsDetail.authorId); //删除取消关注的usrId
+      } else {
+        type = 1;
+        localStorage.set("detail_follow_" + _self.cmsDetail.authorId, true); //新增关注的usrId
+      }
+      curCmsDetail.followFlag = !curCmsDetail.followFlag;
+      let param = {
+        type: type,
+        usrId: toFollowUsrId
+      };
+      this.$post("/api/user/follow", param)
+        .then(res => {
+          if (res.code == "200" && res.data) {
+            //操作成功
+            this.$toast(content, 2);
+            console.log(content);
+            _self.cmsDetail = curCmsDetail;
+          }
+        })
+        .catch(e => {});
+    },
+    /**点赞/取消赞 */
+    operateUp: function() {
+      var _self = this,
+        type = 0,
+        content = "点赞成功";
+      var curCmsDetail = _self.cmsDetail;
+      if (curCmsDetail.upFlag) {
+        type = 0; //当前是赞-->则type是要取消赞
+        curCmsDetail.ups -= 1;
+        content = "取消点赞";
+        localStorage.remove("detail_up_" + _self.id);
+      } else {
+        type = 1;
+        curCmsDetail.ups += 1;
+        localStorage.set("detail_up_" + _self.id, true);
+      }
+      curCmsDetail.upFlag = !curCmsDetail.upFlag;
+      console.log(_self.cmsDetail);
+      this.$post("/api/cmsContent/ups", { type: type, id: _self.id }).then(
+        res => {
+          console.log(res, "操作");
+          if (res.code == "200" && res.data) {
+            //操作成功
+            this.$toast(content, 2000);
+            _self.cmsDetail = curCmsDetail;
+          }
+        }
+      );
+    },
+    /**热门评论 */
+    upTopComment: function() {
+      var _self = this;
+      this.$post("/cmsComment/upTopComment", { contentId: _self.id })
+        .then(res => {
+          console.log(res, "置顶评论");
+          if (res.code == "200" && res.data) {
+            _self.upTopCommentList = res.data;
+          } else {
+            this.$toast("查询热门评论失败,稍后重试", 2000);
+          }
+          return null;
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    /**视频点击播放 */
+    playVideo(event, id) {
+      let video = event.currentTarget;
+      if (video.paused) {
+        // console.log("播放-",id);
+        video.play();
+        if (this.currVideo === 0) {
+          this.currVideo = id;
+        } else {
+          /**暂停上一个视频 */
+          //  console.log("暂停上一个视频",this.currVideo);
+          document.querySelector(".video-" + this.currVideo).pause();
+          this.currVideo = id;
+        }
+      } else {
+        // console.log("暂停",id);
+        video.pause();
+      }
+    }
+  },
+  watch: {}
+};
+</script>
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin.scss";
+@import "../../../assets/common/_base.scss";
+@import "../../../assets/common/_var.scss";
+
+.main {
+  padding-bottom: 40px;
+}
+
+.user_card {
+  margin: 5px;
+  padding: 0 10px;
+  background: linear-gradient(
+    155deg,
+    rgba(253, 158, 1, 1),
+    rgba(255, 130, 1, 1)
+  );
+  box-shadow: 0px 2px 5px 0px #999;
+  border-radius: 8px;
+  .user_info {
+    position: relative;
+    @extend .flex_v_justify;
+    padding: 10px 0;
+    > div {
+      @extend .flex_hc;
+    }
+    .user_img {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      margin-right: 15px;
+      img {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #fff;
+        border-radius: 50%;
+      }
+    }
+    .name {
+      @include t_nowrap(101px);
+      line-height: 1.2;
+      font-size: 16px;
+      padding-bottom: 5px;
+      font-weight: 500;
+      color: #fff;
+    }
+    .tips {
+      @extend .flex_hc;
+      font-size: 10px;
+      p {
+        margin-right: 10px;
+        color: #fff;
+      }
+    }
+    .tips span {
+      padding-right: 5px;
+      font-size: 14px;
+      color: #ffea00;
+    }
+    .record {
+      font-size: 10px;
+      line-height: 14px;
+      padding: 0 8px;
+      border-radius: 12px;
+      color: #fff;
+      background-color: #ff4557;
+    }
+    .follow_btn,
+    .followed_btn {
+      position: absolute;
+      right: 5px;
+      border-radius: 24px;
+      &::before {
+        display: none;
+      }
+    }
+    .follow_btn {
+      background-color: #ff172d;
+      color: #fff;
+    }
+    .followed_btn {
+      color: #575757;
+      background-color: #f5f6f7;
+    }
+  }
+}
+
+.intro_text {
+  padding: 5px 0 15px;
+  font-size: 12px;
+  line-height: 19px;
+  color: #fff151;
+  text-align: justify;
+  @include getBorder(top, #ffb12f);
+}
+
+.expert_title {
+  @extend .flex;
+  position: relative;
+  margin: 14px 0 12px;
+  padding: 0 10px;
+  font-size: 14px;
+  border-left: 2px solid $color_main;
+  ul {
+    @extend .g_v_mid;
+    right: 10px;
+    @extend .flex;
+    background-color: #f5f6f7;
+    font-weight: normal;
+  }
+  li {
+    line-height: 24px;
+    width: 56px;
+    font-size: 11px;
+    color: #a3a3a3;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    text-align: center;
+    &:first-child {
+      border-right: none;
+      border-radius: 12px 0 0 12px;
+    }
+    &:nth-child(2) {
+      border-right: none;
+      border-left: none;
+    }
+    &:last-child {
+      border-left: none;
+      border-radius: 0 12px 12px 0;
+    }
+    &.active {
+      background-color: #fea21b;
+      color: #fff;
+      border: none;
+    }
+  }
+}
+
+.expert_con {
+  margin: 0 5px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.expert_grid {
+  @extend .flex_hc;
+  margin-bottom: 10px;
+  text-align: center;
+  .grid {
+    flex: 1;
+    -webkit-flex: 1;
+    color: #818181;
+    > div {
+      padding: 4px 0;
+      border-width: 0 0 1px 1px;
+      border-style: solid;
+      border-color: rgba(0, 0, 0, 0.1);
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+  p {
+    line-height: 16px;
+  }
+}
+
+.expert_forecast {
+  ul {
+    @extend .flex;
+    margin: 10px 35px;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f5f6f7;
+    font-weight: normal;
+  }
+  li {
+    flex: 1;
+    -webkit-flex: 1;
+    height: 24px;
+    @extend .flex_v_h;
+    color: #a3a3a3;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    &:first-child {
+      border-right: none;
+      border-radius: 12px 0 0 12px;
+    }
+    &:nth-child(2) {
+      border-right: none;
+      border-left: none;
+    }
+    &:last-child {
+      border-left: none;
+      border-radius: 0 12px 12px 0;
+    }
+    &.active {
+      background-color: #fea21b;
+      color: #fff;
+      border: none;
+    }
+  }
+}
+
+.onSale_icon,
+.history_icon,
+.zj_icon {
+  width: 15px;
+  height: 15px;
+  margin-right: 1px;
+}
+
+.onSale_icon {
+  @include getBgImg("../../../assets/images/expert/onSale.png");
+}
+
+.history_icon {
+  @include getBgImg("../../../assets/images/expert/history.png");
+}
+
+.expert_match {
+  .item {
+    @extend .flex_v_justify;
+    height: 84px;
+    @include getBorder(bottom, rgba(0, 0, 0, 0.1));
+    text-align: center;
+    &:last-child {
+      background: initial;
+    }
+    > div {
+      flex: 1;
+      -webkit-flex: 1;
+      white-space: nowrap;
+    }
+    img {
+      width: 38px;
+      height: 38px;
+      margin-bottom: 5px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .vs {
+      padding: 10px 0;
+      color: #444;
+    }
+    .left,
+    .right {
+      font-size: 14px;
+    }
+    .center {
+      color: #999;
+    }
+  }
+}
+
+.expert_reason {
+  padding: 15px;
+  &.no_per {
+    position: relative;
+    height: 145px;
+    .expert_mask {
+      display: block;
+    }
+  }
+  .time {
+    padding-top: 15px;
+    color: #aeaeae;
+  }
+  .txt {
+    padding-top: 10px;
+    padding-bottom: 100px;
+    line-height: 18px;
+    color: #4a4a4a;
+  }
+  .expert_mask {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 145px;
+    color: #979797;
+    background-color: rgba(255, 255, 255, 0.95);
+    text-align: center;
+  }
+  .lock {
+    width: 50px;
+    height: 50px;
+    margin: 20px auto 10px;
+    @include getBgImg("../../../assets/images/expert/lock.png");
+  }
+}
+
+.expert_agreement {
+  padding: 15px 20px 10px;
+  margin-top: 10px;
+  p {
+    @extend .flex_v_justify;
+    padding-bottom: 15px;
+    color: #a3a3a3;
+  }
+  .num {
+    color: #333;
+    span {
+      color: $color_main;
+    }
+  }
+  .agreement {
+    @extend .flex_v_h;
+    span {
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      &.active {
+        @include getBgImg("../../../assets/images/expert/agree.png");
+        border: none;
+      }
+    }
+    a {
+      color: #679dfa;
+    }
+  }
+}
+
+.mod_footer {
+  background-color: #fff;
+}
+</style>

@@ -1,0 +1,97 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-03-31 14:15:34
+ * @LastEditTime: 2020-03-31 17:58:50
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: /quiz-touch/src/views/hd/hd104/pullnews/rules.vue
+ -->
+<template>
+  <div class="ui_pop">
+    <div class="agreement">
+      <h3>活动规则</h3>
+      <div class="txt">
+        <p>请您务必审慎阅读并充分理解“用户协议”和“隐私声明”的各项条款内容，包括但不限于：</p>
+        <p>为了向您提供内容资讯、分享等服务，我们需要收集您的设备信息、操作日志等个人信息。您可在个人中心设置页面查看、管理您的授权。</p>
+        <p>
+          您可阅读<a>《用户协议》</a>和<a>《隐私声明》</a>了解详细信息。如您同意，请点击“同意”开始接受我们的服务。
+        </p>
+      </div>
+      <div class="btn">
+        <a @click="cancel()">同意</a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {
+    goUrlPage(path) {
+      this.$router.push({
+        path: path,
+        query: {}
+      });
+    },
+    cancel() {
+      this.$emit("closePop");
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../../assets/common/_base";
+@import "../../../../assets/common/_mixin";
+
+h3 {
+  padding-bottom: 2.6667vw;
+  font-size: 4.2667vw;
+  line-height: 4.8vw;
+  text-align: center;
+}
+
+.agreement {
+  width: 72.8vw;
+  padding-top: 6.1333vw;
+  border-radius: 2.1333vw;
+  background-color: #fff;
+  color: #333;
+}
+
+.txt {
+  padding: 0 6.6667vw;
+}
+
+p {
+  font-size: 3.4667vw;
+  line-height: 5.0667vw;
+  a {
+    color: #fea21b;
+  }
+}
+
+.btn {
+  @extend .flex;
+  margin-top: 5.7333vw;
+  @include getBorder(top, #ddd);
+  a {
+    flex: 1;
+    -webkit-flex: 1;
+    font-size: 4.5333vw;
+    line-height: 13.8667vw;
+    font-weight: bold;
+    text-align: center;
+    @include getBorder(right, #ddd);
+    &:last-child {
+      color: #fea21b;
+      background: none;
+    }
+  }
+}
+</style>

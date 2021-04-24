@@ -1,0 +1,104 @@
+/* modules/reportpage/reportpage/report-page.wxss */
+
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/base/clear.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+@import "/resources/wxss/base/icon.wxss";
+
+.page-head {
+  width: 750rpx;
+  height: 72rpx;
+
+  background: rgba(0, 0, 0, 0.3);
+  /* border-top: solid 2rpx #ddd; */
+  /* border-bottom: solid 2rpx #ddd; */
+  
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.page-title {
+  width: 640rpx;
+}
+.page-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin: 16rpx 20rpx 0 20rpx;
+}
+.page-title {
+  color: #fff;
+  font-weight: bold;
+}
+
+.report-menu {
+  width: 690rpx;
+  padding: 0 20rpx;
+  margin: 10rpx auto;
+
+  background: #fff;
+  border-radius: 20rpx;
+}
+
+.r-menu-mov-area {
+  width: 680rpx;
+  height: 76rpx;
+  overflow: hidden;
+}
+
+.r-menu-mov-view {
+  width: 125%;
+  height: 76rpx;
+}
+.r-menu-item {
+  float: left;
+  margin: 0 19rpx;
+    
+  font-size: 28rpx;
+  line-height: 72rpx;
+}
+.r-menu-item-cur {
+  color: #0077ff;
+  border-bottom: solid 5rpx #0077ff; 
+}
+
+/* 新的report-menu */
+.report-menu-new {
+  width: 710rpx;
+  padding: 0 10rpx;
+  margin: 10rpx auto;
+
+  background: #fff;
+  border-radius: 15rpx;
+}
+.r-menu-n-mov-area {
+  width: 710rpx;
+  height: 76rpx;
+  overflow: hidden;
+}
+.r-menu-n-mov-view {
+  width: 125%;
+  height: 76rpx;
+}
+.r-menu-n-item-view {
+  display: inline-block;
+  width: 175rpx;
+  text-align: center;
+  line-height: 72rpx;
+}
+.r-menu-n-item {
+  font-size: 28rpx;
+}
+.r-menu-item-cur {
+  display: inline-block;
+  color: #fea21b;
+  border-bottom: solid 5rpx #fea21b; 
+}
+
+
+.md-chats-view {
+  padding-top: 10rpx;
+  padding-bottom: 150rpx;
+}
+.md-chats-note {
+  color: #fa9110;
+}

@@ -1,0 +1,120 @@
+<template>
+  <div class="Page guessPage">
+    <header class="mod_header">
+      <h2>2016职业联赛秋季赛竞猜</h2>
+      <div class="navBar">
+        <div class="users">
+          <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/icon/avatar.png" alt="">
+          <div>
+            <p class="user_name">我的角色名</p>
+            <p class="user_assets">余额：11000竞猜币</p>
+          </div>
+        </div>
+        <div class="herf_gather">
+          <a class="get_icon"></a>
+          <a class="exchange_icon"></a>
+          <a class="record_icon"></a>
+        </div>
+      </div>
+    </header>
+    <div class="main">
+      
+      <ul class="guess_list">
+        <guessItem :type=1 v-for="(item,index) in 10" :key="index"></guessItem>
+      </ul>
+    </div>
+
+  </div>
+</template>
+
+<script>
+import guessItem from "./components/guessItem";
+
+export default {
+  components: {
+    guessItem
+  },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.get_icon {
+  @include getBgImg("../../../assets/images/guess/get_icon.png");
+}
+
+.exchange_icon {
+  @include getBgImg("../../../assets/images/guess/exchange_icon.png");
+}
+
+.record_icon {
+  @include getBgImg("../../../assets/images/guess/record_icon.png");
+}
+
+.link_icon {
+  @include getBgImg("../../../assets/images/guess/link_icon.png");
+}
+
+.Page {
+  background-color: #1f1212;
+}
+
+.mod_header {
+  background-color: #321919;
+  h2 {
+    line-height: 44px;
+    font-size: 18px;
+    font-weight: normal;
+    color: #fedcd7;
+    text-align: center;
+  }
+}
+
+.navBar {
+  @extend .flex_v_justify;
+  height: 40px;
+  padding: 0 20px 0 10px;
+  border-top: 1px solid #6a3223;
+}
+
+.users {
+  @extend .flex_hc;
+  img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+.user_name {
+  color: #fedcd7;
+}
+
+.user_assets {
+  padding-top: 4px;
+  font-size: 10px;
+  color: #86564e;
+}
+
+.herf_gather {
+  @extend .flex_hc;
+  a {
+    width: 22px;
+    height: 22px;
+    margin-left: 24px;
+  }
+}
+
+.guess_list {
+  padding: 0 10px;
+}
+</style>

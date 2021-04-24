@@ -1,0 +1,13 @@
+const biz = 1;
+const agentId = 10002;
+
+export default {
+    biz: biz,
+    agentId: agentId,
+    setBiz(biz) {
+        this.biz = biz;
+    },
+    setAgentId(agentId) {
+        this.agentId = agentId;
+    }
+}

@@ -1,0 +1,155 @@
+/* component/reportlist/reportexpertitem/report-expert-item.wxss */
+
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+@import "/resources/wxss/base/icon.wxss";
+
+.report-expert-item {
+  width: 710rpx;
+  padding: 10rpx;
+  margin: 20rpx auto;
+
+  background: #fff;
+  border-radius: 20rpx;
+}
+.report-expert-info {
+  padding: 10rpx 0;
+}
+.report-expert-info-detail {
+  width: 500rpx;
+  line-height: 30rpx;
+}
+.report-expert-avatar {
+  padding-right: 10rpx;
+}
+.userinfo-avatar {
+  width: 50rpx;
+  height: 50rpx;
+  margin-top: 5rpx;
+
+  border: solid 4rpx #fff;
+  border-radius: 50%;
+}
+.r-e-name {
+  font-size: 24rpx;
+}
+.r-e-d-money {
+  font-size: 22rpx;
+  color: #333;
+}
+.r-e-tag {
+  display: inline-block;
+  width: 100rpx;
+  line-height: 26rpx;
+  text-align: center;
+  margin-left: 10rpx;
+
+  font-size: 20rpx;
+  color: #fff;
+
+  background: #d60c1f;
+  border-radius: 20rpx;
+}
+
+.report-expert-info-note {
+  font-size: 20rpx;
+  color: #aaa;
+}
+
+.r-e-high {
+  display: inline-block;
+  line-height: 30rpx;
+  color: #fea21b;
+}
+.r-e-h-text {
+  padding-right: 5rpx;
+}
+
+.report-export-num {
+  width: 130rpx;
+  text-align: right;
+  line-height: 30rpx;
+
+  font-size: 20rpx;
+  color: #d60c1f;
+}
+
+.report-expert-detail {
+  background: #f8f9fe;
+
+  width: 710rpx;
+  padding: 10rpx 0;
+  border-radius: 10rpx;
+}
+.report-expert-detail-vs {
+  line-height: 40rpx;
+  padding-left: 20rpx;
+
+  color: #aaa;
+  font-size: 24rpx;
+}
+.r-e-d-logo {
+  font-size: 28rpx;
+  padding-right: 5rpx;
+}
+.r-e-d-tit-view {
+  width: 480rpx;
+}
+.r-e-d-tit {
+  color: #000;
+}
+
+.r-e-d-img {
+  width: 40rpx;
+  height: 40rpx;
+  line-height: 40rpx;
+  margin: 0 10rpx;
+}
+.r-e-d-vs {
+  line-height: 40rpx;
+  padding: 0 20rpx;
+}
+.r-e-d-text {
+  display: inline-block;
+  width: 120rpx;
+  line-height: 40rpx;
+}
+
+.report-expert-detail-money {
+  white-space: nowrap;
+  overflow: hidden;
+}
+.icon-dollar {
+  padding-right: 5rpx;
+}
+.r-e-d-note {
+  display: inline-block;
+  width: 100rpx;
+  line-height: 26rpx;
+  text-align: center;
+
+  color: #fff;
+  font-size: 20rpx;
+
+  background: #ec9805;
+  border-radius: 20rpx;
+}
+.report-expert-sub {
+  color: #aaa;
+  font-size: 20rpx;
+
+  padding-left: 20rpx;
+  padding-top: 10rpx;
+}
+
+
+.con{
+	display: flex;
+	align-items: center;
+}
+
+.star_coin{
+	width: 30rpx;
+	height: 30rpx;
+	margin-right: 8rpx;
+}

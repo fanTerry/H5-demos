@@ -1,0 +1,123 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar pageTitle='我的兑换'></navBar>
+    </header>
+    <div class="main">
+      <section class="product_group">
+        <ul class="list">
+          <li class="item" @click="goMore(0)">
+            <i class="allExchange_icon"></i>
+            <span>全部兑换</span>
+          </li>
+          <!-- <li class="item" @click="goMore(1)">
+            <i class="pay_icon"></i>
+            <span>待支付</span>
+          </li> -->
+          <li class="item" @click="goMore(5)">
+            <i class="get_icon"></i>
+            <span>待收货</span>
+          </li>
+          <li class="item" @click="goMore(6)">
+            <i class="done_icon"></i>
+            <span>已完成</span>
+          </li>
+          <li class="item">
+            <i class="address_icon" @click="goMyAdress()"></i>
+            <span>地址管理</span>
+          </li>
+          <li class="item" @click="showPop=true">
+            <i class="contact_icon"></i>
+            <span>联系客服</span>
+          </li>
+          <CustomService :showPop='showPop' @close='showPop=false'>
+            <p>请联系客服QQ：2732470865</p>
+          </CustomService>
+        </ul>
+      </section>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar";
+import CustomService from "components/pop_up/pop_customService";
+export default {
+  data() {
+    return {
+      showPop:false
+    };
+  },
+  methods: {
+    goMore(id, name) {
+      console.log(id);
+      this.$router.push({
+        name: "orderList",
+        params: {
+          shopOrderStatus: id,
+          pageName: "我的兑换",
+          // tabFlag: true
+        }
+      });
+    },
+    goMyAdress(){
+      this.$router.push({
+        path: "/addressManage",
+        query: {
+        }
+      });
+    }
+  },
+  components: {
+    navBar,
+    CustomService
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+.product_group {
+  background-color: #fff;
+  .list {
+    @extend .flex;
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    padding-top: 10px;
+  }
+  .item {
+    width: 25%;
+    padding-bottom: 12px;
+    text-align: center;
+    i {
+      display: block;
+      width: 29px;
+      height: 29px;
+      margin: 0 auto 2px;
+    }
+    span {
+      font-size: 13px;
+      color: #666;
+    }
+  }
+  .allExchange_icon {
+    @include getBgImg("../../../assets/images/store/allExchange_icon.png");
+  }
+  .pay_icon {
+    @include getBgImg("../../../assets/images/store/pay_icon.png");
+  }
+  .get_icon {
+    @include getBgImg("../../../assets/images/store/get_icon.png");
+  }
+  .done_icon {
+    @include getBgImg("../../../assets/images/store/done_icon.png");
+  }
+  .address_icon {
+    @include getBgImg("../../../assets/images/store/address_icon.png");
+  }
+  .contact_icon {
+    @include getBgImg("../../../assets/images/store/contact_icon.png");
+  }
+}
+</style>

@@ -1,0 +1,84 @@
+.Page {
+  background-color: rgb(255, 231, 131);
+}
+.main {
+	background: url('https://daily-rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/rule_lists_bg.png') no-repeat top center;
+  background-size: 100% auto;
+}
+
+.nav {
+	/* @extend .flex; */
+	display: flex;
+  padding: 34rpx 40rpx 0;
+}
+
+.nav a {
+	flex: 1;
+	-webkit-flex: 1;
+	font-size: 34rpx;
+	line-height: 114rpx;
+	color: #fff;
+	text-align: center;
+}
+
+.nav a.cur {
+	position: relative;
+	color: #fcff00;
+}
+
+.nav a.cur::after {
+	content: "";
+	/* @extend .g_c_mid; */
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: 8rpx;
+	width: 74rpx;
+	height: 8rpx;
+	border-radius: 4rpx;
+	background-color: #fcff00;
+}
+
+.sales_record,
+.withdraw_record {
+  height: 893rpx;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sales_record li ,
+.withdraw_record li{
+	/* @extend .flex_v_justify; */
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 150rpx;
+	margin: 0 21rpx;
+	padding: 0 30rpx;
+	border-bottom: 1rpx solid #eee;
+}
+
+.sales_record li:last-child, 
+.withdraw_record li:last-child{
+	border: none;
+}
+
+.time,
+.status {
+	padding-top: 30rpx;
+	font-size: 26rpx;
+	color: #999;
+}
+
+.txt,
+.num {
+	font-size: 36rpx;
+}
+
+.tac {
+	text-align: center;
+}
+
+.sales_record .num {
+  color: #40b7a5;
+}

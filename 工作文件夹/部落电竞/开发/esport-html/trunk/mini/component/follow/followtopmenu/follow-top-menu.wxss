@@ -1,0 +1,45 @@
+/* component/follow/followtopmenu/follow-top-menu.wxss */
+
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+.follow-top-menu {
+  /* width: 710rpx; */
+  padding: 0 20rpx;
+
+  background: #fff;
+  border-top: solid 2rpx #ddd;
+  border-bottom: solid 2rpx #ddd;
+}
+
+.f-t-m-text {
+  display: inline-block;
+  line-height: 72rpx;
+	padding: 0 9rpx 0 6rpx;
+  margin-right: 50rpx;
+
+  font-size: 28rpx;
+  color: #939393;
+}
+.f-t-m-t-act {
+	position: relative;
+  color: #0f87ff;
+}
+
+.f-t-m-t-act::after{
+	content: '';
+	width: 100%;
+	height: 4rpx;
+
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	background-color: #0f87ff;
+}
+
+.f-t-m-icon {
+  float: right;
+  line-height: 68rpx;
+
+  font-size: 40rpx;
+  color: #939393;
+}

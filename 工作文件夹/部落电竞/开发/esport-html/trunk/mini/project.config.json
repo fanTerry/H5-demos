@@ -1,0 +1,131 @@
+{
+	"description": "项目配置文件。",
+	"setting": {
+		"urlCheck": true,
+		"es6": true,
+		"postcss": true,
+		"minified": true,
+		"newFeature": true
+	},
+	"compileType": "miniprogram",
+	"libVersion": "2.7.0",
+	"appid": "wx134aa3b7eeff86b8",
+	"projectname": "PicksPal",
+	"isGameTourist": false,
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"currentL": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": 12,
+			"list": [
+				{
+					"id": 0,
+					"name": "首页：文章内页",
+					"pathName": "modules/articlepage/article-page",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "赛事：首页",
+					"pathName": "pages/report/report",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "赛事：内页",
+					"pathName": "modules/reportpage/reportpage/report-page",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "赛事：会员充值中心",
+					"pathName": "modules/memberpaycenter/member-pay-center",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 3,
+					"name": "专家：首页",
+					"pathName": "pages/expert/expert",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "关注：首页",
+					"pathName": "pages/follow/follow",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 5,
+					"name": "专家：专家主页",
+					"pathName": "modules/expertpage/expertpage/expert-page",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 6,
+					"name": "专家：申请专家页",
+					"pathName": "modules/expertpage/expertapplypage/expert-apply-page",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 7,
+					"name": "专家：专家协议页",
+					"pathName": "modules/expertpage/expertagreepage/expert-agree-page",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 8,
+					"name": "专家：内容详情页",
+					"pathName": "modules/expertpage/expertdetailpage/expert-detail-page",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "我的：主页",
+					"pathName": "pages/my/my",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "我的：我的钱包",
+					"pathName": "modules/mypage/mywallet/my-wallet",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 12,
+					"name": "我的：充值页",
+					"pathName": "modules/mypage/myrecharge/my-recharge",
+					"query": "",
+					"scene": null
+				}
+			]
+		}
+	}
+}

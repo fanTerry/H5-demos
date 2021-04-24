@@ -1,0 +1,11 @@
+{
+  "usingComponents": {
+    "follow-top-menu": "/component/follow/followtopmenu/follow-top-menu",
+    "follow-expert-list": "/component/follow/followexpertlist/follow-expert-list",
+    "expert-item": "/component/comm/expertitem/expert-item",
+		"nav-list":"/component/header/navlist/nav_list",
+		"user-info":"/component/userinfo/user_info",
+    "no-data": "/component/comm/no-data/no-data"
+  },
+  "enablePullDownRefresh": true
+}

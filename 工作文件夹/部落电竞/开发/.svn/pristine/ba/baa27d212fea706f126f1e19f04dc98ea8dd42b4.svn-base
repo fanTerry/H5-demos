@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "pops": "../components/pops"
+  },
+  "navigationBarTitleText": "答题",
+  "navigationBarBackgroundColor": "#fff",
+  "navigationBarTextStyle": "black"
+}

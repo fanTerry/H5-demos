@@ -1,0 +1,30 @@
+const state = {
+    userData: {
+        userInfo: null, // 用户信息
+        starNum: null, // 用户星星
+        yeYunPoints: null // 椰云积分
+        
+    }
+};
+const getters = {
+    getUserData: state => state.userData
+};
+const mutations = {
+    setUserData(state, object) {
+        state.userData = object;
+    }
+};
+const actions = {
+    setUserData({
+        commit
+    }, object) {
+        commit('setUserData', object);
+    }
+};
+
+export default {
+    state,
+    getters,
+    actions,
+    mutations
+};

@@ -1,0 +1,220 @@
+<template>
+  <div class="Page signPage">
+    <header class="mod_header">
+      <navBar :pageTitle="'签到领星星'"></navBar>
+    </header>
+    <div class="main">
+      <ul class="prize_list">
+        <!-- 不能领取加类名disabled -->
+        <li v-for="(item,index) in signGiftList " :key="index"
+          :class="{'recevied':item.receiveStatus==0,'disabled':item.receiveStatus>1}">
+          <p>{{item.hdGiftName.substring(0,3)}}</p>
+          <img :src="require('assets/images/guess/starday'+index+'.png')" alt />
+          <a class="prize_get_btn" v-if="item.receiveStatus>1"
+            @click="showMessage('暂不可领取')">{{item.hdGiftCount?item.hdGiftCount:item.sevenFlag}}星星</a>
+          <a class="prize_get_btn" v-else
+            @click="getPrize(index)">{{item.hdGiftCount?item.hdGiftCount:item.sevenFlag}}星星</a>
+
+        </li>
+      </ul>
+      <div class="pop_tips" v-if="signTips">
+        <p>获得</p>
+        <span>{{signAwardNum}}星星</span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index";
+// import Vue from "vue";
+import { mapGetters, mapActions } from "vuex";
+export default {
+  components: { navBar },
+  props: [],
+
+  data() {
+    return {
+      signGiftList: [], //签到礼品
+      signTips: false,
+      signAwardNum: 0 //随机获得的星星数量
+    };
+  },
+  mounted() {
+    //屏蔽app处理
+    if (this.$route.query.clientType == 3) {
+      this.$router.push({
+        path: "/home",
+        query: {}
+      });
+    }
+    this.openSignPop();
+  },
+  methods: {
+    closePop() {
+      this.$emit("closePop");
+    },
+    //签到领取
+    openSignPop() {
+      return this.$post("/api/hdsign/queryHdGiftInfo")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.signGiftList = dataResponse.data.signGift;
+            console.log(this.signGiftList);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getPrize(index) {
+      return this.$post("/api/hdsign/signIn")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log("签到");
+            let that = this;
+            this.signGiftList[index].receiveStatus = 0;
+            this.signTips = true;
+            this.signAwardNum = dataResponse.data.giftCount;
+            setTimeout(() => {
+              that.signTips = false;
+            }, 1500);
+            //刷新用户余额
+            // this.$emit("updateSign", dataResponse.data.giftRecScore);
+          } else {
+            this.$toast(dataResponse.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //弹窗提示
+    showMessage(msg) {
+      this.$toast(msg);
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.signPage {
+  .back::before,
+  .back::after {
+    background-color: #a26767 !important;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.Page {
+  background: #1f1212;
+}
+
+.main {
+  padding-bottom: 37.33vw;
+}
+
+.mod_header {
+  background-color: #321919;
+}
+
+.nav_bar {
+  color: #fedcd7 !important;
+}
+
+.pop_tips {
+  @extend .g_v_c_mid;
+  width: 57.33vw;
+  padding: 5.33vw 0;
+  text-align: center;
+  background-color: #34201d;
+  p {
+    font-size: 3.73vw;
+    color: #fff;
+  }
+  span {
+    display: block;
+    padding-top: 5.33vw;
+    font-size: 5.33vw;
+    color: #f6b70d;
+  }
+}
+.prize_list {
+  @extend .flex_hc;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  padding: 1.33vw 0 0 2.67vw;
+}
+li {
+  flex: 1;
+  -webkit-flex: 1;
+  padding-bottom: 5.33vw;
+  margin: 2.67vw 2.67vw 0 0;
+  @include getBgImg("../../assets/images/guess/sign_bg.png");
+  background-size: 100% 100% !important;
+  box-shadow: 0px 6px 8px 0px rgba(0, 0, 0, 0.03);
+  text-align: center;
+  &.disabled {
+    opacity: 0.2;
+    @include getBgImg("../../assets/images/guess/sign_disabled.png");
+    .prize_get_btn {
+      color: #767676;
+      border-color: currentColor;
+    }
+  }
+  &:last-child {
+    flex: none;
+    -webkit-flex: none;
+    width: 30.6%;
+    @media (max-width: 35.33vw) {
+      width: 46.8%;
+    }
+    img {
+      height: 9.6vw;
+      margin: 4vw auto 6.13vw;
+    }
+  }
+  &.recevied {
+    position: relative;
+    &::after {
+      content: "";
+      @extend .g_c_mid;
+      top: 9.6vw;
+      width: 21.87vw;
+      height: 12.8vw;
+      @include getBgImg("../../assets/images/guess/recevied.png");
+    }
+    .prize_get_btn {
+      border-color: transparent;
+      color: #cea04a;
+    }
+  }
+  p {
+    font-size: 3.2vw;
+    height: 6.13vw;
+    line-height: 6.13vw;
+    color: #fedcd7;
+  }
+  img {
+    display: block;
+    height: 6.93vw;
+    margin: 5.87vw auto 7.2vw;
+  }
+}
+.prize_get_btn {
+  display: inline-block;
+  width: 25.07vw;
+  line-height: 6.4vw;
+  font-size: 3.2vw;
+  color: #cea04a;
+  border: 1px solid #cea04a;
+  border-radius: 3.73vw;
+}
+</style>

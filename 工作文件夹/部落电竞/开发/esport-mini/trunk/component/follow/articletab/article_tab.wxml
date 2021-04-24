@@ -1,0 +1,61 @@
+<!--component/follow/articletab/article_tab.wxml-->
+<view>
+  <view class="article_tab " :class="{none:showType==110}" wx:for="(item,index) in cmsContentList" :key="index">
+    <userInfo :follower="item.followedUser" :type="1"></userInfo>
+
+    <!-- 全部，文章 -->
+    <!-- 分享和转发的动态 转发的动态加上dynamic_repeat-->
+    <view class="dynamic_share" v-if="item.type==1" bindtap="toCmsDetail(item.aricleId,item.type)">
+      <!-- <view class="to_someone"><span>@欧阳长臂猿</span></view> -->
+      <view class="to_someone">
+        <span>#{{item.tag}}#</span>{{item.detail}}</view>
+      <image class="adver_img" v-if="item.type==1" :src="item.imageSrc" onerror="this.src='https://static.wanplus.com/data/defaviewt/banner.jpg?imageView2/1/w/308/h/208'"></image>
+      <!-- <image class="adver_img" v-if="item.type==2" :src="item.titleImg" alt ></image> -->
+      <!-- <video class="adver_video" mode="aspectFill" src=""></video> -->
+      <!-- 九宫格插图 -->
+      <!-- <view class="nine_place_img">
+              <image src="https://daily-rs.esportzoo.com/upload/interface/avatar/dccf8c6f23_145630.jpg" alt=""></image>
+              <image src="https://daily-rs.esportzoo.com/upload/interface/avatar/dccf8c6f23_145630.jpg" alt=""></image>
+              <image src="https://daily-rs.esportzoo.com/upload/interface/avatar/dccf8c6f23_145630.jpg" alt=""></image>
+              <image src="https://daily-rs.esportzoo.com/upload/interface/avatar/dccf8c6f23_145630.jpg" alt=""></image>
+            </view> -->
+      <!-- <p class="adver_title">北美LCS解说Zirene从拳头公司离职</p> -->
+    </view>
+    <!-- 视频 -->
+    <view class="dynamic_share " v-if="item.type==2">
+      <!-- <view class="to_someone"><span>@欧阳长臂猿</span></view> -->
+      <view class="to_someone">
+        <span>#{{item.tag}}#</span>{{item.detail}}</view>
+      <!-- <image class="adver_img" v-if="item.type==2" :src="item.titleImg" alt /> -->
+      <video class="adver_video" mode="aspectFill" height="200px" v-if="item.type==2" style="object-fit:fill" :poster="item.titleImg" :class="'video-'+item.aricleId" bindtap="playVideo($event,item.aricleId)" controls webkit-playsinline="true" x-webkit-airplay="true"
+        playsinline="true" preload="auto" x5-video-player-type="h5" x5-video-orientation="h5" x5-video-player-fviewlscreen="true">
+        <source :src="item.imageSrc"></source>
+      </video>
+      <!-- <video class="adver_video" mode="aspectFill" src=""></video> -->
+      <!-- 九宫格插图 -->
+      <!-- <view class="nine_place_img">
+              <image src="https://daily-rs.esportzoo.com/upload/interface/avatar/dccf8c6f23_145630.jpg" alt=""></image>
+              <image src="https://daily-rs.esportzoo.com/upload/interface/avatar/dccf8c6f23_145630.jpg" alt=""></image>
+              <image src="https://daily-rs.esportzoo.com/upload/interface/avatar/dccf8c6f23_145630.jpg" alt=""></image>
+              <image src="https://daily-rs.esportzoo.com/upload/interface/avatar/dccf8c6f23_145630.jpg" alt=""></image>
+            </view> -->
+      <!-- <p class="adver_title">北美LCS解说Zirene从拳头公司离职</p> -->
+    </view>
+
+    <!-- 底部发布动态时间 点赞和评论 -->
+    <view class="dynamic_num">
+      <span class="time">{{item.publishTimeStr}}</span>
+      <view>
+        <view class="item " :class="{'active':item.upFlag}" bindtap="operateUp(item,index)">
+          <i class="good_icon"></i>
+          <span>{{item.commentNum}}</span>
+        </view>
+        <view class="item">
+          <i class="comment_icon"></i>
+          <span>{{item.discussNum}}</span>
+        </view>
+        <!-- <view class="item"><i class="iconfont icon-gengduo"></i></view> -->
+      </view>
+    </view>
+  </view>
+</view>

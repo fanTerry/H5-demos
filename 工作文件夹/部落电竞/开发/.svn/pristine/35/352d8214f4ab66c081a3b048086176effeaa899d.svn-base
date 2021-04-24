@@ -1,0 +1,46 @@
+<view class="Page userWalletPage">
+	<view class="main">
+		<view class="header">
+			<image class="user_img" src="{{userInfo.icon}}" alt=""></image>
+			<span class="user_name">{{userInfo.nickName}}</span>
+			<!-- <a bindtap="toRecordList">营收与提现记录</a> -->
+		</view>
+		<!-- <view class="user_account">
+			<view>
+				<p class="account_num">{{userInfo.historyIncome}}</p>
+				<p>历史总额</p>
+			</view>
+			<view class="account_detail">
+				<view>
+					<p class="num">{{userInfo.todayGetMoney}}</p>
+					<p>现金余额</p>
+				</view>
+				<view>
+					<p class="num">{{userInfo.todayIncome}}</p>
+					<p>今日营收</p>
+				</view>
+			</view>
+			<a class="withdraw_btn" bindtap="getMoney()"></a>
+		</view> -->
+		<view class="answer_record">
+			<h3>顶上战绩</h3>
+			<ul wx:if="{{answerRecord.length != 0}}">
+				<block wx:for="{{answerRecord}}">
+					<li data-index="{{index}}">
+						<span>{{item.createTime}}</span>
+						<span>连续答对{{item.num}}道题获得</span>
+						<span class="num" > {{item.giftName}}</span>
+					</li>
+				</block>
+			</ul>
+			<view class="no_data" wx:else>
+				<image src="https://rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/no_data.png"></image>
+				<view>暂无数据</view>
+			</view>
+		</view>
+	</view>
+	
+
+	<!-- 弹窗集合组件 -->
+	<!-- <pops ref="propRef"></pops> -->
+</view>

@@ -1,0 +1,26 @@
+<!--component/report/chartchatitem/chart-chat-item.wxml-->
+  <view class='chart-chat-item clear'>
+    
+    <view class="fl">
+      <image class="userinfo-avatar" src="/resources/images/avatar/cat.jpg" mode="aspectFill" />
+    </view>
+
+    <view class='fl'>
+      <view class='chart-chat-info'>
+        <text class='c-c-name'>老毛精算</text>
+        <text class='c-c-time'>26分钟前</text>
+      </view>
+      <view class='chart-chat-box'>
+        <i class='c-c-b-i'></i> <!--三角形样式用-->
+        <text class='c-t-gray'>正在输入...</text>
+        <text class='c-t-gray'>正在输入...</text>
+        <text class='c-t-gray'>正在输入...</text>
+        <text class='c-t-gray'>正在输入...</text>
+        <text class='c-t-gray'>比赛时间28‘28“</text>
+        <text class='c-t-blue'>YM</text>
+        <text class='c-t-black'>击败</text>
+        <text class='c-t-red'>Maert</text>
+      </view>
+    </view>
+
+  </view>

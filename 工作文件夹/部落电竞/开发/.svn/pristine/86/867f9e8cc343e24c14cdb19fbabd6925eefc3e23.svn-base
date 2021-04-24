@@ -1,0 +1,26 @@
+<!-- modules/store/index.wxml -->
+<view class="main" wx:if="{{miniSwitch==1}}">
+  <view class="product_group">
+    <ul class="list">
+      <li class="item" wx:for="{{categoryList}}" bind:tap="goShopList" data-index="{{index}}">
+        <i style="background-image: url('{{item.image}}')"></i>
+        <span>{{item.name}}</span>
+      </li>
+    </ul>
+  </view>
+  <view class="banner" wx:if="{{adList.length>0}}">
+    <commonBanner indicatorColor="{{swiperOpt.indColor}}" flag="{{false}}" indicatorActiveColor="{{swiperOpt.indActColor}}" swiperArray="{{adList}}" styleObject="height:240rpx;" mode='aspectFill'></commonBanner>
+  </view>
+  <!-- <submenu-bar titleArray="{{subMenuList}}" selectedTag="{{selectedTag}}" bindmyevent="onMyEvent"></submenu-bar> -->
+  <view class="tab_list">
+    <view class="list">
+      <view wx:for="{{subMenuList}}" wx:key="" data-index="{{index}}" bindtap="changeTag" class="item">
+        {{item.name}}
+      </view>
+    </view>
+  </view>
+  <goods-list myClass='{{myClass}}' listGoods='{{shopGoodList}}' type='{{pageType}}'></goods-list>
+</view>
+
+<no-data wx:if="{{miniSwitch==0&&ready}}"></no-data>
+

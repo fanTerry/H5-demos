@@ -1,0 +1,243 @@
+<template>
+  <!-- 已结束的单加end_order -->
+  <li class="follow_order" :class="{'end_order':recommendDetail.status!=1}" @click=" detailType!=1 && goUrlPage('/followPlan/recommendPlanDetail')">
+    <!-- right_tag 红单,wrong_tag 黑单 -->
+    <span class="tag" :class="recommendDetail.resultStatus==1?'wrong_tag':(recommendDetail.resultStatus==2?'right_tag'
+ :(recommendDetail.resultStatus==6 ||recommendDetail.resultStatus==5 ?'flow_tag':''))"></span>
+    <div class="user_info" v-if="detailType!=1">
+      <img :src="recommendDetail.userIcon|getDefaultImg(globalConst.userDefaultIcon)" alt />
+      <p class="name">{{recommendDetail.userNickName}}</p>
+      <div class="tips">
+        <span class="tips_rate" v-if="recommendDetail.tenScoreStr">{{recommendDetail.tenScoreStr}}</span>
+        <span class="tips_award">近十单收益：{{recommendDetail.tenReturnRate}}%</span>
+      </div>
+    </div>
+    <p class="match_info" v-if="recommendDetail!=null">
+      <img :src="recommendDetail.videoGameId|gameLogo" alt />预计
+      {{recommendDetail.recommendEndTime |dateFmt}} 截止
+    </p>
+    <ul class="match_table">
+      <li class="title">
+        <span>自购金额</span>
+        <span>预期回报</span>
+        <span>跟单人数</span>
+        <span>跟单金额</span>
+      </li>
+      <li v-if="recommendDetail!=null">
+        <span>{{recommendDetail.recommendAmount}}</span>
+        <span>约{{recommendDetail.expectedReturnRate}}</span>
+        <span>{{recommendDetail.followCount}}</span>
+        <span>{{recommendDetail.followAmount}}</span>
+      </li>
+    </ul>
+    <a class="follow_plan_btn" @click.stop="toBet()">立即跟单</a>
+    <bet-pops v-if="getBetData.toCurBet==recommendDetail.id" :selectItem="userSelectItem"></bet-pops>
+  </li>
+</template>
+
+<script>
+import betPops from '../../components/betpops.vue';
+import { mapGetters, mapActions } from 'vuex';
+
+export default {
+  components: { betPops },
+  props: ['recommendDetail', 'orderType', 'detailType'],
+  data() {
+    return {
+      userSelectItem: Object
+    };
+  },
+  computed: {
+    ...mapGetters({
+      getBetData: 'getBetData'
+    })
+  },
+  mounted() {
+    //监听监听跟单成功事件
+    this.$bus.$on('followSuccess', data => {
+      console.log('事件触发接受');
+      this.updateRecommendPlan(data);
+    });
+  },
+  methods: {
+    ...mapActions(['setBetData']),
+    updateRecommendPlan(param) {
+      console.log('followSuccess', param);
+      if (this.recommendDetail.id == param.recommendPlanId) {
+        // this.recommendDetail.followCount += 1;
+        // this.recommendDetail.followAmount = this.recommendDetail.followAmount + param.followAmount;
+        this.synRecomend(this.recommendDetail.id);
+      }
+    },
+    goUrlPage(url) {
+      this.$router.push({
+        path: url,
+        query: {
+          id: this.recommendDetail.id,
+          planId: this.recommendDetail.planId,
+          uid: this.recommendDetail.userId
+        }
+      });
+    },
+    toBet() {
+      console.log('点击', this.recommendDetail.id);
+      let recommendDetailId = this.recommendDetail.id;
+      this.userSelectItem.orderType = 3;
+      this.userSelectItem.recommendPlanId = recommendDetailId;
+      this.userSelectItem.odds = this.recommendDetail.expectedReturnRate;
+      this.setBetData({ toCurBet: recommendDetailId });
+      this.$bus.$emit('showFooter', false);
+    },
+    synRecomend(id) {
+      let param = { planRecommendId: id };
+      return this.$post('/api/planRecommend/synData', param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.recommendDetail.followCount = dataResponse.data.followCount;
+            this.recommendDetail.followAmount = dataResponse.data.followAmount;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  destroyed() {
+    this.setBetData({ toCurBet: null });
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../../../assets/common/_base';
+@import '../../../../assets/common/_mixin';
+
+.follow_order {
+  position: relative;
+  margin: 2.1334vw 0;
+  padding: 3.2vw;
+  border-radius: $border_radius;
+  background-color: $color_item;
+}
+.end_order {
+  background-color: #272634;
+  .user_info,
+  .follow_plan_btn {
+    display: none;
+  }
+  .match_table {
+    &,
+    & span {
+      color: rgba(255, 255, 255, 0.5);
+      border-color: #353447;
+    }
+
+    .title {
+      background-color: #353447;
+    }
+  }
+}
+.tag {
+  position: absolute;
+  right: -1px;
+  top: -1px;
+  z-index: 10;
+  width: 20vw;
+  height: 20vw;
+}
+.right_tag {
+  @include getBgImg('../../../../assets/images/followplan/right_tag.png');
+}
+.wrong_tag {
+  @include getBgImg('../../../../assets/images/followplan/wrong_tag.png');
+}
+.flow_tag {
+  @include getBgImg('../../../../assets/images/followplan/flow_tag.png');
+}
+.user_info {
+  position: relative;
+  @extend .flex_hc;
+  margin-bottom: 2.4vw;
+  img {
+    width: 7.4667vw;
+    height: 7.4667vw;
+    border: 0.2667vw solid #fff;
+    border-radius: 50%;
+  }
+  .name {
+    margin-left: 2.1333vw;
+    font-size: 3.7333vw;
+    @include t_nowrap(26.6667vw);
+    line-height: 1.2;
+    color: #fff;
+    font-weight: bold;
+  }
+  .tips {
+    @extend .flex_hc;
+    @extend .g_v_mid;
+    right: 0;
+    span {
+      margin-left: 1.3333vw;
+      padding: 0.8vw 1.8667vw;
+      font-size: 2.4vw;
+      color: #fff;
+      border-radius: $border_radius;
+      background-color: $color_main;
+    }
+    .tips_rate {
+      background-color: $color_btn;
+    }
+    .tips_award {
+      background-color: #c85958;
+    }
+  }
+}
+.match_info {
+  @extend .flex_hc;
+  font-size: 3.4667vw;
+  line-height: 4vw;
+  color: rgba(255, 255, 255, 0.5);
+  img {
+    width: 4vw;
+    height: 4vw;
+    margin-right: 2.1333vw;
+    border-radius: 50%;
+    background-color: #32191e;
+  }
+}
+.match_table {
+  margin-top: 2vw;
+  @include getRadiusBorder(#4b4868, all, 1.0667vw);
+  li {
+    @extend .flex;
+    span {
+      position: relative;
+      flex: 1;
+      -webkit-flex: 1;
+      @include getRadiusBorder(#4b4868, left, 0);
+      font-size: 3.4667vw;
+      line-height: 8.8vw;
+      text-align: center;
+      color: #fff;
+      &:first-child {
+        &::before {
+          display: none;
+        }
+      }
+    }
+  }
+  .title {
+    span {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    background-color: #353447;
+  }
+}
+.follow_plan_btn {
+  display: block;
+  margin-top: 2.1333vw;
+  @include getBtn(auto, 10.4vw, 4vw, #fff, $color_btn, $border_radius);
+  font-weight: bold;
+}
+</style>

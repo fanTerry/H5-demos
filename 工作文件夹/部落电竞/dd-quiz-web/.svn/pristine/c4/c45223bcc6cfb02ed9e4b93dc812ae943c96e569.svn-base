@@ -1,0 +1,225 @@
+<template>
+  <div class="Page pullnewsPage">
+    <header class="mod_header">
+      <nav-bar :pageTitle="'邀好友,赚星星'"></nav-bar>
+    </header>
+    <div class="main">
+      <div class="users">
+        <p class="user_name"><span>卖碳的，</span>您累计获得星星</p>
+        <p class="user_award">8,000</p>
+        <p class="tips">邀请好友参与预测，可获免费星星奖励</p>
+        <a class="rules" @click="showPopRules = true">活动规则</a>
+      </div>
+      <div class="friends">
+        <div class="record">
+          <span>助力记录</span>
+          <p>好友可免费领取星星，参与预测</p>
+        </div>
+        <ul class="friends_list">
+          <li v-for="(item,index) in 8" :key="index">
+            <div class="left">
+              <img src="" alt="">
+              <div class="info">
+                <p class="name">悦意可爱</p>
+                <p class="award">谭志郎获得<span>100星星</span></p>
+              </div>
+            </div>
+            <span class="help">助力100星星</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <footer class="mod_footer">
+      <div class="invited">
+        <a>邀请好友助力</a>
+      </div>
+    </footer>
+
+    <!-- 活动规则 -->
+    <rules v-if="showPopRules" @closePop='closePop'></rules>
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index.vue";
+import rules from "./rules.vue";
+
+export default {
+  components: {
+    navBar,
+    rules
+  },
+  props: [],
+  data() {
+    return {
+      showPopRules: false
+    };
+  },
+  methods: {
+    closePop() {
+      this.showPopRules = false;
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.pullnewsPage {
+  .mod_header {
+    background-color: initial;
+  }
+  .nav_bar {
+    color: #fff !important;
+    .back {
+      display: none;
+    }
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+@font-face {
+  font-family: impact;
+  src: url("../../assets/font/Impact.ttf");
+}
+
+.Page {
+  background-color: #ff4400;
+}
+.main {
+}
+
+.users {
+  height: 114.6667vw;
+  padding-top: 4.5333vw;
+  padding-right: 5.3333vw;
+  @include getBgImg("../../assets/images/pullnews/page_bg.png");
+  text-align: right;
+}
+
+.user_name {
+  font-size: 3.7333vw;
+  color: #fff;
+  span {
+    color: #fff600;
+  }
+}
+
+.user_award {
+  padding-top: 3.2vw;
+  font-family: impact;
+  font-size: 18.4vw;
+  color: #fffbc4;
+}
+
+.tips {
+  display: inline-block;
+  margin-top: 2.6667vw;
+  margin-right: -1.3333vw;
+  padding: 0 3.2vw 0 2.1333vw;
+  line-height: 7.7333vw;
+  font-size: 3.7333vw;
+  color: #fff;
+  background-color: #f74b0d;
+}
+
+.rules {
+  display: block;
+  margin-top: 3.2vw;
+  font-size: 3.4667vw;
+  color: #ffd29b;
+  text-decoration: underline;
+}
+
+.friends {
+  width: 92vw;
+  margin: -8vw auto 0;
+  padding-bottom: 1px;
+  border-radius: 1.3333vw 1.3333vw 0 0;
+  background-color: #fff;
+}
+
+.record {
+  @extend .flex_v_justify;
+  padding: 2.6667vw 4vw 2.6667vw 2.6667vw;
+  span {
+    padding: 1.6vw 2.4vw;
+    font-size: 5.6vw;
+    color: #fff;
+    background-color: #ff6000;
+    border-radius: 1.3333vw;
+  }
+  p {
+    font-size: 3.7333vw;
+    color: #333;
+  }
+}
+
+.friends_list {
+  height: 58vw;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.friends_list li {
+  @extend .flex_v_justify;
+  margin-bottom: 2.1333vw;
+  padding: 1.3333vw 4vw;
+  background-color: #fff9f5;
+  img {
+    width: 12vw;
+    height: 12vw;
+    margin-right: 4.8vw;
+    border-radius: 50%;
+    border: 0.2667vw solid #ffd6c3;
+  }
+  .left {
+    @extend .flex_hc;
+  }
+  .name {
+    font-size: 3.7333vw;
+    font-weight: bold;
+    color: #333;
+  }
+  .award {
+    padding-top: 1.8667vw;
+    font-size: 3.2vw;
+    color: #333;
+    span {
+      padding-left: 1.3333vw;
+      color: #fd6900;
+    }
+  }
+  .help {
+    font-size: 3.7333vw;
+    font-weight: bold;
+    color: #fd6900;
+  }
+}
+
+.mod_footer {
+  .invited {
+    width: 92vw;
+    margin: 0 auto 4vw;
+    padding-top: 3.2vw;
+    background-color: #fff;
+    border-radius: 0 0 1.3333vw 1.3333vw;
+  }
+  a {
+    display: block;
+    width: 73.3333vw;
+    height: 16.8vw;
+    margin: 0 auto;
+    padding-top: 3.4667vw;
+    font-size: 6.1333vw;
+    text-align: center;
+    color: #fff;
+    @include getBgImg("../../assets/images/pullnews/invited.png");
+    background-size: 100% auto;
+  }
+}
+</style>

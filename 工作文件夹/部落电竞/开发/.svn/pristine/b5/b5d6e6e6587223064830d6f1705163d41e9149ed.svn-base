@@ -1,0 +1,59 @@
+
+.main{
+	line-height: 1;
+}
+.section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.1);
+  height: 88rpx;
+  margin-top: 20rpx;
+  padding: 0 40rpx;
+  font-size: 28rpx;
+  background-color: #fff;
+}
+
+label {
+  width: 130rpx;
+  line-height: 88rpx;
+}
+
+input {
+  flex: 1;
+  -webkit-flex: 1;
+  line-height: 88rpx;
+  border: none;
+}
+
+.personal_sign {
+  align-items: flex-start;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  height: initial;
+  padding: 30rpx 40rpx;
+}
+
+.personal_sign label {
+  line-height: 1;
+}
+
+.personal_sign textarea {
+  margin-top: 20rpx;
+  width: 100%;
+  padding-top: 10rpx;
+  line-height: 32rpx;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.submit_btn {
+  display: block;
+  margin: 40rpx 40rpx 50rpx;
+  padding: 30rpx;
+  font-size: 36rpx;
+  color: #fff;
+  border-radius: 16rpx;
+  text-align: center;
+  background-color: #FEA21B;
+}

@@ -1,0 +1,33 @@
+{
+	"data": [{
+			"type": "1",
+			"desc": "商城",
+			"questionList": [{
+					"index": 1,
+					"questionName": "商品是否都有货",
+					"questionAnswer": "您好，商城中上架的商城均有货"
+				},
+				{
+					"index": 2,
+					"questionName": "商品是否包邮",
+					"questionAnswer": "您好，商品是支持包邮的"
+				}
+			]
+		},
+		{
+			"type": "2",
+			"desc": "发现",
+			"questionList": [{
+					"index": 1,
+					"questionName": "商品是否都有货",
+					"questionAnswer": "您好，商城中上架的商城均有货"
+				},
+				{
+					"index": 2,
+					"questionName": "帖子无法发送",
+					"questionAnswer": "可能是您的手机网络原因，可以稍后重试。也有可能是发现页使用人数较多服务器承载过量，可以试着与橘子官方工作人员联系反馈。（ 客服联系微信： Fayul_） "
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,15 @@
+<!--modules/reportpage/mdbet/md-bet.wxml-->
+<!-- 赛事二级页面：竞猜投注 -->
+
+
+<report-banner></report-banner>
+
+<view class='md-bet'>
+
+  <!-- 竞猜投注中列表 -->
+  <view class='report-list'>
+    <report-list reportType="2" betType="1"></report-list>
+
+    <report-list reportType="2" betType="2"></report-list>
+  </view>
+</view>

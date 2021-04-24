@@ -1,0 +1,387 @@
+package com.esportzoo.esport.manager;
+
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.esportzoo.common.appmodel.domain.result.ModelResult;
+import com.esportzoo.esport.client.service.cms.UserFollowServiceClient;
+import com.esportzoo.esport.connect.request.MatchRequest;
+import com.esportzoo.esport.connect.response.CommonResponse;
+import com.esportzoo.esport.connect.response.league.MatchDetailPageResponse;
+import com.esportzoo.esport.connect.response.league.MatchGameResponse;
+import com.esportzoo.esport.connect.response.league.MatchResponse;
+import com.esportzoo.esport.constants.cms.FollowObjectType;
+import com.esportzoo.esport.constants.cms.FollowStatus;
+import com.esportzoo.esport.domain.UserFollow;
+import com.esportzoo.esport.util.Application;
+import com.esportzoo.esport.vo.cms.UserFollowQueryVo;
+import com.esportzoo.leaguelib.client.service.postmatch.GameServiceClient;
+import com.esportzoo.leaguelib.client.service.postmatch.LeagueServiceClient;
+import com.esportzoo.leaguelib.client.service.prematch.MatchServiceClient;
+import com.esportzoo.leaguelib.common.constants.MatchStatus;
+import com.esportzoo.leaguelib.common.constants.VideoGame;
+import com.esportzoo.leaguelib.common.domain.Game;
+import com.esportzoo.leaguelib.common.domain.League;
+import com.esportzoo.leaguelib.common.domain.Match;
+import com.esportzoo.leaguelib.common.result.MatchDataInfoResul;
+import com.esportzoo.leaguelib.common.result.MatchDataResult;
+import com.esportzoo.leaguelib.common.result.MatchResult;
+import com.esportzoo.leaguelib.common.vo.postmatch.GameVo;
+import com.esportzoo.leaguelib.common.vo.postmatch.MatchVo;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * @author haitao.li
+ *获取赛事相关数据
+ */
+@Component
+public class LeagueManager {
+
+	private transient static final Logger logger = LoggerFactory.getLogger(LeagueManager.class);
+	public static final String LOGGER_PREFIX = "查询赛事首页数据-";
+
+	private static List<VideoGame> videoGames = VideoGame.getAllList();
+
+	@Autowired
+	MatchServiceClient matchServiceClient;
+	@Autowired
+	GameServiceClient gameServiceClient;
+	@Autowired
+	LeagueServiceClient leagueServiceClient;
+	@Autowired
+	private UserFollowServiceClient userFollowServiceClient;
+	@Value("${expert.res.domain}")
+	private String resDomain;
+
+	@Autowired
+	private Application application;
+
+	public static final int BOTTOM_LOAD_RANGE = 7;
+	public static final int PULL_LOAD_RANGE = -7;
+
+	/**
+	 * @Description: 获取赛事首页数据
+	 * @param matchDetailRequest
+	 */
+	public CommonResponse<JSONObject> getLeagueIndex(MatchRequest matchDetailRequest) {
+		JSONObject jsonObject = new JSONObject();
+		/*临时处理*/
+		/*if (matchDetailRequest.getLoadType()==1 || matchDetailRequest.getLoadType()==0){
+			jsonObject.put("matchResultList", Lists.newArrayList());
+			return CommonResponse.withSuccessResp(jsonObject);
+		}*/
+		try {
+			if (matchDetailRequest.getLeagueId() == null) {
+
+			}
+			if (matchDetailRequest.getVideogameId() == null) {
+				/*logger.error(LOGGER_PREFIX + "游戏类型ID为空");
+				return CommonResponse.withErrorResp(LOGGER_PREFIX + "游戏类型ID为空");*/
+			}
+			if (matchDetailRequest.getStatus() == null) {
+				logger.warn(LOGGER_PREFIX + "赛事状态ID为空");
+			}
+
+			/** 配置筛选条件 */
+			configGameAndMatchStaus(matchDetailRequest, jsonObject);
+
+
+			MatchVo matchVo = new MatchVo();
+			configDate(matchVo,matchDetailRequest);
+
+			if (matchDetailRequest.getStatus() == 3) {
+				/** 查询全部 */
+				BeanUtils.copyProperties(matchDetailRequest, matchVo,"status");
+			}else {
+				BeanUtils.copyProperties(matchDetailRequest, matchVo);
+			}
+			/*暂时去掉游戏ID筛选*/
+			matchVo.setVideogameId(null);
+			ModelResult<List<MatchResult>> modelResult = matchServiceClient.queryMatchList(matchVo);
+			if (!modelResult.isSuccess()) {
+				logger.error(LOGGER_PREFIX + "查询赛事数据失败，失败原因：{}", modelResult.getErrorMsg());
+				return CommonResponse.withErrorResp(modelResult.getErrorMsg());
+			}
+			List<MatchResult> matchResultList = modelResult.getModel();
+			List<MatchResponse> matchResponseList = convertMatchData(matchResultList, matchDetailRequest);
+			jsonObject.put("matchResultList", matchResponseList);
+		} catch (Exception e) {
+			logger.error(LOGGER_PREFIX + "发生异常，信息：{}", e);
+			e.printStackTrace();
+			return CommonResponse.withErrorResp(LOGGER_PREFIX + "出现异常");
+		}
+		return CommonResponse.withSuccessResp(jsonObject);
+
+	}
+
+	/**
+	 * 设置分页加载日期
+	 * @param matchVo
+	 * @param matchDetailRequest
+	 */
+	public void configDate(MatchVo matchVo, MatchRequest matchDetailRequest) {
+
+		Date beginDay;
+		Date endDay;
+		Date toaay = new Date();
+		Integer nextRange = 0;
+		Integer currRange = 0;
+		if (matchDetailRequest.getLoadType() == 0) {
+			/** 加载当天以前的数据,只能一天一天加载 步长天数为1*/
+			currRange = PULL_LOAD_RANGE * (matchDetailRequest.getPullPageNo() - 1) - 1;
+			nextRange = PULL_LOAD_RANGE * matchDetailRequest.getPullPageNo();
+			endDay = DateUtil.endOfDay(DateUtil.offsetDay(toaay, currRange));
+			beginDay = DateUtil.beginOfDay(DateUtil.offsetDay(toaay, nextRange));
+
+		} else if (matchDetailRequest.getLoadType() == 1) {
+			/** 下一页，当天之后的数据 可一次性加载多天，LoadDayRange是步长天数*/
+			currRange = matchDetailRequest.getBottomPageNo() * BOTTOM_LOAD_RANGE;
+			nextRange = (matchDetailRequest.getBottomPageNo() + 1) * BOTTOM_LOAD_RANGE - 1;
+			beginDay = DateUtil.beginOfDay(DateUtil.offsetDay(toaay, currRange));
+			endDay = DateUtil.endOfDay(DateUtil.offsetDay(toaay, nextRange));
+		} else {
+			/** 刚进来加载，以第一页，取当天数据 */
+			beginDay = DateUtil.beginOfDay(toaay);
+			nextRange = (matchDetailRequest.getBottomPageNo() + 1) * BOTTOM_LOAD_RANGE - 1;
+			endDay = DateUtil.endOfDay(DateUtil.offsetDay(toaay, nextRange));
+		}
+
+		/*临时处理*/
+//		beginDay = DateUtil.beginOfDay(DateUtil.offsetDay(toaay, -10));
+//		endDay  = DateUtil.endOfDay(DateUtil.offsetDay(toaay, 15));
+
+		matchVo.setBeginDate(DateUtil.format(beginDay, "yyyy-MM-dd"));
+		matchVo.setEndDate(DateUtil.format(endDay, "yyyy-MM-dd"));
+	}
+
+
+
+	/**
+	 * 格式化赛事数据,按时间按联赛ID分组
+	 * @param matchResultList
+	 * @return
+	 */
+	public List<MatchResponse> convertMatchData (List<MatchResult> matchResultList, MatchRequest matchDetailRequest) {
+		for (MatchResult matchResult : matchResultList) {
+			String format = DateUtil.format(matchResult.getBeginAt(), "yyyy-MM-dd");
+			matchResult.setSortMatchDate(DateUtil.parseDate(format));
+		}
+		/*如果用户登录，关联赛事关注状态*/
+		if (matchDetailRequest.getUserId()!=null){
+			UserFollowQueryVo userFollowQueryVo = new UserFollowQueryVo();
+			userFollowQueryVo.setObjectType(FollowObjectType.MATCH.getIndex());
+			userFollowQueryVo.setStatus(FollowStatus.FOLLOW.getIndex());
+			userFollowQueryVo.setObjectIdList(matchResultList.stream().map(MatchResult::getId).collect(Collectors.toList()));
+			userFollowQueryVo.setUserId(matchDetailRequest.getUserId());
+			ModelResult<List<UserFollow>> followResult = userFollowServiceClient.queryListByObjectIdListAndUser(userFollowQueryVo);
+			if (followResult.isSuccess()){
+				List<UserFollow> followList = followResult.getModel();
+				List<Long> objectIdList = followList.stream().map(UserFollow::getObjectId).collect(Collectors.toList());
+				for (MatchResult matchResult : matchResultList) {
+					if (objectIdList.contains(matchResult.getId())){
+						matchResult.setFollowType(FollowStatus.FOLLOW.getIndex());
+					}else {
+						matchResult.setFollowType(FollowStatus.CANCEL.getIndex());
+					}
+				}
+			}else {
+				logger.error("查询用户赛事关注列表出错，错误信息：{}",followResult.getErrorMsg());
+			}
+
+		}
+
+
+		/** 先按时间分组 */
+		List<MatchResponse> resposeMatchList = Lists.newArrayList();
+		Map<Date, List<MatchResult>> listMap = matchResultList.stream().collect(Collectors.groupingBy(MatchResult::getSortMatchDate));
+		TreeMap<Date, List<MatchResult>> treeMap = MapUtil.sort(listMap);
+		for (Date date : treeMap.keySet()) {
+
+			List<MatchResult> matchResults = treeMap.get(date);
+			/** 再按联赛分组 */
+			Map<Long, List<MatchResult>> leagueMap = matchResults.stream().collect(Collectors.groupingBy(MatchResult::getLeagueId));
+			for (Long leagueId : leagueMap.keySet()) {
+				List<MatchResult> list = leagueMap.get(leagueId);
+				MatchResult matchResult = list.get(0);
+				MatchResponse detailResponse = new MatchResponse();
+				detailResponse.setGameType(matchResult.getVideogameId().intValue());
+				/*设定中文日期*/
+				Calendar instance = Calendar.getInstance(Locale.CHINA);
+				instance.setTime(date);
+				String cnWeekByCalendar = com.esportzoo.common.util.DateUtil.getCNWeekByCalendar(instance);
+				detailResponse.setSortMatchDate(DateUtil.format(date, "MM月dd日")+" "+cnWeekByCalendar);
+				detailResponse.setMatchResultList(list);
+
+				/*更新联赛名*/
+				if (StringUtils.isEmpty(matchResult.getLeagueName())){
+					ModelResult<League> modelResult = leagueServiceClient.queryByLeagueId(leagueId);
+					detailResponse.setLegueName("暂无");
+					if (modelResult.isSuccess() && modelResult.getModel()!=null){
+						League league = modelResult.getModel();
+						if (StringUtils.isNotBlank(league.getEsportName())) {
+							detailResponse.setLegueName(league.getEsportName());
+						} else {
+							detailResponse.setLegueName(league.getName());
+						}
+					}
+				}else{
+					detailResponse.setLegueName(matchResult.getLeagueName());
+				}
+
+				for (MatchResult result : list) {
+					result.setFormatBeginDate(DateUtil.format(result.getBeginAt(), "HH:mm"));
+					result.setHomeScore(result.getHomeScore() == null ? 0 : result.getHomeScore());
+					result.setAwayScore(result.getAwayScore() == null ? 0 : result.getAwayScore());
+					result.setHomeTeamName(result.getHomeTeamName());
+					result.setAwayTeamName(result.getAwayTeamName());
+					result.setHomeTeamLogo(StringUtils.isNotBlank(result.getEsportHomeTeamLogo())?resDomain + result.getEsportHomeTeamLogo():result.getHomeTeamLogo());
+					result.setAwayTeamLogo(StringUtils.isNotBlank(result.getEsportAwayTeamLogo())?resDomain + result.getEsportAwayTeamLogo():result.getAwayTeamLogo());
+				}
+				List<MatchResult> results = list.stream()
+						.sorted(Comparator.comparing(( MatchResult o1) -> {
+									if (o1.getStatus() == MatchStatus.RUNNING.getIndex()) {
+										return -1;
+									} else if (o1.getStatus() == MatchStatus.NOT_STARTED.getIndex()) {
+										return 0;
+									} else {
+										return 1;
+									}
+
+								}).thenComparing(MatchResult::getBeginAt)).collect(Collectors.toList());
+
+				Date beginAt = results.get(0).getBeginAt();
+				detailResponse.setMatchResultList(results);
+				detailResponse.setSortDate(beginAt);
+
+				/** 直播，未开赛，结束排序 */
+				/*CollUtil.sort(list, (o1, o2) -> {
+					if (o1.getStatus() == MatchStatus.RUNNING.getIndex()) {
+						return -1;
+					} else if (o1.getStatus() == MatchStatus.NOT_STARTED.getIndex()) {
+						return 0;
+					} else {
+						return 1;
+					}
+
+				});*/
+				resposeMatchList.add(detailResponse);
+			}
+		}
+		List<MatchResponse> matchResponseList = resposeMatchList.stream().sorted(Comparator.comparing(matchResponse -> matchResponse.getSortDate())).collect(Collectors.toList());
+
+
+		return matchResponseList;
+
+	}
+
+	/**
+	 * @Description: 配置筛选参数
+	 * @param matchDetailRequest
+	 * @param jsonObject
+	 * @Return void
+	 */
+	private void configGameAndMatchStaus(MatchRequest matchDetailRequest, JSONObject jsonObject) {
+		List<MatchGameResponse> gameResponseList = Lists.newArrayList();
+		for (VideoGame videoGame : videoGames) {
+			MatchGameResponse gameResponse = new MatchGameResponse();
+			gameResponse.setVideogameId(videoGame.getIndex());
+			gameResponse.setVideoGameName(videoGame.getDescription());
+			if (matchDetailRequest.getVideogameId().equals(videoGame.getIndex())) {
+				gameResponse.setSelected(true);
+			} else {
+				gameResponse.setSelected(false);
+			}
+			/** 查询当天各个游戏正在直播的赛事 */
+			MatchVo vo = new MatchVo();
+			vo.setStatus(MatchStatus.RUNNING.getIndex());
+			vo.setVideogameId(videoGame.getIndex());
+			vo.setBeginDate(DateUtil.format(new Date(), "yyyy-MM-dd"));
+			vo.setEndDate(DateUtil.format(new Date(), "yyyy-MM-dd"));
+			ModelResult<List<MatchResult>> listModelResult = null;
+			try {
+				listModelResult = matchServiceClient.queryMatchList(vo);
+			} catch (Exception e) {
+				logger.error("查询游戏赛事直播数出现异常，信息:{}", e);
+				e.printStackTrace();
+			}
+
+			if (listModelResult.isSuccess() && listModelResult.getModel() != null) {
+				gameResponse.setCurrLiveMatchNum(listModelResult.getModel().size());
+			}
+			gameResponseList.add(gameResponse);
+		}
+		jsonObject.put("gamesList", gameResponseList);
+		List<MatchStatus> matchStatusList = MatchStatus.getAllList();
+		jsonObject.put("statusList", matchStatusList);
+	}
+
+	public MatchDetailPageResponse getMatchDetailPageResponse(Long matchId) {
+		MatchDetailPageResponse response = new MatchDetailPageResponse();
+		try {
+			ModelResult<Match> modelResult = matchServiceClient.queryMatchByMatchId(matchId);
+			if (!modelResult.isSuccess() || null == modelResult.getModel()) {
+				logger.error("根据ID无法查询赛事，赛事ID={}",matchId);
+				return response;
+			} else {
+				Match match = modelResult.getModel();
+				match.setAwayTeamLogo(application.getMatchAwayTeamLogo(match));
+				match.setHomeTeamLogo(application.getMatchHomeTeamLogo(match));
+				BeanUtils.copyProperties(match, response);
+				if (null != match.getLeagueId()) {
+					ModelResult<League> leagueModelResult = leagueServiceClient.queryByLeagueId(match.getLeagueId());
+					if (leagueModelResult.isSuccess() && null != leagueModelResult.getModel()) {
+						response.setLeagueName(leagueModelResult.getModel().getName());
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("查询赛事详情数据异常:{}", e);
+		}
+		return response;
+	}
+
+	public MatchDataResult queryMatchDataByMatchId(Long matchId) {
+		ModelResult<MatchDataResult> modelResult = matchServiceClient.queryMatchDataByMatchId(matchId);
+		if (!modelResult.isSuccess() || null == modelResult.getModel()) {
+			return null;
+			
+		} else {
+			return modelResult.getModel();
+		}
+	}
+
+	public List<MatchDataInfoResul> queryMatchResultInfoByMatchId(Long matchId) {
+		ModelResult<List<MatchDataInfoResul>> modelResult = matchServiceClient.queryMatchResultInfoByMatchId(matchId);
+		if (!modelResult.isSuccess() || null == modelResult.getModel()) {
+			return null;
+		} else {
+			return modelResult.getModel();
+		}
+	}
+	
+	// 根据matchId查game信息
+	public Set<String> queryGameByMatchId(Long matchId) {
+		GameVo gameVo = new GameVo();
+		gameVo.setMatchId(matchId);
+		ModelResult<List<Game>> gameResult = gameServiceClient.queryListByCondition(gameVo);
+		if (!gameResult.isSuccess() || null == gameResult.getModel()) {
+			return null;
+		} else {
+			List<String> newList = gameResult.getModel().stream().sorted(Comparator.comparing(Game::getGameId)).map(x -> String.valueOf(x.getGameId()))
+					.collect(Collectors.toList());
+			return new HashSet<String>(newList);
+		}
+	}
+
+
+}

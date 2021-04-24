@@ -1,0 +1,114 @@
+<template>
+  <div>
+    <video-player  class="video-player-box" ref="videoPlayer" :options="playerOptions" :playsinline="true"
+      customEventName="customstatechangedeventname" 
+      >
+    </video-player>
+  </div>
+</template>
+
+<script>
+import "video.js/dist/video-js.css";
+import "vue-video-player/src/custom-theme.css";
+import { videoPlayer } from "vue-video-player";
+import "videojs-contrib-hls";
+export default {
+  data() {
+    return {
+      playerOptions: {
+        notSupportedMessage: "此视频暂无法播放，请稍后再试",
+        muted: true,
+        language: "en",
+        playbackRates: [0.7, 1.0, 1.5, 2.0],
+        aspectRatio: "16:9",
+        language: "zh-CN",
+        fluid: false,
+        width: document.documentElement.clientWidth,
+        sources: [
+          {
+            type: "video/mp4",
+            src:
+              "http://daily-rs-v.esportzoo.com/upload/schedule/192.168.9.230/video/Admin/20190802/admin_1564739529015.mp4"
+          }
+        ],
+        poster:
+          "https://static.wanplus.com/data/event/banner/block/113295.png?v=0&imageView2/1/w/308/h/208",
+        controls: "control",
+        
+        muted: false //是否静音
+      }
+    };
+  },
+  methods: {
+    // onLive(onM3u8, onCover) {
+    //   var that = this;
+
+    //   this.playerOptions = {
+    //     notSupportedMessage: "此视频暂无法播放，请稍后再试",
+    //     autoplay: false, //如果true,浏览器准备好时开始回放。
+    //     loop: false, // 导致视频一结束就重新开始。
+    //     // preload: 'auto', // 建议浏览器在<video>加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）
+    //     language: "zh-CN",
+    //     aspectRatio: "16:9", // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
+    //     fluid: false, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
+    //     sources: [
+    //       {
+    //         type: "application/x-mpegURL", //如果是直播的话  此处务必这样配置
+    //         src: onM3u8 //视频url地址
+    //       }
+    //     ],
+    //     poster: onCover, //你的封面地址
+    //     width: document.documentElement.clientWidth,
+    //     control: {
+    //       //此处的设置都未生效，不知道为啥，我用爆破的方式解决的
+    //       timeDivider: false,
+    //       durationDisplay: false,
+    //       remainingTimeDisplay: false,
+    //       fullscreenToggle: true //全屏按钮
+    //     }
+    //   };
+    // }
+    // listen event
+    onPlayerPlay(player) {
+      console.log('player play!', player)
+      if(player.hasStarted_){
+          return
+      }
+       player.play()
+    },
+    onPlayerPause(player) {
+      console.log('player pause!', player)
+      if(player.hasStarted_){
+        player.pause()
+      }
+       
+    },
+    // ...player event
+
+    // or listen state event
+    playerStateChanged(playerCurrentState) {
+      // console.log('player current update state', playerCurrentState)
+    },
+
+    // player is ready
+    playerReadied(player) {
+      console.log("the player is readied", player);
+      // you can use it to do something...
+      // player.[methods]
+    },
+    onPlayerCanplay($event) {}
+  },
+  mounted() {
+    // this.onLive(
+    //   "http://video.esportzoo.com/sv/c4c681b-16c51826c1a/c4c681b-16c51826c1a.mp4",
+    //   "newCover"
+    // );
+  },
+  components: {
+    videoPlayer
+  }
+};
+</script>
+
+<style lang='scss'>
+</style>

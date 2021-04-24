@@ -1,0 +1,198 @@
+<template>
+  <div class='Page guessMixPage'>
+    <header class='mod_header'>
+      <nav-bar :pageTitle='"赢加竞技"'></nav-bar>
+      <div class="tab">
+        <div class="active">单关</div>
+        <div>串关</div>
+      </div>
+      <!-- 游戏切换 -->
+      <nav class="match_tab">
+        <ul class="list">
+          <li :class="{'active':!leagueInfo.requestParam.videoGameId}" @click="changeGame(0,$event)">全部游戏<span v-if="leagueInfo.matchCountSum>0">{{leagueInfo.matchCountSum}}</span></li>
+
+          <li :class="{'active':leagueInfo.requestParam.videoGameId==item.index}" v-for=" (item, index) in leagueInfo.gameList" :key="index" @click="changeGame(item.index,$event)">
+            {{item.description}}<span v-if="item.matchCount>0"> {{item.matchCount}}</span>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <div class='main'>
+      <mod-mix v-for="(item,index) in 10" :key="index"></mod-mix>
+    </div>
+
+    <bet-mix></bet-mix>
+    <footer class='mod_footer'>
+
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from '../../../components/header/nav_bar/index.vue';
+import modMix from '../components/mixItem.vue';
+import betMix from '../components/betMix.vue';
+
+export default {
+  components: {
+    navBar,
+    modMix,
+    betMix
+  },
+  props: [],
+  data() {
+    return {
+      //联赛数据  leagueInfo.
+      leagueInfo: {
+        matchList: [], //赛事列表
+        currSpList: '', //用于刷新赔率
+        currPageSize: 10,
+        gameList: [],
+        loadMore: true, //加载更多
+        queryStartHour: 24, //单位小时，查询开始时间，24小时之前
+        matchCountSum: 0,
+        requestParam: {
+          pageNo: 1,
+          pageSize: 10,
+          totalPages: 0,
+          leagueId: null,
+          videoGameId: null
+        }
+      }
+    };
+  },
+  mounted() {
+    this.getGameList();
+  },
+  methods: {
+    getGameList() {
+      // this.mescroll.showDownScroll();
+      return this.$post('/api/quiz/match/videoGames')
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            let gameList = dataResponse.data;
+            let matchCountSum = 0;
+            gameList.forEach(element => {
+              matchCountSum += element.matchCount;
+            });
+            this.leagueInfo.matchCountSum = matchCountSum;
+            this.leagueInfo.gameList = gameList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    changeGame(videoGameId, e) {
+      if (videoGameId == 0) {
+        this.leagueInfo.requestParam.videoGameId = null;
+      } else {
+        this.leagueInfo.requestParam.videoGameId = videoGameId;
+      }
+      this.leagueInfo.requestParam.pageNo = 1;
+      this.leagueInfo.matchList = [];
+
+      // this.getIndexMatchData().then(data => {
+      //   this.mescroll.endSuccess(this.leagueInfo.currPageSize, this.leagueInfo.loadMore);
+      //   $('.upwarp-nodata').hide();
+      // });
+      this.scrollTarget(e.currentTarget.previousElementSibling);
+    },
+    scrollTarget(target) {
+      if (!target) {
+        return;
+      }
+      var thisLeft = target.offsetLeft - 20;
+      // console.log(thisLeft, "thisLeft");
+      $('.list').animate({ scrollLeft: thisLeft }, 500);
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+@import '../../../assets/common/_base';
+.guessMixPage {
+  // .mod_header {
+  //   background-color: $color_item;
+  // }
+  // .nav_bar {
+  //   color: #fff !important;
+  //   .back {
+  //     &::before,
+  //     &::after {
+  //       background-color: #fff !important;
+  //     }
+  //   }
+  // }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import '../../../assets/common/_base';
+@import '../../../assets/common/_mixin';
+
+.tab {
+  @extend .flex_hc;
+  div {
+    flex: 1;
+    -webkit-flex: 1;
+    @include getBtn(auto, 10.6667vw, 3.7333vw, rgba(255, 255, 255, 0.5), $color_item, 0);
+  }
+  .active {
+    color: #fff;
+    background-color: $color_btn;
+  }
+}
+
+.match_tab {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0 4.2667vw;
+  // margin-top: 1.0667vw;
+  height: 12.8vw;
+  overflow: hidden;
+  background-color: $color_main;
+  ul {
+    height: calc(100% + 6px);
+    font-size: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  li {
+    position: relative;
+    display: inline-block;
+    margin-right: 7.7333vw;
+    padding: 4.2667vw 0;
+    font-size: 3.7333vw;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.5);
+    border-radius: 3px;
+    &.active {
+      position: relative;
+      color: #fff;
+      &::after {
+        content: '';
+        @extend .g_c_mid;
+        bottom: 1.0667vw;
+        width: 4vw;
+        height: 1.0667vw;
+        border-radius: 0.8vw;
+        background-color: #fff;
+      }
+    }
+    span {
+      position: absolute;
+      top: 2.6667vw;
+      right: -3.2vw;
+      @extend .flex_v_h;
+      @include getBtn(2.6667vw, 2.6667vw, 1.6vw, #fff, #666695, 50%);
+    }
+  }
+}
+</style>

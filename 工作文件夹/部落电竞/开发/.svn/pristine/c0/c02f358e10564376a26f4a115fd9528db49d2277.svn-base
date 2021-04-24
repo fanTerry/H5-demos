@@ -1,0 +1,139 @@
+<template>
+  <!-- mod_mix是一个大的循环体 -->
+  <div class="mod_mix">
+    <!-- 对阵信息 -->
+    <div class="mix_title">
+      <p>DOTA2 - WePlay Pushka</p>
+      <div class="flex_hc">
+        <i class="rank_icon"></i>
+        <i class="live_icon"></i>
+      </div>
+    </div>
+    <!-- 比赛信息 当天多个比赛循环体-->
+    <div class="mix_info" v-for="(item,index) in 2" :key="index">
+      <!-- 队伍信息和时间不可滑动 -->
+      <div class="mix_item match_info">
+        <p class="title">周二 6/22 18:40</p>
+        <div class="value">
+          <p>SKT</p>
+          <p>JD gameing</p>
+          <i>13</i>
+        </div>
+      </div>
+      <div class="mix_plays">
+        <ul class="mix_list">
+          <!-- 投注循环体 -->
+          <li class="mix_item" v-for="(item,index) in 5" :key="index">
+            <p class="title">周二 6/22 18:40</p>
+            <div class="value">
+              <p class="active"><span>高于24.5</span>2.11</p>
+              <p><span>低于24.5</span>1.92</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../../assets/common/_base';
+@import '../../../assets/common/_mixin';
+
+.mix_title {
+  @extend .flex_v_justify;
+  height: 8.8vw;
+  padding: 0 4.2667vw;
+  font-size: 3.7333vw;
+  color: #fff;
+  background-color: #666695;
+}
+
+.rank_icon,
+.live_icon {
+  width: 5.3333vw;
+  height: 5.3333vw;
+  margin-left: 4vw;
+}
+
+.rank_icon {
+  @include getBgImg('../../../assets/images/guess/rank_icon.png');
+  background-size: contain;
+}
+
+.live_icon {
+  @include getBgImg('../../../assets/images/guess/live_icon.png');
+  background-size: contain;
+}
+
+.mix_info {
+  @extend .flex_hc;
+}
+
+.mix_item {
+  .title {
+    @include getBtn(29.3333vw, 5.0667vw, 2.9333vw, #fff, #999, 0);
+  }
+  .value {
+    position: relative;
+    p {
+      @include getBtn(29.3333vw, 11.2vw, 3.7333vw, $color_yellow, $color_item, 0);
+      margin-bottom: 1px;
+      margin-right: 1px;
+      &:nth-child(2) {
+        margin-bottom: 0;
+      }
+      &.active {
+        color: #fff;
+        background-color: $color_btn;
+        span {
+          color: $color_yellow;
+        }
+      }
+    }
+    span {
+      margin-right: 2.1333vw;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    i {
+      @extend .g_v_mid;
+      right: 2.1333vw;
+      @include getCircle(4.8vw, #5f5a89, #fff);
+      font-size: 2.6667vw;
+    }
+  }
+}
+
+.match_info {
+  .value p {
+    margin-right: 0;
+    padding: 0 4.2667vw;
+    text-align: left;
+    color: rgba(255, 255, 255, 0.7);
+    background-color: #353447;
+  }
+}
+
+.mix_plays {
+  height: 27.7333vw;
+  overflow: hidden;
+}
+
+.mix_list {
+  @extend .flex;
+  height: 29.3333vw;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+</style>

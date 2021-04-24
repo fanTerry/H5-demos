@@ -1,0 +1,646 @@
+<template>
+  <div class="Page">
+    <header class="mod_header"></header>
+    <div class="main">
+      <!-- banner图 -->
+      <figure class="mod_banner">
+        <ul>
+          <li>
+            <img src alt />
+          </li>
+        </ul>
+      </figure>
+      <!-- 登录 -->
+      <section class="mod_users">
+        <div class="user_info">
+          <div class="user_img">
+            <img v-bind:src="iconImg?iconImg:require('../../assets/images/home/default_img.png')" alt />
+            <!-- <img v-bind:src="userInfo.icon|getDefaultImg(globalConst.wxUserDefaultIcon)" alt=""/> -->
+          </div>
+          <div class="login_out" v-if="loginType == 1">
+            <a class="login_btn" @click="login">登录</a>
+            <span class="user_guess">我的竞猜</span>
+            <div class="login_wx" @click="login">
+              <span>微信登录</span>
+            </div>
+          </div>
+          <div class="login_in" v-else>
+            <span class="user_guess" @mouseenter="popGuessMark = true" @mouseleave="popGuessMark = false">我的竞猜</span>
+            <div class="user_assets">
+              <span class="coin"></span>
+              <span>{{walletRec}}</span>
+            </div>
+            <a class="recharge_btn" @click="openChargerDialog">金豆充值</a>
+            <a class="signin_btn" v-if="isUserSignToday">明日再来</a>
+            <a class="signin_btn" v-else @click="openSignPop()">签到领豆</a>
+
+            <div class="pop_guess" v-if="popGuessMark" @mouseenter="popGuessMark = true"
+              @mouseleave="popGuessMark = false">
+              <div class="guess_info">
+                <p>昵称：<span class="name">{{userInfo.nickName}}</span></p>
+                <a class='guess_out' @click="singout">退出</a>
+              </div>
+              <ul class="guess_list">
+                <li @click="quizzesRecord">
+                  <img src="../../assets/images/pop/guess_icon.png" alt="">
+                  <p>竞猜记录</p>
+                </li>
+                <li @click="exchangeRecord">
+                  <img  src="../../assets/images/pop/exchange_icon.png" alt="">
+                  <p>兑奖记录</p>
+                </li>
+                <li>
+                  <img src="../../assets/images/pop/playing_icon.png" alt="">
+                  <p>玩法规则</p>
+                </li>
+                <li>
+                  <img src="../../assets/images/pop/feedback_icon.png" alt="">
+                  <p>我要反馈</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!--顶部跑马灯-->
+        <div class="broadcast">
+          <div class="swiper-container">
+            <ul class="list swiper-wrapper">
+              <li class="item swiper-slide" v-for="(item,index) in 3" :key="index">
+                <span>DE、yt</span>
+                <span>成功获得</span>
+                <span class="award">iPhone 6s plus</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- 猜MVP，冠军，英雄，五杀 -->
+      <modGuess></modGuess>
+      <section class="mod_illustration">
+        <img src="https://tvax4.sinaimg.cn/large/8856eac7gy1ff13rx933fj2078075q2x.jpg" alt />
+      </section>
+      <!-- 赛事竞猜 -->
+      <modMatchGuess></modMatchGuess>
+      <!-- 人气投票 -->
+      <!-- <modVote></modVote> -->
+      <!-- 椰子积分兑换 -->
+      <modExchange></modExchange>
+    </div>
+    <!-- 弹窗 -->
+    <pops ref="props" :type="type" :showType="showType" :exchangeStarNum="exchangeStarNum" @closePop="closePop"
+      @updateUserScore="updateUserScore">
+    </pops>
+    <loginPop ref="loginPop"></loginPop>
+  </div>
+</template>
+
+<script>
+import Swiper from "swiper";
+import pops from "../../components/pop/pops";
+import loginPop from "../../components/pop/loginPop";
+import localStorage from "../../libs/storages/localStorage";
+import cookie from "../../libs/common/cookie";
+import { mapGetters, mapActions } from "vuex";
+import modGuess from "../homeguess/guess";
+import modMatchGuess from "../matchguess/matchGuess";
+import modVote from "../vote/vote";
+import modExchange from "../exchange/exchange";
+
+export default {
+  components: {
+    modGuess,
+    modMatchGuess,
+    modVote,
+    modExchange,
+    pops,
+    loginPop
+  },
+  props: [],
+  data() {
+    return {
+      commonMark: Number,
+      userInfo: null,
+      iconImg: null,
+      sceneStr: null,
+      walletRec: null,
+      exchangeStarNum: null,
+      loginType: 1,
+      type: 3,
+      showType: false,
+      popGuessMark: false,
+      isUserSignToday: false
+    };
+  },
+  computed: {
+    ...mapGetters({
+      loginInfo: "getLoginPop",
+      userLoginType: "getLoginType",
+      wxuserInfo: "getUserInfo",
+      wxuserStarNum: "getstarNum"
+    }),
+    getstarNum() {
+      return this.wxuserStarNum.state;
+    },
+    getLoginType() {
+      return this.userLoginType.state;
+    },
+    getUserInfo() {
+      return this.wxuserInfo.state;
+    }
+  },
+  //实时监听用户状态
+  watch: {
+    getstarNum(val) {
+      this.walletRec = val;
+      console.log(val, "H用户星星");
+    },
+    getLoginType(val) {
+      this.loginType = val;
+      console.log(val, "H用户登录状态");
+    },
+    getUserInfo(val) {
+      this.userInfo = val;
+      this.iconImg = this.userInfo.icon;
+      console.log(this.userInfo, "H已获得用户信息");
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.initSwiper();
+    });
+    //查询用户登录状态
+    this.getLoginInfo();
+  },
+  methods: {
+    updateUserScore(addNum) {
+      console.log("刷新钱包");
+      console.log(addNum);
+      this.walletRec = addNum;
+      //刷新钱包余额
+    },
+    initSwiper() {
+      this.swiper = new Swiper(".swiper-container", {
+        loop: true,
+        speed: 2000,
+        autoplay: true,
+        slidesPerView: "auto",
+        spaceBetween: 20,
+        autoplayDisableOnInteraction: false,
+        observer: true,
+        observeParents: true
+      });
+    },
+    //用户登录
+    login() {
+      //调用登录子组件的方法
+      this.$refs.loginPop.wxCodeLogin();
+    },
+    // 公用关闭弹窗
+    closePop() {
+      this.type = 0;
+      this.showType = false;
+      this.$refs.props.rechargeConfirmMark = false;
+    },
+
+    //查询用户登录状态
+    loginStatus() {
+      console.log("检查是否登录");
+      return this.$post("/api/hdsign/querySignStatus")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse.data);
+            this.getLoginInfo();
+            this.queryYeYunPoints();
+            this.creditsExchangeShow();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    //获取用户信息登录
+    getLoginInfo() {
+      console.log("初始化1");
+      this.userInfo = localStorage.get("user");
+      console.log("已获得用户信息", this.userInfo);
+      if (this.userInfo != null) {
+        return this.$post("/api/hdsign/querySignStatus")
+          .then(rsp => {
+            const dataResponse = rsp;
+            if (dataResponse.code == 200) {
+              console.log(dataResponse.data);
+              console.log(this.loginInfo.state, "h用户登录标志");
+              //用户成功登录后改登录标志位true
+              this.$store.dispatch("setLoginPop", { state: true });
+              this.$store.dispatch("setLoginType", { state: 0 });
+              this.iconImg = this.userInfo.icon;
+              this.type = 0;
+              this.showType = false;
+              this.queryYeYunPoints();
+              this.creditsExchangeShow();
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            this.login();
+          });
+      }
+    },
+
+    //用户退出
+    singout() {
+      this.$axios
+        .post("/api/wxlogin/wxLoginout")
+        .then(dataResponse => {
+          console.log(dataResponse.data);
+          if (dataResponse.data.code != "200") {
+            console.log("系统异常");
+            return;
+          }
+          this.wxLoginout();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //确认用户成功退出
+    wxLoginout() {
+      this.popGuessMark = false;
+      this.iconImg = null;
+      this.userInfo = null;
+      this.loginType = 1;
+      console.log(this.userInfo);
+      localStorage.remove("user");
+      cookie.delCookie("wx_account_login_cookie_sid");
+      //用户退出登录后改登录标志位false
+      this.$store.dispatch("setLoginPop", { state: false });
+      this.$store.dispatch("setLoginShowType", { state: false });
+      this.$store.dispatch("setCodeType", { state: 0 });
+      this.$store.dispatch("setLoginType", { state: 1 });
+      console.log("退出成功");
+    },
+    //竞猜记录
+    quizzesRecord() {
+      this.type = 4;
+      this.showType = true;
+    },
+    //兑奖记录
+    exchangeRecord() {
+      this.type = 5;
+      this.showType = true;
+    },
+    //关闭兑换积分弹窗
+    closeExchangePop() {
+      this.type = 0;
+      this.showType = false;
+    },
+
+    //签到领导
+    openSignPop() {
+      this.type = 3;
+      this.showType = true;
+      return this.$post("/api/hdsign/queryHdGiftInfo")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.$refs.props.signGiftList = dataResponse.data.signGift;
+            console.log(this.$refs.props.signGiftList);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //检查是否今天已签到，没有显示签到
+    checkUserSignStatus() {
+      console.log("检查是否今天已签到，没有显示签到");
+      return this.$post("/api/hdsign/querySignStatus")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            if (dataResponse.data.signStatus == "0") {
+              this.isUserSignToday = true;
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //充值
+    openChargerDialog() {
+      this.type = 6;
+      this.showType = true;
+      return this.$post("/api/payment/getChargeMoneyList")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.$refs.props.chargeMoneyList = dataResponse.data;
+            this.$refs.props.walletRec = this.walletRec;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    jumpPointConversion() {
+      this.type = 7;
+      this.showType = true;
+      this.creditsExchangeShow();
+    },
+
+    //积分兑换
+    creditsExchangeShow() {
+      return this.$post("/api/starNum/queryStarNum")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.$store.dispatch("setstarNum", {
+              state: dataResponse.data.ableRecScore
+            });
+            this.exchangeStarNum = dataResponse.data.recScore;
+            console.log(dataResponse.data.recScore, "获取用户可以兑换的星星");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //查询椰云积分
+    queryYeYunPoints() {
+      return this.$post("/api/yeYunUser/yeYunUserInfo")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse.data, "获得用户椰云积分");
+            this.$store.dispatch("setYeYunPoints", {
+              state: dataResponse.data.score
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error, "调用椰云出现错误");
+        });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_icon";
+
+.Page {
+  position: relative;
+  min-width: 1350px;
+  @include getBgImg("../../assets/images/home/home_bg.png");
+  background-position: top center;
+  background-size: 1915px auto;
+  background-color: #1b111e;
+}
+
+.mod_header {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  &::after {
+    content: "";
+    @extend .g_c_mid;
+    top: 0;
+    width: 100%;
+    height: 409px;
+    @include getBgImg("../../assets/images/home/star_light.png");
+    background-position: top center;
+    background-size: 1915px auto;
+  }
+}
+
+.main {
+  width: 1350px;
+  padding-bottom: 160px;
+  margin: 0 auto;
+}
+
+.mod_banner {
+  height: 228px;
+  margin: 39px auto 0;
+}
+
+.mod_users {
+  position: relative;
+  z-index: 1;
+  @extend .flex_v_justify;
+  width: 1234px;
+  margin: -12px auto 0;
+  padding: 30px 15px 22px;
+  @include getBgImg("../../assets/images/home/users_bg.png");
+}
+
+.user_info {
+  @extend .flex_hc;
+  .login_btn {
+    padding-right: 10px;
+    font-size: 14px;
+    color: #f3d40c;
+    text-decoration: underline;
+  }
+}
+
+.user_img {
+  width: 72px;
+  height: 68px;
+  margin-right: 16px;
+  padding: 14px 13px 8px;
+  @include getBgImg("../../assets/images/home/user_img.png");
+  img {
+    width: 100%;
+    height: 100%;
+    padding: 6px;
+    border: 1px solid #6d4829;
+    border-radius: 50%;
+  }
+}
+
+.user_guess {
+  position: relative;
+  margin-right: 48px;
+  font-size: 14px;
+  color: #ffdcd7;
+  &::after {
+    content: "";
+    @extend .g_v_mid;
+    right: -20px;
+    width: 12px;
+    height: 12px;
+    @include getBgImg("../../assets/images/home/guess_icon.png");
+  }
+}
+
+.user_assets {
+  @extend .flex_hc;
+  font-size: 14px;
+  font-weight: bold;
+  color: #f3d40c;
+  .coin {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+}
+
+.login_wx {
+  width: 126px;
+  height: 28px;
+  cursor: pointer;
+  text-align: center;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(180deg, #2a2125, #2a2125),
+    linear-gradient(0deg, #0e5f83, #25a3ad);
+  border: 3px transparent solid;
+  span {
+    line-height: 22px;
+    font-size: 18px;
+    font-weight: bold;
+    background: linear-gradient(
+      0deg,
+      rgba(38, 165, 195, 1) 0%,
+      rgba(152, 233, 240, 1) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.login_out,
+.login_in {
+  @extend .flex_hc;
+}
+
+.login_in {
+  position: relative;
+  .user_guess {
+    line-height: 60px;
+    cursor: pointer;
+  }
+  .pop_guess {
+    position: absolute;
+    left: -14px;
+    top: 35px;
+    width: 457px;
+    height: 246px;
+    padding: 44px 40px 0;
+    @include getBgImg("../../assets/images/pop/guess_bg.png");
+  }
+
+  .guess_info {
+    font-size: 14px;
+    @extend .flex_v_justify;
+    p {
+      color: #6e4c47;
+    }
+    a {
+      color: #f3d40c;
+      text-decoration: underline;
+    }
+  }
+
+  .guess_list {
+    @extend .flex_v_justify;
+    margin-top: 57px;
+    text-align: center;
+    img {
+      width: 38px;
+      height: 38px;
+    }
+    p {
+      padding-top: 27px;
+      font-size: 14px;
+      color: #ffdcd7;
+    }
+  }
+}
+
+.login_out {
+  .user_guess {
+    margin-right: 25px;
+  }
+  .user_guess::after {
+    display: none;
+  }
+}
+
+.recharge_btn,
+.signin_btn {
+  width: 122px;
+  height: 34px;
+  font-size: 16px;
+  line-height: 30px;
+  border-radius: 2px;
+  color: #fff;
+  text-align: center;
+}
+
+.recharge_btn {
+  margin-left: 37px;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(180deg, #401b20, #401b20),
+    linear-gradient(180deg, #ba9d6e, #89642d);
+  border: 2px transparent solid;
+}
+
+.signin_btn {
+  margin-left: 18px;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(180deg, #37181f, #37181f),
+    linear-gradient(180deg, #115a7b, #115a7b);
+  border: 2px transparent solid;
+}
+
+.broadcast {
+  position: relative;
+  width: 525px;
+  height: 24px;
+  padding-left: 35px;
+  &::before {
+    content: "";
+    @extend .g_v_mid;
+    left: 0;
+    display: block;
+    width: 24px;
+    height: 24px;
+    @include getBgImg("../../assets/images/home/broadcast_icon.png");
+  }
+  .list {
+    width: 490px;
+    font-size: 14px;
+    color: #7f4545;
+  }
+  .item {
+    width: auto;
+    line-height: 24px;
+  }
+  .award {
+    color: #fedcd7;
+  }
+}
+
+.mod_illustration {
+  display: table;
+  margin: 30px auto 0;
+  img {
+    width: 1240px;
+    height: 100px;
+    object-fit: cover;
+  }
+}
+
+.swiper-wrapper {
+  transition-timing-function: linear !important;
+  -webkit-transition-timing-function: linear !important;
+  -ms-transition-timing-function: linear !important;
+}
+</style>

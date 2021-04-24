@@ -1,0 +1,609 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <nav-bar :pageTitle="createMatchFlag?'创建赛事':'修改赛事'"></nav-bar>
+    </header>
+    <div class="main">
+      <div class="match_bg"
+        :style="'background-image: url('+(createMatchParam.gameImage||require('assets/images/matchtool/wzry_header_bg.png'))+')'">
+      </div>
+      <div class="create_match">
+        <div class="item select_game">
+          <div class="flex_v_justify" @click="createMatchFlag&&(showGameList = !showGameList)">
+            <label>选择游戏</label>
+            <div class="flex_hc">
+              {{createMatchParam.gameName||'请选择'}}
+              <img class="game_img" :src="createMatchParam.gameLogo" v-if="createMatchParam.gameLogo">
+              <i class="toggle_icon" :class="{active:!showGameList}" v-if='createMatchFlag'></i>
+            </div>
+          </div>
+          <div class="game_list" v-show="showGameList">
+            <div :class="{cur:gameSelect == index}" v-for="(item,index) in infoData.allGames" :key="index"
+              @click="toSelectGame(item,index)">
+              <img :src="item.logoUrl">
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <label for="match_name">赛事名称</label>
+          <div><input type="text" id="match_name" v-model="createMatchParam.name" maxlength="12" @blur="scrollToTop">
+            <i class="edit_icon"></i></div>
+        </div>
+        <div class="item join_team">
+          <div class="title" @click="createMatchFlag&&(showTeamTotal = !showTeamTotal)">
+            <label>参赛队伍</label>
+            <div class="flex_hc">
+              <span> {{createMatchParam.teams||'请选择'}}</span>
+              <i class="toggle_icon" :class="{active:!showTeamTotal}" v-if='createMatchFlag'></i>
+            </div>
+          </div>
+          <div class="select_item" v-show="showTeamTotal">
+            <span :class="{select:createMatchParam.teams == item}" v-for="(item,index) in infoData.teamsList"
+              :key="index" @click="toSelectTeams(item)"><i></i>{{item}}</span>
+          </div>
+        </div>
+        <div class="item">
+          <label for="team_person">每队人数</label>
+          <div><input type="text" v-model.number="createMatchParam.plays" disabled id="team_person">
+            <!-- <i class="edit_icon"></i> -->
+          </div>
+        </div>
+        <div class="item match_model">
+          <label>赛事模式</label>
+          <div>淘汰制</div>
+        </div>
+        <div class="item regist_time">
+          <label>报名截止时间</label>
+          <div @click="pickDate(dateType.DEADLINETIME)">
+            <!-- <input type="text" id="regist_time"> -->
+            {{createMatchParam.deadline||''}}
+            <i class="edit_icon"></i>
+          </div>
+        </div>
+        <div class="item game_time">
+          <label>比赛时间</label>
+          <div @click="pickDate(dateType.MATCHTIME)">
+            <!-- <input type="text" id="game_time"> -->
+            {{createMatchParam.startTime||''}}
+            <i class="edit_icon"></i>
+          </div>
+        </div>
+        <div class="item race_round">
+          <div class="flex_v_justify" @click="showMatchRound = !showMatchRound">
+            <label>赛程轮次</label>
+            <div class="flex_hc" v-if='createMatchParam.rounds'>
+              {{createMatchParam.rounds||''}}
+              <i class="toggle_icon" :class="{active:!showMatchRound}"></i>
+            </div>
+          </div>
+          <div class="item" v-show="showMatchRound" v-for="(item,index) in createMatchParam.rounds" :key="index">
+            <label>第{{index+1}}轮</label>
+            <div @click="pickDate(dateType.ROUNDTIME,index)">{{createMatchParam.roundTimes[index]||'填写时间'}}<i
+                class="edit_icon"></i></div>
+          </div>
+        </div>
+        <div class="item award_tips">
+          <label for="award_tips">奖励说明</label>
+          <textarea name="" v-model="createMatchParam.rewardDesc" maxlength="1000" id="award_tips" placeholder="请填写奖励机制"
+            @click="scrollToBottom()" @blur="scrollToTop"></textarea>
+        </div>
+        <a class="next_btn" @click="checkMatchInfo">下一步</a>
+      </div>
+    </div>
+    <vue-hash-calendar ref="picker" model="dialog" :scroll-change-date="true" :visible.sync="isShowCalendar"
+      :default-datetime="defaultDatetime" :is-show-week-view="false" format="YY-MM-DD hh:mm" week-start="sunday"
+      picker-type="datetime" :show-today-button="true" @confirm="dateConfirm">
+    </vue-hash-calendar>
+    <!-- 点击下一步弹出 -->
+    <div class="ui_pop" v-if="showPop">
+      <match-info :matchInfo='createMatchParam' @close='showPop=false'></match-info>
+    </div>
+    <footer class="mod_footer">
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "components/header/nav_bar/index.vue";
+import matchInfo from "./components/matchinfo.vue";
+//日期选择类型
+const dateType = {
+  DEADLINETIME: 1, //报名截止时间
+  MATCHTIME: 2, //比赛时间
+  ROUNDTIME: 3 //轮次时间
+};
+const infoErrorMsg = {
+  gameName: "请先填写游戏名称", //目前接口暂时未用上,方便组件传值
+  name: "请先填写赛事名称", // 赛事名称
+  teams: "请选择参数队伍数", // 参赛队伍数
+  plays: "请选择每队人数", // 每队人数
+  rounds: "请选择赛程轮次", // 赛程轮次
+  roundTimes: "请填写轮次对应的时间", // 轮次对应的时间
+  deadline: "请填写报名截止时间", // 报名截止时间
+  startTime: "请填写比赛开始时间" //比赛开始时间
+};
+const notCheck = ["rewardDesc", "matchType", "matchId"];
+export default {
+  components: {
+    navBar,
+    matchInfo
+  },
+  props: [],
+  data() {
+    return {
+      infoData: {
+        //访问创建赛事页面所需要的数据
+        allGames: [],
+        canCreate: Boolean,
+        teamsList: []
+      },
+      createMatchParam: {
+        //创建赛事所需要的参数
+        matchId: null, //目前创建赛事接口暂时未用上,兼容修改赛事
+        gameName: null, //目前接口暂时未用上,方便组件传值
+        gameLogo: null, //游戏logo
+        gameImage: null, //游戏背景图
+        gameId: null, //选择的游戏id
+        name: null, // 赛事名称
+        teams: null, // 参赛队伍数
+        plays: null, // 每队人数
+        rounds: null, // 赛程轮次
+        roundTimes: [], // 轮次对应的时间
+        matchType: 1, // 赛制：1淘汰制，2循环赛制
+        deadline: null, // 报名截止时间
+        startTime: null, //比赛开始时间
+        rewardDesc: null // 奖励说明
+      },
+      gameSelect: 0,
+      showTeamTotal: false,
+      showGameList: false,
+      showMatchRound: false,
+      showPop: false,
+      isShowCalendar: false, //是否显示弹窗
+      defaultDatetime: new Date(),
+      dateType: dateType,
+      selectDateType: 0,
+      roundTimeIndex: null,
+      createMatchFlag: true //创建赛事标识,false:某些赛事信息不能修改
+    };
+  },
+  mounted() {
+    if (this.$route.query && this.$route.query.matchId) {
+      //表示修改赛事信息
+      this.createMatchParam.matchId = this.$route.query.matchId;
+    }
+    if (this.createMatchParam.matchId) {
+      this.createMatchFlag = false;
+      //可以修改赛事信息
+      this.getInfoForUpdate();
+    } else {
+      this.getInfoForCreateMatch();
+    }
+
+     this.$wxApi.wxRegister({
+      title: "橘子赛事",
+      desc: "橘子电竞邀你来参赛啦！",
+      imgUrl:
+        "http://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg"
+    });
+  },
+  methods: {
+    //校验输入赛事信息
+    checkMatchInfo() {
+      this.showPop = this.verifyParam();
+    },
+    //进入当前页面时需要请求的内容
+    getInfoForCreateMatch() {
+      this.$post("/api/matchtool/createMatch/info")
+        .then(rsp => {
+          console.log(rsp);
+          if (rsp.code == "200") {
+            this.infoData = rsp.data;
+            if (!rsp.data.canCreate) {
+              this.$toast("您暂时无创建赛事的权限");
+            } else {
+              this.setDefaultPageData(this.infoData);
+            }
+          } else {
+            this.$toast(rsp.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //初始化页面数据,设置默认值
+    setDefaultPageData(infoData) {
+      if (this.infoData.allGames.length > 0) {
+        this.toSelectGame(infoData.allGames[0], 0);
+        this.toSelectTeams(infoData.teamsList[0]);
+        this.showGameList = true;
+        this.showTeamTotal = true;
+        this.showMatchRound = true;
+      }
+    },
+    //点击触发日期插件
+    pickDate(type, index) {
+      this.selectDateType = type;
+      this.roundTimeIndex = index;
+      this.isShowCalendar = true;
+    },
+    //确认选择日期,根据不同的类型设置值
+    dateConfirm(date) {
+      let curDateType = this.selectDateType;
+      if (curDateType == dateType.DEADLINETIME) {
+        this.createMatchParam.deadline = date;
+        console.log(this.createMatchParam.deadline, "截止时间");
+      } else if (curDateType == dateType.MATCHTIME) {
+        if (date > this.createMatchParam.deadline) {
+          //判断比赛时间必须大于报名截止时间
+          this.createMatchParam.startTime = date;
+        } else {
+          this.$toast("比赛时间要大于报名截止时间", 4);
+        }
+      } else if (curDateType == dateType.ROUNDTIME) {
+        if (this.roundTimeIndex > 0) {
+          //判断第N轮必须大于N-1轮
+          let prevIndex = this.roundTimeIndex - 1;
+          if (date > this.createMatchParam.roundTimes[prevIndex]) {
+            this.createMatchParam.roundTimes[this.roundTimeIndex] = date;
+          } else {
+            let tipMsg =
+              "设置第" +
+              (this.roundTimeIndex + 1) +
+              "轮时间必须大于第" +
+              (prevIndex + 1) +
+              "轮时间";
+            this.$toast(tipMsg, 4);
+          }
+        } else {
+          //第一轮要大于比赛时间
+          if (this.createMatchParam.startTime > date) {
+            this.$toast("第1轮时间要大于比赛时间", 4);
+          } else {
+            this.createMatchParam.roundTimes[this.roundTimeIndex] = date;
+          }
+        }
+      }
+    },
+    //校验用户填写的创建赛事信息
+    verifyParam() {
+      let curParam = this.createMatchParam,
+        passFlag = true;
+      for (var key in curParam) {
+        if (notCheck.indexOf(key) > -1) {
+          continue;
+        }
+        let condition =
+          (key == "roundTimes" &&
+            curParam["rounds"] > 0 &&
+            curParam[key].length < curParam["rounds"]) ||
+          !curParam[key];
+        if (condition && infoErrorMsg[key]) {
+          this.$toast(infoErrorMsg[key]);
+          passFlag = false;
+          break;
+        }
+      }
+      return passFlag;
+    },
+    getInfoForUpdate() {
+      this.$post("/api/matchtool/getMatchInfo", {
+        matchId: this.createMatchParam.matchId
+      })
+        .then(rsp => {
+          console.log(rsp, "getInfoForUpdate");
+          if (rsp.code == "200") {
+            this.createMatchParam = rsp.data;
+          } else {
+            this.$toast(rsp.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //选择队伍数
+    toSelectTeams(item) {
+      this.createMatchParam.teams = item;
+      this.createMatchParam.rounds = Math.log(item) / Math.log(2);
+    },
+    //选择游戏
+    toSelectGame(item, index) {
+      this.gameSelect = index;
+      this.createMatchParam.gameId = item.id;
+      this.createMatchParam.gameName = item.name;
+      this.createMatchParam.plays = 5;
+      this.createMatchParam.gameLogo = item.logoUrl;
+      this.createMatchParam.gameImage = item.imageUrl;
+    },
+    scrollToBottom() {
+      // 解决安卓软输入框在一屏下面软键盘顶不起来的情况
+      // if (/(Android)/i.test(navigator.userAgent)) {
+      //   setTimeout(() => {
+      //     let scrollY = document.getElementsByClassName("create_match")[0]
+      //       .clientHeight;
+      //     document
+      //       .getElementsByClassName("create_match")[0]
+      //       .scrollTo({ top: scrollY, left: 0, behavior: "smooth" });
+      //   }, 600);
+      // }
+      setTimeout(() => {
+        document.getElementsByClassName("award_tips")[0].scrollIntoView();
+      }, 600);
+    },
+    scrollToTop() {
+      setTimeout(function() {
+        window.scrollTo(0, 0);
+      }, 100);
+      // console.log(this.createMatchParam.rewardDesc);
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.main {
+  position: relative;
+  @extend .flex;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  background-color: #090709;
+}
+
+.match_bg {
+  // position: absolute;
+  // top: 0;
+  // left: 0;
+  // z-index: 0;
+  // width: 100%;
+  height: 31.4667vw;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+}
+
+.match_info {
+  margin-top: 0 !important;
+}
+
+.edit_icon {
+  @extend .g_v_mid;
+  right: 0;
+  width: 5.3333vw;
+  height: 5.3333vw;
+  @include getBgImg("../../assets/images/matchtool/edit_icon.png");
+  background-size: 100% auto;
+}
+
+.toggle_icon {
+  width: 5.3333vw;
+  height: 5.3333vw;
+  @include getBgImg("../../assets/images/matchtool/toggle_icon.png");
+  &.active {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+  }
+}
+
+.confirm_btn {
+  @extend .flex_v_h;
+  flex: none;
+  -webkit-flex: none;
+  width: 16.5333vw;
+  height: 7.4667vw;
+  color: #ee701d;
+  border: 0.4vw solid currentColor;
+  border-radius: 3.7333vw;
+}
+
+.create_match {
+  flex: 1;
+  -webkit-flex: 1;
+  margin: -3.4667vw 4vw 0;
+  overflow-y: scroll;
+  // -webkit-overflow-scrolling: touch;
+  // -webkit-overflow-scrolling: touch;
+  // -webkit-backface-visibility: hidden;
+  // -webkit-transform: translate3d(0, 0, 0);
+  padding-bottom: 8.5333vw;
+  background-color: #fff;
+  border-radius: 1.0667vw 1.0667vw 0 0;
+}
+
+.game_img {
+  width: 8vw;
+  height: 8vw;
+  margin: 0 3.6vw 0 1.3333vw;
+  object-fit: contain;
+}
+
+.item {
+  position: relative;
+  @extend .flex_v_justify;
+  height: 14.6667vw;
+  padding: 0 4.5333vw 0 3.2vw;
+  font-size: 3.7333vw;
+  color: #333;
+  @include getBorder(bottom, #e6e6e6);
+  > div {
+    position: relative;
+    @extend .flex_hc;
+    flex: 1;
+    -webkit-flex: 1;
+    height: 100%;
+  }
+  label {
+    flex: none;
+    -webkit-flex: none;
+    height: 100%;
+    font-size: 4.2667vw;
+    line-height: 14.6667vw;
+  }
+  input {
+    position: relative;
+    z-index: 1;
+    width: 26.6667vw;
+    flex: 1;
+    -webkit-flex: 1;
+    height: 100%;
+    padding-right: 8.8vw;
+    font-size: 3.7333vw;
+    text-align: right;
+    color: #333;
+    opacity: 1 !important;
+  }
+  input[disabled] {
+    opacity: 1 !important;
+  }
+}
+
+.match_model > div,
+.regist_time > div,
+.game_time > div,
+.race_round .item > div {
+  padding-right: 8.8vw;
+  justify-content: flex-end;
+  -webkit-justify-content: flex-end;
+}
+
+.race_round {
+  display: block;
+  height: initial;
+  padding: 0;
+  > div {
+    height: 14.6667vw;
+    padding: 0 4.5333vw 0 3.2vw;
+  }
+  .toggle_icon {
+    margin-left: 3.6vw;
+  }
+  .item {
+    padding-left: 7.2vw;
+    background-color: #f4f4f4;
+  }
+}
+
+.join_team {
+  display: block;
+  height: auto;
+  padding: 0;
+  .title {
+    @extend .flex_v_justify;
+    padding: 0 4.5333vw 0 3.2vw;
+  }
+  .toggle_icon {
+    margin-left: 3.6vw;
+  }
+  .select_item {
+    height: 14.9333vw;
+    padding-left: 3.2vw;
+    flex-wrap: nowrap;
+    overflow-x: scroll;
+    // -webkit-overflow-scrolling: touch;
+    background-color: #f4f4f4;
+    span {
+      @extend .flex_hc;
+      height: 100%;
+      padding: 0 4.2667vw;
+    }
+    i {
+      width: 3.2vw;
+      height: 3.2vw;
+      margin-right: 1.3333vw;
+      border-radius: 50%;
+      background-color: #666;
+      border: 1px solid #fff;
+      box-sizing: content-box;
+    }
+    .select i {
+      position: relative;
+      @include getBgImg("../../assets/images/matchtool/select_icon.png");
+      background-color: transparent;
+      background-size: 100% 100%;
+    }
+  }
+}
+
+.select_game {
+  display: block;
+  padding: 0;
+  height: initial;
+  > div {
+    height: 14.6667vw;
+    padding: 0 4.5333vw 0 3.2vw;
+    label {
+      font-size: 4vw;
+    }
+  }
+  .game_list {
+    @extend .flex_hc;
+    background-color: #f4f4f4;
+    .cur {
+      position: relative;
+      &::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 3.2vw;
+        height: 3.2vw;
+        @include getBgImg("../../assets/images/matchtool/select_icon.png");
+        background-size: 100% 100%;
+        border: 1px solid #fff;
+        border-radius: 50%;
+      }
+    }
+    img {
+      width: 8vw;
+      height: 8vw;
+      margin-left: 4vw;
+      object-fit: contain;
+    }
+  }
+}
+
+.award_tips {
+  display: block;
+  height: initial;
+  padding: 0;
+  label {
+    padding-left: 3.2vw;
+  }
+  textarea {
+    display: block;
+    width: 100%;
+    height: 29.8667vw;
+    padding: 3.2vw;
+    font-size: 4.2667vw;
+    line-height: 6vw;
+    background-color: #f4f4f4;
+    &::placeholder {
+      color: #ccc;
+    }
+  }
+}
+
+.next_btn {
+  display: block;
+  margin: 8.5333vw 4vw 0;
+  line-height: 11.7333vw;
+  font-size: 4.5333vw;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  border-radius: 11.7333vw;
+  @include getBgLinear(right, #ee701d, #f5951d);
+}
+
+.ui_pop {
+  .match_info {
+    max-height: 133.3333vw;
+    overflow: scroll;
+    // -webkit-overflow-scrolling: touch;
+  }
+}
+</style>

@@ -1,0 +1,187 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar pageTitle='订单详情'></navBar>
+    </header>
+    <div class="main">
+      <section>
+        <locationAddress :address="detail.shopAddress" v-if="detail.shopAddress"></locationAddress>
+      </section>
+      <section class="order_details">
+        <div class="order_name" v-for="item in detail.goodList">
+          <div class="goods_img">
+            <img :src="item.goodIcon" alt="">
+          </div>
+          <div class="goods_info">
+            <p class="goods_name"><span class="name">{{item.goodName}}</span><span><i
+                  class="star_coin"></i>{{item.goodPrice}}</span></p>
+            <p><span></span><span class="num">X {{item.quantity}}件</span></p>
+          </div>
+        </div>
+        <div class="order_info">
+          <span>订单状态</span>
+          <span>{{detail.orderStatusDes}}</span>
+        </div>
+        <div class="order_info" v-if="detail.shopExpressVo">
+          <span>发货状态</span>
+          <span>{{detail.shopExpressVo.statusDes}}</span>
+        </div>
+        <div class="order_info" v-if="detail.shopExpressVo">
+          <span>快递单号</span>
+          <span class="express_bill"><span class="copy"
+              @click="copyPostNo(detail.shopExpressVo.trackingNumber)">复制</span><span>{{detail.shopExpressVo.trackingNumber}}</span></span>
+          <textarea id="copy_input_id" style="position: absolute;top: 0;left: 0;opacity: 0;z-index: -10;"></textarea>
+        </div>
+        <div class="order_info" v-for="card in detail.cardList">
+          <span>卡号</span>
+          <span class="express_bill"><span class="copy" @click="copyPostNo(card.cardNo)">复制</span><span>{{card.cardNo}}</span></span>
+        </div>
+        <div class="order_info" v-for="card in detail.cardList">
+          <span>卡密</span>
+          <span class="express_bill"><span class="copy" @click="copyPostNo(card.cardPass)">复制</span><span>{{card.cardPass}}</span></span>
+        </div>
+        <div class="order_info">
+          <span>创建时间</span>
+          <span><span>{{detail.orderCreatTime}}</span><span></span></span>
+        </div>
+        <div class="order_info">
+          <span>订单编号</span>
+          <span>{{detail.orderNo}}</span>
+        </div>
+        <div class="order_info">
+          <span class="pay_title">实付款</span>
+          <span class="pay_money"><i class="star_coin"></i><span>{{detail.payScore}}</span></span>
+        </div>
+      </section>
+    </div>
+  </div>
+</template>
+
+<script>
+import locationAddress from "../../../components/store/address";
+import navBar from "../../../components/header/nav_bar/index";
+export default {
+  data() {
+    return {
+      orderId: null,
+      detail: Object
+    };
+  },
+  mounted() {
+    this.orderId = this.$route.params.orderId;
+    this.getOrderDetail();
+  },
+  methods: {
+    getOrderDetail() {
+      this.$post("/api/shopOrder/orderdetail/" + this.orderId)
+        .then(res => {
+          console.log(res);
+          if ((res.code = "200")) {
+            this.detail = res.data;
+          } else {
+            this.$toast("系统异常，请稍后再试");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    copyPostNo: function(postNo) {
+      var input = document.getElementById("copy_input_id");
+      input.setAttribute("readonly", "readonly");
+      input.value = postNo; // 修改文本框的内容
+      input.select(); // 选中文本
+      document.execCommand("copy"); // 执行浏览器复制命令
+      this.$toast("复制成功");
+    }
+  },
+  components: {
+    navBar,
+    locationAddress
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+section {
+  padding-left: 10px;
+  padding-right: 10px;
+  background-color: #fff;
+}
+.order_details {
+  margin-top: 8px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  font-size: 14px;
+  color: #333;
+}
+.order_name {
+  @extend .flex;
+  padding-bottom: 6px;
+  .goods_img {
+    width: 85px;
+    height: 85px;
+    margin-right: 15px;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+  }
+  .goods_info {
+    flex: 1;
+    -webkit-flex: 1;
+    padding-top: 10px;
+    p {
+      @extend .flex_v_justify;
+      padding-bottom: 5px;
+    }
+    .num {
+      color: #999;
+    }
+  }
+  .goods_name {
+    span {
+      display: inline-flex;
+      display: -webkit-inline-flex;
+      align-items: center;
+      -webkit-align-items: center;
+    }
+    .name {
+      display: inline-block;
+      @include t_nowrap(100px);
+    }
+  }
+}
+.order_info {
+  @extend .flex_v_justify;
+  padding-top: 14px;
+  .express_bill {
+  }
+  .copy {
+    display: inline-block;
+    padding: 4px 10px;
+    margin-right: 12px;
+    color: $color_main;
+    @include getRadiusBorder($color_main, all, 24px);
+  }
+}
+.pay_title,
+.pay_money {
+  display: inline-flex;
+  display: -webkit-inline-flex;
+  align-items: center;
+  -webkit-align-items: center;
+  font-size: 16px;
+}
+.star_coin {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+</style>

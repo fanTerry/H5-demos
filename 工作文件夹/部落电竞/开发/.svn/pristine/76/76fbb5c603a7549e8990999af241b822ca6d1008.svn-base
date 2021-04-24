@@ -1,0 +1,40 @@
+/* component/comm/expertitem/expert-item.wxss */
+
+@import "/resources/wxss/base/display.wxss";
+
+.e-i-m {
+  width: 400rpx;
+}
+.expert-item {
+  margin-bottom: 20rpx;
+}
+.expert-name {
+  font-size: 30rpx;
+  line-height: 30rpx;
+  padding-top: 20rpx;
+}
+.expert-info {
+  display: inline-block;
+  color: #818181;
+  font-size: 24rpx;
+  line-height: 20rpx;
+  padding-right: 20rpx;
+}
+.expert-follow {
+  display: inline-block;
+  width: 130rpx;
+  height: 50rpx;
+  line-height: 50rpx;
+
+  font-size: 32rpx;
+  font-weight: bold;
+  text-align: center;
+  color: #ec9805;
+
+  border-radius: 30rpx;
+  border: solid 2rpx #ec9805;
+}
+.expert-followed {
+  color: #afafaf;
+  border: solid 2rpx #afafaf;
+}

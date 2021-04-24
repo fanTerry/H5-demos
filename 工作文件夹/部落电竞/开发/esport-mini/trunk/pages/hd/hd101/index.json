@@ -1,0 +1,11 @@
+{
+  "component": true,
+  "usingComponents": {
+    "home": "./components/home/home",
+    "rules": "./components/ruleslist/ruleslist",
+    "users": "./components/userwallet/userwallet"
+  },
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
+  "navigationBarTitleText": "答题"
+}

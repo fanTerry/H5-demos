@@ -1,0 +1,106 @@
+
+<template>
+  <div class="guess_bet_vertical">
+    <p>选择竞猜金额</p>
+    <div class="bet_num">
+      <span>2000</span>
+      <span>5000</span>
+      <span>1万</span>
+      <input type="text" placeholder="自定义">
+    </div>
+    <div class="flex_v_justify">
+      <span>预测奖金<i class="num">2000</i></span>
+      <div class="user_assets"><span class="coin"></span>110000</div>
+    </div>
+    <a class="guess_now"><span>立即竞猜</span></a>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.guess_bet_vertical {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  padding: 15px 12px;
+  font-size: 14px;
+  color: #6e4c47;
+  background: #201217;
+  border: 1px solid #5e3b23;
+  .bet_num {
+    @extend .flex_hc;
+    margin: 15px auto;
+    border: 1px solid #5e3b23;
+    span,
+    input {
+      width: 78px;
+      height: 46px;
+      line-height: 46px;
+      border-right: 1px solid #5e3b23;
+      color: #fedcd7;
+      text-align: center;
+      &.active {
+        background: linear-gradient(135deg, #f7d064, #8a5a26);
+        background: -ms-linear-gradient(135deg, #f7d064, #8a5a26);
+      }
+    }
+    input {
+      border: none;
+      &::-webkit-input-placeholder {
+        color: #fedcd7;
+      }
+    }
+  }
+  .num {
+    padding-left: 10px;
+  }
+  .user_assets {
+    @extend .flex_hc;
+    margin-left: 25px;
+    color: #f3d40c;
+    font-weight: bold;
+    .coin {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      @include getBgImg("../../../assets/images/pc/coin.png");
+    }
+  }
+  .guess_now {
+    display: block;
+    width: 312px;
+    height: 48px;
+    margin-top: 15px;
+    font-size: 18px;
+    line-height: 48px;
+    text-align: center;
+    @include getBgImg("../../../assets/images/pc/guess_now.png");
+    span {
+      font-weight: bold;
+      -webkit-text-stroke: 1px undefined;
+      text-stroke: 1px undefined;
+      background: linear-gradient(
+        0deg,
+        rgba(255, 220, 215, 1) 0.2685546875%,
+        rgba(255, 242, 240, 1) 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+}
+</style>

@@ -1,0 +1,59 @@
+<template>
+  <div class='ui_pop'>
+    <div class="rules">
+      <h3>规则说明</h3>
+      <a class="close" @click="closePop()"></a>
+      <p>
+        本网站所有VRF协议图片及素材均由本公司或版权所有人授权发布，如果您侵犯了该图片素材或素材的知识产权，上海韩众网络科技有限公司有权依据著作权侵权惩罚性赔偿标准或最高达50万元人民币的法定标准要求赔偿，且有权不以本网站发布的图片授权价格作为参考标准。公司有权依据著作权侵权惩罚性赔偿标准或最高达50万元人民币的法定标准要求赔偿，且有权不以本网站发布的图片授权价格作为参考标准。
+      </p>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {
+    closePop(){
+      this.$emit("closeRulesPop")
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+
+.rules {
+  position: relative;
+  width: 73.0667vw;
+  height: 96vw;
+  @include getBgImg("../../../assets/images/game/shake/pop_common.png");
+}
+
+.close {
+  position: absolute;
+  left: 0;
+  top: 5.0667vw;
+  width: 13.3333vw;
+  height: 13.3333vw;
+}
+
+h3 {
+  padding-top: 4vw;
+  font-size: 4.8vw;
+  color: #df6744;
+  text-align: center;
+}
+
+p {
+  margin: 6.6667vw 11.6vw 0 12.9333vw;
+  font-size: 3.2vw;
+  line-height: 5.4vw;
+  color: #aa661b;
+}
+</style>

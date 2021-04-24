@@ -1,0 +1,29 @@
+<!--component/expert/expertrecommend/expert-recommend.wxml-->
+
+<!-- 推荐选项-胜负 -->
+
+<view class='expert-info-title'>
+  <view class='expert-title'><i class='iconfont icon-shoucang e-t-icon'></i>推荐选项·胜负</view>
+</view>
+
+<view class='expert-recommend-view'>
+  <view wx:for="abc" wx:key='' class='expert-recommend dsp-table'>
+    <view class='dsp-cell e-r-c1'>
+      <image class='report-info-img' src='/resources/images/logo/logo-we.png' mode='aspectFit' />
+      <view class='e-r-d-text'>
+        <text>WE</text>
+      </view>
+    </view>
+    <view class='dsp-cell e-r-detail'>
+      <view class='e-r-d-title'><text>2019 KPL青春赛-小组赛拷贝</text></view>
+      <view class='e-r-d-vs'><text>VS</text></view>
+      <view class='e-r-d-title'><text>5月29日08:00 [BO3]</text></view>
+    </view>
+    <view class='dsp-cell e-r-c1'>
+      <image class='report-info-img' src='/resources/images/logo/logo-blg.png' mode='aspectFit' />
+      <view class='e-r-d-text'>
+        <text>BLG</text>
+      </view>
+    </view>
+  </view>
+</view>

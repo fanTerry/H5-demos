@@ -1,0 +1,22 @@
+<!--component/newslist/newsvideoitem/news-video-item.wxml-->
+<!-- 最后一个元素添加border-none -->
+<view class='news-video-item'>
+  <video class='news-video' id="myVideo" src="http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400" binderror="videoErrorCallback" object-fit="fill" controls show-play-btn ></video>
+  <view class='news-video-title'>
+    <text>{{newsData.detail}}</text>
+  </view>
+  <view class='news-video-sub clear'>
+    <view class='news-info fr'>
+      <view class="news-info-item">
+        <i class='iconfont icon-icon_yulan n-i-i-i'></i><text>{{newsData.seeNum}}</text>
+      </view>
+      <view class="news-info-item">
+        <i class='iconfont icon-xiaoxi n-i-i-i'></i><text>{{newsData.discussNum}}</text>
+      </view>
+      <view class='news-info-item n-i-i-last'>
+        <i class='iconfont icon-gengduo n-i-i-i'></i>
+      </view>
+    </view>
+    <view class='news-tag'>#{{newsData.tag}}</view>
+  </view>
+</view>

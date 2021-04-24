@@ -1,0 +1,11 @@
+<!--component/report/reportbanner/report-banner.wxml-->
+<view class='report-banner'>
+  <swiper class="report-banner-swiper"
+    indicator-dots="true" indicator-active-color="#fff" autoplay="true" circular="true" bindchange="onSwiperChange">
+    <block wx:for="abc" wx:key="">
+      <swiper-item>
+        <image class="r-b-swiper-image" src="/resources/images/image4.png" mode="scaleToFill" />
+      </swiper-item>
+    </block>
+  </swiper>
+</view>

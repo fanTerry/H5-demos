@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+		"goods-list": "/component/store/goodsList",
+		"submenu-bar": "/component/submenubar/submenu-bar"
+	}
+}

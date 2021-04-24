@@ -1,0 +1,221 @@
+<template>
+  <div class="Page">
+    <div class="main">
+      <!-- 答题海报 -->
+      <section class="mod_poster">
+        <!-- 选中加active -->
+        <a class="start_answer_btn" :class="{'active':show}" @click="joinHdSubject()"></a>
+        <!-- href="/hd/hd101/answering"  -->
+      </section>
+      <!-- 中奖模块 -->
+      <section class="mod_award">
+        <div class="winner_scroll" id="box">
+          <ul id="ul1">
+            <li v-for="item in giftInfo.giftWinnerList">
+
+              <span>恭喜</span>
+              <span class="winner_name">item</span>
+              <span>喜中{{giftInfo.hdGiftName}}</span>
+
+            </li>
+            <!-- <li>
+              <span>恭喜</span>
+              <span class="winner_name">蛤套</span>
+              <span>喜中opps</span>
+            </li>
+            <li>
+              <span>恭喜</span>
+              <span class="winner_name">蛤套3335</span>
+              <span>喜中opps</span>
+            </li> -->
+          </ul>
+          <ul id="ul2"></ul>
+        </div>
+        <div class="award_prize">
+          <p class="title">{{giftInfo.hdGiftName}}</p>
+          <p>数量：<span class="num">{{giftInfo.giftRemainder}}</span>个</p>
+          <p>时间：{{giftInfo.playTime}}</p>
+        </div>
+      </section>
+    </div>
+    <footer class="mod_footer">
+      <tabs></tabs>
+    </footer>
+    <!-- 弹窗集合组件 -->
+    <pops @close="closeProp()" v-if="showProp" :type="4"></pops>
+  </div>
+</template>
+
+<script>
+import tabs from "./components/tabs";
+import pops from "./components/pops";
+
+export default {
+  components: { tabs, pops },
+  props: [],
+  data() {
+    return {
+      show: false,
+      giftInfo: {},
+      subject: {},
+      showProp: false
+    };
+  },
+  mounted() {
+    this.getGift();
+    
+  },
+  methods: {
+    
+
+    closeProp() {
+      this.showProp = false;
+    },
+    getGift() {
+      let param = {};
+      this.$post("/api/subject/home", param)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.giftInfo = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    joinHdSubject() {
+      console.log("00000");
+      let _self = this;
+      this.show = true;
+      setTimeout(() => {
+        _self.show = false;
+      }, 200);
+
+      this.$post("/api/subject/joinSubject")
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            let subject = dataResponse.data;
+            //跳转答题页
+            this.$router.push({
+              name: "hd101Answering",
+              query: {
+                hdUserLogId: subject.hdUserLogId,
+                subjectId: subject.subjectId,
+                subjectLogId: subject.subjectLogId
+              }
+            });
+          } else if (dataResponse.code == "1607") {
+            this.showProp = true;
+          } else if (dataResponse.code == "4444") {
+            this.$toast("请勿频繁重复点击");
+          } else {
+            this.$toast("参加答题异常，请稍后再试");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.Page {
+  background-color: rgb(255, 231, 131);
+}
+
+.mod_poster {
+  position: relative;
+  padding-bottom: 93.3%;
+  @include getBgImg("../../../assets/images/hd/hd101/poster.png");
+}
+
+.start_answer_btn {
+  @extend .g_c_mid;
+  bottom: -5.6vw;
+  width: 87.5vw;
+  padding-bottom: 19.7vw;
+  @include getBgImg("../../../assets/images/hd/hd101/start_answer_btn.png");
+  &.active {
+    @include getBgImg(
+      "../../../assets/images/hd/hd101/start_answer_active.png"
+    );
+  }
+  &::after {
+    content: "最先连对20道题即可领取";
+    position: absolute;
+    left: 21.1vw;
+    top: -2.4vw;
+    font-size: 3.6vw;
+    color: #333;
+    white-space: nowrap;
+  }
+}
+
+.mod_award {
+  width: 94.4%;
+  height: 39.2vw;
+  margin: 36px auto 14px;
+  @include getBgImg("../../../assets/images/hd/hd101/award_bg.png");
+}
+.winner_scroll {
+  height: 12.8vw;
+  padding-top: 2.1vw;
+  li {
+    @extend .flex_v_h;
+    font-size: 4vw;
+    height: 10.7vw;
+    color: #fff;
+    .winner_name {
+      padding: 0 7px;
+      color: #fcff00;
+    }
+  }
+}
+
+.award_prize {
+  padding: 3.2vw 0 0 33.3vw;
+  p {
+    padding-bottom: 1.3vw;
+    font-size: 3.2vw;
+    color: #999;
+  }
+  .title {
+    padding-bottom: 2.7vw;
+    font-size: 5.6vw;
+    color: #ffea00;
+    @include t_nowrap(100%);
+  }
+
+  .num {
+    padding-right: 3px;
+    color: #ffea00;
+  }
+}
+
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+</style>

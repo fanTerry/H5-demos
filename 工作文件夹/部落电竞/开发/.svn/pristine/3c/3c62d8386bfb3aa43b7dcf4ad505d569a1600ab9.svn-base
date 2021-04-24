@@ -1,0 +1,103 @@
+<template>
+  <div class="Page addressEdit_Page">
+    <header class="mod_header">
+      <navBar pageTitle='编辑地址'></navBar>
+    </header>
+    <div class="main">
+      <writeAddress ref="address" @successSave="successSave">
+      </writeAddress>
+
+    </div>
+
+    <footer class="mod_footer">
+      <a class="exchange_btn" @click="save()">保存</a>
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar";
+import writeAddress from "../../../components/pop_up/store/writeAddress";
+
+export default {
+  data() {
+    return {
+      popAddressFlag: true,
+      id: Number
+    };
+  },
+  created() {},
+  mounted() {
+    if (this.$route.query.type == 1) {
+      //新增
+    } else {
+      //修改
+      this.$refs.address.address = this.$route.query.address;
+    }
+  },
+  methods: {
+    save() {
+      this.$refs.address.submit();
+    },
+    successSave() {
+      this.$router.go(-1);
+    }
+  },
+  components: {
+    navBar,
+    writeAddress
+  }
+};
+</script>
+
+<style lang="scss">
+.addressEdit_Page {
+  .ui_pop {
+    background-color: #f5f4f3 !important;
+    .ui_pop {
+      background-color: rgba(0, 0, 0, 0.7) !important;
+    }
+  }
+  .receive_adress {
+    bottom: initial !important;
+    top: 0;
+    border-radius: 0 !important;
+  }
+  .close,
+  .title,
+  .location_address,
+  .exchange_btn {
+    display: none !important;
+  }
+
+  .delete_address {
+    position: absolute;
+    top: 305px;
+    width: 100%;
+    line-height: 48px;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    text-align: center;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+.Page {
+  background-color: #fff;
+  .mod_footer {
+    .exchange_btn {
+      @extend .flex_v_h;
+      display: flex !important;
+      margin: 4px auto;
+      font-size: 17px;
+      @include getBtn(210px, 40px, transparent, #fff, 40px);
+      background: linear-gradient(to right, #ffa200, #ff7b1c);
+    }
+  }
+}
+</style>

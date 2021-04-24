@@ -1,0 +1,41 @@
+/* modules/articlepage/wxss/article.wxss */
+
+/* 文章作者部分 */
+.article-author {
+  padding: 20rpx 0;
+}
+.article-author-avatar {
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 50%;
+
+  margin-right: 20rpx;
+}
+.article-author-name {
+  padding-top: 5rpx;
+  font-size: 24rpx;
+  line-height: 20rpx;
+}
+
+.article-author-info {
+  font-size: 20rpx;
+  color: #aaa;
+  line-height: 20rpx;
+  margin-top: -5rpx;
+  padding-right: 20rpx;
+}
+.article-author-follow {
+  height: 50rpx;
+  line-height: 50rpx;
+  padding: 0 30rpx;
+
+  font-size: 28rpx;
+  color: #ff9600;
+
+  border-radius: 30rpx;
+  border: solid 1rpx #ff9600;
+  margin-top: -8rpx;
+}
+.article-at {
+  color: #35acff;
+}

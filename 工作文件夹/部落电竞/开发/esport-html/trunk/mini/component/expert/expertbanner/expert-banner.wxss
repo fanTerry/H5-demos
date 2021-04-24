@@ -1,0 +1,15 @@
+/* component/expert/expertbanner/expert-banner.wxss */
+
+.expert-banner {
+  width: 750rpx;
+  height: 360rpx;
+  margin: 0 auto;
+}
+.expert-banner-swiper {
+  width: 750rpx;
+  height: 360rpx;
+}
+.e-b-swiper-image {
+  width: 750rpx;
+  height: 360rpx;
+}

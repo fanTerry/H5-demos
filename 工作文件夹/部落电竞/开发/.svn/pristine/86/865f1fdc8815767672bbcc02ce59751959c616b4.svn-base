@@ -1,0 +1,84 @@
+<template>
+  <li class="follow_order">
+    <div class="user_info">
+      <img src="" alt="">
+      <p class="name">电竞打卡</p>
+      <div class="tips">
+        <span>近10中5</span>
+        <span>近十单收益：1250%</span>
+      </div>
+    </div>
+    <p class="match">王者荣耀 2020-05-05 21:00 截止</p>
+    <ul>
+      <li>
+        <span>自购金额</span>
+        <span>预期回报</span>
+        <span>跟单人数</span>
+        <span>跟单金额</span>
+      </li>
+      <li>
+        <span>1000</span>
+        <span>145%</span>
+        <span>8</span>
+        <span>13200</span>
+      </li>
+    </ul>
+  </li>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../../assets/common/_base';
+@import '../../../assets/common/_mixin';
+
+.follow_order {
+  margin-top: 2.1334vw;
+  padding: 3.2vw;
+  border-radius: 1.3334vw;
+  background-color: #fff;
+}
+.user_info {
+  @extend .flex_hc;
+  img {
+    width: 7.4667vw;
+    height: 7.4667vw;
+    border: 0.2667vw solid #ff9da3;
+    border-radius: 50%;
+    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
+  }
+  .name {
+    margin-left: 2.1333vw;
+    font-size: 3.7333vw;
+    @include t_nowrap(26.6667vw);
+    line-height: 1.2;
+    color: #333;
+    font-weight: bold;
+  }
+  .tips {
+    @extend .flex_hc;
+    @extend .g_v_mid;
+    right: 0;
+  }
+  .match {
+    margin-top: 2.4vw;
+    font-size: 3.4667vw;
+    line-height: 4vw;
+    color: #333;
+  }
+  ul {
+    margin-top: 2vw;
+    border: 0.2667vw solid #ddd;
+    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
+  }
+}
+</style>

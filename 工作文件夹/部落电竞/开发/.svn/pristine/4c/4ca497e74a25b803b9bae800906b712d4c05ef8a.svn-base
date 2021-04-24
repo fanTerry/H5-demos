@@ -1,0 +1,18 @@
+/* pages/index/index.wxss */
+page{
+	display: flex;
+	flex-direction: column;
+}
+
+.index-section {
+  width: 710rpx;
+  padding: 10rpx;
+  margin: 10rpx auto;
+
+  background: #fff;
+  border-radius: 15rpx;
+}
+
+.main{
+	position: relative;
+}

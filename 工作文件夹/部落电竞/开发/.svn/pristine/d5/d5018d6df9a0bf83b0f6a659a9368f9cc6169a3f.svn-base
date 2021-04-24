@@ -1,0 +1,112 @@
+<template>
+  <section class="tabbar">
+      <ul>
+          <li>
+              <i class="home"></i>
+              <span>首页</span>
+          </li>
+          <li class="cur">
+              <i class="match"></i>
+              <span>赛事</span>
+          </li>
+          <li>
+              <i class="follow"></i>
+              <span>关注</span>
+          </li>
+          <li>
+              <i class="expert"></i>
+              <span>专家</span>
+          </li>
+          <li>
+              <i class="user_center"></i>
+              <span>我的</span>
+          </li>
+      </ul>
+  </section>
+</template>
+
+<script>
+export default {  
+    data() {
+        return {
+ 
+        }
+    },
+    methods: {
+
+    },
+    components: {
+
+    }
+}
+</script>
+
+<style lang='scss'>
+    @import '../../assets/common/_base.scss';
+    @import '../../assets/common/_mixin.scss';
+    .tabbar{
+        color: #A4A2A5;
+        ul{
+            @extend .flex_hc;
+            justify-content: space-around;
+            padding: 5px 0 2px;
+        }
+        i{
+            display: block;
+            width: 20px;
+            height: 20px;
+            margin: 0 auto;
+        }
+        span{
+            display: block;
+            padding: 5px 0;
+            text-align: center;
+        }
+    } 
+
+    .cur{
+        color: #FF7E00;
+        @include getBorder(bottom,#FF7E00);
+        .home{
+            @include getBgImg('../../assets/images/home/home_cur.png');
+            background-size: 100% auto;
+        }
+        .match{
+            @include getBgImg('../../assets/images/match/match_cur.png');
+            background-size: 100% auto;
+        }
+        .follow{
+            @include getBgImg('../../assets/images/follow/follow_cur.png');
+            background-size: 100% auto;
+        }
+        .expert{
+            @include getBgImg('../../assets/images/expert/expert_cur.png');
+            background-size: 100% auto;
+        }
+        .user_center{
+            @include getBgImg('../../assets/images/user_center/user_center_cur.png');
+            background-size: 100% auto;
+        }
+    }
+    
+    .home{
+        @include getBgImg('../../assets/images/home/home.png');
+        background-size: 100% auto;
+    }
+    .match{
+        @include getBgImg('../../assets/images/match/match.png');
+        background-size: 100% auto;
+    }
+    .follow{
+        @include getBgImg('../../assets/images/follow/follow.png');
+        background-size: 100% auto;
+    }
+    .expert{
+        @include getBgImg('../../assets/images/expert/expert.png');
+        background-size: 100% auto;
+    }
+    .user_center{
+        @include getBgImg('../../assets/images/user_center/user_center.png');
+        background-size: 100% auto;
+    }
+</style>

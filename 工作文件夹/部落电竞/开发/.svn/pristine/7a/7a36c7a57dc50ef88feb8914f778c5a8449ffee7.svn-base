@@ -1,0 +1,35 @@
+<!--component/report/oddresultitem/odd-result-item.wxml-->
+<view class='odd-result-item'>
+  <view class='odd-result-item-tit'><text>全场获胜者</text></view>
+  
+  <view class='odd-result-list'>
+
+    <view class='grid-tit'>
+      <view class='box t1'>平台</view>
+      <view class='box t2'>LDLC</view>
+      <view class='box t3'>FrostFire</view>
+    </view>
+
+    <view class='grid-lump'>
+      <view class='box l1'><text>平均</text></view>
+      <view class='box l2'><text>即赔</text></view>
+      <view class='box l3'><text>2.456</text></view>
+      <view class='box l4'><text>2.456</text></view>
+      <view class='box l5'><text>胜率</text></view>
+      <view class='box l6'><text>57%</text></view>
+      <view class='box l7'><text>57%</text></view>
+    </view>
+
+    <view class='grid-lump'>
+      <view class='box l1'><image class='o-r-i-img' src="/resources/images/image5.png" mode="widthFix" /></view>
+      <view class='box l2'><text>即赔</text></view>
+      <view class='box l3'><text>2.456</text></view>
+      <view class='box l4'><text>2.456</text></view>
+      <view class='box l5'><text>胜率</text></view>
+      <view class='box l6'><text>57%</text></view>
+      <view class='box l7'><text>57%</text></view>
+    </view>
+    
+  </view>
+
+</view>

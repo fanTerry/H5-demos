@@ -1,0 +1,62 @@
+<!--component/popup/ppmy/pp-my.wxml-->
+<!-- 充值页：支付方式选择弹框 -->
+
+<block wx:if="{{showDialog}}">
+  <!-- 遮罩层:TODO:需要禁止页面的滚动-->
+  <!-- <view class='popup-bg'></view>
+
+  <view class='popup-view pp-my-recharge'>
+    <i class='iconfont icon-guanbi popup-close' bindtap='hide'></i>
+
+    <view class='popup-content pp-expert-content'>
+      <radio-group class="m-r-radio-group" bindchange="radioChange">
+        <radio class="m-r-radio" wx:for-items="{{items}}" wx:key="name" value="{{item.index}}" checked="true">
+          <text>{{item.name}} -- {{item.amount + item.unit}}</text>
+        </radio>
+      </radio-group>
+    </view>
+
+    <view class='popup-btn-view'>
+      <view class='popup-btn pp-m-r-btn'>
+        <text bindtap='confirmPay'>确认支付</text>
+      </view>
+    </view>
+  </view> -->
+
+  <!-- 公用遮罩组件遮罩 -->
+  <view class="mask"></view>
+
+  <view class="pop_up" wx:if="{{items!=null&&items.length>0}}">
+    <i class='iconfont icon-guanbi close' bindtap='hide'></i>
+    <!-- <view class="order">订单金额：33.00星星</view> -->
+    <view class="order">确认支付</view>
+    <!--
+		<view class="discount">
+			<text>优惠券</text>
+			<view>无可用优惠券<i class='iconfont icon-xiangyou'></i></view>
+		</view>
+		<view class="balance">
+			<text>余额抵扣</text>
+			<text class="c_red">-4.00元</text>
+		</view>
+    -->
+    <view class="pay_title">需支付</view>
+    <view class="pay_num">{{payPrice}}
+      <text>星星</text>
+    </view>
+    <view class="pay_method" wx:for-items="{{items}}" data-selectpay="{{item.index}}" data-item="{{item}}" bindtap='confirmPay'>
+      <image src="{{item.icon}}"></image>
+      {{item.name}}
+      <text>余额:{{item.balance==null?0.00:item.balance}}{{item.unit}}</text>
+    </view>
+    <!-- <view class="pay_method">
+			<image src="https://rs.esportzoo.com/svn/esport-res/mini/images/yb_icon.png"></image>友宝余额支付
+			<text>余额:{{item.amount + item.unit}}</text>
+		</view> -->
+    <block wx:for-items="{{items}}">
+      <view wx:if="{{item.index==2}}" class="att_tisp">温馨提示:1元友宝余额价值与1星星价值一致</view>
+    </block>
+		<a class="exchange_btn">确认支付</a>
+  </view>
+
+</block>

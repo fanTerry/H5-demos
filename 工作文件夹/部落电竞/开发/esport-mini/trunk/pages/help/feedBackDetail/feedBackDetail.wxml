@@ -1,0 +1,16 @@
+<!--pages/help/feedBackDetail/feedBackDetail.wxml-->
+<view class="Page">
+	<view class="main">
+		<feedback-list ref="reply" userInfo="{{userInfo}}" myFeedbackList="{{myFeedbackList}}" type="{{showType}}"></feedback-list>
+	</view>
+	<view class="mod_footer" style='padding-bottom:{{paddingBottom}}px'>
+		<view class="film_handle" >
+			<view class="comment_input">
+				<span class="comment_btn"></span>
+				<input type="text" bindfocus="inputFocus" bindblur="inputBlur" adjust-position = "{{false}}" placeholder="{{placeholder}}" bindinput="editContent"   value="{{contentValue}}"/>
+				<span class="clean" bindtap="cleanVal"></span>
+			</view>
+			<view class="send_btn"  bindtap="toSendReply" >发送</view>
+		</view>
+	</view>
+</view>

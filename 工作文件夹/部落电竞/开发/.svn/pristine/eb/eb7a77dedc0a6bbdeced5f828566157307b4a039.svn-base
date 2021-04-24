@@ -1,0 +1,16 @@
+<!--pages/expert/paid-article-page.wxml-->
+<view>
+
+  <!-- 热门推荐列表 -->
+  <view class='expert-title-view'>
+    <!--<text class='expert-title'>热门推荐</text>-->
+  </view>
+
+  <view class=''>
+    <report-expert-item wx:for="{{articleList}}" wx:key='' expertArticle="{{item}}"></report-expert-item>
+  </view>
+
+    <no-data  wx:if="{{noDataFlag}}" ></no-data>
+</view>
+
+

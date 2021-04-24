@@ -1,0 +1,27 @@
+<!--component/popup/ppmy/pp-my.wxml-->
+<!-- 充值页：支付方式选择弹框 -->
+
+<!-- 遮罩层:TODO:需要禁止页面的滚动-->
+<view class='popup-bg'></view>
+
+<view class='popup-view pp-my-recharge'>
+  <i class='iconfont icon-guanbi popup-close'></i>
+
+  <view class='popup-content pp-expert-content'>
+    <radio-group class="m-r-radio-group" bindchange="radioChange">
+        <radio class="m-r-radio" wx:for-items="{{items}}" wx:key="name" value="{{item.name}}" checked="{{item.checked}}">
+            <text>{{item.value}}</text>
+        </radio>
+    </radio-group>
+  </view>
+
+  <view class='popup-btn-view'>
+    <view class='my-recharge-btn-text'>
+      <text class='m-r-b-text'>确认支付：</text><text class='m-r-b-unit'>¥</text><text class='m-r-b-money'>100.00</text>
+    </view>
+
+    <view class='popup-btn pp-m-r-btn'>
+      <text>确认支付</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+		"goods-list":"/component/store/goodsList",
+		"commonBanner": "/component/bigimageswiper/bigimage-swiper"
+	},
+	"window": {
+	}
+}

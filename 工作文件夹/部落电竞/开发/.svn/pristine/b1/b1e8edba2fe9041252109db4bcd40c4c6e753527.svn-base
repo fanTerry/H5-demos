@@ -1,0 +1,83 @@
+/* component/submenubar/submenu-bar.wxss */
+
+.sub-menu {
+  background: #fcfcfc;
+  border-bottom: solid 1rpx #ddd;
+}
+
+.sub-menu-mov-area {
+  width: 710rpx;
+  height: 76rpx;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.sub-menu-mov-view {
+  width: 150%;
+  height: 76rpx;
+}
+
+.sub-menu-item {
+  float: left;
+  padding: 0 10rpx;
+  margin-right: 20rpx;
+  font-size: 28rpx;
+  line-height: 72rpx;
+}
+
+.sub-menu-item-act {
+  color: #fea21b;
+  border-bottom: solid 5rpx #fea21b;
+}
+
+.sub-menu-icon {
+  float: right;
+  width: 40rpx;
+  height: 40rpx;
+  margin: 15rpx 15rpx 0 0;
+}
+
+.tab_list {
+  height: 70rpx;
+  line-height: 1;
+  padding: 0 6rpx;
+  border-bottom: 2rpx solid #ddd;
+  overflow: hidden;
+	background-color: #fff;
+}
+
+.tab_list .list {
+  height: calc(100% + 6px);
+  font-size: 0;
+  white-space: nowrap;
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab_list .item {
+  display: inline-block;
+  margin-right: 25rpx;
+  padding: 22rpx 15rpx;
+  font-size: 26rpx;
+  color: #000;
+}
+
+.tab_list .item:last-child {
+  margin-right: 0;
+}
+
+.tab_list .item.current{
+	position: relative;
+	color: #fea21b;
+}
+
+.tab_list .item.current::after{
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: 0;
+
+	width: 100%;
+	height: 4rpx;
+	background-color: #fea21b;
+}

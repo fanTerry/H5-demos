@@ -1,0 +1,44 @@
+/* pages/report/report.wxss */
+@import "/resources/wxss/base/clear.wxss";
+
+.report-sub-menu {
+  width: 690rpx;
+  height: 55rpx;
+  padding: 10rpx 20rpx;  
+  margin: 10rpx auto;
+
+  font-size: 24rpx;
+  background: #fff;
+  border-radius: 15rpx;
+}
+
+.report-sub-menu-item {
+  width: 150rpx;
+  height: 50rpx;
+  line-height: 50rpx;
+
+  float: left;
+  margin-right: 30rpx;
+
+  text-align: center;
+  color: #666;
+  font-weight: bold;
+  background: #fff;
+
+  border: solid 1rpx #ddd;
+  border-radius: 30rpx;
+}
+.rp-s-m-i-cur {
+  border-color: #666;
+}
+
+.report-sub-menu-other {
+  margin-right: 20rpx;
+  line-height: 50rpx;
+}
+
+.report-blank {
+  width: 750rpx;
+  height: 100rpx;
+  margin: 0 auto;
+}

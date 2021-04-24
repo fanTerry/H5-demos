@@ -1,0 +1,30 @@
+
+
+
+.banner{
+	position: relative;
+}
+
+.banner::after{
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	transform: scaleY(.5);
+
+	width: 100%;
+	height: 1px;
+	background-color: #ddd;
+}
+
+.banner_txt{
+	line-height: 70rpx;
+	font-size: 26rpx;
+	color: #000;
+}
+
+.banner_img{
+	width: 100%;
+	height: 100%;
+	border-radius: 10rpx;
+}

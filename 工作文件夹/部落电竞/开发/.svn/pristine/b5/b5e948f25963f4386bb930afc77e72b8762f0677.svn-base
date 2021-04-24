@@ -1,0 +1,105 @@
+/* modules/mypage/myrecharge/my-recharge.wxss */
+
+@import "/resources/wxss/base/clear.wxss";
+@import "/modules/mypage/wxss/my-comm.wxss";
+
+.my-recharge-info {
+  width: 730rpx;
+  height: 255rpx;
+  margin: 10rpx auto;
+}
+.m-r-i-bg {
+  width: 730rpx;
+  height: 255rpx;
+}
+.m-w-i-title {
+  margin-left: 40rpx;
+  margin-top: -180rpx;
+}
+.m-w-i-num {
+  margin-left: 40rpx;
+  margin-top: 10rpx;
+}
+
+.my-recharge-item {
+  height: 110rpx;
+  line-height: 110rpx;
+  border-bottom: solid 2rpx #ddd;
+}
+.my-recharge-item:last-child {
+  border-bottom: none;
+}
+.m-r-i-unit {
+  font-size: 50rpx;
+  font-weight: bold;
+  color: #efc75e;
+  margin: 0 10rpx 0 20rpx;
+}
+.m-r-i-money {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+.m-r-i-act {
+  border-radius: 15rpx;
+  border-bottom: none;
+  /* background: linear-gradient(to right, rgba(104,160,255,1) 0%,rgba(255,255,255,1) 100%); */
+  background: linear-gradient(to right, rgba(255,142,0,1) 0%,rgba(255,255,255,1) 100%);
+}
+.m-r-i-act .m-r-i-money {
+  color: #fff;
+}
+
+.my-faq-line {
+  font-size: 28rpx;
+
+  padding: 20rpx 0;
+  margin: 10rpx 20rpx;
+  border-bottom: dashed 2rpx #ddd;
+}
+.m-f-l-title {
+  color: #999;
+}
+.m-f-l-subt {
+  color: #666;
+}
+.m-f-l-answer {
+  color: #999;
+  text-indent: 50rpx;
+}
+
+.my-recharge-btn-view {
+  width: 710rpx;
+  padding: 10rpx 20rpx;
+  height: 80rpx;
+  overflow: hidden;
+  background: #fff;
+}
+.my-recharge-btn-text {
+  display: inline-block;
+  font-size: 26rpx;
+  margin: 0 50rpx 0 100rpx;
+}
+.m-r-b-text {
+  color: #aaa;
+}
+.m-r-b-unit {
+  color: #333;
+}
+.m-r-b-money {
+  color: #ffa200; 
+  font-size: 30rpx;
+}
+.my-recharge-btn {
+  display: inline-block;
+  width: 280rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+
+  text-align: center;
+  font-size: 36rpx;
+  color: #fff;
+  border-radius: 40rpx;
+
+  background: linear-gradient(to right, rgba(255,162,0,1) 0%,rgba(255,123,28,1) 100%);
+}

@@ -1,0 +1,13 @@
+#style=2
+#build_dir=dist
+
+#daily_pack=npm run build
+daily_ip=192.168.9.230
+daily_www=/mfs/ShareFile/res/esport_h5_www/h5/dist
+#daily_manager=/mfs/ShareFile/res/esport_h5_www/h5/dist/nuxt.config.js
+
+#beta_pack=ng build --prod --delete-output-path
+#beta_pack=npm run build
+beta_ip=47.112.96.253
+beta_www=/mfs/ShareFile/res/esport_h5_www/h5/dist
+#beta_host=beta-m.esportzoo.com

@@ -1,0 +1,272 @@
+<template>
+  <div class="ui_pop">
+    <div class="pop_pay">
+      <div class="order" id="yeePayBtn">
+        充值方式选择
+        <a class="close" @click="close()"></a>
+      </div>
+      <div class="pay_method" v-for="(item,index) in toChargeWayList " @click="choose(item)" :key="index">
+        <div>
+          <img :src="item.payIcon" alt />
+          {{item.payName}}
+          <span v-if="item.showBalance==1">(余额:{{item.balance}})</span>
+        </div>
+        <i class="select_icon" :class="choosedPayWay.payIndex==item.payIndex?'selected':''"></i>
+      </div>
+      <a class="confirm_btn" @click="confirm()" v-if="choosedPayWay.payIndex!=12">{{buttonText}}</a>
+      <a
+        class="confirm_btn"
+        :href="fuiouSchemaUrl"
+        v-else
+      >富友支付宝</a>
+      <div class="att_tips" v-for="(item,index) in toChargeWayList">
+        <template v-if="item.payIndex==2">温馨提示:1元友宝余额价值与1星星价值一致</template>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import baseParamConfig from '../../../baseParamConfig';
+export default {
+  props: ['price', 'chargeWayList'],
+  data() {
+    return {
+      choosedPayWay: {},
+      buttonText: '确认',
+      notEnough: false,
+      toChargePrice: 0, //组件拿的值,但会变化
+      toChargeWayList: [], //组件拿的值,但会变化
+      chargeListAliWx: [9.9, 49.9, 99.9, 199.9], //这4个档位：支付宝，微信支付
+      chargeListYeeWx: [499.9, 999.9], //这2个档位：易宝支付,微信支付
+      tempChargeWayList: [], //临时存放对应支付渠道index
+      fuiouSchemaUrl: '' //富友支付宝跳转地址
+    };
+  },
+  watch: {
+    choosedPayWay(newData, oldData) {
+      console.log(newData, oldData);
+      if (newData.showBalance == 0) {
+        this.buttonText = '确认';
+        return;
+      }
+      if (parseFloat(newData.balance) < this.toChargePrice) {
+        this.buttonText = '余额不足,去充值';
+        this.notEnough = true;
+      }
+    }
+  },
+  mounted() {
+    this.toChargePrice = parseFloat(this.price);
+    this.toChargeWayList = this.chargeWayList;
+    if (this.toChargeWayList) {
+      /**
+       * 9.9;49.9;99.9;199.9 这4个档位：支付宝，微信支付
+        499.9;999.9 这2个档位：微信支付，易宝支付 
+       */
+      console.log(this.toChargeWayList, 'testtt');
+      if (this.isInArray(this.chargeListAliWx, this.toChargePrice)) {
+        this.tempChargeWayList = [];
+        this.tempChargeWayList.push(this.globalConst.payIndexMap.get('Ali_H5_PAY'));
+        this.tempChargeWayList.push(this.globalConst.payIndexMap.get('WXH5_PAY'));
+        this.tempChargeWayList.push(this.globalConst.payIndexMap.get('YEEPAY_EBANK_PAY'));
+        this.tempChargeWayList.push(this.globalConst.payIndexMap.get('UMS_H5_PAY'));
+        this.tempChargeWayList.push(this.globalConst.payIndexMap.get('UMS_H5_ALI_PAY'));
+        this.tempChargeWayList.push(this.globalConst.payIndexMap.get('FUIOU_ALI_PAY'));
+        this.toChargeWayList = this.filterChargeIndexList(this.tempChargeWayList);
+      }
+      if (this.isInArray(this.chargeListYeeWx, this.toChargePrice)) {
+        this.tempChargeWayList = [];
+        this.tempChargeWayList.push(this.globalConst.payIndexMap.get('YEEPAY_EBANK_PAY'));
+        this.tempChargeWayList.push(this.globalConst.payIndexMap.get('WXH5_PAY'));
+        this.tempChargeWayList.push(this.globalConst.payIndexMap.get('UMS_H5_PAY'));
+        this.tempChargeWayList.push(this.globalConst.payIndexMap.get('UMS_H5_ALI_PAY'));
+        this.tempChargeWayList.push(this.globalConst.payIndexMap.get('FUIOU_ALI_PAY'));
+        this.toChargeWayList = this.filterChargeIndexList(this.tempChargeWayList);
+      }
+      this.toChargeWayList.forEach(item => {
+        console.log(item);
+        if (parseFloat(item.showBalance) >= this.toChargePrice) {
+          this.choosedPayWay = item;
+          return;
+        } else {
+          this.choosedPayWay = this.toChargeWayList[0];
+        }
+      });
+    }
+    this.getFuiouSchemaUrl();
+  },
+  methods: {
+    close() {
+      this.$emit('close');
+    },
+    choose(item) {
+      this.choosedPayWay = item;
+    },
+    confirm() {
+      if (this.choosedPayWay.payIndex == -1) {
+        this.$toast('请先选择充值方式');
+        return;
+      }
+      if (this.notEnough) {
+        this.toCharge();
+        return;
+      }
+      this.$emit('confirmCharge', this.choosedPayWay.payIndex, this.chargeWayBalance);
+    },
+    toCharge() {
+      let chooseIndex = this.choosedPayWay.payIndex;
+      if (chooseIndex == 2) {
+        window.location.href = this.globalConst.uboxCharge;
+      }
+    },
+    isInArray(arr, value) {
+      for (var i = 0; i < arr.length; i++) {
+        if (value === arr[i]) {
+          return true;
+        }
+      }
+      return false;
+    },
+    filterChargeIndexList(arr) {
+      return this.toChargeWayList.filter(item => {
+        return this.isInArray(arr, item.payIndex);
+      });
+    },
+    getFuiouSchemaUrl() {
+      if (this.choosedPayWay.payIndex == this.globalConst.payIndexMap.get('FUIOU_ALI_PAY')) {
+        let toUrl =
+          window.location.protocol +
+          '//' +
+          window.location.host +
+          '/uc/userFuiouPay?amount=' +
+          this.toChargePrice +
+          '&payIndex=' +
+          this.choosedPayWay.payIndex +
+          '&userId=' +
+          this.choosedPayWay.payIndex +
+          '&agentId=' +
+          baseParamConfig.agentId +
+          '&biz=' +
+          baseParamConfig.biz +
+          '&clientType=' +
+          baseParamConfig.clientType;
+           console.log(toUrl,'支付宝充值地址');
+        let url = 'alipays://platformapi/startapp?appId=20000067&url=' + encodeURIComponent(toUrl);
+        this.fuiouSchemaUrl = url;
+        console.log(this.fuiouSchemaUrl,'this.fuiouSchemaUrl');
+      }
+    }
+  },
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../../assets/common/_base';
+@import '../../../assets/common/_mixin';
+
+.pop_pay {
+  position: relative;
+  width: 76vw;
+  border-radius: 0.5333vw;
+  color: #fff;
+  background-color: $color_item;
+  overflow: hidden;
+  .close {
+    @extend .g_v_mid;
+    right: 0;
+    width: 9.6vw;
+    height: 9.6vw;
+    @include getBgImg('../../../assets/images/guess/sign_close.png');
+    background-size: 4.2667vw;
+  }
+  .order {
+    position: relative;
+    @include getBorder(bottom, #565279);
+    @include getBtn(auto, 9.6vw, 4.2667vw, #fff, #353447, 0);
+  }
+  .pay_num {
+    padding: 10px 0 15px;
+    font-size: 42px;
+    text-align: center;
+    color: #ee322b;
+  }
+  .pay_num span {
+    font-size: 19px;
+  }
+  .pay_method {
+    position: relative;
+    @extend .flex_v_justify;
+    padding: 0 5.3333vw;
+    height: 19.2vw;
+    font-size: 4vw;
+    color: #fff;
+    &::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 58.4vw;
+      height: 1px;
+      background-color: #565279;
+      transform: scaleY(0.5);
+      -webkit-transform: scaleY(0.5);
+    }
+    &:last-child {
+      &::after {
+        display: none;
+      }
+    }
+    > div {
+      @extend .flex_hc;
+    }
+    img {
+      width: 8.5333vw;
+      height: 8.5333vw;
+      object-fit: cover;
+      margin-right: 3.7333vw;
+      border-radius: 0.5333vw;
+    }
+    span {
+      padding-left: 10px;
+      font-size: 13px;
+      color: #ee322b;
+    }
+    .select_icon {
+      width: 4.5333vw;
+      height: 4.5333vw;
+      @include getRadiusBorder(#565279, all, 100%);
+      background-color: #353447;
+      border-radius: 50%;
+    }
+    .selected {
+      @include getBgImg('../../../assets/images/store/select.png');
+      border: none;
+    }
+  }
+  .yb_icon {
+    @include getBgImg('../../../assets/images/user_center/yb_coin.png');
+  }
+  .att_tips {
+    // padding: 4px 0 8px;
+    text-align: center;
+  }
+  .pay_title {
+    padding-top: 20px;
+    font-size: 15px;
+    text-align: center;
+    color: #000;
+  }
+  .warn_tips {
+    @extend .g_c_mid;
+    bottom: 10px;
+    color: $color_red;
+    text-align: center;
+  }
+  .confirm_btn {
+    display: block;
+    @include getBtn(auto, 10.4vw, 4vw, #fff, $color_btn, 0);
+  }
+}
+</style>

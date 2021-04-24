@@ -1,0 +1,22 @@
+<template>
+  <section>
+    CSGO
+  </section>
+</template>
+
+<script>
+//import SlideRender from "../../components/common/slide/slide-render"
+import SlideRender from "../../components/common/slide/slide-render"
+export default {
+  components: {
+    SlideRender
+  },
+  data() {
+      return {};
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+
+</style>

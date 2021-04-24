@@ -1,0 +1,76 @@
+<template>
+  <figure class="banner">
+    <!-- <ul class="swiper-wrapper"> -->
+    <swiper :options="swiperOption" ref="mySwiper">
+      <!-- slides -->
+      <swiper-slide v-for="(item,index) in adList" :key="index">
+        <!-- <li class="swiper-slide" v-for="item in adList"> -->
+        <img :src="item.picUrl" alt="" :style="styleObject" @click="goTo(item.location)">
+        <!-- </li> -->
+      </swiper-slide>
+      <!-- Optional controls -->
+      <div class="swiper-pagination" slot="pagination"></div>
+      <!-- <div class="swiper-button-prev" slot="button-prev"></div>
+        <div class="swiper-button-next" slot="button-next"></div>
+        <div class="swiper-scrollbar" slot="scrollbar"></div> -->
+    </swiper>
+    <!-- </ul> -->
+    <slot></slot>
+    <!-- <figcaption class="title">{{slideText}}</figcaption> -->
+  </figure>
+</template>
+
+<script>
+import { swiper, swiperSlide } from "vue-awesome-swiper";
+import "../../../assets/common/swiper.css";
+export default {
+  components: {
+    swiper,
+    swiperSlide
+  },
+  props: ["adList", "styleObject"],
+  data() {
+    return {
+      swiperOption: {
+        autoplay: {
+          delay: 2500,
+          disableOnInteraction: false
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+          type: "bullets",
+          dynamicBullets: true
+        },
+        loop: true
+      }
+    };
+  },
+  mounted() {},
+
+  methods: {
+    goTo(url) {
+      window.location.href = url;
+    }
+  }
+};
+</script>
+
+<style lang='scss'>
+@import "../../../assets/common/_mixin.scss";
+.banner {
+  // @include getBorder(bottom, #ddd);
+  img {
+    width: 100%;
+    object-fit: contain;
+    border-radius: 5px;
+  }
+  .title {
+    padding: 0 5px;
+    font-size: 13px;
+    line-height: 36px;
+    color: #000;
+    @include t_nowrap(100%);
+  }
+}
+</style>

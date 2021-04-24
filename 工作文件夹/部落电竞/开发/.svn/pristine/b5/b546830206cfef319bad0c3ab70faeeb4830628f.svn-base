@@ -1,0 +1,127 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <h2>
+        <div class="back"></div>
+        注册
+      </h2>
+    </header>
+
+    <div class="main">
+      <div class="user_name">
+        <input type="text" placeholder="用户名2-15位，且不能是纯数字" v-model="account">
+      </div>
+      <div class="user_pwd">
+        <input type="text" placeholder="请输入密码" v-model="password">
+      </div>
+      <div class="user_pwd">
+        <input type="text" placeholder="请重复输入密码" v-model="repetPassword">
+      </div>
+      <!-- disabled置灰态 -->
+      <a class="register_btn disabled" @click="register">注册</a>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      phone: "",
+      account: "",
+      password: "",
+      repetPassword: ""
+    };
+  },
+  mounted() {
+    if (this.$route.query && this.$route.query.phone) {
+      this.phone = this.$route.query.phone;
+    }
+  },
+  methods: {
+    register() {
+      if (this.phone == "") {
+        this.$toast("手机号为空");
+        return;
+      }
+      if (this.account == "") {
+        this.$toast("账号为空");
+        return;
+      }
+      if (this.password == "") {
+        this.$toast("密码为空");
+        return;
+      }
+      if (this.repetPassword == "") {
+        this.$toast("重复密码为空");
+        return;
+      }
+      if (this.password != this.repetPassword) {
+        this.$toast("两次输入的密码不一样");
+        return;
+      }
+      let param = {
+        phone: this.phone,
+        account: this.account,
+        password: this.password,
+        repetPassword: this.repetPassword
+      };
+      this.$post("/api/regist/phoneRegister/", param)
+        .then(dataResponse => {
+          if (dataResponse.code != "200") {
+            this.$toast(dataResponse.message);
+          }
+          this.$toast("注册成功");
+          this.$router.push({
+            name: "login",
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../../assets/common/_mixin";
+@import "../../../../assets/common/_base";
+@import "../../../../assets/common/_var";
+.mod_header {
+  h2 {
+    background: none;
+  }
+}
+
+.main {
+  padding-top: 25px;
+  .user_name,
+  .user_pwd {
+    @extend .flex_v_justify;
+    margin: 0 20px;
+    padding: 20px 0;
+    @include getBorder(bottom, #e7e7e7);
+    input {
+      flex: 1;
+      -webkit-flex: 1;
+      border: none;
+      font-size: 15px;
+    }
+  }
+  .register_btn {
+    display: block;
+    margin: 20px 20px 25px;
+    padding: 15px;
+    font-size: 18px;
+    color: #fff;
+    border-radius: 8px;
+    text-align: center;
+    background-color: $color_main;
+    &.disabled {
+      opacity: 0.5;
+    }
+  }
+}
+</style>

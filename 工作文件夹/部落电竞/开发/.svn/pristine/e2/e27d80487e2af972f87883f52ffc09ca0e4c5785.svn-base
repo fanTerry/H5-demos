@@ -1,0 +1,179 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <h2>
+        <div class="back"></div>
+        重置密码
+        <a class="meet_problem">遇到问题?</a>
+      </h2>
+    </header>
+
+    <div class="main">
+      <div class="phone_num">
+        <span class="area_code">中国+86</span>
+        <input type="text" placeholder="请输入手机号" v-model="phone">
+      </div>
+      <div class="ver_code">
+        <input type="text" placeholder="请输入验证码" v-model="registerCode">
+        <!-- disabled置灰态 -->
+        <button v-bind:class="sendRegisterCodeClass" @click="getRegisterCode">发送验证码</button>
+      </div>
+      <a class="login_btn disabled" @click="goToNext">下一步</a>
+      <p class="att_tips">点击上面的“下一步”按钮，即表示您同意</p>
+      <p class="rules">橘子电竞软件许可及服务协议，橘子电竞版权保护说明，用户私隐政策</p>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      phone: "",
+      registerCode: "",
+      sendRegisterCodeClass: "send_code"
+    };
+  },
+  methods: {
+    //获取验证码
+    getRegisterCode() {
+      console.log("点击获取验证码-start");
+      this.sendRegisterCodeClass = "disabled";
+      console.log(this.phone);
+      if (this.phone == "") {
+        alert("请先输入手机号");
+        this.sendRegisterCodeClass = "send_code";
+        return;
+      }
+      let param = {
+        phone: this.phone
+      };
+      this.$post("/api/regist/resetPasswordValidCode/", param)
+        .then(dataResponse => {
+          if (dataResponse.code != "200") {
+            alert(dataResponse.message);
+          }
+          this.sendRegisterCodeClass = "send_code";
+        })
+        .catch(error => {
+          console.log(error);
+          this.sendRegisterCodeClass = "send_code";
+        });
+      console.log("点击获取验证码-end");
+    },
+
+    //点击下一步
+    goToNext() {
+      if (this.phone == "") {
+        alert("手机号为空");
+        return;
+      }
+      if (this.registerCode == "") {
+        alert("验证码为空");
+        return;
+      }
+      let param = {
+        phone: this.phone,
+        code: this.registerCode,
+        type: 2
+      };
+      this.$post("/api/regist/validRegisterCode/", param)
+        .then(dataResponse => {
+          if (dataResponse.code != "200") {
+            alert(dataResponse.message);
+          } else {
+            this.$router.push({
+              name: "resetPasswordConfirm",
+              query: {
+                phone: this.phone,
+              }
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_var";
+
+.mod_header {
+  h2 {
+    position: relative;
+    background: none;
+  }
+  .meet_problem {
+    @extend .g_v_mid;
+    right: 20px;
+    color: #999;
+    font-size: 13px;
+  }
+}
+
+.main {
+  padding-top: 25px;
+  .phone_num,
+  .ver_code {
+    @extend .flex_v_justify;
+    margin: 0 20px;
+    padding: 20px 0;
+    @include getBorder(bottom, #e7e7e7);
+    input {
+      border: none;
+      font-size: 15px;
+    }
+    .send_code {
+      @extend .flex_v_h;
+      width: 85px;
+      height: 24px;
+      border-radius: 4px;
+      background-color: $color_main;
+      border: none;
+      color: #fff;
+    }
+  }
+  .area_code {
+    position: relative;
+    padding-right: 15px;
+    font-size: 14px;
+    &::after {
+      content: "";
+      @extend .g_v_mid;
+      right: 0;
+      width: 1px;
+      height: 22px;
+      background-color: #757a7e;
+    }
+  }
+  .login_btn {
+    display: block;
+    margin: 20px 20px 25px;
+    padding: 15px;
+    font-size: 18px;
+    color: #fff;
+    border-radius: 8px;
+    text-align: center;
+    background-color: $color_main;
+  }
+  .disabled {
+    opacity: 0.5;
+  }
+  .att_tips {
+    padding-top: 10px;
+    padding-left: 20px;
+    color: #7c7c7c;
+  }
+  .rules {
+    padding: 20px 20px 0;
+    line-height: 18px;
+    color: #494949;
+  }
+}
+</style>

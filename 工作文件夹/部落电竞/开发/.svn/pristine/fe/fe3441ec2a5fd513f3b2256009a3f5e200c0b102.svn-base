@@ -1,0 +1,385 @@
+import utils from './libs/utilsTool.js';
+
+/** 根据size格式化传入的对象
+ *  @param {string} val 需要格式化的字符串
+ *  @param {num} size 保留多少位
+ */
+exports.subStr = (val, size, suffixStr) => {
+    if (!val || val.length == 0 || val == undefined) {
+        return;
+    }
+    var suffix = suffixStr ? suffixStr : '...';
+    if (val.length > size) {
+        return val.substring(0, size) + suffix;
+    } else {
+        return val;
+    }
+};
+
+/** 根据图片地址判断是否取默认图
+ *  @param {string} imgUrl 传入的图片地址
+ *  @param {string} defaultImg 默认显示的图片地址
+ */
+exports.getDefaultImg = (imgUrl, defaultImg) => {
+    if (!imgUrl) {
+        return defaultImg;
+    } else {
+        return imgUrl;
+    }
+};
+
+/** 格式化数字->货币
+ *  @param {string} 数字
+ *  @param {numbeer} places 保留位数
+ */
+exports.formatMoney = (number, places, symbol, thousand, decimal) => {
+    number = number || 0;
+    places = !isNaN(places = Math.abs(places)) ? places : 2;
+    symbol = symbol !== undefined ? symbol : '￥';
+    thousand = thousand || ',';
+    decimal = decimal || '.';
+    var negative = number < 0 ? '-' : '',
+        i = parseInt(number = Math.abs(+number || 0).toFixed(places), 10) + '',
+        j = (j = i.length) > 3 ? j % 3 : 0;
+    return symbol + negative + (j ? i.substr(0, j) + thousand : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + thousand) + (places ? decimal + Math.abs(number - i).toFixed(places).slice(2) : '');
+};
+
+/** 格式化话题->前后加#号 */
+exports.formatTopic = (topicName) => {
+    if (!topicName) {
+        return '';
+    } else {
+        return '#' + topicName + '#';
+    }
+};
+
+/** 下单方案 */
+exports.betPlan = (status) => {
+    var statusStr = {
+        '1': '待处理',
+        '2': '订单确认中',
+        '3': '下单失败',
+        '4': '下单成功',
+        '5': '下单失败'
+    };
+    return statusStr[status];
+};
+/** 订单状态 */
+exports.winStatus = (winStatus) => {
+    var statusStr = {
+        '1': '未中奖',
+        '3': '开奖失败',
+        '5': '奖池取消',
+        '6': '流局,已退款'
+    };
+    return statusStr[winStatus];
+};
+
+/** 比赛局数 */
+exports.gameFightNum = (fightNum, flag) => {
+    var gameNum = '';
+    if (flag) {
+        gameNum = fightNum.substring(12, fightNum.length);
+    } else {
+        gameNum = fightNum;
+    }
+    if (gameNum === '0') {
+        return '总场';
+    } else {
+        return '第' + gameNum + '局';
+    }
+};
+
+/** 格式化时间
+ *  @param {string} time 需要格式化的时间
+ *  @param {String} fmt 格式化字符串
+ */
+exports.dateFmt = (time, fmt) => {
+    if (!time) {
+        return;
+    } else {
+        return utils.fmtDate(new Date(time), fmt || 'yyyy-MM-dd hh:mm');
+    }
+};
+
+/** 比赛状态 */
+exports.matchStatus = (status) => {
+    var statusStr = {
+        '0': '已报名',
+        '1': '报名中',
+        '2': '报名结束',
+        '3': '未开赛',
+        '4': '比赛中',
+        '5': '比赛结束',
+        '6': '队伍已满',
+        '7': '开赛失败',
+        '8': '赛事关闭',
+        '9': '无效'
+    };
+    return statusStr[status];
+};
+
+
+// 游戏图标
+exports.gameLogo = (id) => {
+    var statusStr = {
+        '1': 'https://rs.esportzoo.com/svn/esport-res/ddquiz/images/logo/lol.png',
+        '2': 'https://rs.esportzoo.com/svn/esport-res/ddquiz/images/logo/wzry.png',
+        // '3': 'https://rs.esportzoo.com/svn/esport-res/ddquiz/images/logo/hpjy.png',
+        '4': 'https://rs.esportzoo.com/svn/esport-res/ddquiz/images/logo/dota2.png',
+        // '5': 'https://rs.esportzoo.com/svn/esport-res/ddquiz/images/logo/cf.png',
+        '6': 'https://rs.esportzoo.com/svn/esport-res/ddquiz/images/logo/csgo.png',
+        '7': 'https://rs.esportzoo.com/svn/esport-res/ddquiz/images/logo/swxf.png',
+        '8': 'https://rs.esportzoo.com/svn/esport-res/ddquiz/images/logo/xjzb.png',
+        '9': 'https://rs.esportzoo.com/svn/esport-res/ddquiz/images/logo/chlh.png',
+    };
+    return statusStr[id];
+};
+
+// 摇一摇小游戏中奖水果图片
+exports.gameFruits = (id) => {
+    var statusStr = {
+        '1': 'https://rs.esportzoo.com/svn/esport-res/game/images/gameshake/yezi.png',
+        '2': 'https://rs.esportzoo.com/svn/esport-res/game/images/gameshake/apple.png',
+        '3': 'https://rs.esportzoo.com/svn/esport-res/game/images/gameshake/taozi.png',
+        '4': 'https://rs.esportzoo.com/svn/esport-res/game/images/gameshake/putao.png',
+        '5': 'https://rs.esportzoo.com/svn/esport-res/game/images/gameshake/caomei.png',
+        '6': 'https://rs.esportzoo.com/svn/esport-res/game/images/gameshake/yingtao.png',
+        '7': 'https://rs.esportzoo.com/svn/esport-res/game/images/gameshake/hamigua.png',
+        '19': 'https://rs.esportzoo.com/svn/esport-res/game/images/gameshake/feiji.png',
+    };
+    return statusStr[id];
+};
+
+
+// 罗马帝国游戏图片
+exports.goldEmpireAward = (id) => {
+    var statusStr = {
+        '1': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_15.png', //男
+        '2': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_14.png', //女
+        '5': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_16.png', //男元老
+        '6': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_17.png', //男民主
+        '7': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_18.png', //女元老
+        '8': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_19.png', //女民主
+        '9': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_1.png', //查理曼大帝
+        '10': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_2.png', //凯撒大帝
+        '11': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_3.png', //屋大维
+        '12': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_4.png', //玛丽
+        '13': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_5.png', //叶卡捷琳娜
+        '14': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_6.png', //伊莎贝拉
+        '15': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_7.png', //奥托大帝
+        '16': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_8.png', //查士丁尼大帝
+        '17': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_9.png', //君士坦丁一世
+        '18': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_10.png', //玛格丽特
+        '19': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_11.png', //维多利亚
+        '20': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_12.png', //伊丽莎白
+        '21': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/grade_img/1002_13.png', //无人当选
+    };
+    return statusStr[id];
+};
+
+// 机器人头像映射
+exports.goldEmpireRobot = (id) => {
+    var statusStr = {
+        'head_001': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/robot_img/head_001.png',
+        'head_002': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/robot_img/head_002.png',
+        'head_003': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/robot_img/head_003.png',
+        'head_004': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/robot_img/head_004.png',
+        'head_005': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/robot_img/head_005.png',
+        'head_006': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/robot_img/head_006.png',
+        'head_007': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/robot_img/head_007.png',
+        'head_008': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/robot_img/head_008.png',
+        'head_009': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/robot_img/head_009.png',
+        'head_010': 'https://rs.esportzoo.com/svn/esport-res/game/images/goldempire/robot_img/head_010.png',
+    };
+    return statusStr[id];
+};
+
+/** 比赛时间 */
+exports.matchTime = (item) => {
+    var currentTimes = Date.parse(new Date()); // 当前时间戳
+    var endTimes = item.deadline; // 报名结束时间
+
+    var disTime = endTimes - currentTimes;
+    // 计算出相差天数
+    var days = Math.floor(disTime / (24 * 3600 * 1000));
+    // 计算出小时数
+    var leave1 = disTime % (24 * 3600 * 1000); // 计算天数后剩余的毫秒数
+    var hours = Math.floor(leave1 / (3600 * 1000));
+    // // 计算相差分钟数
+    // var leave2 = leave1 % (3600 * 1000);        // 计算小时数后剩余的毫秒数
+    // var minutes = Math.floor(leave2 / (60 * 1000));
+    // // 计算相差秒数
+    // var leave3 = leave2 % (60 * 1000);      // 计算分钟数后剩余的毫秒数
+    // var seconds = Math.round(leave3 / 1000);
+
+    if (item.status == 0 || item.status == 1 || item.status == 6) { // 已报名，报名中，队伍已满
+        if (currentTimes < endTimes) {
+            return days + '天' + hours + '小时后截止';
+        }
+    } else if (item.status == 7) { // 开赛失败
+        return '队伍数量不足';
+    } else if (item.status == 8) { // 赛事关闭
+        return '手动关闭';
+    } else if (item.status == 2) { // 报名结束
+        if (item.creator == true) {
+            return '请确认赛程';
+        } else if (currentTimes < endTimes) {
+            return days + '天' + hours + '小时后公布赛程';
+        }
+    }
+};
+exports.matchMsg = (item) => {
+    var matchMsgTimes = utils.fmtDate(new Date(item.startTime), 'MM.dd hh:mm');
+    if (item.status == 0) { // 已报名
+        return '你已成功报名该比赛！';
+    } else if (item.status == 4) { // 比赛中
+        if (item.startTime == null) {
+            return '决赛';
+        } else {
+            return '下一轮：(' + matchMsgTimes + ')';
+        }
+    } else if (item.status == 3) { // 未开始
+        return '首轮比赛（' + matchMsgTimes + ')';
+    } else if (item.status == 5 && item.join == true) { // 比赛结束，用户参加
+        if (item.ranking == -1) {
+            return '首轮比赛被淘汰';
+        } else if (item.ranking == 0) {
+            return '获得冠军';
+        } else {
+            return '止步' + item.ranking;
+        }
+    }
+};
+
+exports.toChineseDate = (time) => {
+    var da = new Date(time);
+    var chineseDate = da.getMonth() + 1 + '月' + da.getDate() + '日';
+    return chineseDate;
+};
+exports.toHour = (time) => {
+    var curTime = utils.fmtDate(new Date(time), 'hh:mm');
+    return curTime;
+};
+
+exports.toDay = (time) => {
+    var curTime = utils.fmtDate(new Date(time), 'yyyy-MM-dd');
+    return curTime;
+};
+
+exports.toChineseDateAndHour = (time) => {
+    var da = new Date(time);
+    var chineseDate = da.getMonth() + 1 + '月' + da.getDate() + '日';
+    var curTime = utils.fmtDate(da, 'hh:mm');
+    return chineseDate + ' ' + curTime;
+};
+
+
+/**
+ *
+ *格式化数字 ->每三位加一个逗号分隔
+ * @param number 数字 
+ * @returns
+ */
+exports.toThousands = (num) => {
+    var num = (num || 0).toString(), result = '';
+    while (num.length > 3) {
+        result = ',' + num.slice(-3) + result;
+        num = num.slice(0, num.length - 3);
+    }
+    if (num) { result = num + result; }
+    return result;
+}
+
+/** 格式化数字->货币
+ *  @param {string} 数字
+ *  @param {numbeer} places 保留位数
+ */
+exports.formatMoney = (number, places, symbol, thousand, decimal) => {
+    number = number || 0;
+    places = !isNaN(places = Math.abs(places)) ? places : 1;
+    symbol = symbol !== undefined ? symbol : '￥';
+    thousand = thousand || ',';
+    decimal = decimal || '.';
+    var negative = number < 0 ? '-' : '',
+        i = parseInt(number = Math.abs(+number || 0).toFixed(places), 10) + '',
+        j = (j = i.length) > 3 ? j % 3 : 0;
+    return symbol + negative + (j ? i.substr(0, j) + thousand : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + thousand) + (places ? decimal + Math.abs(number - i).toFixed(places).slice(2) : '');
+};
+
+
+/**
+ *
+ *格式化数字 ->每三位加一个逗号分隔
+ * @param number 数字 
+ * @returns
+ */
+exports.toThousands = (num) => {
+    var num = (num || 0).toString(), result = '';
+    while (num.length > 3) {
+        result = ',' + num.slice(-3) + result;
+        num = num.slice(0, num.length - 3);
+    }
+    if (num) { result = num + result; }
+    return result;
+}
+/**
+ * 格式化联赛名称，超过20打点
+ */
+exports.formatLeagueName = (leagueName) => {
+    if (leagueName.length > 20) {
+        var name = leagueName.substring(0, 20);
+        return name + "...";
+    }
+    return leagueName;
+}
+
+/**
+ * 格式化队伍名称，超过14打点
+ */
+exports.formatTeamName = (teamName) => {
+    if (teamName.length > 14) {
+        var name = teamName.substring(0, 14);
+        return name + "...";
+    }
+    return teamName;
+}
+/**
+ * 格式化首页队伍名称，
+ */
+exports.formatName = (teamName, num) => {
+    if (num && teamName.length > num) {
+        var name = teamName.substring(0, num);
+        return name;
+    }
+    return teamName;
+}
+
+/**
+ * 格式化金额，保持小数点两位
+ */
+exports.formatAwardTtotal = (awardTtotal) => {
+    var awardTtotal = Math.round(parseFloat(awardTtotal) * 100) / 100;
+    var xsd = awardTtotal.toString().split(".");
+    if (xsd.length == 1) {
+        awardTtotal = awardTtotal.toString() + ".00";
+        return awardTtotal;
+    }
+    if (xsd.length > 1) {
+        if (xsd[1].length < 2) {
+            awardTtotal = awardTtotal.toString() + "0";
+        }
+        return awardTtotal;
+    }
+}
+
+/**
+ * 截取后面的几位数
+ */
+exports.formatNumber = (number, size) => {
+    if (number.length > size) {
+        var num = number.substring(number.length - size, number.length);
+        return num;
+    }
+    return number;
+}

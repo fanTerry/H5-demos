@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "report-sub-menu": "/component/report/reportsubmenu/report-sub-menu",
+    "chart-chat-item": "/component/report/chartchatitem/chart-chat-item"
+  }
+}

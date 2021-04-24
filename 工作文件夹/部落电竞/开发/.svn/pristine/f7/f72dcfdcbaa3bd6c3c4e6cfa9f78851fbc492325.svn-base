@@ -1,0 +1,196 @@
+<template>
+  <ul class="cmt_list detail">
+    <li v-for="(item ,index) in dataList " :key="index" @click="goToDetail(item.id)" :id="'sendMessage_'+item.id">
+      <div class="cmt_user">
+        <div class="flex_hc">
+          <span class="name">{{userInfo.nickName}}</span>
+          <b></b>
+          <span class="class">{{item.feedbackType==1?'用户问题':item.feedbackType==2?"客服回复":"用户回复"}}</span>
+        </div>
+        <span class="date">{{item.createTime | dateFmt}}</span>
+      </div>
+      <div class="cmt_cnt">
+        {{item.content}}
+      </div>
+      <div class="cmt_att">
+
+        <span class="img" v-for="(imageUrl, imgIndex) in item.imgList" :key="imgIndex">
+          <img :src="imageUrl">
+        </span>
+      </div>
+      <!-- <div class="cmt_att error" v-if="type==1"> -->
+      <!--有图，加载失败-->
+      <!-- <span class="img"><img src=""></span>
+      </div> -->
+      <div class="cmt_type" v-if="type==1"><span class="orange">{{item.questionTypeName}}</span></div>
+      <!-- 用户的个人反馈才有cmt_time -->
+      <div class="cmt_time" v-if="type==1">
+
+        <span class="date">{{item.updateTime | dateFmt}}</span>
+        <a class="reply"><span class="num">{{item.replyNum}}</span></a>
+
+      </div>
+    </li>
+  </ul>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: ["dataList", "type"],
+  data() {
+    return {
+      userInfo: {}
+    };
+  },
+  mounted() {
+    this.userInfo = JSON.parse(window.localStorage.user);
+  },
+  methods: {
+    goToDetail(id) {
+      console.log("id", id);
+      if (this.type == 2) {
+        return;
+      }
+      this.$router.push({
+        path: "/helpcenter/feedBackDetail",
+        query: { qid: id }
+      });
+    },
+    scrollViewMySend(id) {
+      const currel = document.getElementById("sendMessage_" + id);
+      if (currel) {
+        currel.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+.cmt_list li {
+  background: #fff;
+  padding: 0.34rem 0.3rem 0;
+  margin-bottom: 0.2rem;
+}
+.cmt_list li:last-child {
+  margin-bottom: 0;
+}
+.cmt_list .cmt_cnt {
+  line-height: 0.36rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.28rem;
+  color: #666;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.cmt_list .cmt_time {
+  margin-top: 0.38rem;
+  padding: 0.15rem 0.06rem 0.12rem 0;
+  font-size: 0.26rem;
+  line-height: 1.2;
+  color: #999;
+  border-top: 0.01rem solid #eaeaea;
+}
+.cmt_list .cmt_time .reply {
+  float: right;
+  padding-left: 0.28rem;
+  color: #999;
+  background: url("../../../assets/images/help/icon_comment.png") no-repeat left
+    0.04rem;
+  background-size: 0.28rem 0.26rem;
+}
+.cmt_list .cmt_time .reply .num {
+  margin-left: 0.1rem;
+}
+.cmt_list .cmt_att {
+  margin-top: 0.18rem;
+  font-size: 0;
+}
+.cmt_list .cmt_att .img {
+  display: inline-block;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin: 0 0.1rem 0.1rem 0;
+  overflow: hidden;
+  text-align: center;
+  background: #d0d0d0;
+}
+.cmt_list .cmt_att .img img {
+  width: auto;
+  display: inline-block;
+  height: auto;
+  min-width: 1.8rem;
+  max-height: 1.8rem;
+}
+.cmt_list .cmt_att.error {
+  margin-top: -0.1rem;
+  margin-bottom: -0.18rem;
+}
+.cmt_list .cmt_att.error .img {
+  width: 0.61rem;
+  height: 0.43rem;
+  background: transparent;
+}
+.cmt_list .cmt_att.error .img img {
+  min-width: 0.61rem;
+  max-height: 0.43rem;
+}
+.cmt_list .cmt_user {
+  display: flex;
+  display: -webkit-flex;
+  align-items: center;
+  -webkit-align-items: center;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  height: 0.4rem;
+  line-height: 0.4rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.26rem;
+  color: #999;
+}
+.cmt_list .cmt_user .name {
+  color: #333;
+  vertical-align: middle;
+}
+.cmt_list .cmt_user b {
+  display: inline-block;
+  width: 3px;
+  height: 0.31rem;
+  margin: 0 0.08rem 0 0.08rem;
+  vertical-align: middle;
+  border: 0.01rem solid #e7e7e7;
+  border-left: 0;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  background: #999;
+}
+.cmt_list .cmt_user .date {
+  float: right;
+}
+.cmt_list.detail li {
+  padding-bottom: 0.3rem;
+}
+.cmt_list.detail .cmt_cnt {
+  margin-bottom: 0.3rem;
+  -webkit-line-clamp: inherit;
+}
+.cmt_type {
+  margin-top: 0.18rem;
+}
+.cmt_type span {
+  font-size: 0.24rem;
+  height: 0.34rem;
+  line-height: 0.34rem;
+  padding: 0 0.04rem;
+  margin-right: 0.1rem;
+  border: 0.02rem solid transparent;
+  border-radius: 0.04rem;
+}
+.cmt_type span.orange {
+  border-color: #e47b32;
+  color: #e47b32;
+}
+</style>

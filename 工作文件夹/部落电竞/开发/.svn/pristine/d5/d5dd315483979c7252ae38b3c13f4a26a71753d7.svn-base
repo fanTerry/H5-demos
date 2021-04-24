@@ -1,0 +1,226 @@
+<template>
+  <div :class="showStyle">
+    <!-- hot_personal 推荐项目竞猜无头像加该类名 -->
+    <!-- hot_team 推荐项目竞猜有头像加该类名 -->
+    <template v-if="showType==null">
+      <div class="match_item" :class="{active:getBetData.toCurBet==matchGameId+'_'+index}"
+        v-for="(item,index) in quizMatchGame.quizOptions" :key="index" @click="selectItem(item,index,$event)">
+        <p>{{item.name}}</p>
+        <span>{{item.odds}}</span>
+        <!-- 竞猜下注 -->
+        <bet :ref="'childBet'+matchGameId+'_'+index" :selectItem="userSelectItem"
+          v-if="getBetData.toCurBet==matchGameId+'_'+index"></bet>
+      </div>
+    </template>
+    <template v-if="showType==1">
+      <li class="team_match_item" :class="{active:getBetData.toCurBet==matchGameId+'_'+index}"
+        v-for="(item,index) in quizMatchGame.quizOptions" :key="index" @click="selectItem(item,index,$event)">
+        <div class="player_img">
+          <img src alt />
+        </div>
+        <div class="info">
+          <p class="success_tips">{{item.name}}-ddd</p>
+          <p class="ratio_tips">{{item.odds}}</p>
+          <!-- <p class="support_num">支持率{{item.popularity}}</p> -->
+        </div>
+        <!-- <div class="progress">
+        <span class="progress_bar" style="width:40%"></span>
+      </div> -->
+      </li>
+    </template>
+  </div>
+</template>
+
+<script>
+import bet from "./bet.vue";
+import { mapGetters, mapActions } from "vuex";
+export default {
+  components: { bet },
+  props: ["quizMatchGame", "showStyle", "showType"],
+  data() {
+    return {
+      matchGameId: null, //quiz_match_game表中的id
+      userSelectItem: null
+    };
+  },
+  computed: {
+    ...mapGetters({
+      getLoginData: "getLoginData",
+      getUserData: "getUserData",
+      getBetData: "getBetData"
+    })
+  },
+  mounted() {
+    console.log(this.quizMatchGame, "quizMatchGame-betItem");
+    this.matchGameId = this.quizMatchGame.id;
+  },
+
+  methods: {
+    ...mapActions(["setBetData", "setLoginData"]),
+    selectItem(item, index, e) {
+      console.log(item, "selectItem");
+      if (this.checkLogin()) {
+        e.stopPropagation();
+        this.toCurBet = this.matchGameId + "_" + index;
+        this.userSelectItem = item;
+        this.userSelectItem.matchGameId = this.matchGameId;
+        this.userSelectItem.matchNo = this.quizMatchGame.matchNo;
+        this.userSelectItem.playThirdName = this.quizMatchGame.thirdName;
+        this.setBetData({ toCurBet: this.toCurBet });
+      }
+    },
+    //检查是否登录
+    checkLogin() {
+      if (this.getLoginData.loginState == true) {
+        return true;
+      } else {
+        console.log("用户没有登录");
+        this.setLoginData({
+          ...this.getLoginData,
+          loginShowType: true, // 控制登录弹窗
+          codeType: 1
+        });
+        return false;
+      }
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_mixin";
+
+.match_item {
+  float: left;
+  width: 50%;
+  padding-bottom: 15px;
+  border-width: 1px 0 0 1px;
+  border-style: solid;
+  border-color: #463025;
+  background-color: rgba(37, 18, 20, 0.5);
+  text-align: center;
+  &.active {
+    background: linear-gradient(135deg, #f7d064, #8a5a26);
+    background: -ms-linear-gradient(135deg, #f7d064, #8a5a26);
+    span {
+      color: #fff;
+    }
+  }
+  p {
+    padding: 15px 5px 0;
+    font-size: 18px;
+    color: #ffdcd7;
+    @include t_nowrap(100%);
+    line-height: 1.2;
+  }
+  span {
+    display: inline-block;
+    padding-top: 6px;
+    font-size: 14px;
+    color: #6e4c47;
+  }
+}
+
+// 推荐热门竞猜个人
+.hot_personal {
+  position: relative;
+  display: table;
+  margin-top: 32px;
+  border-width: 0 1px 1px 0;
+  border-style: solid;
+  border-color: #463025;
+  &::after {
+    content: "";
+    display: table;
+    overflow: hidden;
+    clear: both;
+  }
+  .match_item {
+    width: 170px;
+    p {
+      padding: 20px 5px 0;
+      font-size: 30px;
+    }
+    span {
+      padding-top: 8px;
+      font-size: 18px;
+    }
+  }
+}
+
+// 推荐热门竞猜团队
+.hot_team {
+  position: relative;
+  display: table;
+  margin-top: 28px;
+  border-width: 1px 0 0 1px;
+  border-style: solid;
+  border-color: #5e3b23;
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+    overflow: hidden;
+  }
+  .team_match_item {
+    position: relative;
+    float: left;
+    width: 170px;
+    padding: 16px 0 0 16px;
+    border-width: 0 1px 1px 0;
+    border-style: solid;
+    border-color: #5e3b23;
+    background: linear-gradient(135deg, rgba(176, 72, 64, 0.2), #201217);
+    background: -ms-linear-gradient(135deg, rgba(176, 72, 64, 0.2), #201217);
+    &::after {
+      content: "";
+      display: table;
+      clear: both;
+      overflow: hidden;
+    }
+    &.active {
+      background: linear-gradient(135deg, #f7d064, #8a5a26);
+      background: -ms-linear-gradient(135deg, #f7d064, #8a5a26);
+      .progress_bar {
+        color: #fff;
+        background-color: #dfb453;
+      }
+      .support_num {
+        color: #fff;
+      }
+    }
+    .info {
+      float: left;
+    }
+    .player_img {
+      float: left;
+      width: 50px;
+      height: 50px;
+      margin-right: 15px;
+      border: 1px solid #4a3220;
+      border-radius: 50%;
+      img {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+      }
+    }
+    .success_tips {
+      padding-top: 5px;
+      font-size: 18px;
+      color: #ffdcd7;
+    }
+    .ratio_tips {
+      padding-top: 5px;
+      font-size: 14px;
+      color: #ffdcd7;
+    }
+    .support_num {
+      padding: 18px 0 12px;
+      font-size: 14px;
+      color: #51423a;
+    }
+  }
+}
+</style>

@@ -1,0 +1,95 @@
+/* modules/mypage/mywallet/my-wallet.wxss */
+
+@import "/resources/wxss/base/clear.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+@import "/modules/mypage/wxss/my-comm.wxss";
+
+.my-wallet-info {
+  width: 670rpx;
+  padding: 20rpx 20rpx 20rpx 40rpx;
+  margin: 10rpx auto;
+
+  background: #829cfd;
+  border-radius: 15rpx;
+}
+.m-w-i-t2 {
+  margin-top: 20rpx;
+}
+
+.m-w-i-btn {
+  font-size: 28rpx;
+  color: #fff;
+
+  width: 180rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  margin-top: 100rpx;
+
+  text-align: center;
+  border: solid 2rpx #fff;
+  border-radius: 30rpx;
+}
+
+.m-w-m-item {
+  display: inline-block;
+  width: 150rpx;
+  text-align: center;
+  
+  font-size: 26rpx;
+  color: #666;
+}
+.m-w-m-i2 {
+  width: 410rpx;
+}
+.m-w-m-text {
+  padding: 10rpx;
+}
+.m-w-m-t-act {
+  color: #4b96fb;
+  border-bottom: solid 5rpx #4b96fb;
+}
+.m-w-m-icon {
+  font-size: 20rpx;
+  color: #666;
+}
+.m-w-m-i-act {
+  color: #4b96fb;
+}
+.my-wallet-menu-view {
+  position: relative;
+}
+.my-wallet-menu-sub {
+  position: absolute;
+  left: 0;
+  top: 80rpx;
+
+  width: 730rpx;
+  padding: 10rpx 0;
+  background: #fff;
+  border-radius: 15rpx;
+}
+.m-w-m-s-item {
+  display: inline-block;
+  width: 150rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  margin: 10rpx 15rpx;
+
+  text-align: center;
+  font-size: 28rpx;
+  color: #999;
+
+  border: solid 2rpx #999;
+  border-radius: 40rpx;
+}
+.m-w-m-s-i-act {
+  color: #4b96fb;
+  border: solid 2rpx #4b96fb;
+}
+
+
+.my-wallet-time {
+  padding: 5rpx 20rpx;
+  font-size: 28rpx;
+  color: #000;
+}

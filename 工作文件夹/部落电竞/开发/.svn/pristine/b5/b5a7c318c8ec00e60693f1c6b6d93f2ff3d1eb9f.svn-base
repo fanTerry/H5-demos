@@ -1,0 +1,5 @@
+<!--component/follow/followtopmenu/follow-top-menu.wxml-->
+<view class='follow-top-menu'>
+  <text class='f-t-m-text' wx:for='{{menuArray}}'>{{item}}</text> <!--响应状态样式：f-t-m-t-act-->
+  <i class='iconfont icon-tianxie f-t-m-icon'></i>
+</view>

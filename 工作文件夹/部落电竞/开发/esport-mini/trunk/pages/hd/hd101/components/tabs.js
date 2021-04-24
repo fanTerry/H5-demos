@@ -1,0 +1,55 @@
+// pages/hd/hd101/components/tabs.js
+Component({
+  /**
+   * 组件的属性列表
+   */
+  properties: {
+    flagNum: Number
+  },
+
+  /**
+   * 组件的初始数据
+   */
+  data: {
+    tabList: [{
+        link: "/pages/hd/hd101/index",
+        class: "rank_record"
+      },
+      {
+        link: "/pages/hd/hd101/ruleslist/ruleslist",
+        class: "rules_lists"
+      },
+      {
+        link: "/pages/hd/hd101/userwallet/userwallet",
+        class: "user_wallet"
+      }
+    ]
+  },
+
+  /**
+   * 组件的方法列表
+   */
+  methods: {
+    gotoAddress: function(event) {
+      // console.log(event.currentTarget.dataset.index,this.data.flagNum);
+      // if(this.data.flagNum != event.currentTarget.dataset.index){
+      // 	this.setData({flagNum:event.currentTarget.dataset.index});
+      // 	wx.navigateTo({
+      // 		url: event.currentTarget.dataset.url
+      // 	})
+      // };
+      var index = event.currentTarget.dataset.index,
+        url = event.currentTarget.dataset.url;
+      if (index == 0) {
+        wx.switchTab({
+          url: url
+        })
+      } else {
+        wx.navigateTo({
+          url: url
+        })
+      }
+
+    }
+  }
+})

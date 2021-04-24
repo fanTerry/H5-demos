@@ -1,0 +1,105 @@
+<template>
+  <div class="Page">
+    <header class="mod_header header_nav_list">
+      <userHeader :num="isIf"></userHeader>
+    </header>
+
+    <div class="main">
+      <banner></banner>
+
+      <!-- 热门专家 -->
+      <section class="mod_expert">
+        <h2 class="expert_title">热门专家</h2>
+        <div class="expert_con">
+          <ul>
+            <li class="item">
+              <img src="" alt="">
+              <p>名字几个字</p>
+            </li>
+            <li class="item">
+              <img src="" alt="">
+              <p>名字几个字</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 热门推荐 -->
+      <section class="mod_expert">
+        <h2 class="expert_title">热门推荐</h2>
+        <hotRecommend></hotRecommend>
+      </section>
+    </div>
+
+    <footer class="mod_footer">
+      <tabbar></tabbar>
+    </footer>
+  </div>
+</template>
+
+<script>
+import tabbar from "../../components/tabbar/index";
+import userHeader from "../../components/header/user_header";
+import banner from "../../components/header/banner";
+import hotRecommend from "../../components/hot_recommend/index";
+export default {
+  data() {
+    return {
+      isIf: false
+    };
+  },
+  methods: {},
+  components: {
+    tabbar,
+    userHeader,
+    banner,
+    hotRecommend
+  }
+};
+</script>
+
+<style lang='scss'>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+@import "../../assets/common/_var.scss";
+
+.expert_title {
+  margin: 14px 0 12px;
+  padding: 0 10px;
+  font-size: 14px;
+  border-left: 2px solid $color_main;
+}
+
+.expert_con {
+  height: 107px;
+  margin: 0 5px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  .item {
+    padding: 20px 15px;
+    font-size: 0;
+    text-align: center;
+  }
+  ul {
+    height: calc(100% + 6px);
+    white-space: nowrap;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+    li {
+      display: inline-block;
+    }
+  }
+  img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+  }
+  p {
+    padding-top: 10px;
+    font-size: 12px;
+    @include t_nowrap(45px);
+    color: #333;
+  }
+}
+</style>

@@ -1,0 +1,327 @@
+<template>
+  <div class="ui_pop">
+    <!-- 积分兑换 -->
+    <div class="pointsExchange">
+      <a class="close" @click="closePop"></a>
+      <h3>积分兑换</h3>
+      <div class="pointsExchange_con">
+        <p class="rules">星星兑换椰子分，奖励积分可用于奖励兑换</p>
+        <div class="exchange_box">
+          <div class="flex_v_justify">
+            <span class="star"></span>
+            <span class="exchange_icon"></span>
+            <span class="coco"></span>
+          </div>
+          <div class="exchange_tips"><span>星星</span><span>椰子分</span></div>
+        </div>
+        <div class="exchange_input">
+          <p class="star_balance">星星余额：{{exchangeStarNum}}</p>
+          <!-- <input class="exchange_num" type="text" placeholder="输入兑换数量"  @blur="BlerText($event)" min="1" > -->
+          <input class="exchange_num " type="text" placeholder="输入兑换星星数量  " v-model="starNum" ref="getValue"
+            v-on:input="inputNum($event)" />
+        </div>
+        <!-- 输入兑换数量后加active -->
+        <div class="exchange_btn">
+          <!-- 加disabled置为不可点击 -->
+          <a :class="{disabled:!showNum}" @click="starExchange">立即兑换</a>
+        </div>
+        <p class="att_tips" v-if="showNum">可兑换椰云积分：{{starNum/1000}}</p>
+      </div>
+      <!-- 输入兑换金额大于星星余额弹窗 -->
+      <div class="pop_tips" v-if="showBalancePop==1">
+        <p>余额不足或不是1000的倍数，请重新输入</p>
+      </div>
+      <div class="pop_tips" v-if="showBalancePop==2">
+        <p>请输入正整数</p>
+      </div>
+      <div class="pop_tips" v-if="showBalancePop==3">
+        <p>兑换星星最少为1000</p>
+      </div>
+      <div class="pop_tips" v-if="showBalancePop==4">
+        <p>兑换成功</p>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script>
+import Vue from "vue";
+import { mapGetters, mapActions } from "vuex";
+export default {
+  components: {},
+  props: ["exchangeStarNum"],
+
+  data() {
+    return {
+      walletRec: null, //用户星星数量
+      showBalancePop: 0, //星星不满足条件时弹出
+      yeYunPoints: "", // 兑换的椰云积分
+      showNum: false,
+      starNum: null,
+      clickControl: 0
+    };
+  },
+  computed: {
+    ...mapGetters({
+      // wxuserStarNum: "getstarNum"
+    }),
+    getstarNum() {
+      // return this.wxuserStarNum.state;
+    }
+  },
+  //实时监听用户星星状态
+  watch: {
+    getstarNum(val) {
+      this.walletRec = val;
+      console.log(val, "666I用户星星");
+    }
+  },
+  methods: {
+    closePop() {
+      this.$emit("closeExchangePop");
+    },
+
+    //定时任务
+    timedTask() {
+      setTimeout(() => {
+        (this.showBalancePop = 0),
+          // (this.starNum = null),
+          (this.showNum = false);
+      }, 1000);
+    },
+    //关闭定时任务
+    closeTimedTask() {
+      setTimeout(() => {
+        (this.showBalancePop = 0),
+          (this.starNum = null),
+          (this.showNum = false);
+        //this.$parent.closeExchangePop();
+      }, 1500);
+    },
+
+    // 兑换椰云积分
+    inputNum(e) {
+      // this.clickControl = 0;
+      this.starNum = e.target.value;
+      console.log(this.starNum);
+      console.log(this.exchangeStarNum, "可兑换星星数量");
+      let boolean = new RegExp("^[1-9][0-9]*$").test(this.starNum);
+      if (!boolean) {
+        this.showNum = false;
+        this.showBalancePop = 2;
+        this.timedTask();
+      } else if (
+        this.starNum >= 1000 &&
+        this.starNum <= this.exchangeStarNum &&
+        this.starNum % 1000 == 0
+      ) {
+        console.log("数字合适");
+        this.showNum = true;
+      } else if (this.starNum > this.exchangeStarNum) {
+        this.showNum = false;
+        this.showBalancePop = 1;
+        this.timedTask();
+      } else {
+        this.showNum = false;
+      }
+    },
+    //防止用户多次点击
+    starExchange() {
+      this.clickControl++;
+      this.affirmStarExchange();
+      console.log(this.clickControl, "点击次数");
+    },
+    //确认点击兑换
+    affirmStarExchange() {
+      if (this.clickControl === 1) {
+        this.showNum = false;
+        console.log("点击兑换1", this.starNum);
+        if (this.starNum < 1000) {
+          this.showBalancePop = 3;
+          this.timedTask();
+        } else if (
+          this.starNum >= 1000 &&
+          this.starNum <= this.exchangeStarNum &&
+          this.starNum % 1000 == 0
+        ) {
+          console.log("确认兑换2", this.starNum);
+          let param = {};
+          param.walletScore = this.starNum;
+          return this.$post("/api/yeYunOrder/exchangeYeYunScore", param)
+            .then(rsp => {
+              this.canSave = true;
+              this.clickControl = 0;
+              const dataResponse = rsp;
+              console.log(dataResponse);
+              if (dataResponse.code == 200) {
+                this.$parent.creditsExchangeShow();
+                this.$parent.queryYeYunPoints();
+                this.showBalancePop = 4;
+                this.closeTimedTask();
+              }
+            })
+            .catch(error => {
+              console.log(error, "兑换连接椰云积分失败");
+            });
+        } else {
+          this.showBalancePop = 1;
+          this.timedTask();
+        }
+      } else {
+        console.log("点击次数过多");
+        this.clickControl = 0;
+        return;
+      }
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.ui_pop > div {
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 10px;
+  top: 6px;
+  width: 20px;
+  height: 20px;
+  @include getBgImg("../../assets/images/guess/close.png");
+}
+
+.rules {
+  padding-bottom: 30px;
+  color: #86564e;
+}
+
+.pop_tips {
+  @extend .g_v_c_mid;
+  width: 215px;
+  padding: 20px 0;
+  text-align: center;
+  p {
+    font-size: 14px;
+    color: #fff;
+  }
+  span {
+    display: block;
+    padding-top: 20px;
+    font-size: 20px;
+    color: #f6b70d;
+  }
+}
+
+.att_tips {
+  padding-top: 10px;
+  font-size: 14px;
+  color: #ba3129;
+}
+
+.pointsExchange {
+  position: relative;
+  width: 100%;
+  margin: 0 10px;
+  background-color: #261314;
+  h3 {
+    line-height: 33px;
+    font-size: 18px;
+    font-weight: normal;
+    color: #fedcd7;
+    background-color: #2e1a1b;
+    text-align: center;
+  }
+}
+
+.pointsExchange_con {
+  margin: 15px auto 0;
+  text-align: center;
+  .exchange_box {
+    width: 150px;
+    margin: 0 auto;
+  }
+  .exchange_tips {
+    @extend .flex_v_justify;
+    width: 160px;
+    padding-top: 12px;
+    font-size: 18px;
+    color: #ffdcd7;
+  }
+  .star,
+  .coco {
+    width: 35px;
+    height: 35px;
+    @include getBgImg("../../assets/images/guess/starday0.png");
+  }
+  .coco {
+    @include getBgImg("../../assets/images/guess/coco_icon.png");
+  }
+  .exchange_icon {
+    width: 30px;
+    height: 30px;
+    @include getBgImg("../../assets/images/guess/exchange_points.png");
+  }
+
+  .exchange_input {
+    width: 250px;
+    margin: 34px auto 0;
+  }
+
+  .star_balance {
+    color: #86564e;
+    text-align: left;
+  }
+  .exchange_num {
+    width: 100%;
+    margin-top: 8px;
+    line-height: 35px;
+    font-size: 16px;
+    color: #fff;
+    text-align: center;
+    border: 1px solid #3e2428;
+    background-color: #231416;
+  }
+  .exchange_btn {
+    margin-top: 18px;
+    padding: 10px 0 15px;
+    @include getBgImg("../../assets/images/guess/shadow.png");
+    background-size: 100% auto;
+    background-position: top center;
+    a {
+      display: block;
+      width: 140px;
+      margin: 0 auto;
+      border-radius: 3px;
+      line-height: 33px;
+      font-size: 14px;
+      color: #fff;
+      background: linear-gradient(to bottom, #df2f26, #86171a);
+      background: -webkit-linear-gradient(top, #df2f26, #86171a);
+    }
+    .disabled {
+      opacity: 0.2;
+    }
+  }
+  input::-webkit-input-placeholder {
+    /* Chrome/Opera/Safari */
+    color: #3e2428;
+  }
+  input::-moz-placeholder {
+    /* Firefox 19+ */
+    color: #3e2428;
+  }
+  input:-ms-input-placeholder {
+    /* IE 10+ */
+    color: #3e2428;
+  }
+  input:-moz-placeholder {
+    /* Firefox 18- */
+    color: #3e2428;
+  }
+}
+</style>

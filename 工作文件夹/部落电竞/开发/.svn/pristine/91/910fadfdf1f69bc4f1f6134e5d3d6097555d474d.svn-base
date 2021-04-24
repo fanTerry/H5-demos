@@ -1,0 +1,77 @@
+package com.esportzoo.esport.controller.user;
+
+import com.alibaba.fastjson.JSONObject;
+import com.esportzoo.common.appmodel.page.DataPage;
+import com.esportzoo.esport.connect.response.CommonResponse;
+import com.esportzoo.esport.controller.BaseController;
+import com.esportzoo.esport.domain.UserCenterInfoVo;
+import com.esportzoo.esport.domain.UserConsumer;
+import com.esportzoo.esport.domain.UserWalletLogRec;
+import com.esportzoo.esport.manager.UserCenterManager;
+import com.esportzoo.esport.manager.UserWalletManager;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ * @description: 个人中心数据获取
+ *
+ * @author: Haitao.Li
+ *
+ * @create: 2019-05-20 09:29
+ **/
+@Controller
+@RequestMapping("usercenter")
+public class UserCenterController  extends BaseController {
+
+	private transient final Logger logger = LoggerFactory.getLogger(getClass());
+
+	@Autowired
+	private UserCenterManager userCenterManager;
+	@Autowired
+	private UserWalletManager userWalletManager;
+
+
+	@RequestMapping(value = "/ucIndexdata", produces = "application/json; charset=utf-8", method = RequestMethod.POST)
+	@ApiOperation(value = "个人中心首页数据接口", httpMethod = "POST", consumes = "application/x-www-form-urlencoded", produces = "application/json")
+	@ApiResponse(code = 200, message = "个人中心首页数据接口", response = CommonResponse.class)
+	@ResponseBody
+	public CommonResponse<UserCenterInfoVo> ucIndexdata(HttpServletRequest request) {
+		UserCenterInfoVo userCenterInfoVo = new UserCenterInfoVo();
+		UserConsumer userConsumer = getLoginUsr(request);
+		if (userConsumer!=null){
+			 userCenterInfoVo = userCenterManager.getUserInfo(userConsumer.getId());
+		}
+		return CommonResponse.withSuccessResp(userCenterInfoVo);
+	}
+
+
+	@RequestMapping(value = "/getWalletLog", produces = "application/json; charset=utf-8", method = RequestMethod.POST)
+	@ApiOperation(value = "获取用户钱包流水", httpMethod = "POST", consumes = "application/x-www-form-urlencoded", produces = "application/json")
+	@ApiResponse(code = 200, message = "获取用户钱包流水", response = CommonResponse.class)
+	@ResponseBody
+	public CommonResponse<JSONObject> getWalletLog(HttpServletRequest request, Integer pageNo, Integer pageSize,Integer type) {
+		UserConsumer userConsumer = getLoginUsr(request);
+		DataPage<UserWalletLogRec> page = new DataPage<>();
+		if (pageNo != null) {
+			page.setPageNo(pageNo);
+		}
+		if (pageSize != null) {
+			page.setPageSize(pageSize);
+		}
+		CommonResponse<JSONObject> commonResponse = userWalletManager.getPageUserWalletLog(userConsumer.getId(), page,type);
+		return commonResponse;
+
+	}
+
+
+
+}

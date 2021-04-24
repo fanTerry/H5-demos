@@ -1,0 +1,33 @@
+// component/newslist/newsimageitem/news-image-item.js
+Component({
+  /**
+   * 组件的属性列表
+   */
+  properties: {
+    newsData: Object
+  },
+
+  /**
+   * 组件的初始数据
+   */
+  data: {
+
+  },
+
+  /**
+   * 组件的方法列表
+   */
+  methods: {
+
+      gotoDetail:function () {
+        var _self = this;
+        var toUrl = '/modules/articlepage/article-page?type=1&id=' + _self.data.newsData.aricleId;
+        if (_self.data.newsData.type==2){
+          toUrl = '/modules/articlepage/article-page?type=3&id=' + _self.data.newsData.aricleId;
+        }
+        wx.navigateTo({
+              url: toUrl
+          })
+      }
+  }
+})

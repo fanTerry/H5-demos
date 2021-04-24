@@ -1,0 +1,12 @@
+daily_mvn=-U -e clean package -Dmaven.test.skip=true -Pdaily
+daily_ip=192.168.9.230
+daily_www=/data0/www/esport/interface/ROOT.war
+daily_tomcat=/data0/opt/esport/tomcat7_interface
+#daily_host=daily-api.esportzoo.com
+
+beta_mvn=-U -e clean package -Dmaven.test.skip=true -Pproduct
+beta_ip=47.112.96.253
+beta_www=/data0/www/esport/interface/ROOT.war
+beta_tomcat=/data0/opt/esport/tomcat7_interface
+#beta_host=beta-api.esportzoo.com
+

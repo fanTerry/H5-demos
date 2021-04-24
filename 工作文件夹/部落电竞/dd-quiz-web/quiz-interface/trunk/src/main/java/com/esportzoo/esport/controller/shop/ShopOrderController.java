@@ -1,0 +1,283 @@
+package com.esportzoo.esport.controller.shop;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.esportzoo.common.appmodel.domain.result.ModelResult;
+import com.esportzoo.common.util.MathUtil;
+import com.esportzoo.esport.client.service.shop.ShopGoodsServiceClient;
+import com.esportzoo.esport.client.service.shop.ShopOrderServiceClient;
+import com.esportzoo.esport.connect.request.BaseRequest;
+import com.esportzoo.esport.connect.request.shop.ShopSubmitOrderRequest;
+import com.esportzoo.esport.connect.response.CommonResponse;
+import com.esportzoo.esport.connect.response.ShopOrderStatusShow;
+import com.esportzoo.esport.connect.response.payment.PayOrderResponse;
+import com.esportzoo.esport.constants.EsportPayway;
+import com.esportzoo.esport.constants.SysConfigPropertyKey;
+import com.esportzoo.esport.constants.UserOperationParam;
+import com.esportzoo.esport.constants.shop.ShopAddressStatus;
+import com.esportzoo.esport.constants.shop.ShopGoodsStatus;
+import com.esportzoo.esport.constants.shop.ShopGoodsType;
+import com.esportzoo.esport.controller.BaseController;
+import com.esportzoo.esport.domain.*;
+import com.esportzoo.esport.manager.ShopManager;
+import com.esportzoo.esport.manager.UserWalletManager;
+import com.esportzoo.esport.manager.goods.ShopAddressManager;
+import com.esportzoo.esport.util.RequestUtil;
+import com.esportzoo.esport.vo.ChargePayRequest;
+import com.esportzoo.esport.vo.partner.UboxBalanceVo;
+import com.esportzoo.esport.vo.shop.GoodsExchangeParam;
+import com.esportzoo.esport.vo.shop.GoodsInfoVo;
+import com.esportzoo.esport.vo.shop.ShopOrderDetailVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 商城订单相关接口
+ * 
+ * @author wujing
+ */
+@Controller
+@RequestMapping("shopOrder")
+@Api(value = "商城订单相关接口", tags = { "商城订单相关接口" })
+public class ShopOrderController extends BaseController {
+
+	private transient final Logger logger = LoggerFactory.getLogger(getClass());
+
+	@Autowired
+	private ShopManager shopManager;
+
+	@Value("${shop.image.host}")
+	private String shopImageHost;
+
+	@Autowired
+	private ShopAddressManager shopAddressManager;
+	@Autowired
+	private UserWalletManager userWalletManager;
+
+	@Autowired
+	@Qualifier("shopGoodsServiceClient")
+	private ShopGoodsServiceClient shopGoodsServiceClient;
+
+	@Autowired
+	@Qualifier("shopOrderServiceClient")
+	ShopOrderServiceClient shopOrderServiceClient;
+
+	@Value("${appId}")
+	private String appId;
+	@Value("${signKey}")
+	private String signKey;
+	
+
+	@ApiOperation(value = "商品兑换订单接口", httpMethod = "POST", consumes = "application/x-www-form-urlencoded", produces = "application/json")
+	@ApiResponse(code = 200, message = "", response = CommonResponse.class)
+	@RequestMapping(value = "/submit/{goodsId}", method = RequestMethod.POST)
+	@ResponseBody
+	public CommonResponse<PayOrderResponse> exchangeGoods(@ApiParam(required = true, name = "商品id") @PathVariable("goodsId") Long goodsId, ShopSubmitOrderRequest submitOrderRequest, HttpServletRequest request) {
+		PayOrderResponse resp = new PayOrderResponse();
+		try {
+			UserConsumer userConsumer = getLoginUsr(request);
+			if (userConsumer == null) {
+				logger.info("商品兑换订单接口,未获取到登录用户信息，goodsId={}", goodsId);
+				return CommonResponse.withErrorResp("未获取到登录用户信息");
+			}
+			if (null == submitOrderRequest.getChoosedPayWay()) {
+				return CommonResponse.withErrorResp("请选择支付方式");
+			}
+			if (null == EsportPayway.valueOf(submitOrderRequest.getChoosedPayWay())) {
+				return CommonResponse.withErrorResp("选择的支付方式不对");
+			}
+			logger.info("商品兑换订单接口,用户id:{},用户昵称:{},传入参数:{}", userConsumer.getId(), userConsumer.getNickName(), JSONObject.toJSONString(submitOrderRequest));
+			/**
+			 * 1.是否填写了地址,地址是否属于该用户 2.礼品是否充足 3.用户钱包是否足够
+			 */
+			Long addressId = submitOrderRequest.getAddressId();
+			if (null == submitOrderRequest.getGoodsId() || null == submitOrderRequest.getNum() || null == submitOrderRequest.getChoosedPayWay()) {
+				logger.info("商品兑换订单接口,必要参数为空,goodsId={},用户id:{}", goodsId, userConsumer.getId());
+				return CommonResponse.withErrorResp("兑换订单必要参数为空");
+			}
+			// 判断礼品状态和礼品是否充足
+			ModelResult<ShopGoods> modelResult = shopGoodsServiceClient.queryById(submitOrderRequest.getGoodsId());
+			if (null == modelResult || !modelResult.isSuccess() || null == modelResult.getModel()) {
+				logger.info("商品兑换订单接口,查询商品详情接口错误,goodsId={},用户id:{}", goodsId, userConsumer.getId());
+				return CommonResponse.withErrorResp("查询商品详情异常");
+			}
+			ShopGoods shopGoods = modelResult.getModel();
+			// 礼品状态不可兑换 或者礼品无库存或者礼品库存小于用户想兑换的数量
+			if (shopGoods.getStatus().intValue() != ShopGoodsStatus.ABLE_EXCHANGE.getIndex()
+					|| null == shopGoods.getStock() || 0 == shopGoods.getStock()
+					|| shopGoods.getStock().intValue() < submitOrderRequest.getNum().intValue()) {
+				logger.info("商品兑换订单接口,礼品状态异常或库存不足,goodsId={},用户id:{},商品库存:{},用户兑换数量:{}", goodsId, userConsumer.getId(), shopGoods.getStock(), submitOrderRequest.getNum());
+				return CommonResponse.withErrorResp("礼品库存不足");
+			}
+			// 礼品是实物判断地址
+			if (shopGoods.getType().intValue() == ShopGoodsType.PHYSICAL_GOODS.getIndex()) {
+				if (null == addressId) {
+					logger.info("商品兑换订单接口,礼品是实物地址为空,goodsId={},用户id:{}", goodsId, userConsumer.getId());
+					return CommonResponse.withErrorResp("地址为空");
+				}
+				// 判断用户地址信息
+				ShopAddress userAddress = shopAddressManager.getShopAddressById(addressId);
+				if (null == userAddress || userAddress.getUserId().intValue() != userConsumer.getId().intValue()
+						|| userAddress.getStatus().intValue() != ShopAddressStatus.VALID.getIndex()) {
+					logger.info("商品兑换订单接口,用户地址不存在或不属于当前用户或地址无效,goodsId={},地址id:{},用户id:{}", goodsId, userAddress.getId(), userConsumer.getId());
+					return CommonResponse.withErrorResp("未填写地址");
+				}
+			}
+			int choosedPayWay = submitOrderRequest.getChoosedPayWay().intValue();
+			// 判断用户钱包信息
+			if (choosedPayWay == EsportPayway.UBOX_PAY.getIndex()) {
+				UboxBalanceVo vo = userWalletManager.getUboxBalance(userConsumer.getId());
+				if (null != vo) {
+					BigDecimal uboxBanlance = new BigDecimal(vo.getBalance()).divide(new BigDecimal(100));
+					if (uboxBanlance.compareTo(MathUtil.smaller1000(shopGoods.getPayScore())) < 0) {
+						logger.info("商品兑换订单接口,用户友宝钱包者余额不足,goodsId={},用户id:{},uboxBanlance={}", goodsId, userConsumer.getId(), JSONObject.toJSONString(uboxBanlance));
+						return CommonResponse.withErrorResp("友宝余额不足");
+					}
+				} else {
+					logger.info("商品兑换订单接口,用户友宝钱包为空,goodsId={},用户id:{}", goodsId, userConsumer.getId());
+					return CommonResponse.withErrorResp("友宝余额不足");
+				}
+			} else if (choosedPayWay == EsportPayway.REC_PAY.getIndex()) {
+				UserWalletRec userWalletRec = userWalletManager.getUserWalletRec(userConsumer.getId());
+				if (null == userWalletRec || userWalletRec.getAbleRecScore().compareTo(shopGoods.getPayScore()) < 0) {
+					logger.info("商品兑换订单接口,用户星星钱包为空或者余额不足,goodsId={},用户id:{},userWalletRec={}", goodsId, userConsumer.getId(), JSONObject.toJSONString(userWalletRec));
+					return CommonResponse.withErrorResp("星星余额不足");
+				}
+			}
+			// 校验通过
+			GoodsExchangeParam goodsExchangeParam = new GoodsExchangeParam();
+			goodsExchangeParam.setUserId(userConsumer.getId());
+			goodsExchangeParam.setAccount(userConsumer.getAccount());
+			goodsExchangeParam.setAddressId(addressId);
+			// 兑换商品
+			GoodsInfoVo goods = new GoodsInfoVo(submitOrderRequest.getGoodsId(), submitOrderRequest.getNum());
+			Map<Long, GoodsInfoVo> goodsMap = new HashMap<Long, GoodsInfoVo>();
+			goodsMap.put(submitOrderRequest.getGoodsId(), goods);
+			goodsExchangeParam.setGoodsMap(goodsMap);
+			goodsExchangeParam.setRemark(submitOrderRequest.getRemark());
+			goodsExchangeParam.setEsportPayway(submitOrderRequest.getChoosedPayWay());
+			UserOperationParam userOperationParam = new UserOperationParam();
+			userOperationParam.setOperIp(RequestUtil.getClientIp(request));
+			userOperationParam.setClientType(submitOrderRequest.getClientType());
+			userOperationParam.setChannelNo(submitOrderRequest.getAgentId());
+			ModelResult<ChargePayRequest> modelOrderResult = shopOrderServiceClient.shopGoodsExchange(goodsExchangeParam, userOperationParam);
+			if (modelOrderResult == null || !modelOrderResult.isSuccess() || null == modelOrderResult.getModel()) {
+				logger.info("商品兑换订单接口,调用商品兑换接口异常,goodsId={},用户id:{},modelOrderResult={}", goodsId, userConsumer.getId(), JSONObject.toJSONString(modelOrderResult));
+				return CommonResponse.withErrorResp("服务繁忙,请稍后再试~");
+			}
+			BeanUtils.copyProperties(modelOrderResult.getModel(), resp);
+			resp.setSuccessFlag(true);
+			resp.setChargeWay(choosedPayWay);
+			logger.info("商品兑换订单接口,商品兑换成功,goodsId={},用户id:{},modelOrderResult={}", goodsId, userConsumer.getId(), JSONObject.toJSONString(modelOrderResult));
+		} catch (Exception e) {
+			logger.info("根据id获取shopGoods详情，发生异常，goodsId={}，exception={}", goodsId, e.getMessage(), e);
+			return CommonResponse.withErrorResp(e.getMessage());
+		}
+		return CommonResponse.withSuccessResp(resp);
+	}
+
+	@ApiOperation(value = "订单详情接口", httpMethod = "POST", consumes = "application/x-www-form-urlencoded", produces = "application/json")
+	@ApiResponse(code = 200, message = "", response = CommonResponse.class)
+	@RequestMapping(value = "/orderdetail/{orderId}", method = RequestMethod.POST)
+	@ResponseBody
+	public CommonResponse<ShopOrderDetailVo> getShopOrderDetail(@ApiParam(required = true, name = "订单id") @PathVariable("orderId") Long orderId, HttpServletRequest request) {
+		String logPrefix = "获取订单详情_orderId=" + orderId + "_";
+		try {
+			UserConsumer userConsumer = getLoginUsr(request);
+			if (userConsumer == null) {
+				return CommonResponse.withErrorResp("未获取到用户信息");
+			}
+			ModelResult<ShopOrderDetailVo> modelResult = shopOrderServiceClient.getShopOrderDetail(orderId);
+			if (!modelResult.isSuccess()) {
+				logger.info(logPrefix + "接口返回错误errCode={},errMsg={}", modelResult.getErrorCode(), modelResult.getErrorMsg());
+				return CommonResponse.withErrorResp("接口错误");
+			}
+			ShopOrderDetailVo detailVo = modelResult.getModel();
+			if (detailVo == null) {
+				logger.info(logPrefix + "接口返回结果为空");
+				return CommonResponse.withErrorResp("接口返回结果为空");
+			}
+			if (detailVo.getUserId().longValue() != userConsumer.getId().longValue()) {
+				logger.info(logPrefix + "只有用户自己才能查看");
+				return CommonResponse.withErrorResp("只有用户自己才能查看");
+			}
+			if (detailVo.getGoodList() != null && detailVo.getGoodList().size() > 0) {
+				detailVo.getGoodList().forEach(eachGood -> {
+					eachGood.setGoodIcon(shopImageHost + eachGood.getGoodIcon());
+				});
+			}
+			//需要缩小倍数
+			if (detailVo.getPayType()==3){
+				detailVo.setPayScore(MathUtil.smaller1000(detailVo.getPayScore()));
+			}
+			return CommonResponse.withSuccessResp(detailVo);
+		} catch (Exception e) {
+			logger.info(logPrefix + "发生异常e={}", e.getMessage(), e);
+			return CommonResponse.withErrorResp("系统异常");
+		}
+	}
+	
+	
+	@ApiOperation(value = "订单状态前端展示接口", httpMethod = "GET", consumes = "application/x-www-form-urlencoded", produces = "application/json")
+	@ApiResponse(code = 200, message = "", response = CommonResponse.class)
+	@RequestMapping(value = "/orderstatus", method = RequestMethod.GET)
+	@ResponseBody
+	public CommonResponse<List<ShopOrderStatusShow>> getOrderstatusShowList(BaseRequest baseRequest) {
+		String logPrefix = "订单状态前端展示接口_";
+		try {
+			List<ShopOrderStatusShow> list = new ArrayList<>();
+			SysConfigProperty sysConfigProperty = getSysConfigByKey(SysConfigPropertyKey.SHOP_ORDER_STATUS_FRONT_SHOW, baseRequest.getClientType(),baseRequest.getAgentId());
+			String configValue = sysConfigProperty.getValue();
+			list = JSON.parseArray(configValue, ShopOrderStatusShow.class);
+			return CommonResponse.withSuccessResp(list);
+		} catch (Exception e) {
+			logger.info(logPrefix + "发生异常e={}", e.getMessage(), e);
+			return CommonResponse.withErrorResp("系统异常");
+		}
+	}
+
+/*	private Map<String, String> getWeixinPayRespParam(String prepayId) {
+		Map<String, String> requestParams = new HashMap<>();
+		*//** 微信支付返回参数组装 *//*
+		String timeStamp = WxpayUtil.getTimeStampStr();
+		String nonceStr = WxpayUtil.getRandomNonceStr(32);
+		requestParams.put("timeStamp", timeStamp);
+		requestParams.put("nonceStr", nonceStr);
+		requestParams.put("prepayId", prepayId);
+		requestParams.put("paySign", getSign(timeStamp, nonceStr, prepayId));
+		return requestParams;
+	}
+
+	private String getSign(String timeStamp, String nonceStr, String prepayId) {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("appId", appId);
+		params.put("timeStamp", timeStamp);
+		params.put("nonceStr", nonceStr);
+		params.put("package", "prepay_id=" + prepayId);
+		params.put("signType", "MD5");
+		String sign = WxpayUtil.createMd5Sign(params, signKey);
+		logger.info("唤起微信支付参数timeStamp={},nonceStr={},prepayId={},appId={},signKey={},sign={}",
+				timeStamp, nonceStr, prepayId, appId, signKey, sign);
+		return sign;
+	}*/
+}

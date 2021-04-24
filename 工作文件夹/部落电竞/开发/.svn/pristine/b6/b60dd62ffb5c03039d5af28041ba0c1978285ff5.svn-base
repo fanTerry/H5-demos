@@ -1,0 +1,144 @@
+/* component/reportlist/report-item.wxss */
+
+.report-item-detail {
+  width: 710rpx;
+  height: 100rpx;
+  margin: 0 auto;
+  padding: 30rpx 0 20rpx 0;
+  border-bottom: solid 1rpx #ddd;
+}
+
+.r-p-i-info {
+  width: 700rpx;
+  height: 40rpx;
+  position: absolute;
+  left: 0;
+  top: -2rpx;
+}
+.r-p-i-icon-live {
+  width: 60rpx;
+  height: 30rpx;
+  margin-left: 10rpx;
+}
+.r-p-i-i-num {
+  font-size: 24rpx;
+  color: #f87600;
+}
+
+.r-p-i-r1 {
+  width: 50rpx;
+  padding-left: 10rpx;
+}
+.r-p-i-title {
+  color: #9f9f9f;
+  font-size: 24rpx;
+  font-weight: bold;
+  line-height: 35rpx;
+}
+.r-p-i-r2 {
+  width: 200rpx;
+}
+.r-p-i-r4 {
+  width: 200rpx;
+}
+.r-p-i-d-text {
+  color: #9f9f9f;
+  font-size: 28rpx;
+
+  line-height: 70rpx;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+.r-p-i-r3 {
+  width: 80rpx;
+}
+.r-p-i-score {
+  font-size: 36rpx;
+  padding: 0 5rpx;
+
+  color: #686868;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.r-p-i-s-win {
+  color: #138bfe;
+}
+
+
+.r-p-i-r5 {
+  width: 110rpx;
+  text-align: right;
+}
+
+.r-p-i-i {
+  font-size: 38rpx;
+  color: #e8e8e8;
+}
+.r-p-i-i-cur {
+  color: #f87600;
+}
+
+.r-p-i-d-img-gift {
+  width: 55rpx;
+  height: 55rpx;
+  margin-top: 15rpx;
+}
+
+.r-p-i-d-img {
+  width: 60rpx;
+  height: 60rpx;
+}
+.r-p-i-d-txt {
+  line-height: 10rpx;
+  font-weight: bold;
+}
+
+.r-p-i-d-score {
+  text-align: center;
+}
+.r-p-i-d-s-num {
+  width: 60rpx;
+  font-size: 40rpx;
+  font-weight: bold;
+}
+.r-p-i-d-time {
+  font-size: 24rpx;
+  color: #767676;
+}
+
+
+
+
+.r-p-i-status-view {
+  width: 110rpx;
+  height: 40rpx;
+
+  position: absolute;
+  left: 260rpx;
+  bottom: 15rpx;
+}
+.r-p-i-d-s-status {
+  width: 110rpx;
+  line-height: 40rpx;
+  text-align: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #fff;
+  margin: 0 auto;
+
+  background: #d8d9db;
+  border-radius: 30rpx;
+}
+.r-p-i-d-s-s-before {
+  background: #44a24c;
+}
+
+.r-p-i-d-s-s-ing {
+  background: #fea21b;
+}
+
+.r-p-i-d-s-s-over {
+  background: #d8d9db
+}
+
+
+
+

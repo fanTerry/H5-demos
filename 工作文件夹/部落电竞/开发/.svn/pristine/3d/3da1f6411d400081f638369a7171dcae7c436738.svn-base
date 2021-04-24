@@ -1,0 +1,72 @@
+<!--component/popup/ppexpert/pp-expert.wxml-->
+<!-- 专家支付相关弹框 -->
+
+<!-- 遮罩层:TODO:需要禁止页面的滚动-->
+<view class='popup-bg'></view>
+
+<!-- 余额不足请充值提示框 -->
+<view class='popup-view pp-expert-recharge'>
+
+  <i class='iconfont icon-guanbi popup-close'></i>
+
+  <view class='popup-title'>抱歉！余额不足请充值哦！</view>
+
+  <view class='popup-content pp-expert-content'>
+    <!-- 支付元素列表 -->
+    <expert-rech-item wx:for="abcdef" class=''></expert-rech-item>
+
+    <!-- 网络出错情况 -->
+    <view class='pp-expert-net-error dsp-none'>
+      <image class="pp-e-n-e-image" src="/resources/images/sleep.png" mode="aspectFill" />
+      <view class='pp-e-n-e-text'>
+        <text>抱歉！开发哥哥睡着了，再试一次好么？</text>
+      </view>
+    </view>
+
+    <!-- 提示tips:充值成功 -->
+    <!-- <view class='pp-expert-tip'>
+      <view class='pp-tip'>
+        <i class='iconfont icon-yichoujine pp-tip-icon'></i>
+        <text>恭喜！充值成功！</text>
+      </view>
+    </view> -->
+
+    <!-- 提示tips:充值中 -->
+    <view class='pp-expert-tip'>
+      <div class="lds-default">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <view class='pp-tip pp-tip-ing'>
+        <text>支付中</text>
+      </view>
+    </view>
+
+  </view>
+
+  <view class='pp-expert-note'>
+    <text class='pp-e-n-text'>我的余额：</text>
+    <text class='pp-e-n-num'>38</text>
+    <text class='pp-e-n-coin'>金币</text>
+  </view>
+  <view class='popup-btn-view'>
+    <view class='popup-btn pp-btn-gray'>
+      <i class='iconfont icon-yichoujine pp-icon'></i>
+      <text>金币支付</text>
+    </view>
+    <view class='popup-btn pp-btn-green'>
+      <i class='iconfont icon-yichoujine pp-icon'></i>
+      <text>微信支付</text>
+    </view>
+  </view>
+</view>

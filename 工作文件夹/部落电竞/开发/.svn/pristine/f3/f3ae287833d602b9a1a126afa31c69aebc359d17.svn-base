@@ -1,0 +1,84 @@
+<template>
+  <nav class="nav_list">
+    <ul>
+      <li :class="{active:selectedTab==item.contentType}" @click="changeTab(item.contentType)"
+        v-for="(item,index) in dataList" :key="index">{{item.name}}</li>
+    </ul>
+    <!-- <div class="list_more"></div> -->
+  </nav>
+</template>
+
+<script>
+export default {
+  props: {
+    dataList: Array
+  },
+  data() {
+    return {
+      selectedTab: window.localStorage.selectedTab?window.localStorage.selectedTab:1
+    };
+  },
+  methods: {
+    changeTab(tabId) {
+      console.log("切换到tabid=", tabId);
+      if (tabId == this.selectedTab) {
+        return;
+      }
+      this.selectedTab = tabId;
+      this.$emit("changeTab", tabId);
+    }
+  },
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base.scss";
+@import "../../../assets/common/_mixin.scss";
+.nav_list {
+  position: relative;
+  height: 37px;
+  padding-right: 40px;
+  overflow: hidden;
+  @include getBorder(bottom, #ddd);
+  background-color: #fff;
+  ul {
+    height: calc(100% + 6px);
+    padding-left: 5px;
+    font-size: 0;
+    white-space: nowrap;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+  li {
+    display: inline-block;
+    padding: 12px;
+    margin-right: 10px;
+    font-size: 13px;
+    color: #818181;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+  .active {
+    position: relative;
+    &::after {
+      content: "";
+      @extend .g_c_mid;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      color: #ff7e00;
+      background-color: #ff7e00;
+    }
+  }
+  .list_more {
+    @extend .g_v_mid;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    @include getBgImg("../../../assets/images/home/list_more.png");
+    background-size: 16px;
+  }
+}
+</style>

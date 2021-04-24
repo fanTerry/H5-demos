@@ -1,0 +1,66 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navList></navList>
+      <div class="search_con">
+        <input type="text" placeholder="搜索话题">
+        <i class="search"></i>
+      </div>
+    </header>
+
+    <div class="main">
+      <section class="user_list">
+        <h2>A</h2>
+        <userInfo></userInfo>
+      </section>
+    </div>
+  </div>
+</template>
+
+<script>
+import navList from "../../components/header/nav_list/index";
+import userInfo from "../../components/user_info/index";
+
+export default {
+  data() {
+    return {};
+  },
+  methods: {},
+  components: {
+    navList,
+    userInfo
+  }
+};
+</script>
+
+<style lang='scss'>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+@import "../../assets/common/_var.scss";
+@import "../../assets/common/iconfont.css";
+
+.main {
+  padding: 0 5px;
+}
+
+.search_con {
+  position: relative;
+  @extend .flex;
+  margin: 7px 45px;
+  input {
+    flex: 1;
+    height: 24px;
+    padding-left: 30px;
+    border-radius: 24px;
+    background-color: #fff;
+    border: none;
+  }
+  .search {
+    @extend .g_v_mid;
+    left: 7px;
+    width: 16px;
+    height: 16px;
+    @include getBgImg("../../assets/images/home/search.png");
+  }
+}
+</style>

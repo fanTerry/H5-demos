@@ -1,0 +1,12 @@
+<!--component/report/oddlockitem/odd-lock-item.wxml-->
+<view class='odd-lock-item'>
+  <view class='odd-lock-item-tit'><text>全场获胜者</text></view>
+  <view class='dsp-table'>
+    <view wx:for="ab" wx:key="" class='dsp-cell'>
+      <view class='odd-lock-item-rect'>
+        <view class='o-l-i-r-txt'><text>LDLC</text></view>
+        <i class='iconfont icon-xiaosuotou icon-clock'></i>
+      </view>
+    </view>
+  </view>
+</view>

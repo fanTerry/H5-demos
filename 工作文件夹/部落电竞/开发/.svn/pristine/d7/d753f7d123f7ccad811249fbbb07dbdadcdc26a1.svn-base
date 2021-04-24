@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "report-expert-item": "/component/reportlist/reportexpertitem/report-expert-item",
+    "no-data": "/component/comm/no-data/no-data"
+  }
+}

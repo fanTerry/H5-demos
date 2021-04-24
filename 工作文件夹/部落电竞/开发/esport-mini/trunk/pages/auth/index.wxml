@@ -1,0 +1,46 @@
+<!--index.wxml-->
+<view wx:if="{{canIUse}}">
+    <view class='header'>
+        <image src='https://rs.esportzoo.com/svn/esport-res/mini/images/icon/avatar.png'></image>
+    </view>
+    <view class='content'>
+        <view>您暂未授权“橘子电竞”小程序获取你的信息,将无法正常使用小程序的功能。如需要正常使用，请点击“授权”按钮</view>
+        <text>获得你的公开信息(昵称，头像等)</text>
+    </view>
+
+    <button class='bottom' type='primary' open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="bindGetUserInfo">
+        授权登录
+    </button>
+</view>
+
+<view wx:else>请升级微信版本</view>
+
+
+<!--  定义模板
+  1. 使用 template 标签
+  2. 使用 name 属性为模板命名
+ -->
+<!-- <template name="access-box">
+  <view class='box'>
+    <view class='msg-box'>
+      <text class='title'>{{title}}</text>
+      <view class='line'/>
+      <text class='msg'> {{msg}} </text>
+      <view class='btn'>
+        <button type='primary' bindtap='cancle' class='btn-cancle'>{{cancle}}</button>
+        <button type='primary' class='btn-confirm' open-type='getUserInfo' bindgetuserinfo='getUserInfo'>{{confirm}}</button>
+      </view>
+  </view>
+  </view>
+  
+</template>
+
+<template is="access-box" data="{{...access}}"/> -->
+
+<!-- <template is="msgItem" data="{{...item}}"><template> -->
+<!--
+1.  ... 代表循环/遍历
+2. 引用模板时，template 只需单个标签，形如：<template />
+3. 用 is 属性指定使用哪个模板
+4. data 属性存放需要的数据
+-->

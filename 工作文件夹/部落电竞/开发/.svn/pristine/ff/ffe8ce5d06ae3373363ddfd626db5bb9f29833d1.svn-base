@@ -1,0 +1,60 @@
+package com.esportzoo.esport.controller;
+
+import com.alibaba.fastjson.JSONObject;
+import com.esportzoo.esport.connect.request.CmsContentRequest;
+import com.esportzoo.esport.connect.response.CommonResponse;
+import com.esportzoo.esport.domain.NewsListVo;
+import com.esportzoo.esport.manager.CmsContentManager;
+import com.esportzoo.esport.manager.IndexManager;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+/**
+ * 首页数据
+ * @author: wujing
+ * @date:2019年4月18日下午4:36:05
+ */
+@Controller
+@Api(value = "首页数据接口", tags = { "首页的controller" })
+public class IndexController  {
+
+	private transient final Logger logger = LoggerFactory.getLogger(getClass());
+
+	@Autowired
+	IndexManager indexManager;
+
+	@Autowired
+	CmsContentManager cmsContentManager;
+
+	@RequestMapping(value = "/indexData", produces = "application/json; charset=utf-8", method = RequestMethod.POST)
+	@ApiOperation(value = "首页数据接口POST", httpMethod = "POST", consumes = "application/x-www-form-urlencoded", produces = "application/json")
+	@ApiResponse(code = 200, message = "首页数据POST", response = CommonResponse.class)
+	public @ResponseBody CommonResponse<JSONObject> index(HttpServletRequest request) {
+
+		CommonResponse<JSONObject> data = indexManager.getIndexData();
+		return data;
+	}
+
+
+	@RequestMapping(value = "/newlist", produces = "application/json; charset=utf-8", method = RequestMethod.POST)
+	@ApiOperation(value = "资讯内容列表接口POST", httpMethod = "POST", consumes = "application/x-www-form-urlencoded", produces = "application/json")
+	@ApiResponse(code = 200, message = "资讯内容列表接口POST", response = CommonResponse.class)
+	public @ResponseBody CommonResponse<List<NewsListVo>> newlist(HttpServletRequest request, CmsContentRequest cmsContentRequest) {
+		List<NewsListVo> contentList = cmsContentManager.getCmsContentList(cmsContentRequest);
+		return CommonResponse.withSuccessResp(contentList);
+	}
+
+
+
+}

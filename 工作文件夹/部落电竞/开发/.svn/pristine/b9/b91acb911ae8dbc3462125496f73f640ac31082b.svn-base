@@ -1,0 +1,79 @@
+<template>
+  <div>
+    <a class="release_btn" @click="showPublish=true"></a>
+    <div class="ui_pop" :class="{fadeToTop:showPublish}" @click="showPublish=false">
+      <div class="tab">
+        <div class="active" @click="toPublish(3)">短文</div>
+        <div @click="toPublish(5)">视频</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  props: [],
+  data() {
+    return {
+      showPublish: false
+    };
+  },
+  methods: {
+    toPublish(type) {
+      this.showPublish = false;
+      this.$router.push({
+        name: "publishEssays",
+        query: {
+          type: type
+        }
+      });
+    }
+  },
+
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+@import "../../assets/common/_var.scss";
+
+.release_btn {
+  position: fixed;
+  right: 5px;
+  bottom: 100px;
+  width: 56px;
+  height: 56px;
+  @include getBgImg("../../assets/images/follow/release_icon.png");
+}
+
+.ui_pop {
+  transform: translateY(100%);
+  -webkit-transform: translateY(100%);
+  .tab {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    @extend .flex;
+    background-color: #fff;
+    @media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+      only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+      padding-bottom: constant(safe-area-inset-bottom) !important;
+      padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+    div {
+      position: relative;
+      flex: 1;
+      -webkit-flex: 1;
+      padding: 17px 0;
+      font-size: 16px;
+      color: #000;
+      text-align: center;
+      &.active {
+        color: $color_main;
+      }
+    }
+  }
+}
+</style>

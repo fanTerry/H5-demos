@@ -1,0 +1,96 @@
+<template>
+    <figure class="banner" >
+        <ul>
+            <slide ref="slide"  :loop="isLoop" :showDot="isAutoPlay" :interval="interval" :threshold="threshold" :speed="speed" @changePic="changePic">
+                <li v-for="(item,index) in adList" :key="index" @click="see(item.location)">
+                    <img :src="item.picUrl" alt=""  >
+                </li>
+            </slide>
+        </ul>
+        <!-- <figcaption class="title">{{slideText}}</figcaption> -->
+    </figure>
+</template>
+
+<script>
+import slide from "../../common/slide";
+export default {
+  components: {
+    slide,
+  },
+  props:['adList',"noLoop"],
+  data() {
+    return {
+      isAutoPlay: true,
+      isLoop: true,
+      isShowDot: true,
+      speed: 400,
+      threshold: 0.3,
+      interval: 2000,
+      slideText: "",  
+      list:[],
+
+    };
+  },
+  mounted () {
+             
+  },
+  watch:{
+    adList(newList,oldList){
+      if(newList.length>0){
+        this.list= newList
+        this.slideText = this.list[0].title;
+      }
+      
+    }
+  },
+  methods: {
+    /** 轮播图切换 */
+    changePic(index) {
+      if (index!='undefined') {
+        if(this.list.length>1){
+          this.slideText = this.list[index].title;
+        }
+       
+      }
+    },
+
+    update(log){
+      console.log(log);
+      this.$refs.slide.update();
+    },
+    see(location){
+      console.log("000");
+      console.log(location);
+      if(location){
+        console.log("99999");
+        window.location.href = location
+      }
+    },
+
+   
+  },
+
+
+};
+</script>
+
+<style lang='scss'>
+@import "../../../assets/common/_mixin.scss";
+.banner {
+  @include getBorder(bottom, #ddd);
+  img,
+  video {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  .title {
+    padding: 0 5px;
+    font-size: 13px;
+    line-height: 36px;
+    color: #000;
+    @include t_nowrap(100%);
+  }
+}
+</style>

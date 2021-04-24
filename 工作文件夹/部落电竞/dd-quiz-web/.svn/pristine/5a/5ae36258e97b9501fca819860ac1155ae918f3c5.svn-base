@@ -1,0 +1,265 @@
+<!--
+ * @Author: haitao.li
+ * @Date: 2020-04-04 16:10:23
+ * @LastEditTime: 2020-04-05 19:46:31
+ * @LastEditors: Please set LastEditors
+ * @Description: 欢乐摇一摇钱包流水弹窗
+ * @FilePath: /quiz-touch/src/views/game/shake/wallet.vue
+ -->
+<template>
+  <div class='ui_pop'>
+    <div class="wallet">
+      <h3>游戏记录</h3>
+      <a class="close" @click="closePop()"></a>
+      <div class="container" @scroll="onScroll()">
+        <div class="record_list">
+          <div class="record" v-for="(item,index) in dataMap" :key="index">
+            <p class="title">{{item.time}}</p>
+            <ul>
+              <li class="item" v-for="(gameOrder,index) in item.dataList" :key="index">
+                <div class="top">
+                  <div class="txt">
+                    <div class="flex_hc">
+                      <span>掉落: </span>
+                      <p v-for="(award,index) in gameOrder.awardLevelVoList " :key="index">
+                        <img :src="award.awardIcon" alt="">x{{award.awardNum}}
+                      </p>
+                    </div>
+                  </div>
+                  <span class="num">+{{gameOrder.returnScore}}</span>
+                </div>
+                <div class="bottom">
+                  <span>{{gameOrder.createTime| dateFmt }}</span>
+                  <span>消耗-{{gameOrder.score}}</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- <loading v-if="isLoading" :notext="true"></loading> -->
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import loading from '../../../components/common/loading';
+export default {
+  components: {
+    loading,
+  },
+  props: [],
+  data() {
+    return {
+      dataMap: [],
+      pageParam: {
+        pageNo: 1,
+        pageSize: 10,
+        hasNext: true
+      },
+      isLoading: false,
+      stopReapeat: false //防止重复翻页
+    };
+  },
+  mounted() {
+    this.getPageData();
+  },
+  methods: {
+    closePop() {
+      this.$emit("closeWalletPop");
+    },
+
+    /**
+     * @description: 获取每一页的数据
+     * @param {分页数据}
+     * @return:
+     */
+    getPageData(param) {
+      this.isLoading = true
+      if (!param) {
+        param = this.pageParam;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/game/shake/getUserWalletLog", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log(
+              dataResponse.data,
+              "钱包流水查询--getPageData--分页数据"
+            );
+            if (dataResponse.data) {
+              this.pageParam.hasNext = dataResponse.data.hasNext;
+              this.hanldDataLog(dataResponse.data.listMap);
+              console.log("this.dataMap", this.dataMap);
+              this.stopReapeat = false;
+              setTimeout(() => {
+                this.isLoading = false
+              }, 300);
+            }
+          } else {
+            this.$toast(dataResponse.message, 1.5);
+            this.isLoading = false
+          }
+
+
+        })
+        .catch(error => {
+          this.$$toast("请求异常", 1.5);
+          console.log(error);
+        });
+    },
+    /**
+     * @description: 将数据转化为按日期分割的条目
+     * @param {array}
+     * @return:
+     */
+    hanldDataLog(data) {
+      let listMap = [];
+      for (var key in data) {
+        var el = {
+          time: key,
+          dataList: data[key]
+        };
+        listMap.push(el);
+      }
+
+      let selfMap = this.dataMap;
+      if (selfMap.length > 0) {
+        var index = selfMap.length - 1;
+        if (selfMap[index].time === listMap[0].time) {
+          selfMap[index].dataList = selfMap[index].dataList.concat(
+            listMap[0].dataList
+          );
+          listMap.shift();
+        }
+      }
+      for (var i = 0; i < listMap.length; i++) {
+        selfMap.push(listMap[i]);
+      }
+      this.dataMap = selfMap;
+    },
+
+    /**
+     * 监控上拉加载翻页
+     */
+    onScroll() {
+      //滚动内容容器的高度
+      let outerHeight = document.querySelector(".container").clientHeight;
+      //滚动内容高度
+      let innerHeight = document.querySelector(".record_list").clientHeight;
+      //滚动条距离顶部的大小
+      let scrollTop = document.querySelector(".container").scrollTop;
+      // console.log(innerHeight, outerHeight, scrollTop);
+      if (innerHeight < outerHeight + scrollTop + 5) {
+        console.log("44444");
+        //加载更多操作
+        if (!this.pageParam.hasNext) {
+          //没有下一页
+          if (this.pageParam.pageNo >= 1) {
+            this.$toast("数据到底啦", 1.5);
+          }
+          return;
+        }
+        if (this.stopReapeat) {
+          return;
+        }
+        this.stopReapeat = true;
+        console.log("加载下一页", this.pageParam);
+        this.pageParam.pageNo += 1;
+        this.getPageData();
+      }
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.wallet {
+  position: relative;
+  width: 73.0667vw;
+  height: 96vw;
+  @include getBgImg("../../../assets/images/game/shake/pop_common.png");
+}
+
+.close {
+  position: absolute;
+  left: 0;
+  top: 5.0667vw;
+  width: 13.3333vw;
+  height: 13.3333vw;
+}
+
+h3 {
+  padding-top: 4vw;
+  font-size: 4.8vw;
+  color: #df6744;
+  text-align: center;
+}
+
+.container {
+  height: 62.8vw;
+  margin: 9.3333vw 9.4667vw 0 9.7333vw;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+  }
+}
+
+.record {
+  .title {
+    display: block;
+    padding: 2.1333vw 0;
+    font-size: 3.2vw;
+    text-align: center;
+    color: #aa661b;
+  }
+}
+
+.item {
+  @extend .flex_v_h;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  width: 100%;
+  height: 11.7333vw;
+  margin-bottom: 1.3333vw;
+  padding: 0 2.6667vw;
+  background-color: #c44d39;
+  border: 1px solid #8c3728;
+  border-radius: 1.3333vw;
+  &:last-child {
+    margin-bottom: 0;
+  }
+  > div {
+    @extend .flex_v_justify;
+    width: 100%;
+  }
+}
+
+.top {
+  color: #fff;
+  .txt {
+    font-size: 3.2vw;
+  }
+  .num {
+    font-size: 4.2667vw;
+    font-weight: bold;
+  }
+  img {
+    width: 3.2vw;
+    height: 3.2vw;
+    object-fit: contain;
+  }
+}
+
+.bottom {
+  padding-top: 1.6vw;
+  font-size: 2.6667vw;
+  color: #fff;
+}
+</style>

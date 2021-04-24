@@ -1,0 +1,73 @@
+{
+	"pages": [
+		"pages/index/index",
+		"pages/expert/expert",
+		"pages/follow/follow",
+		"pages/auth/index",
+		"pages/report/report",
+		"pages/my/my",
+		"pages/my/userInfo/userInfo",
+		"pages/my/userInfo/writeInfo",
+		"pages/store/store",
+		"pages/store/detail/goodsDetail",
+		"pages/store/list/goodsList",
+		"pages/store/my_exchange/my_exchange",
+		"pages/store/address/edit",
+		"pages/store/order/orderDetails",
+		"modules/articlepage/article-page",
+		"modules/reportpage/report-page",
+		"modules/expertpage/expertpage/expert-page",
+		"modules/expertpage/expertdetailpage/expert-detail-page",
+		"modules/expertpage/expertapplypage/expert-apply-page",
+		"modules/expertpage/expertagreepage/expert-agree-page",
+		"modules/expertpage/paidarticlepage/paid-article-page",
+		"modules/mypage/myrecharge/my-recharge"
+		
+	],
+	"window": {
+		"navigationBarBackgroundColor": "#fea21b",
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "橘子电竞",
+		"backgroundColor": "#eeeeee",
+		"backgroundTextStyle": "light"
+	},
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#fea21b",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"iconPath": "resources/images/tabbar/index-icon.png",
+				"selectedIconPath": "resources/images/tabbar/index-icon-act.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/report/report",
+				"iconPath": "resources/images/tabbar/report-icon.png",
+				"selectedIconPath": "resources/images/tabbar/report-icon-act.png",
+				"text": "赛事"
+			},
+			{
+				"pagePath": "pages/store/store",
+				"iconPath": "resources/images/tabbar/store-icon.png",
+				"selectedIconPath": "resources/images/tabbar/store-icon-act.png",
+				"text": "商城"
+			},
+			{
+				"pagePath": "pages/expert/expert",
+				"iconPath": "resources/images/tabbar/expert-icon.png",
+				"selectedIconPath": "resources/images/tabbar/expert-icon-act.png",
+				"text": "文章"
+			},
+			{
+				"pagePath": "pages/my/my",
+				"iconPath": "resources/images/tabbar/my-icon.png",
+				"selectedIconPath": "resources/images/tabbar/my-icon-act.png",
+				"text": "我的"
+			}
+		]
+	},
+	"sitemapLocation": "sitemap.json"
+}

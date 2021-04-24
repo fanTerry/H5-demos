@@ -1,0 +1,486 @@
+<template>
+  <div class="ui_pop recharge_pop" v-if="rechargePop" @click="$event.stopPropagation();">
+    <div class="Page rechargePage">
+      <p class="title">
+        星星充值
+        <a class="close" @click="closePop"></a>
+      </p>
+      <ul class="prize_list">
+        <li v-for="(item,index) in chargeMoneyList" :key="index" :class="chargeIndex==index ? 'select' : ''" @click="selectChargeAmount(item.chargeMoney,index)">
+          <!-- <p :class="item.sendStar>0?'':'no_bg'">{{item.sendStar>0?"+"+item.sendStar+"星星":""}}</p> -->
+          <!-- <img :src="require('../../../assets/images/guess/starday0.png')" alt /> -->
+          <span class="cost_star">{{item.chargeMoney}}星星</span>
+          <a class="prize_get_btn">{{item.chargeMoney}}元</a>
+        </li>
+      </ul>
+      <div class="exchange_btn" :class="{disabled:selectedAmount<=0}" @click="gotoCharge()">
+        <!-- 加disabled置为不可点击 -->
+        立即支付 {{selectedAmount <= 0?'':selectedAmount+'元'}}
+      </div>
+      <charge-pop-up v-if="showChargePopUp" :chargeWayList="chargeWayList" @close="closeChargeDialog" @confirmCharge="confirmCharge" :price="selectedAmount"></charge-pop-up>
+      <pop-Alert :showPop="showPop" @close="showPop=false" @confirm="confirm" btnTxt1="已取消" btnTxt2="已完成支付" type="2">
+        <p>请确认微信支付是否已完成</p>
+      </pop-Alert>
+      <pop-Alert :showPop="showFuiouPop" @close="showFuiouPop=false" @confirm="confirmFuiou" btnTxt1="取消" btnTxt2="去授权" type="2">
+        <p>是否授权富友-支付宝支付</p>
+      </pop-Alert>
+    </div>
+  </div>
+</template>
+
+<script>
+import chargePopUp from '../../../components/pop_up/charge/index.vue';
+import popAlert from '../../../components/pop_up/pop_alert.vue';
+import baseParamConfig from '../../../baseParamConfig';
+import Vue from 'vue';
+import { getUrlParamExceptBaseParam } from '../../../libs/utils';
+export default {
+  components: { chargePopUp, popAlert },
+  props: [],
+  data() {
+    return {
+      chargeMoneyList: [], //充值金额列表
+      selectedAmount: 0.0, //选择的充值金额
+      chargeIndex: null, //下标
+      showChargePopUp: false, //是否展示充值方式
+      chargeWayList: [], //充值方式列表
+      rechargePop: false, //是否唤起当前充值弹窗标识
+      showPop: false, // 充值成功后弹窗标识
+      showFuiouPop: false, //富友授权弹窗
+      showFuiouAuthUrl: '' //富友授权url
+    };
+  },
+  mounted() {
+    //阻止ios系统下弹窗拉起，底部仍会滑动的问题
+    this.doPopTouchMove();
+    //获取微信配置
+    this.getWxConfig();
+  },
+  methods: {
+    getWxConfig: function() {
+      this.$post('/api/wxlogin/getJsConfig')
+        .then(rsp => {
+          console.log(rsp, 'rsp');
+          if (rsp.appId != '') {
+            this.wx.config({
+              debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+              appId: rsp.appId, // 必填，公众号的唯一标识
+              timestamp: rsp.timestamp, // 必填，生成签名的时间戳
+              nonceStr: rsp.nonceStr, // 必填，生成签名的随机串
+              signature: rsp.signature, // 必填，签名，见附录1
+              jsApiList: ['chooseWXPay']
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    /**关闭充值方式弹窗 */
+    closeChargeDialog() {
+      this.showChargePopUp = false;
+    },
+    /**充值 */
+    confirmCharge: function(chooseChargeWay, chargeWayBalance) {
+      // console.log(chooseChargeWay, "确认充值选择的充值方式");
+      if (parseFloat(chargeWayBalance) < parseFloat(this.selectedAmount)) {
+        this.$toast('余额不足');
+        return;
+      }
+      let u = navigator.userAgent;
+      let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+      var wxRedirectUrl = encodeURIComponent(window.location.href); //微信H5支付 回跳地址
+      let thirdPayRedirect = this.getThirdReturnUrl(); //第三方支付(支付宝,易宝等) 回跳地址
+      let param = {
+        chargeAmount: this.selectedAmount,
+        chargeWay: chooseChargeWay,
+        redirectUrl: thirdPayRedirect
+      };
+      if (chooseChargeWay == this.globalConst.payIndexMap.get('FUIOU_ALI_PAY')) {
+        this.fuiouAliPayAuth();
+      }
+      // console.log(param, "充值传递的参数");
+      var _self = this;
+      this.$post('/api/h5charge/tocharge', param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse, '充值返回数据');
+          if (dataResponse.code == '200' && dataResponse.data.successFlag) {
+            if (chooseChargeWay == this.globalConst.payIndexMap.get('WXH5_PAY') && dataResponse.data.requestUrl != '') {
+              //安卓机在跳转微信支付时，先打开wxRedirectUrl,导致支付成功后余额没有刷新；
+              if (isiOS) {
+                window.location.href = dataResponse.data.requestUrl + '&redirect_url=' + wxRedirectUrl;
+              } else {
+                window.location.href = dataResponse.data.requestUrl;
+              }
+              setTimeout(() => {
+                this.closePop();
+                this.$emit('openPopAlert');
+              }, 3000);
+            } else if (chooseChargeWay == this.globalConst.payIndexMap.get('YEEPAY_EBANK_PAY') && dataResponse.data.requestUrl != '') {
+              this.goThirdNoReferPay(dataResponse.data.requestUrl);
+            } else if (chooseChargeWay == this.globalConst.payIndexMap.get('WXJSAPI_PAY')) {
+              this.weixinPay(dataResponse.data.requestParams, _self);
+            } else if (chooseChargeWay == this.globalConst.payIndexMap.get('Ali_H5_PAY')) {
+              this.goToAliPay(isiOS, dataResponse);
+            } else if (chooseChargeWay == this.globalConst.payIndexMap.get('UMS_H5_PAY') || chooseChargeWay == this.globalConst.payIndexMap.get('UMS_H5_ALI_PAY')) {
+              // window.location.href = dataResponse.data.requestUrl;
+              this.goThirdNoReferPay(dataResponse.data.requestUrl);
+            } else if (chooseChargeWay == this.globalConst.payIndexMap.get('FUIOU_ALI_PAY')) {
+              this.fuiouAlipayReady(this.fuiouToPay(dataResponse.data.prepayId));
+            } else {
+              this.$emit('getUserWallet');
+              setTimeout(() => {
+                this.closePop();
+              }, 1000);
+            }
+            this.closeChargeDialog();
+          } else if (dataResponse.code == '600') {
+            this.$toast('余额不足');
+          } else if (dataResponse.code == '602') {
+            //风控提示
+            this.$toast(dataResponse.message);
+          } else {
+            if (chooseChargeWay != this.globalConst.payIndexMap.get('FUIOU_ALI_PAY')) {
+              this.$toast('服务器繁忙,稍后再试~');
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    /**h5支付后 */
+    confirm: function() {
+      this.showPop = false;
+      this.$emit('getUserWallet');
+      setTimeout(() => {
+        this.closePop();
+      }, 1000);
+    },
+    /**微信JSAPI支付 */
+    weixinPay: function(params, _self) {
+      console.log(params, 'params');
+      _self.wx.ready(function() {
+        _self.wx.chooseWXPay({
+          timestamp: params.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+          nonceStr: params.nonceStr, // 支付签名随机串，不长于 32 位
+          package: params.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+          signType: 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+          paySign: params.paySign, // 支付签名
+          success: function(res) {
+            _self.$toast('充值成功', 2.5);
+            _self.$emit('getUserWallet');
+            setTimeout(() => {
+              _self.closePop();
+            }, 1000);
+          },
+          cancel: function(res) {
+            _self.$toast('支付取消', 2);
+          },
+          fail: function(res) {
+            _self.$toast('支付失败', 2);
+          }
+        });
+      });
+    },
+    /**获取充值方式 */
+    gotoCharge() {
+      // console.log(this.selectedAmount, "选择的充值金额");
+      if (this.selectedAmount <= 0.0) {
+        // this.$toast("请先选择充值金额");
+        return;
+      }
+      this.$post('/api/payment/getPayWayList', { needRecPay: false })
+        .then(rsp => {
+          const dataResponse = rsp;
+          // console.log(dataResponse, "h5充值方式返回");
+          if (dataResponse.code == '200') {
+            this.chargeWayList = dataResponse.data;
+            // console.log(this.chargeWayList, "充值方式列表1");
+            if (this.chargeWayList.length <= 0) {
+              this.$toast('充值暂未开放');
+              return;
+            }
+            this.showChargePopUp = true;
+          } else {
+            this.$toast('获取充值方式异常，请稍后再试');
+            return;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    /**点击选择充值的金额 */
+    selectChargeAmount(item, index) {
+      console.log(item, index, '充值参数', item.money);
+      this.selectedAmount = item;
+      this.chargeIndex = index;
+    },
+    closePop() {
+      this.$emit('closeRechargePop');
+    },
+    openChargerDialog() {
+      return this.$post('/api/h5charge/pageData')
+        .then(res => {
+          console.log(res, '得到充值页所需数据');
+          if (res.code == '200') {
+            this.chargeMoneyList = res.data.chargeAmountResponseList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    goToAliPay(isiOS, dataResponse) {
+      // 添加之前先删除一下，如果单页面，页面不刷新，添加进去的内容会一直保留在页面中，二次调用form表单会出错
+      let divForm = document.getElementsByTagName('divform');
+      if (divForm.length) {
+        document.body.removeChild(divForm[0]);
+      }
+      const div = document.createElement('divform');
+      div.innerHTML = dataResponse.data.requestUrl; // 就是接口返回的form 表单字符串
+      document.body.appendChild(div);
+      if (isiOS) {
+        document.forms[0].submit();
+      } else {
+        document.forms[0].setAttribute('target', '_blank'); // 新开窗口跳转
+        document.forms[0].submit();
+      }
+      setTimeout(() => {
+        this.closePop();
+        this.$emit('openPopAlert');
+      }, 3000);
+    },
+    goThirdNoReferPay(url) {
+      var MyComponent = Vue.extend({
+        template: '<a style="color:#fff;" id="goThirdNoReferPay"  rel="noreferrer" href="' + url + '"  ref="clickSpan">易宝</a>'
+      });
+      var component = new MyComponent().$mount();
+      document.getElementById('yeePayBtn').appendChild(component.$el);
+      console.log(component.$el, 'component.$el');
+      var e = document.createEvent('MouseEvents');
+      e.initEvent('click', true, true); //这里的click可以换成你想触发的行为
+      component.$el.dispatchEvent(e); //这里的clickME可以换成你想触发行为的DOM结点
+      document.body.addEventListener('veb', function(e) {
+        component.$el.click();
+      });
+      var event = document.createEvent('HTMLEvents');
+      // initEvent接受3个参数:事件类型，是否冒泡，是否阻止浏览器的默认行为
+      event.initEvent('veb', false, true);
+      //通过eventType传递事件信息,触发document上绑定的click事件
+      document.body.dispatchEvent(event);
+      document.getElementById('yeePayBtn').removeChild(document.getElementById('goThirdNoReferPay'));
+    },
+    //第三方支付后,需要回跳的url
+    getThirdReturnUrl() {
+      let curRoute = this.$route.path;
+      let returnUrl =
+        window.location.protocol +
+        '//' +
+        window.location.host +
+        curRoute +
+        getUrlParamExceptBaseParam(this.$route.query) +
+        'agentId=' +
+        baseParamConfig.agentId +
+        '&biz=' +
+        baseParamConfig.biz +
+        '&clientType=' +
+        baseParamConfig.clientType;
+      console.log(returnUrl, 'returnUrl');
+      return returnUrl;
+    },
+    doPopTouchMove() {
+      this.openChargerDialog().then(() => {
+        this.rechargePop = true;
+        // 阻止ios系统下弹窗拉起，底部仍会滑动的问题
+        this.$nextTick(() => {
+          let rechargePop = document.getElementsByClassName('recharge_pop')[0];
+          rechargePop.ontouchmove = function(e) {
+            e.preventDefault();
+          };
+        });
+      });
+    },
+    fuiouAliPayAuth() {
+      this.$post('/api/oauth2/authorize/alipay')
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse, '富友支付宝-h5充值方式返回');
+          if (dataResponse.code == '200') {
+            // this.$toast('支付宝服务窗为用户buyer_id=' + dataResponse.data, 4);
+            if (dataResponse.data && dataResponse.data.length > 50) {
+              //弹窗 去授权
+              this.showFuiouPop = true;
+              this.showFuiouAuthUrl = dataResponse.data;
+            }
+            // this.fuiouAlipayReady(this.fuiouToPay(dataResponse.data));
+          } else {
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    fuiouAlipayReady(callback) {
+      // 如果jsbridge已经注入则直接调用
+      if (window.AlipayJSBridge) {
+        callback && callback();
+      } else {
+        // 如果没有注入则监听注入的事件
+        document.addEventListener('AlipayJSBridgeReady', callback, false);
+      }
+    },
+    fuiouToPay(tradeNO) {
+      console.log(window.AlipayJSBridge, 'window.AlipayJSBridge');
+      console.log(window.AlipayJSBridge, 'in');
+      if (window.AlipayJSBridge) {
+        console.log('in  AlipayJSBridge');
+      }
+      AlipayJSBridge.call(
+        'tradePay',
+        {
+          tradeNO: tradeNO
+        },
+        function(result) {
+          alert(JSON.stringify(result));
+        }
+      );
+    },
+    confirmFuiou() {
+      // alert(this.showFuiouAuthUrl);
+      window.location.href = this.showFuiouAuthUrl;
+    }
+  }
+};
+</script>
+
+
+<style lang='scss' scoped>
+@import '../../../assets/common/_base';
+@import '../../../assets/common/_mixin';
+
+.Page {
+  position: relative;
+  width: 89.3333vw;
+  height: initial;
+  background-color: $color_item;
+  border-radius: $border_radius;
+  overflow: hidden;
+}
+
+.title {
+  position: relative;
+  font-size: 4.2667vw;
+  line-height: 9.6vw;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  background-color: #353447;
+  border-bottom: 1px solid #565279;
+}
+
+.close {
+  @extend .g_v_mid;
+  right: 0;
+  @include getClose(20px, #565279);
+}
+
+.pop_tips {
+  @extend .g_v_c_mid;
+  width: 57.33vw;
+  padding: 5.33vw 0;
+  text-align: center;
+  background-color: #34201d;
+  p {
+    font-size: 3.73vw;
+    color: #fff;
+  }
+  span {
+    display: block;
+    padding-top: 5.33vw;
+    font-size: 5.33vw;
+    color: #f6b70d;
+  }
+}
+.prize_list {
+  @extend .flex_hc;
+  margin: 1.3333vw 4.2667vw;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  li {
+    position: relative;
+    width: 24.5333vw;
+    margin: 3.4667vw 3.6vw 0 0;
+    text-align: center;
+    background-color: #666695;
+    border-radius: $border_radius;
+    overflow: hidden;
+    @include getBgImg('../../../assets/images/user_center/logo_bg.png');
+    background-size: contain;
+    &:nth-child(3n) {
+      margin-right: 0;
+    }
+    &.select {
+      background-color: #ffd402;
+      @include getBgImg('../../../assets/images/user_center/logo_bg_active.png');
+      background-size: contain;
+      p,
+      .prize_get_btn {
+        background-color: #c85958;
+      }
+      .cost_star {
+        color: #c85958;
+      }
+    }
+    .cost_star {
+      display: block;
+      padding: 7.4667vw 0 6.6667vw;
+      font-size: 4.5333vw;
+      line-height: 5.0667vw;
+      font-weight: bold;
+      color: #fff;
+    }
+    p {
+      @extend .g_c_mid;
+      top: 1.3333vw;
+      @extend .flex_v_h;
+      width: 19.7333vw;
+      height: 4vw;
+      font-size: 2.9333vw;
+      border-radius: 0.8vw;
+      color: #fff;
+      background-color: #353447;
+    }
+    img {
+      display: block;
+      height: 6.4vw;
+      margin: 1.0667vw auto 2.1333vw;
+      object-fit: contain;
+    }
+  }
+}
+
+.prize_get_btn {
+  display: block;
+  line-height: 5.3333vw;
+  font-size: 3.4667vw;
+  color: #fff;
+  background-color: #353447;
+}
+
+.exchange_btn {
+  display: block;
+  margin-top: 3.4667vw;
+  line-height: 9.6vw;
+  font-size: 4vw;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  background-color: $color_btn;
+  &.disabled {
+    opacity: 0.3;
+  }
+}
+</style>

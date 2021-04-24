@@ -1,0 +1,21 @@
+@import "iconfont.css";
+// @import "_base";
+// @import "_mixin";
+@import "_var";
+@import "_icon"; 
+@import "_animate";
+
+// 页面采用弹性盒子布局
+.Page{
+}
+
+// 公用头部栏
+.mod_header{
+    position: relative;
+    background-color: #fff;
+}
+
+
+// 内容主体可滑动区域
+.main{
+}

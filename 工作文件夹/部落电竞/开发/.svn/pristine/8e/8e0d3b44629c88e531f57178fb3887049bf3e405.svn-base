@@ -1,0 +1,239 @@
+<template>
+  <div class="Page">
+    <header class="mod_header header_nav_list">
+        <userHeader :num="isIf"></userHeader>
+        <navList></navList> 
+    </header>
+    <div class="main">
+      <div class="scroll-list-wrap">
+        <scroll ref="scroll" :scrollbar="scrollbar" :pullDownRefresh="pullDownRefresh" :pullUpLoad="pullUpLoad" :startY="0" @pullingDown="onPullingDown" @pullingUp="onPullingUp">
+          <div class="scroll_wrapper">  
+            <figure class="banner">
+              <ul>
+                <li><img src="http://img2.imgtn.bdimg.com/it/u=215489180,4292999584&fm=26&gp=0.jpg" alt=""></li>
+                <!-- 视频文件 -->
+                <!-- <li><video src="https://www.runoob.com/try/demo_source/movie.mp4"></video></li> -->
+              </ul>
+              <figcaption class="title">新起点！2019年TGA腾讯电竞运动会三月分站赛赛程公布新起点！2019年TGA腾讯电竞运动会三月分站赛赛程公布</figcaption>
+            </figure>
+            <section class="infor_list">
+              <article class="item" v-for="(item,index) in 20" >
+                <div><img  class="item_img" src="http://img2.imgtn.bdimg.com/it/u=215489180,4292999584&fm=26&gp=0.jpg" alt=""></div>
+                <div class="item_right">
+                  <div>
+                    <p class="item_title"><span>#TGA新闻</span><span>9天前</span></p>
+                    <p class="txt">洲际系列赛规模缩小 仅保留亚洲对抗赛和欧美对抗赛洲际系列赛规模缩小 仅保留亚洲对抗赛和欧美对抗赛</p>
+                  </div>
+                  <div class="visited">
+                    <p><i class="iconfont icon-icon_yulan"></i><span>55652</span></p>
+                    <p><i class="iconfont icon-pinglun"></i><span>55652</span></p>
+                  </div>
+                </div>
+              </article>
+            </section>
+          </div>
+        </scroll>
+      </div>
+    </div>
+    <footer class="mod_footer">
+      <tabbar></tabbar>
+    </footer>
+  </div>
+</template>
+
+<script>
+  import tabbar from '../../components/tabbar/index'
+  import navList from '../../components/header/nav_list/index' 
+  import userHeader from '../../components/header/user_header/index' 
+  import Scroll from 'components/common/scroll'
+
+  export default {
+    data() {
+      return {
+        isIf:true,
+        scrollbar: { fade: true },
+        pullDownRefresh: { threshold: 90, stop: 40, txt: '刷新成功' },
+        pullUpLoad: { threshold: 10, txt: { more: "加载更多", noMore: "没有更多数据了" } }
+      }
+    }, 
+    mounted() {
+        // this.$nextTick(() => {
+        // //	$(".loading_wrapper").hide() ;
+        //     this.$refs.scroll.initScroll()
+        // })
+        this.$refs.scroll.initScroll();
+    },
+    methods: {
+      onPullingDown() {
+          if (this._isDestroyed) {
+              return
+          }
+          this.refresh(true);
+      },
+      onPullingUp() {
+        console.log('onPullingUp');
+          if (this._isDestroyed) {
+              return
+          }
+          if (this.counter >= this.pageEnd) {
+              this.$refs.scroll.forceUpdate();
+          } else {
+              this.loadMore()
+          }
+      }
+    },
+    components: {
+      tabbar,
+      userHeader,
+      navList,
+      Scroll
+    }
+  }
+</script>
+
+<style lang='scss'>
+  @import '../../assets/common/_base.scss';
+  @import '../../assets/common/_mixin.scss';
+  @import '../../assets/common/iconfont.css';
+  .scroll-list-wrap {
+    position: relative;
+    height: 100%; // border: 1px solid rgba(0,0,0,.1);
+    // border-radius: .3rem;
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+    overflow: hidden; //margin-top: 80px ;
+    margin-bottom: 60px;
+}
+  .header_nav_list{
+    background: linear-gradient(-15deg,#FFA904,#FF782F);
+    .nav_top{
+      @extend .flex_v_justify;
+      padding: 15px 10px 10px;
+      .user_img{
+        width: 24px;
+        height: 24px;
+        margin-right: 12px;
+        img{
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+        }
+      }
+    }
+    .left,.right{
+      @extend .flex_hc;
+    }
+    .left{
+      flex: 1;
+      -webkit-flex: 1;
+    }
+    .search_con{
+      position: relative;
+      flex:1;
+      -webkit-flex:1;
+      margin-right: 20px;
+    }
+    input{
+      width: 100%;
+      height: 24px;
+      padding-left: 30px;
+      border-radius: 24px;
+      background-color: #fff;
+      border: none;
+    }
+    .search{
+      @extend .g_v_mid;
+      left: 7px;
+      width: 16px;
+      height: 16px;
+      @include getBgImg("../../assets/images/home/search.png"); 
+    }
+    .message,.comment{
+      position: relative;
+      width: 22px;
+      height: 22px;
+    }
+    .message{
+      @include getBgImg('../../assets/images/home/message.png');
+      .att{
+        @extend .flex_v_h;
+
+        position: absolute;
+        right: 0;
+        top: 0;
+        transform: translate(50%,-30%);
+        -webkit-transform: translate(50%,-30%);
+
+        @include getCircle(14px,#FF0000,#fff);
+        font-size: 11px;
+      }
+    }
+    .comment{
+      margin-left: 20px;      
+      @include getBgImg('../../assets/images/home/comment.png');
+    }
+  } 
+  .main{
+    margin: 5px 5px 0;
+    padding-top: 5px;
+    border-radius: 6px;
+    background-color: #fff;
+    .banner{
+      @include getBorder(bottom,#ddd);
+      img,video{
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 5px;
+      }
+      .title{
+        padding: 0 5px;
+        font-size: 13px;
+        line-height: 36px;
+        color: #000;
+        @include t_nowrap(100%);
+      }
+    }
+    .infor_list .item{
+      @extend .flex_hc;
+      padding: 10px 10px 10px 0;
+      @include getBorder(bottom,#ddd);
+      .item_img{
+        width: 140px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 5px;
+      }
+      .item_right{
+        @extend .flex_justify;
+        flex-direction: column;
+        -webkit-flex-direction: column;
+        height: 90px;
+        margin-left: 14px;
+      }
+      .item_title{
+        @extend .flex_justify;
+        font-size: 11px;
+        color: #A3A3A3;
+      }
+      .txt{
+        padding-top: 7px;
+        font-size: 13px;
+        line-height: 17px;
+        color: #000;
+        text-align: justify;
+        @include line_clamp(3);
+      }
+      .visited{ 
+        @extend .flex;
+        .iconfont{ 
+          font-size: 12px;
+          margin-right: 2px;
+        }
+        p{
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+</style>

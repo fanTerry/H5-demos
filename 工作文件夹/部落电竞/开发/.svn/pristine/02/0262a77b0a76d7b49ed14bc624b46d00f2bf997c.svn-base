@@ -1,0 +1,70 @@
+<!--
+ * @Author: your name
+ * @Date: 2019-11-27 14:34:37
+ * @LastEditTime: 2020-06-12 11:14:22
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /esport-touch/src/views/home/video.vue
+--> 
+<template>
+  <div id="mse"></div>
+
+</template>
+<script>
+// import html2canvas from "html2canvas";
+import '../../libs/common/xgplayer';
+import '../../libs/common/xgplayer-hls';
+import '../../libs/common/xgplayer-flv';
+
+export default {
+  name: 'HelloWorld',
+  data() {
+    return {
+      msg: 'Welcome to Your Vue.js App'
+    };
+  },
+  mounted() {
+    let player = new HlsJsPlayer({
+      id: "mse",
+      url:
+        "http://al.hls.huya.com/src/1199531596839-1199531596839-5307382377197076480-2399063317134-10057-A-0-1.m3u8",
+      playsinline: true,
+      whitelist: [""],
+      "x5-video-player-type": "h5",
+      "x5-video-player-fullscreen": "true",
+      playbackRate: [null]
+    });
+    // let player = new FlvJsPlayer({
+    //   id: 'mse',
+    //   url:
+    //     'https://al.flv.huya.com/src/1456953785-1456953785-6257568858358415360-2914031026-10057-A-0-1.flv?wsSecret=29399c7a4f41d9f028090416e0b0a367&wsTime=5ee2e6e1&seqid=1591928557013&ctype=huya_tars&fs=bgct&u=0&t=100&sv=2005111540',
+    //   playsinline: true,
+    //   whitelist: [''],
+    //   'x5-video-player-type': 'h5',
+    //   'x5-video-player-fullscreen': 'true',
+    //   playbackRate: [null],
+    //   autoplay: true,
+    //   fluid: true
+    // });
+  }
+};
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+h1,
+h2 {
+  font-weight: normal;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+}
+</style>

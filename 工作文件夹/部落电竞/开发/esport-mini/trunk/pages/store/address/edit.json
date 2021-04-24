@@ -1,0 +1,7 @@
+{
+	"component": true,
+	"usingComponents": {
+		"writeAddress":"/component/popup/store/writeAddress"
+	},
+	"navigationBarTitleText": "编辑地址"
+}

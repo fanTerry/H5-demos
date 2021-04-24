@@ -1,0 +1,29 @@
+<!--pages/index/index.wxml-->
+
+
+<add-tips />
+<!-- 顶部信息栏 暂时注释 -->
+<!-- <userinfo-bar id="usrinfo_id" showType="1" ></userinfo-bar> -->
+
+<!-- 菜单导航栏 -->
+<submenu-bar titleArray="{{subMenuList}}" selectedTag="{{selectedTag}}" bindmyevent="onMyEvent"></submenu-bar>
+
+<!-- 图片滚动部分 -->
+
+<view class="main">
+    <scroll-view bindscrolltolower="lower" style="height:{{scrollTop}}px"  scroll-y="1">
+      <view class='index-section' wx:if="{{newsList.length>0||(swiperAdList.length>0&&selectedTag==1)}}">
+        <block wx:if="{{swiperAdList.length>0&&selectedTag==1}}">
+          <commonBanner indicatorColor="{{swiperOpt.indColor}}" indicatorActiveColor="{{swiperOpt.indActColor}}" swiperArray="{{swiperAdList}}" styleObject="height:400rpx;"></commonBanner>
+        </block>
+        <!-- 新闻列表部分 -->
+        <block wx:if="{{newsList.length>0}}">
+          <news-list newsDataList="{{newsList}}" selectedTag="{{selectedTag}}" canShowVideo="{{canShowVideo}}"></news-list>
+        </block>
+      </view>
+
+
+      <no-data wx:if="{{noDataFlag}}"></no-data>
+    </scroll-view>
+</view>
+

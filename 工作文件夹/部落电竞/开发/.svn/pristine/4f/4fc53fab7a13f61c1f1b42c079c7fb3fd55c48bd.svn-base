@@ -1,0 +1,41 @@
+<template>
+  <div class="ui_pop">
+    <div class="contact_customService">
+      <p>请联系客服QQ：104798642</p>
+      <a class="confirm_btn">确定</a>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {};
+  },
+  methods: {},
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_mixin";
+.contact_customService {
+  width: 270px;
+  border-radius: 8px;
+  background-color: #fff;
+  p {
+    line-height: 52px;
+    font-size: 15px;
+    color: #333;
+    text-align: center;
+  }
+  .confirm_btn {
+    display: block;
+    line-height: 52px;
+    font-size: 17px;
+    color: #fea21b;
+    text-align: center;
+    @include getBorder(top, #ddd);
+  }
+}
+</style>

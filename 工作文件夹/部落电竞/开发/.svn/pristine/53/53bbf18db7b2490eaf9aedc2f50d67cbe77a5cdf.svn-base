@@ -1,0 +1,7 @@
+<!--component/newslist/news-list.wxml-->
+<view class='news-list' wx:for="{{newsDataList}}" wx:key="index">
+  <news-video-item wx:if="{{item.type==2 && canShowVideo}}" newsData="{{item}}" bind:myplay="onMyPlay" id="video-{{item.aricleId}}"></news-video-item>
+  <news-image-item wx:else newsData="{{item}}" selectedTag="{{selectedTag}}"></news-image-item>
+  <!--<news-image-item wx:else="{{item.type==1}}" newsData="{{item}}"></news-image-item>-->
+  <!--<news-image-item  newsData="{{item}}"></news-image-item>-->
+</view>

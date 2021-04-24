@@ -1,0 +1,561 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar pageTitle="发布短文" v-if="type==3"></navBar>
+      <navBar pageTitle="发布视频" v-if="type==5"></navBar>
+    </header>
+    <div class="main">
+      <section class="mod_publish">
+        <!-- 发布短文 -->
+        <div :class="type==3?'publish_essays':'publish_img'">
+          <div class="publish_txt">
+            <div class="essays_con" :class="switchTabType==1?'active':''" v-html="contentHtml">
+            </div>
+            <textarea class="essays" v-model="content" @input="handleInput" name="" id="" maxlength="200"
+              placeholder="#添加话题(适合的话题会被更多人看到)200字以内" ref="focusTextarea"></textarea>
+          </div>
+          <div class="add_container" v-if="type==3">
+            <!--发布短文-->
+            <div class="add_item" style="display:none">
+              <img :src="test">
+            </div>
+            <template v-if='imgs.length>0'>
+              <div class="add_item" v-for="(item, i) in imgs" :key='i'>
+                <img :src="item">
+                <span class="close" @click="del(i)"></span>
+                <span class="edit">编辑</span>
+                <input style="position:absolute;opacity:0;" type="file" @change="fileUpdate(i,$event)" accept="image/*">
+              </div>
+            </template>
+            <div class="add_item" v-if="imgs.length<maxSize">
+              <span class="add_icon"></span>
+              <img src="" alt="" ref="img">
+              <input style="position:absolute;opacity:0;" type="file" id='files' @change="fileChange($event)"
+                ref="input" accept="image/*">
+            </div>
+          </div>
+          <div class="add_container" v-if="type==5">
+            <!--发布视频-->
+            <div class="add_item">
+              <span class="add_icon"></span>
+              <img src="" alt="" ref="img">
+              <video id="videoId" autoplay controls v-show="showVideo" />
+              <input style="position:absolute;opacity:0;" type="file" id='pop_video' @change="uploadVideo($event)"
+                ref="file" accept="video/*" v-if='!showVideo'>
+              <!--capture="camcorder" -->
+            </div>
+            <!-- <textarea class="note_txt" placeholder="在此输入图片注释"></textarea> -->
+          </div>
+        </div>
+      </section>
+      <section class="mod_project">
+        <div class="project_tab">
+          <ul>
+            <li class="keyboard_icon" :class="switchTabType==1?'active':''" @click="switchType(1)"></li>
+            <li class="topic_icon" :class="switchTabType==2?'active':''" @click="switchType(2)"></li>
+          </ul>
+          <a @click="publishEssay">确定</a>
+        </div>
+        <div class="project_con" v-if="switchTabType==2">
+          <ul>
+            <li class="topic_talk">
+              <div class="search">
+                <span class="search_icon"></span>
+                <input type="text" name="" id="" v-model="searchVal" placeholder="搜索话题">
+                <span class="close"></span>
+              </div>
+              <template v-if="searchVal!=''">
+                <p v-for="(item,index) in searchList" :key="index" @click="selectTopic(item.name)">
+                  {{item.name |formatTopic}}</p>
+              </template>
+              <template v-else>
+                <p v-for="(item,index) in topicList" :key="index" @click="selectTopic(item.name)">
+                  {{item.name |formatTopic}}</p>
+              </template>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar/index";
+export default {
+  components: {
+    navBar
+  },
+  props: [],
+  data() {
+    return {
+      topicList: [],
+      searchVal: "", //默认输入为空
+      selectTopicName: [],
+      content: "",
+      imgs: [], // 图片预览地址
+      imgfiles: [], // 图片原文件，上传到后台的数据
+      maxSize: 9, // 限制上传数量
+      test: "",
+      switchTabType: 1, //切换tab
+      type: 3, //用户发布的类型:3:短文,5视频
+      showVideo: false,
+      textAreaFocus: true,
+      contentHtml: "",
+      maxContentLength: 200
+    };
+  },
+  mounted() {
+    this.type = this.$route.query.type || 3;
+    console.log(this.type);
+    this.$refs.focusTextarea.focus();
+    this.getCmsTopicList();
+  },
+  computed: {
+    searchList() {
+      let _self = this,
+        resultList = [];
+      if (!this.searchVal) {
+        return resultList;
+      }
+      this.topicList.forEach(item => {
+        if (item.name.search(_self.searchVal) != -1) {
+          resultList.push(item);
+        }
+      });
+      return resultList;
+    }
+  },
+  methods: {
+    switchType(switchTabType) {
+      this.switchTabType = switchTabType;
+      if (this.switchTabType == 1) {
+        this.$refs.focusTextarea.focus();
+      }
+    },
+    fileUpdate(index, event) {
+      //修改图片
+      var _this = this;
+      var event = event || window.event;
+      var file = event.target.files;
+      var leng = file.length;
+      for (var i = 0; i < leng; i++) {
+        if (this.judgeFileSize(file[i])) {
+          return;
+        }
+        var reader = new FileReader(); // 使用 FileReader 来获取图片路径及预览效果
+        _this.imgfiles[index] = file[i];
+        reader.readAsDataURL(file[i]);
+        reader.onload = function(e) {
+          _this.imgs[index] = e.target.result; // base 64 图片地址形成预览
+          _this.test = e.target.result;
+        };
+      }
+    },
+    fileChange() {
+      // 添加图片
+      var _this = this;
+      var event = event || window.event;
+      var file = event.target.files;
+      var leng = file.length;
+      for (var i = 0; i < leng; i++) {
+        if (this.judgeFileSize(file[i])) {
+          return;
+        }
+        var reader = new FileReader(); // 使用 FileReader 来获取图片路径及预览效果
+        _this.imgfiles.push(file[i]);
+        reader.readAsDataURL(file[i]);
+        reader.onload = function(e) {
+          _this.imgs.push(e.target.result); // base 64 图片地址形成预览
+        };
+      }
+    },
+    del(i) {
+      // 根据下标删除
+      this.imgfiles.splice(i, 1);
+      this.imgs.splice(i, 1);
+      console.log(this.imgs);
+      console.log(this.imgfiles);
+    },
+    publishEssay() {
+      let _self = this;
+      if (_self.content == "") {
+        _self.$toast("请输入要发布的内容");
+        return;
+      }
+      if (_self.content.length > _self.maxContentLength) {
+        _self.$toast("发布的内容在" + _self.maxContentLength + "字以内");
+        return;
+      }
+      if (_self.type == 5 && _self.imgfiles.length == 0) {
+        _self.$toast("请选择要发布的视频");
+        return;
+      }
+      let form = new FormData();
+      form.append("content", _self.content);
+      for (var i = 0; i < _self.imgfiles.length; i++) {
+        form.append("files", _self.imgfiles[i]);
+      }
+      form.append("isForm", true);
+      form.append("typeId", this.type);
+      _self
+        .$post("/api/userContent/publish", form)
+        .then(res => {
+          if (res.code == "200") {
+            console.log(res);
+            _self.$toast("发布成功");
+            _self.$router.push({
+              name: "community"
+            });
+          } else {
+            _self.$toast(res.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    changeImage(event) {
+      const refs = this.$refs;
+      const elInput = refs.input;
+      const elImg = refs.img;
+      if (window.FileReader) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const src = e.target.result;
+          elImg.src = src;
+        };
+        if (elInput.files && elInput.files[0]) {
+          reader.readAsDataURL(elInput.files[0]);
+        }
+      }
+    },
+    selectTopic(name) {
+      this.content = this.content + "#" + name + "#";
+      this.contentHtml = this.applyHighlights(this.content);
+      this.$refs.focusTextarea.focus();
+    },
+    getCmsTopicList() {
+      let _self = this;
+      _self
+        .$post("/api/cmsTopic/list")
+        .then(res => {
+          console.log(res, "get topics");
+          if (res.code == "200" && res.data) {
+            _self.topicList = res.data.page.dataList;
+          } else {
+            _self.$toast(res.message, 2);
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    handleInput() {
+      this.contentHtml = this.applyHighlights(this.content);
+      console.log(this.content.length);
+      if (this.content.length > this.maxContentLength) {
+        this.$toast("发布的内容在" + this.maxContentLength + "字以内");
+      }
+    },
+    judgeFileSize(file) {
+      const isLt5M = 1024 * 1024 * 5 < file.size;
+      console.log(file.size);
+      if (isLt5M) {
+        this.$toast("上传图片大小不能超过5MB!");
+      }
+    },
+    uploadVideo: function() {
+      var that = this;
+      var filesId = document.getElementById("pop_video"); //获取上传文件标签
+      var videoId = document.getElementById("videoId"); //获取音频标签
+      var url = this.getFileURL(filesId.files[0]); //把当前的 files[0]传给 getFileURL方法，getFileURL方法对其做一些处理
+      videoId.src = url; //给video 标签设置src
+      setTimeout(() => {
+        var dura = videoId.duration;
+        console.log(dura);
+        if (Math.floor(dura) > 60) {
+          this.$toast("上传的视频不能超过60秒");
+          return;
+        }
+        that.imgfiles.push(filesId.files[0]);
+        if (url) {
+          this.showVideo = true;
+        }
+      }, 1000);
+    },
+    getFileURL: function(file) {
+      //getFileURL方法接收数据并做一些处理。
+      var getUrl = null;
+      if (window.createObjectURL != undefined) {
+        // basic
+        getUrl = window.createObjectURL(file);
+      } else if (window.URL != undefined) {
+        // window.URL 标准定义
+        // mozilla(firefox)
+        getUrl = window.URL.createObjectURL(file); //获得一个http格式的url路径，这个时候就可以设置到<img>中显不了。
+      } else if (window.webkitURL != undefined) {
+        //window.webkitURL是webkit内核的实现 // webkit or chrome
+        getUrl = window.webkitURL.createObjectURL(file);
+      }
+      return getUrl;
+    },
+    applyHighlights: function(text) {
+      text = text
+        .replace(/<mark>/g, "")
+        .replace(/<\/mark>/g, "")
+        .replace(/\n$/g, "\n\n")
+        .replace(/#(.*?)#/g, "<mark>$&</mark>");
+      return text;
+    }
+  }
+};
+</script>
+<style lang="scss">
+mark {
+  color: #0f87ff;
+  background-color: initial;
+}
+</style>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+
+.main {
+  padding: 10px 0;
+}
+.mod_publish {
+  padding: 10px 0 5px;
+  background-color: #fff;
+}
+.publish_txt {
+  position: relative;
+  height: 160px;
+  textarea,
+  .essays_con {
+    width: 100%;
+    height: 160px;
+    padding: 0 15px;
+    border: none;
+    color: transparent;
+    caret-color: #333;
+    word-break: break-all;
+    font: 17px/25px "Open Sans", sans-serif;
+    &::-webkit-input-placeholder {
+      color: #c0c0c0;
+    }
+  }
+  .title {
+    height: 70px;
+  }
+  .essays {
+    position: absolute;
+  }
+  .essays_con {
+    position: absolute;
+    word-wrap: break-word;
+    color: #333;
+  }
+}
+@keyframes shine {
+  from {
+    background-color: #333;
+  }
+  50% {
+    background-color: transparent;
+  }
+  to {
+    background-color: #333;
+  }
+}
+.add_container {
+  @extend .flex_hc;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+}
+
+.add_item {
+  position: relative;
+  width: 27.4%;
+  padding-top: 26.9%;
+  margin: 0 0 10px 10px;
+  border: 1px dashed #ddd;
+  border-radius: 8px;
+  input {
+    @extend .g_v_c_mid;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+  img,
+  video {
+    @extend .g_v_c_mid;
+    width: 102%;
+    height: 102%;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  .close {
+    @include getClose(12px, #fff);
+    right: 3px;
+    top: 3px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+  }
+  .edit {
+    position: absolute;
+    bottom: 3px;
+    left: 3px;
+    z-index: 100;
+    padding: 0 5px;
+    font-size: 13px;
+    line-height: 18px;
+    color: #fff;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+}
+.publish_img {
+  .add_item {
+    width: 95%;
+    margin: 10px auto 0;
+    padding-top: 36.8%;
+    img,
+    video {
+      width: 102%;
+      height: 102%;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+    input {
+      height: 140px;
+    }
+  }
+  .essays {
+    height: 50px;
+  }
+  .note_txt {
+    height: 140px;
+    margin-top: 5px;
+    font-size: 13px;
+    line-height: 25px;
+    &::-webkit-input-placeholder {
+      text-align: center;
+    }
+  }
+}
+.add_icon {
+  @extend .g_v_c_mid;
+  width: 24px;
+  height: 24px;
+  &::before {
+    content: "";
+    @extend .g_v_mid;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    border-radius: 5px;
+    background-color: #ddd;
+  }
+  &::after {
+    content: "";
+    @extend .g_c_mid;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    border-radius: 5px;
+    background-color: #ddd;
+  }
+}
+.mod_project {
+  background-color: #fff;
+}
+.project_tab {
+  @extend .flex_v_justify;
+  padding: 0 10px;
+  background-color: #f5f4f3;
+  a {
+    padding: 0 10px;
+    line-height: 24px;
+    font-size: 16px;
+    color: #fff;
+    background-color: $color_main;
+    border-radius: 23px;
+  }
+  ul {
+    @extend .flex_hc;
+    flex: 1;
+    -webkit-flex: 1;
+    height: 42px;
+  }
+  li {
+    margin-right: 20px;
+  }
+}
+.keyboard_icon {
+  width: 28px;
+  height: 21px;
+  @include getBgImg("../../../assets/images/follow/keyboard_icon.png");
+  &.active {
+    @include getBgImg("../../../assets/images/follow/keyboard_icon_active.png");
+  }
+}
+.topic_icon {
+  width: 25px;
+  height: 23px;
+  @include getBgImg("../../../assets/images/follow/topic_icon.png");
+  &.active {
+    @include getBgImg("../../../assets/images/follow/topic_icon_active.png");
+  }
+}
+.project_con {
+  > ul {
+    width: 100%;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    li {
+      display: inline-block;
+      width: 100%;
+    }
+  }
+}
+.topic_talk {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  .search {
+    @extend .flex_hc;
+    height: 24px;
+    margin: 0 15px 12px;
+    padding: 0 10px;
+    background-color: #eee;
+    border-radius: 24px;
+  }
+  .search_icon {
+    width: 18px;
+    height: 18px;
+    @include getBgImg("../../../assets/images/home/search.png");
+  }
+  input {
+    flex: 1;
+    height: 100%;
+    padding-left: 10px;
+    font-size: 14px;
+  }
+  .close {
+    @include getClose(9px, #ddd);
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+  }
+  p {
+    padding-left: 55px;
+    line-height: 30px;
+    font-size: 14px;
+    color: #818181;
+    @include getBorder(bottom, #ddd);
+  }
+}
+</style>

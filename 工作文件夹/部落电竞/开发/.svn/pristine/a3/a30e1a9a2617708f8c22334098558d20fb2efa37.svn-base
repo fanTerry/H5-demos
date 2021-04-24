@@ -1,0 +1,98 @@
+<!--component/reportlist/reportexpertexpertArticle/report-expert-expertArticle.wxml-->
+<wxs src="../../../utils/tools.wxs" module="tools" />
+<view class='report-expert-expertArticle report-expert-item'>
+
+    <!-- 第一部分 -->
+    <view class='report-expert-info dsp-table'>
+
+        <navigator url='/modules/expertpage/expertpage/expert-page?id={{expertArticle.userId}}'>
+          <view class="dsp-cell report-expert-avatar">
+              <image class="userinfo-avatar" src="{{expertArticle.authorAvatar}}" mode="aspectFill" />
+          </view>
+        </navigator>
+        <view class='dsp-cell'>
+            <navigator url='/modules/expertpage/expertpage/expert-page?id={{expertArticle.userId}}'>
+              <view class='report-expert-info-detail'>
+                  <text class='r-e-name'>{{expertArticle.authorName}}</text>
+                  <!--<i class='r-e-tag'>近7中6</i>-->
+              </view>
+            </navigator>
+            <!--    <view class='report-expert-info-note'>
+                  <text>推荐买点：</text>
+                  <view class='r-e-high'>
+                    <text class='r-e-h-text'>胜负让分</text>
+                    <text class='r-e-h-text'>大小分</text>
+                    <text class='r-e-h-text'>十二杀</text>
+                  </view>
+                </view>-->
+        </view>
+
+        <!-- <view class='dsp-cell'>
+            <view class='report-export-num'>66%</view>
+            <view class='report-export-num'>近期回报率</view>
+        </view>-->
+
+    </view>
+
+    <!-- 第二部分 -->
+    <navigator url='/modules/expertpage/expertdetailpage/expert-detail-page?expertUsrId={{expertArticle.userId}}&articleId={{expertArticle.id}}'>
+
+        <view class='report-expert-detail dsp-table'>
+
+            <view class='report-expert-detail-vs dsp-cell '>
+                <view  class='r-e-d-tit-view'>
+                    <!--<i class='iconfont icon-shoucang r-e-d-logo' style="color: #efc75e;"></i>-->
+                    <i wx:if="{{expertArticle.videogameId==1}}" class='iconfont icon-lol1 icon-lol'></i>
+                    <i wx:if="{{expertArticle.videogameId==4}}"class='iconfont icon-dota'></i>
+                    <text class='r-e-d-tit'>{{expertArticle.title}}</text>
+                </view>
+
+                <block wx:for="{{expertArticle.matchResultList}}" wx:key=''>
+                    <view class='dsp-table'>
+                        <view class='dsp-cell'>
+                             <text  class='r-e-d-text t-r'>{{tools.sub(item.homeTeamName)}}</text>
+                        </view>
+
+                        <view class='dsp-cell'>
+                            <image class='r-e-d-img' src='{{item.homeTeamLogo?item.homeTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFill'/>
+                        </view>
+                      
+
+                        <view class='dsp-cell'>
+                            <text class='r-e-d-vs'>VS</text>
+                        </view>
+
+                        <view class='dsp-cell'>
+                            <image class='r-e-d-img' src='{{item.awayTeamLogo?item.awayTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFill'/>
+                        </view>
+
+                        <view class='dsp-cell'>
+                            <text class='r-e-d-text t-l'>{{tools.sub(item.awayTeamName)}}</text>
+                        </view>
+                    </view>
+                </block>
+            </view>
+
+            <view class='report-expert-detail-money'>
+                <view class="con">
+                    <block wx:if="{{expertArticle.isFree==0 && expertArticle.price>0}}">
+                        <text wx:if="{{expertArticle.hasPayed && expertArticle.placeFlag==1}}">已支付</text>
+                        <block wx:else>
+                        	<image class="star_coin" src="https://rs.esportzoo.com/svn/esport-res/mini/images/wallet/star_coin.png"></image>
+                        	<text>{{expertArticle.price}}星星</text>
+                        </block>
+                    </block>
+                    <text wx:else>免费</text>
+                </view>
+                <view>
+                    <!--<i class='r-e-d-note'>不中全退</i>-->
+                </view>
+            </view>
+
+        </view>
+    </navigator>
+    <view class='report-expert-sub'>
+        <text>{{expertArticle.publishTime}}发布 | 阅读 {{expertArticle.views}}</text>
+    </view>
+
+</view>

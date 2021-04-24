@@ -1,0 +1,17 @@
+/* component/report/memnewsitem/mem-news-item.wxss */
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+.mem-news-item {
+  padding: 15rpx 10rpx;
+
+  font-size: 28rpx;
+}
+.m-n-i-blue {
+  color: #0f87ff;
+}
+.m-n-i-red {
+  color: #fc7879;
+}
+.m-n-i-green {
+  color: #44a14c;
+}

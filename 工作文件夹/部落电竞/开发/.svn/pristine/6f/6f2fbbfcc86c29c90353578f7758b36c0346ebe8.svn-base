@@ -1,0 +1,47 @@
+<!-- modules/store/address/edit.wxml -->
+<view class="main">
+  <form bindsubmit="formSubmit">
+    <view class="receive_adress">
+      <view>
+        <label for="receive_user">收货人</label>
+        <input name='receiverName' value="{{adderess.receiverName}}" type="text" id="receive_user" placeholder=""></input>
+      </view>
+      <view>
+        <label for="phone_num">手机号码</label>
+        <input name='receiverPhone' value="{{adderess.receiverPhone}}" type="number" id="phone_num" placeholder="" maxlength="11"></input>
+      </view>
+      <view>
+        <label>所在地区</label>
+        <picker mode="region" bindchange="bindRegionChange" value="{{region}}" custom-item="{{customItem}}">
+          <p class="location_address picker">
+            <span>{{region[0]}}</span>
+            <span>{{region[1]}}</span>
+            <span>{{region[2]}}</span>
+						<block wx:if="{{region.length==0}}">
+							请选择
+						</block>
+						<i class='iconfont icon-xiangyou'></i>
+          </p>
+        </picker>
+      </view>
+      <!-- <storeExchange></storeExchange> -->
+      <view class="detail_adress">
+        <span>详细地址：</span>
+        <textarea name="receiverAddress" value="{{adderess.receiverAddress}}" id="" cols="30" rows="10" placeholder="如道路、门牌号、小区、楼栋号、单元室等" ></textarea>
+      </view>
+      <view class="set_address">
+        <span bind:tap="chooseDefault">
+          <i class="{{defaulted?'select':'no'}}"></i>
+          <!-- <checkbox name='defaulted' checked="{{defaulted}}"/> -->
+          设置为默认地址
+        </span>
+      </view>
+    </view>
+
+    <a class="delete_address" wx:if="{{addressId}}" bind:tap="deleteAdderess">删除收货地址</a>
+    <button class='exchange_btn' form-type="submit">保存</button>
+    <!-- <a class="exchange_btn">保存</a> -->
+  </form>
+  <!-- <writeAddress myClass='{{myClass}}' addressId='{{addressId}}' adderess='{{adderess}}' >
+  </writeAddress> -->
+</view>

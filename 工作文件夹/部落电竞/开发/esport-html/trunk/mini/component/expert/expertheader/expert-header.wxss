@@ -1,0 +1,78 @@
+/* component/expert/expertheader/expert-header.wxss */
+
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/base/display.wxss";
+@import "/resources/wxss/base/clear.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+@import "/modules/expertpage/wxss/expert-base.wxss";
+
+.expert-info-bg {
+  width: 750rpx;
+  overflow-x: hidden;
+  height: 120rpx;
+  padding-top: 50rpx;
+  background-color: #0942aa;
+}
+
+.expert-info {
+  width: 670rpx;
+  margin: -110rpx auto 20rpx auto;
+  padding: 30rpx;
+
+  background: #6a9afe;
+  border-radius: 15rpx;
+}
+.expert-basic {
+  width: 670rpx;
+  margin-top: -60rpx;
+  padding-bottom: 20rpx;
+  border-bottom: dashed 2rpx #fff;
+}
+.e-b-c1 {
+  width: 170rpx;
+}
+.e-b-c2 {
+  width: 380rpx;
+}
+.e-b-c3 {
+  width: 120rpx;
+}
+
+.e-b-f-line {
+  padding-top: 35rpx;
+}
+.expert-avatar {
+  width: 135rpx;
+  height: 135rpx;
+
+  border-radius: 50%;
+  border: solid 5rpx #eee;
+}
+.expert-name {
+  color: #fff;
+  font-size: 42rpx;
+  font-weight: bold;
+}
+.expert-num{
+  font-size: 30rpx;
+  color: #ffea00;
+}
+.expert-sub {
+  color: #0841a8;
+  font-size: 24rpx;
+  padding: 0 5rpx;
+}
+
+.expert-tag {
+  display: inline-block;
+  padding: 0 20rpx;
+  margin-left: 10rpx;
+
+  line-height: 32rpx;
+  background: #ff4557;
+  border-radius: 20rpx;
+  
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #fff;
+}

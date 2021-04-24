@@ -1,0 +1,644 @@
+<template>
+  <div class="Page" :class="{iosApp:isIosApp}" :style="'background-image: url('+teamRoomInfo.bgUrl+')'"
+    v-show="pageShow">
+    <header class="mod_header">
+      <nav-bar :pageTitle="'赛事信息'"></nav-bar>
+      <div class="room_title">
+        <title>{{teamRoomInfo.name}}</title>
+        <ul class="tab_list">
+          <li v-for="(item,index) in tabList" :class="{active:showListItem == index}" :key="index"
+            @click="showListItem = index">{{item}}</li>
+        </ul>
+      </div>
+    </header>
+    <div class="main">
+      <!-- 参赛队伍 -->
+      <div class="join_team" v-if="showListItem === 0">
+        <!-- <h3>
+          <div class="flex_hc">
+            <span>参赛队伍</span>
+            <span class="format">[ {{teamRoomInfo.matchTeamNum}}支队伍
+              ，{{matchTypeName[teamRoomInfo.matchType]}}]</span>
+          </div>
+          <a class="more" @click="goUrlPage('/matchTool/moreTeam')">更多队伍<span></span></a>
+        </h3> -->
+        <!-- 赛事信息 -->
+        <div class="match_info">
+          <div class="info">
+            <div>
+              <span>当前状态</span>
+
+              <span>{{matchStatusArray[teamRoomInfo.matchStatus]}}</span>
+            </div>
+            <div>
+              <span>当前队伍数</span>
+              <p><span class="team_num">{{teamRoomInfo.teamNum}}</span> / {{teamRoomInfo.matchTeamNum}}</p>
+            </div>
+            <div>
+              <span>报名结束时间:</span>
+              <span>{{teamRoomInfo.endTime | toChineseDateAndHour}}</span>
+            </div>
+          </div>
+          <!-- 主办方显示 -->
+          <div v-if="teamRoomInfo.creator" class="manage_btn" @click="goUrlPage('/matchTool/moreTeam')">
+            <a class="bg_orange">队伍管理</a>
+          </div>
+          <!-- 参赛者显示 -->
+          <div v-else class="manage_btn">
+            <template v-if="teamRoomInfo.join">
+              <p>已报名</p>
+              <a class="bg_blue" @click="cancelMatch()">申请退赛</a>
+            </template>
+
+            <p v-else>未报名</p>
+
+          </div>
+        </div>
+        <p class="format">[ {{teamRoomInfo.matchTeamNum}}支队伍
+          ，{{matchTypeName[teamRoomInfo.matchType]}}]</p>
+        <!-- 参赛队伍列表 -->
+        <team-list ref="teamlist" :userTeamId="teamId" :teamList="teamRoomInfo.teamInfo" :matchId="matchId"
+          @applySuccess="applySuccess" @applyFailed="applyFailed">
+        </team-list>
+
+      </div>
+
+      <!-- 赛程 -->
+      <div class="team_schedule" v-if="showListItem === 1">
+        <!-- <h3>
+          <div class="flex_hc">
+            <span>赛程</span>
+          </div>
+          <a class="more" @click="goUrlPage('/matchTool/moreSchedule')">更多赛程<span></span></a>
+        </h3> -->
+        <schedule-list ref="schedule" :matchId="matchId" :scheduleList="teamRoomInfo.scheduleInfo"
+          :creatorFlag="teamRoomInfo.creator">
+        </schedule-list>
+      </div>
+
+      <!-- 聊天室 -->
+      <div class="chat_room" v-if="showListItem === 2">
+        <!-- <h3>
+          <div class="flex_hc">
+            <span>聊天室</span>
+          </div>
+        </h3> -->
+        <chat-room @hideFooter='showFooter = false' @showFooter='showFooter = true'></chat-room>
+      </div>
+    </div>
+    <footer class="mod_footer">
+      <div class="">
+        <a class="rule_btn" @click="toManageOrDetail(teamRoomInfo.creator)">规则管理</a>
+        <a class="share_btn" @click="canvasToImg()">分享赛事</a>
+      </div>
+    </footer>
+
+    <div class="ui_pop" v-show="dialogShow">
+      <div class="pop_share" v-if="shareFlag" ref="faultTree" id="share_card">
+        <div class="card_info">
+          <p>
+            <span>赛事名称：</span><span>{{teamRoomInfo.name}}</span>
+          </p>
+          <p>
+            <span>赛事模式：</span><span>{{matchTypeName[teamRoomInfo.matchType]}}</span>
+          </p>
+          <p>
+            <span>赛事时间：</span><span>{{teamRoomInfo.matchStartTime|dateFmt}}</span>
+          </p>
+          <p>
+            <span>赛事奖励：</span><span>扫码详见更多赛事信息</span>
+          </p>
+        </div>
+        <div class="qr_code" id="qrcode">
+        </div>
+      </div>
+      <div class="share_img" v-else>
+        <a class='close' @click="dialogShow = false;shareFlag=true"></a>
+        <img :src="imageUrl" alt="">
+      </div>
+    </div>
+    <pops :popTitle="popTitle" v-show="showPop" @cancel='showPop = false' @confirm="applyQuiz"></pops>
+    <pops :popTitle="popTitle" :hideCancel="true" v-show="showApplyPop" @confirm="showApplyPop = false"></pops>
+  </div>
+</template>
+
+<script>
+import html2canvas from "html2canvas";
+import navBar from "components/header/nav_bar/index.vue";
+import teamList from "./components/teamlist.vue";
+import scheduleList from "./components/schedulelist.vue";
+import chatRoom from "./components/chatroom.vue";
+import pops from "./components/pops.vue";
+import domtoimage from "dom-to-image";
+// import moduleName from "../../";
+import QRCode from "qrcodejs2";
+import { mapGetters, mapActions } from "vuex";
+export default {
+  components: { navBar, teamList, scheduleList, chatRoom, pops },
+  props: [],
+  data() {
+    return {
+      tabList: ["参赛队伍", "赛程", "聊天室"],
+      isIosApp: false,
+      showListItem: 0,
+      pageShow: false,
+      showPop: false,
+      showApplyPop: false,
+      popTitle: "",
+      imageUrl: "",
+      shareFlag: true,
+      dialogShow: false,
+      matchId: Number,
+      teamId: Number, //用户当前报名队伍
+      teamRoomInfo: {},
+      scheduleInfo: {},
+      matchTypeName: { 1: "淘汰制", 2: "循环制" },
+      userInfo: {},
+      showFooter: true,
+      matchStatusArray: {
+        0: "无效",
+        1: "报名中",
+        2: "未开赛",
+        3: "比赛中",
+        4: "已结束",
+        5: "开赛失败",
+        6: "赛事关闭"
+      }
+    };
+  },
+  mounted() {
+    this.matchId = this.$route.query.matchId;
+    this.getMatchRoomTeamInfo();
+    // this.pageShow = true;
+    this.refreshMatchId(); //防止页面刷新，matchId丢失
+    // 判断是否为iosApp版本
+    if (this.$route.query.clientType == 4) {
+      this.isIosApp = true;
+    }
+  },
+  methods: {
+    ...mapActions(["setMatchInfo"]),
+    refreshMatchId() {
+      console.log(this.matchId, "room获得的比赛ID");
+      this.setMatchInfo({
+        matchId: this.matchId // 赛事ID
+      });
+    },
+    canvasToImg() {
+      this.qrcode();
+      this.dialogShow = true;
+      let _self = this;
+      setTimeout(() => {
+        html2canvas(document.getElementById("share_card"), {
+          // useCORS: true //（图片跨域相关）
+          // allowTaint: false //允许跨域（图片跨域相关）
+          // taintTest: true //是否在渲染前测试图片
+          // width: document.getElementById("my-node").clientWidth, //显示的canvas窗口的宽度
+          // height: document.getElementById("my-node").clientHeight //显示的canvas窗口的高度
+          // windowWidth: document.body.scrollWidth, // 获取X轴方向滚动条中的内容
+          // windowHeight: document.body.scrollHeight, // 获取Y轴方向滚动条中的内容
+          // x: 0 // 页面在X轴上没有滚动，故设为0
+          // y: window.pageYOffset // 页面在垂直方向的滚动距离
+        }).then(function(canvas) {
+          _self.imageUrl = canvas.toDataURL("image/png");
+          _self.shareFlag = false;
+          console.log(_self.shareFlag);
+        });
+      }, 1000);
+    },
+    goUrlPage(url) {
+      this.$router.push({
+        path: url,
+        query: { matchId: this.matchId }
+      });
+    },
+    applySuccess(teamId, teamNum) {
+      this.teamRoomInfo.join = true;
+      this.teamRoomInfo.teamNum = teamNum;
+      this.clearUserAvatar();
+      this.teamId = teamId;
+      this.showApplyPop = true;
+      this.popTitle = "恭喜您已报名成功";
+    },
+    applyFailed() {
+      this.teamRoomInfo.join = false;
+      this.clearUserAvatar();
+    },
+    applyQuiz() {
+      this.showPop = false;
+      let param = {};
+      param.teamId = this.teamId;
+      param.userApplyId = this.userInfo.userId;
+      param.matchId = this.matchId;
+      console.log(param);
+      return this.$post("/api/matchtool/matchRoom/quiz", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.teamRoomInfo.join = false;
+            this.clearAvatar();
+            this.teamId = "";
+            console.log(dataResponse);
+            console.log(dataResponse);
+            this.teamRoomInfo.teamNum = dataResponse.data;
+          } else if (dataResponse.code == "4444") {
+            this.$toast(dataResponse.message);
+          } else {
+            this.$toast("退赛异常");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //删除掉原来的头像报名位置
+    clearUserAvatar() {
+      for (let index = 0; index < this.teamRoomInfo.teamInfo.length; index++) {
+        const team = this.teamRoomInfo.teamInfo[index];
+        if (team.teamId == this.teamId) {
+          if (team.playerInfo != null) {
+            for (var i = 0; i < team.playerInfo.length; i++) {
+              let player = team.playerInfo[i];
+              console.log(player);
+              if (player != null && player.userId == this.userInfo.userId) {
+                console.log("下标", i);
+                team.playerInfo.splice(i, 1);
+                return;
+              }
+            }
+          }
+        }
+      }
+    },
+
+    clearAvatar() {
+      if (this.$refs.teamlist.currPosition) {
+        this.$refs.teamlist.currPosition = "";
+      } else {
+        this.clearUserAvatar();
+      }
+
+      // this.$refs.teamlist.currPosition = ""
+    },
+
+    getMatchRoomTeamInfo() {
+      let param = {};
+      param.pageType = 0;
+      return this.$post("/api/matchtool/matchRoom/" + this.matchId, param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          this.pageShow = true;
+          if (dataResponse.code == "200") {
+            this.teamRoomInfo = dataResponse.data.teamRoomInfo;
+            // let teamInfo = this.teamRoomInfo.teamInfo;
+            // if (teamInfo && teamInfo.length > 0) {
+            //   this.teamRoomInfo.teamInfo = this.teamRoomInfo.teamInfo.slice(
+            //     0,
+            //     3
+            //   );
+            // }
+            // let scheduleList = this.teamRoomInfo.scheduleList;
+            // if (scheduleList && scheduleList.length > 0) {
+            //   this.teamRoomInfo.scheduleInfo = this.teamRoomInfo.scheduleList.slice(
+            //     0,
+            //     2
+            //   );
+            // }
+            this.teamId = this.teamRoomInfo.userTeamId;
+            this.userInfo = dataResponse.data.userInfo;
+            console.log(
+              "dataResponse.data.userInfo",
+              dataResponse.data.userInfo
+            );
+            this.$refs.teamlist.userInfo = this.userInfo;
+            this.$refs.schedule.matchStatus = this.teamRoomInfo.matchStatus;
+            this.$store.dispatch("setUserInfo", dataResponse.data.userInfo);
+          } else {
+            this.$toast("系统异常");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    qrcode() {
+      //生成二维码
+      console.log(window.location.href, "二维码");
+      let url = window.location.href;
+      let qrcode = new QRCode("qrcode", {
+        width: 142,
+        height: 142, // 高度
+        padding: 10,
+        text: url, // 二维码内容
+        // render: 'canvas' ,   // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
+        background: "#fff", // 背景色
+        foreground: "#ff0" // 前景色
+      });
+    },
+    cancelMatch() {
+      this.showPop = true;
+      this.popTitle = "您确定要退出参赛?";
+    },
+
+    screenshotsImg() {
+      this.qrcode();
+      this.dialogShow = true;
+      let self = this;
+      this.$nextTick(() => {
+        //ios第一次截图会失败，所以这里执行两次，暂时不知道什么原因
+        var node = document.getElementById("my-node");
+        domtoimage
+          .toPng(node)
+          .then(function(dataUrl) {
+            // self.imageUrl = dataUrl;
+            // self.shareFlag = false;
+            console.log(self.imageUrl, dataUrl);
+          })
+          .catch(function(error) {
+            console.error("oops, something went wrong!", error);
+          });
+
+        setTimeout(() => {
+          var node = document.getElementById("my-node");
+          console.log(node);
+          domtoimage
+            .toPng(node)
+            .then(function(dataUrl) {
+              self.imageUrl = dataUrl;
+              self.shareFlag = false;
+              console.log(self.imageUrl, dataUrl);
+            })
+            .catch(function(error) {
+              console.error("oops, something went wrong!", error);
+            });
+        }, 1000);
+      });
+    },
+    toManageOrDetail(isCreator) {
+      if (isCreator) {
+        //举办方,管理赛事
+        this.$router.push({
+          name: "createMatch",
+          query: {
+            matchId: this.matchId
+          }
+        });
+      } else {
+        //其他角色,查看赛事
+        this.$router.push({
+          name: "matchInfo",
+          query: {
+            toolMatchId: this.matchId
+          }
+        });
+      }
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_mixin";
+@import "../../assets/common/_base";
+
+.Page {
+  background-position: center 44px;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  &.iosApp {
+    @media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+      only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+      background-position: center 88px;
+    }
+  }
+}
+
+.main {
+  // overflow-x: hidden;
+}
+
+.mod_header {
+  background: transparent;
+  .nav_bar {
+    background-color: #fff;
+  }
+}
+
+.room_title {
+  padding-top: 19.7333vw;
+  text-align: center;
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-position: top center;
+  title {
+    display: inline-block;
+    padding: 0 2.9333vw;
+    line-height: 7.2vw;
+    font-size: 4vw;
+    font-weight: 600;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 0.5333vw solid #3d3d3d;
+    border-radius: 4vw;
+  }
+  .tab_list {
+    @extend .flex_v_justify;
+    padding-top: 3.4667vw;
+    li {
+      width: 28.5333vw;
+      padding: 0 5.3333vw 1.8667vw;
+      font-size: 4.2667vw;
+      line-height: 4.8vw;
+      color: #999;
+      &:last-child {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+    .active {
+      position: relative;
+      color: #fff;
+      &::after {
+        content: "";
+        @extend .g_c_mid;
+        bottom: 0;
+        width: 6.9333vw;
+        height: 0.8vw;
+        border-radius: 0.4vw;
+        background-color: #ff7e00;
+      }
+    }
+  }
+}
+
+.format {
+  font-size: 3.4667vw;
+  line-height: 4.9333vw;
+  color: #ff7e00;
+  text-align: center;
+}
+
+h3 {
+  @extend .flex_v_justify;
+  padding: 2.9333vw;
+  font-size: 5.3333vw;
+  line-height: 5.8667vw;
+  color: #fff;
+
+  .more {
+    @extend .flex_hc;
+    font-size: 3.7333vw;
+    font-weight: normal;
+    span {
+      width: 3.2vw;
+      height: 3.2vw;
+      margin-left: 2.1333vw;
+      @include getBgImg("../../assets/images/matchtool/more_icon.png");
+    }
+  }
+}
+
+.match_info {
+  @extend .flex_v_justify;
+  width: 94.6667vw;
+  margin: 2.6667vw;
+  padding: 2.9333vw 4vw 2.9333vw 2.6667vw;
+  font-size: 3.7333vw;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.2);
+  .info {
+    // width: 56.8vw;
+    flex: 1;
+    -webkit-flex: 1;
+    > div {
+      @extend .flex_v_justify;
+      padding-bottom: 3.2vw;
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+    .team_num {
+      color: #ff7e00;
+    }
+  }
+}
+
+.manage_btn {
+  margin-left: 8vw;
+  p {
+    line-height: 5.3333vw;
+    padding-bottom: 1.3333vw;
+    text-align: center;
+  }
+  a {
+    @extend .flex_v_h;
+    width: 23.2vw;
+    height: 9.3333vw;
+    font-weight: bold;
+    border-radius: 6vw;
+  }
+  .bg_orange {
+    @include getBgLinear(right, #ee701d, #f5951d);
+  }
+  .bg_blue {
+    @include getBgLinear(right, #1a74ff, #00b4ff);
+  }
+}
+
+.chat_room {
+  height: 100%;
+}
+
+.mod_footer {
+  > div {
+    @extend .flex_v_h;
+    padding: 2.6667vw 0;
+  }
+  a {
+    @extend .flex_v_h;
+    width: 30.6667vw;
+    height: 11.7333vw;
+    margin: 0 4vw;
+    font-size: 4.5333vw;
+    font-weight: bold;
+    color: #fff;
+    border-radius: 11.7333vw;
+  }
+  .rule_btn {
+    @include getBgLinear(right bottom, #6950fb, #b83af3);
+  }
+  .share_btn {
+    @include getBgLinear(right bottom, #1a74ff, #00b4ff);
+  }
+}
+
+.pop_share {
+  position: relative;
+  width: 100vw;
+  height: 160.8vw;
+  @include getBgImg("../../assets/images/matchtool/share_bg.png");
+  background-size: 100% 100%;
+  .close {
+    position: absolute;
+    right: 1.3333vw;
+    top: 1.3333vw;
+  }
+  .card_info {
+    margin-top: 53.3333vw;
+  }
+  > div {
+    width: 84vw;
+    margin: 0 auto;
+    padding: 5.3333vw 6.6667vw;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 1.6vw;
+    p {
+      padding-bottom: 2.6667vw;
+      font-size: 4.2667vw;
+      line-height: 4.8vw;
+      color: #efd2a6;
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+  }
+  .qr_code {
+    width: 37.8667vw;
+    height: 37.8667vw;
+    margin: 6.6667vw auto 0;
+    padding: 0.8vw 0 0 0.8vw;
+    // background-repeat: no-repeat;
+    // background-position: center;
+    // background-size: cover;
+    background-color: #fff;
+  }
+}
+
+.share_img {
+  @extend .g_v_c_mid;
+  width: 80%;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    transform: translateY(50%);
+    -webkit-transform: translateY(50%);
+    width: 100%;
+    height: 10px;
+    background-color: #000;
+  }
+  .close {
+    position: absolute;
+    top: 2.6667vw;
+    right: 2.6667vw;
+    width: 5.3333vw;
+    height: 5.3333vw;
+    @include getBgImg("../../assets/images/matchtool/close.png");
+  }
+  img {
+    width: 100%;
+  }
+}
+</style>

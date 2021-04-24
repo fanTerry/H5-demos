@@ -1,0 +1,62 @@
+<!--component/reportlist/reportitem/report-item.wxml-->
+
+<view class='report-item'>
+
+
+  <!-- 第一格 -->
+  <view class='dsp-cell r-p-i-r1'>
+    <view class='r-p-i-time'><text>08:00</text></view>
+    <view class='r-p-i-title'><text>BO1</text></view>
+  </view>
+
+  <!-- 第二格 -->
+  <view class='dsp-cell r-p-i-r2'>
+    <view class='r-p-i-d-info clear'>
+      <image class='r-p-i-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+      <view class='r-p-i-d-text'>
+        <text>DETONA...</text>
+      </view>
+      <view class='r-p-i-d-score'>
+        <text>-</text>
+      </view>
+    </view>
+    <view class='r-p-i-d-info'>
+      <image class='r-p-i-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+      <view class='r-p-i-d-text'>
+        <text>DETONA...</text>
+      </view>
+      <view class='r-p-i-d-score'>
+        <text class='r-p-i-d-s-blue'>2</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 第三格 -->
+  <view class='dsp-cell r-p-i-r3'>
+    <image class='r-p-i-d-img-gift' src='/resources/images/image2.png' mode='aspectFill' />
+  </view>
+
+  <!-- 第四格 -->
+  <view class='dsp-cell r-p-i-r4'>
+    <!-- 未开始状态：响应状态:icon-bell-a-act-->
+    <!-- <i class='iconfont icon-naozhong icon-bell-a'></i> -->
+
+    <!-- 进行中状态 -->
+    <view class='r-p-i-status r-p-i-s-ing'>
+      <view class='r-p-i-status-text'>
+        <!-- <i class='iconfont icon-tupian1 icon-pic'></i> -->
+        <i class='iconfont icon-bofang icon-play'></i>
+        <text>图文直播</text>
+      </view>
+      <view class='r-p-i-status-text'>
+        <text>进行中</text>
+      </view>
+    </view>
+
+    <!-- <view class='r-p-i-status r-p-i-s-over'>
+      <view class='r-p-i-status-text'><i class='iconfont icon-icon_tianjia r-p-i-i r-p-i-i-cur'></i><text>集锦,回放</text></view>
+      <view class='r-p-i-status-text'><text>进行中</text></view>
+    </view> -->
+  </view>
+
+</view>

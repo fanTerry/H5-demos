@@ -1,0 +1,133 @@
+<template>
+  <div>
+    <h3>{{quizMathGame.subjectName}}<span class="end_time">{{quizMathGame.deadlineTime}}截止</span></h3>
+    <div class="battle_team">
+      <!-- 投注结束加上disabled -->
+      <a v-for="(item,index) in quizMathGame.quizOptions" :key="index"
+        :class="{select:getBetData.toCurBet == matchGameId+'_'+index}" @click="selectItem(item,index,$event)">
+        <p>{{item.name}}</p>
+        <span>赔率 {{item.odds}}</span>
+        <!-- 投注弹窗 -->
+        <bet-pops v-if="getBetData.toCurBet==matchGameId+'_'+index" :selectItem="userSelectItem"></bet-pops>
+      </a>
+    </div>
+  </div>
+</template>
+
+<script>
+import betPops from "./betpops.vue";
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  components: { betPops },
+  props: ["quizMathGame"],
+  data() {
+    return {
+      showProp: false,
+      userSelectItem: Object,
+      matchGameId: null //quiz_match_game表中的id
+    };
+  },
+  computed: {
+    ...mapGetters({
+      getBetData: "getBetData"
+    })
+  },
+  mounted() {
+    this.matchGameId = this.quizMathGame.id;
+  },
+  methods: {
+    ...mapActions(["setBetData"]),
+    selectItem(item, index, e) {
+      e.stopPropagation();
+      console.log(item, "selectItem");
+      console.log(this.quizMathGame, "this.quizMathGame");
+      this.showProp = true;
+      let toCurBet = this.matchGameId + "_" + index;
+      this.userSelectItem = item;
+      this.userSelectItem.matchGameId = this.matchGameId;
+      this.userSelectItem.matchNo = this.quizMathGame.matchNo;
+      this.userSelectItem.playThirdName = this.quizMathGame.thirdName;
+      this.setBetData({ toCurBet: toCurBet });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+h3 {
+  font-size: 3.73vw;
+  color: #fedcd7;
+  font-weight: normal;
+  &:before {
+    content: "";
+    display: inline-block;
+    vertical-align: bottom;
+    width: 1.07vw;
+    height: 4.8vw;
+    margin-right: 1.33vw;
+    border-radius: 2px;
+    background: linear-gradient(to bottom, #f7d64b, #c4480a);
+    background: -webkit-linear-gradient(top, #f7d64b, #c4480a);
+  }
+}
+
+.battle_team {
+  padding-top: 1.07vw;
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+    overflow: hidden;
+  }
+  a {
+    float: left;
+    width: 31%;
+    margin-right: 3%;
+    margin-top: 2.67vw;
+    padding: 1.87vw 0;
+    text-align: center;
+    background-color: #251214;
+    border-radius: 6px;
+    @include getRadiusBorder(#463025, all, 6px);
+    &:nth-child(3n) {
+      margin-right: 0;
+    }
+    &.select {
+      @include getRadiusBorder(#bb3129, all, 6px);
+      &:after {
+        content: "";
+        position: absolute;
+        right: -1.33vw;
+        top: -1.33vw;
+        width: 4.8vw;
+        height: 4.8vw;
+        @include getBgImg("../../../assets/images/guess/select.png");
+      }
+    }
+
+    &.disabled {
+      background-color: #954735;
+      opacity: 0.2;
+    }
+    p {
+      color: #fedcd7;
+    }
+    span {
+      display: inline-block;
+      padding-top: 1.07vw;
+      font-size: 3.2vw;
+      color: #86564e;
+    }
+  }
+}
+
+.end_time {
+  padding-left: 2.67vw;
+  font-size: 3.2vw;
+  color: #86564e;
+}
+</style>

@@ -1,0 +1,44 @@
+<!--modules/store/index.wxml-->
+  <view class="main">
+    <view class="product_group">
+      <ul class="list">
+        <li class="item">
+          <i class="around_icon"></i>
+          <span>周边</span>
+        </li>
+        <li class="item">
+          <i class="garage_icon" ></i>
+          <span>手办</span>
+        </li>
+        <li class="item">
+          <i class="skin_icon"></i>
+          <span>皮肤</span>
+        </li>
+        <li class="item">
+          <i class="digital_icon"></i>
+          <span>数码</span>
+        </li>
+        <li class="item">
+          <i class="earphone_icon"></i>
+          <span>耳机</span>
+        </li>
+        <li class="item">
+          <i class="computer_icon"></i>
+          <span>电脑</span>
+        </li>
+        <li class="item">
+          <i class="rat_icon"></i>
+          <span>鼠键</span>
+        </li>
+        <li class="item">
+          <i class="hardware_icon"></i>
+          <span>硬件</span>
+        </li>
+      </ul>
+    </view>
+    <view class="banner">
+      <image mode='aspectFill' src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=15815148,1086245564&fm=26&gp=0.jpg" alt=""></image>
+    </view>
+    <submenu-bar titleArray="{{subMenuList}}" selectedTag="{{selectedTag}}" bindmyevent="onMyEvent"></submenu-bar>
+    <goods-list myClass='{{myClass}}'></goods-list>
+  </view>

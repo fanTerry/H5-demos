@@ -1,0 +1,20 @@
+<!--modules/store/my_exchange/my_exchange.wxml-->
+<view class="main">
+  <view class="product_group">
+    <ul class="list">
+      <li class="item" bindtap="goToOrderList" data-orderstatus="{{item.contentType}}" wx:for="{{shopOrderStatusList}}" wx:key="">
+        <i class="{{item.frontClass}}"></i>
+        <span>{{item.name}}</span>
+      </li>
+      <li class="item">
+        <i class="address_icon"></i>
+        <span>地址管理</span>
+      </li>
+      <li class="item">
+        <i class="contact_icon"></i>
+        <span bindtap="contactCustomerService">联系客服</span>
+        <popAlert showPop="{{showPopUp}}" content="请联系客服QQ: 2732470865" type="1" bindmyconfirm="closePopUp"></popAlert>
+      </li>
+    </ul>
+  </view>
+</view>

@@ -1,0 +1,146 @@
+{
+	"description": "项目配置文件",
+	"packOptions": {
+		"ignore": []
+	},
+	"setting": {
+		"urlCheck": true,
+		"es6": true,
+		"postcss": true,
+		"minified": true,
+		"newFeature": true,
+		"autoAudits": false,
+		"checkInvalidKey": true
+	},
+	"compileType": "miniprogram",
+	"libVersion": "2.6.5",
+	"appid": "wx3cc14d435c0825a3",
+	"projectname": "esport",
+	"debugOptions": {
+		"hidedInDevtools": []
+	},
+	"isGameTourist": false,
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"currentL": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": 1,
+			"list": [
+				{
+					"id": 0,
+					"name": "资讯详情",
+					"pathName": "modules/articlepage/article-page",
+					"query": "type=1&id=14837",
+					"scene": null
+				},
+				{
+					"id": 1,
+					"name": "赛事详情页",
+					"pathName": "modules/reportpage/report-page",
+					"query": "matchId=545356",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "达人个人主页",
+					"pathName": "modules/expertpage/expertpage/expert-page",
+					"query": "id=143214",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "达人：达人协议页",
+					"pathName": "modules/expertagreepage/expert-agree-page",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "赛事首页",
+					"pathName": "pages/report/report",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "申请达人",
+					"pathName": "modules/expertpage/expertapplypage/expert-apply-page",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "赛事：会员充值中心",
+					"pathName": "modules/memberpaycenter/member-pay-center",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "充值页面",
+					"pathName": "modules/memberpaycenter/member-pay-center",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 12,
+					"name": "我的：充值页",
+					"pathName": "modules/mypage/myrecharge/my-recharge",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 9,
+					"name": "充值确认支付弹窗",
+					"pathName": "component/popup/ppmy/pp-my",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "充值页",
+					"pathName": "modules/mypage/myrecharge/my-recharge",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "我的页面",
+					"pathName": "pages/my/my",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 12,
+					"name": "推荐内容",
+					"pathName": "modules/expertpage/expertdetailpage/expert-detail-page",
+					"query": "expertUsrId=143216&articleId=80",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "协议页面",
+					"pathName": "modules/expertpage/expertagreepage/expert-agree-page",
+					"query": "",
+					"scene": null
+				}
+			]
+		}
+	}
+}

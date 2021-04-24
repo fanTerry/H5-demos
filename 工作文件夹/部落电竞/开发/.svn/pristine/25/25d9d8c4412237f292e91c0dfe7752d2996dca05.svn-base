@@ -1,0 +1,16 @@
+
+page {
+  font-family: "PingFang SC", Arial, Helvetica, sans-serif;
+  word-wrap: break-word;
+  background-color: #f3f2f0;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* 统一的底部撑开空层 */
+.blank {
+  width: 750rpx;
+  height: 150rpx;
+  margin: 0 auto;
+}

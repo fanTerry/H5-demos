@@ -1,0 +1,51 @@
+/* component/comm/expertitem/expert-item.wxss */
+
+@import "/resources/wxss/base/display.wxss";
+
+.e-i-m {
+  width: 400rpx;
+}
+.expert-item {
+	position: relative;
+  margin-bottom: 20rpx;
+}
+.expert-name {
+  font-size: 30rpx;
+  line-height: 30rpx;
+  padding-top: 20rpx;
+}
+.expert-info {
+  display: inline-block;
+  color: #818181;
+  font-size: 24rpx;
+  line-height: 20rpx;
+  padding-right: 20rpx;
+}
+
+.follow,.followed{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 140rpx;
+	height: 52rpx;
+	font-size: 	28rpx;
+	border-radius: 50rpx;
+
+	position: absolute;
+	top: 50%;
+	right: 20rpx;
+	transform: translateY(-50%);
+}
+
+.follow{
+	color: #EC9805;
+	/* background-color: #EC9805; */
+	border: 1rpx solid #EC9805;
+	box-sizing: border-box;
+}
+
+.followed{
+	color: #AFAFAF;
+	border: 1px solid #AFAFAF;
+}

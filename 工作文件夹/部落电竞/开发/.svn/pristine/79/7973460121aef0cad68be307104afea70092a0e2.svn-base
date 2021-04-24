@@ -1,0 +1,49 @@
+<!--component/reportlist/report-list.wxml-->
+
+<!-- 赛程列表 -->
+<!--<view class='report-list margin-b40 pr'>-->
+<view class='report-list'>
+    <view class='report-list-time'><text>{{detailResponse.sortMatchDate}}</text></view>
+
+    <!--<view class='report-list-name'><text>{{detailResponse.videoGameName}} {{detailResponse.legueName==null?'':detailResponse.legueName}}</text></view>-->
+
+    <!--  <view wx:if="{{reportType == 1}}" class='report-item'>
+        <view wx:for="{{detailResponse.matchResultList}}" wx:key="">
+            <navigator url="/modules/reportpage/report-page?matchId={{item.matchId}}">
+                <report-process-item matchResult="{{item}}"></report-process-item>
+            </navigator>
+        </view>
+
+      </view>
+
+      &lt;!&ndash; 赛果列表 &ndash;&gt;
+      <view wx:elif="{{reportType == 2}}">
+        <view wx:for="list" wx:key="">
+            <navigator url="/modules/reportpage/report-page?matchId={{item.matchId}}">
+                <report-result-item></report-result-item>
+            </navigator>
+        </view>
+      </view>-->
+
+    <view class='report-list-detail'>
+        <!-- 赛事详情名称 -->
+        <view class='report-list-detail-name' style='padding:5rpx 10rpx 5rpx 10rpx;'>
+            <i wx:if="{{detailResponse.gameType==1}}" class='iconfont icon-lol1 icon-lol'></i>
+            <i wx:if="{{detailResponse.gameType==4}}"class='iconfont icon-dota'></i>
+            <!-- <i class='iconfont icon-kpl1 icon-kpl'></i>
+            <i class='iconfont icon-wangzhe1 icon-king'></i> -->
+            <view class='r-p-l-n-text'><text>{{detailResponse.legueName==null?'暂无':detailResponse.legueName}}</text></view>
+            <view class='r-p-l-n-sub-text'><text>
+                <!--预留信息位置，例如填小组赛-->
+
+
+            </text></view>
+        </view>
+        <!-- 新的：赛事元素列表 -->
+        <!--<navigator  >-->
+            <report-item liveFlag="{{liveFlag}}" wx:for="{{detailResponse.matchResultList}}" wx:key="" wx:for-item="matchResult" matchResult="{{matchResult}}" ></report-item>
+        <!--</navigator>-->
+    </view>
+
+
+</view>

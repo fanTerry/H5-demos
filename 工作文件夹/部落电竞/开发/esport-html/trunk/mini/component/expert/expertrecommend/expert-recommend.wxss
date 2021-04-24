@@ -1,0 +1,74 @@
+/* component/expert/expertrecommend/expert-recommend.wxss */
+
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/base/display.wxss";
+@import "/resources/wxss/base/clear.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+@import "/modules/expertpage/wxss/expert-base.wxss";
+
+/* expert-recommend-view */
+.expert-recommend-view {
+  width: 730rpx;
+  margin: 0 auto;
+
+  background: #fff;
+  border-radius: 15rpx;
+}
+
+.expert-recommend {
+  width: 730rpx;
+  padding: 30rpx 0;
+  border-bottom: solid 1rpx #ddd;
+}
+.expert-recommend:last-child {
+  border-bottom: none;
+}
+
+.e-r-c1 {
+  width: 180rpx;
+  text-align: center;
+}
+.e-r-detail {
+  line-height: 30rpx;
+  font-size: 26rpx;
+  font-weight: bold;
+
+  text-align: center;
+}
+.e-r-d-vs {
+  color: #333;
+  font-size: 36rpx;
+  font-weight: bold;
+  padding: 20rpx 0;
+}
+.e-r-name {
+  font-weight: bold;
+  line-height: 50rpx;
+}
+.e-r-n-text {
+  font-size: 44rpx;
+}
+.e-r-d-title {
+  line-height: 30rpx;
+  color: #999;
+}
+.e-r-vs {
+  font-size: 30rpx;
+  font-weight: bold;
+  padding: 0 40rpx;
+}
+.e-r-time {
+  padding: 0 5rpx;
+}
+
+.report-info-img {
+  width: 80rpx;
+  height: 80rpx;
+  margin-top: -20rpx;
+}
+.e-r-d-text {
+  color: #333;
+  font-size: 36rpx;
+  font-weight: bold;
+  line-height: 30rpx;
+}

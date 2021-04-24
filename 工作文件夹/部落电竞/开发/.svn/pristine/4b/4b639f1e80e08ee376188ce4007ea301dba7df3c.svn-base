@@ -1,0 +1,112 @@
+package com.esportzoo.esport.manager;
+
+import cn.hutool.core.bean.BeanUtil;
+import com.esportzoo.common.appmodel.domain.result.ModelResult;
+import com.esportzoo.common.redisclient.core.JedisClusterClientImpl;
+import com.esportzoo.esport.client.service.cms.CmsCommentServiceClient;
+import com.esportzoo.esport.client.service.cms.CmsContentServiceClient;
+import com.esportzoo.esport.client.service.consumer.UserConsumerServiceClient;
+import com.esportzoo.esport.client.service.expert.RecExpertApplyServiceClient;
+import com.esportzoo.esport.constant.CachedKeyAndTimeLong;
+import com.esportzoo.esport.constants.AuditStatus;
+import com.esportzoo.esport.domain.RecExpertApply;
+import com.esportzoo.esport.domain.UserCenterInfoVo;
+import com.esportzoo.esport.domain.UserConsumer;
+import com.esportzoo.esport.vo.UserConsumerQueryOption;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+/**
+ * @description:
+ *
+ * @author: Haitao.Li
+ *
+ * @create: 2019-05-20 09:32
+ **/
+@Component
+public class UserCenterManager {
+
+
+	private transient static final Logger logger = LoggerFactory.getLogger(UserCenterManager.class);
+
+
+	@Autowired
+	@Qualifier("userConsumerServiceClient")
+	private UserConsumerServiceClient userConsumerServiceClient;
+
+	@Autowired
+	@Qualifier("cmsContentServiceClient")
+	private CmsContentServiceClient cmsContentServiceClient;
+
+	@Autowired
+	@Qualifier("cmsCommentServiceClient")
+	private CmsCommentServiceClient cmsCommentServiceClient;
+
+	@Autowired
+	@Qualifier("recExpertApplyServiceClient")
+	private RecExpertApplyServiceClient recExpertApplyServiceClient;
+
+	@Autowired
+	@Qualifier("redisClusterClient")
+	JedisClusterClientImpl jedisClusterClient;
+
+	public static final String USER_UP_SUM = "user_up_sum_";
+
+
+	public UserCenterInfoVo getUserInfo(Long userId) {
+
+		UserCenterInfoVo centerInfoVo = new UserCenterInfoVo();
+		/*初始化数据*/
+		centerInfoVo.setUpSum("0");
+		centerInfoVo.setFans(0);
+		centerInfoVo.setFollowers(0);
+		try {
+			UserConsumerQueryOption queryOption = new UserConsumerQueryOption();
+			ModelResult<UserConsumer> modelResult = userConsumerServiceClient.queryConsumerById(userId, queryOption);
+			if (!modelResult.isSuccess()) {
+				logger.error("查询用户=「{}」出现异常,异常信息：{}", userId, modelResult.getErrorMsg());
+				return centerInfoVo;
+			}
+			UserConsumer userConsumer = modelResult.getModel();
+
+			BeanUtil.copyProperties(userConsumer, centerInfoVo);
+
+			/*是否提交专家申请*/
+			ModelResult<List<RecExpertApply>> expertApplyResult = recExpertApplyServiceClient.queryByUserId(userId);
+			if (expertApplyResult.isSuccess() && expertApplyResult.getModel() != null && expertApplyResult.getModel().size() > 0) {
+				/*审核中、审核通过，不显示入口*/
+				RecExpertApply apply = expertApplyResult.getModel().get(0);
+				if (apply.getStatus() == AuditStatus.AUDITING.getIndex() || apply.getStatus() == AuditStatus.AUDIT_SECC.getIndex()) {
+					centerInfoVo.setHasExpertApply(false);
+				}
+			}
+
+			/*统计用户点赞总数*/
+			String upSum = jedisClusterClient.get(USER_UP_SUM + userConsumer.getId());
+
+			if (StringUtils.isEmpty(upSum)) {
+				Long sum = 0L;
+				ModelResult<Long> sumUpsResult = userConsumerServiceClient.querySumUpsByUserIdAndTime(userId, null, null);
+				if (!sumUpsResult.isSuccess()) {
+					logger.error("查询用户=「{}」点赞数出现异常,异常信息：{}", userId, sumUpsResult.getErrorMsg());
+				}
+				sum = sumUpsResult.getModel();
+				upSum = String.valueOf(sum);
+				/*缓存5分钟*/
+				jedisClusterClient.set(USER_UP_SUM + userConsumer.getId(), upSum, CachedKeyAndTimeLong.setMinutes(5));
+			}
+			centerInfoVo.setUpSum(upSum);
+		} catch (Exception e) {
+			logger.error("查询用户中心信息，出现异常：{}", e);
+		}
+
+		return centerInfoVo;
+
+	}
+}

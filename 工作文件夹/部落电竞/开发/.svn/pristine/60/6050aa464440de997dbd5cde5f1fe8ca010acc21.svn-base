@@ -1,0 +1,852 @@
+<template>
+  <div class="Page allGuessPage">
+    <header class="mod_header">
+      <nav-bar>
+        <div class="title">
+          <div class="game_logo">
+            <img :src="matchInfo.videogameId|gameLogo" alt="">
+          </div>
+          <p>{{matchInfo.startTime|formatByDay}}&nbsp;&nbsp;{{matchInfo.leagueName}} BO{{matchInfo.gameNumbers}}</p>
+        </div>
+      </nav-bar>
+    </header>
+
+    <guess-item class="match_info" :matchInfo='matchInfo' matchType='1'></guess-item>
+    <!-- 直播 -->
+    <div class="live" v-if="matchInfo.liveVisible==1 &&activatedFlag && matchInfo.liveVideoUrlList ">
+      <video-live :videoLiveInfo="videoLiveInfo"></video-live>
+    </div>
+
+    <div class="tab">
+      <!-- <span>数据</span> -->
+      <span :class="{active:tabType==1}" @click="changeTabType(1)">预测</span>
+      <span :class="{active:tabType==2}" @click="changeTabType(2)">跟单</span>
+      <!-- <span>方案</span> -->
+    </div>
+    <div class="main" :class="{'ban_slide':getBetData.toCurBet}">
+      <!-- 预测板块 -->
+      <section class="mod_guess" v-if="tabType==1">
+        <ul class="guess_list">
+          <li class="item" v-for="(item,index) in morePlayList" :key="index">
+            <bet-Item class="bet" :guessEnd='true' :quizMathGame="item"></bet-Item>
+          </li>
+        </ul>
+
+        <ul class="end_list" v-if='endingPlayList&&endingPlayList.length>0'>
+          <p class="title">- 已完结赛果 -</p>
+          <li class="item" v-for="(item,index) in endingPlayList" :key="index">
+            <bet-Item class="bet" :guessEnd='false' :quizMathGame="item"></bet-Item>
+          </li>
+        </ul>
+      </section>
+      <no-data v-if="moreNoData && endNoData" :text="'暂无盘口，敬请期待'"> </no-data>
+      <!-- 方案与跟单板块 -->
+      <plan-and-project ref="followPlan" :type="2" :matchId='matchId' v-if="tabType==2"></plan-and-project>
+
+      <!-- 点击加上active -->
+      <a class="refresh_btn" :class="{active:reflushFlag}" @click="onClickRefresh()"></a>
+    </div>
+    <recharge-pop v-if="showRechargePop" @closeRechargePop="closeRechargePop" @getUserWallet="getUserWallet" @openPopAlert="openPopAlert">
+    </recharge-pop>
+    <pop-Alert :showPop="showPop" @close="showPop=false" @confirm="confirm" btnTxt1="已取消" btnTxt2="已完成支付" type="2">
+      <p>请确认微信支付是否已完成</p>
+    </pop-Alert>
+    <footer class="mod_footer"></footer>
+  </div>
+</template>
+
+<script>
+import navBar from '../../components/header/nav_bar/index.vue';
+import guessItem from './home/components/guessItem.vue';
+import betItem from './components/betItem.vue';
+import rechargePop from '../guess/recharge/recharge.vue';
+import popAlert from '../../components/pop_up/pop_alert.vue';
+import videoLive from '../../components/common/videoLive.vue';
+import planAndProject from './components/planAndProject.vue';
+import noData from '../../components/no_data/index.vue';
+import { mapGetters, mapActions } from 'vuex';
+import { fmtDate } from '../../libs/utils';
+
+export default {
+  components: {
+    navBar,
+    betItem,
+    rechargePop,
+    popAlert,
+    guessItem,
+    videoLive,
+    planAndProject,
+    noData
+  },
+  filters: {
+    formatByDay(time) {
+      return fmtDate(new Date(time), 'MM-dd');
+    }
+  },
+  props: [],
+  data() {
+    return {
+      matchId: null,
+      morePlayList: [], //赛中，未开赛
+      endingPlayList: [], // 完结场
+      showRechargePop: false, //支付弹窗
+      showPop: false,
+      matchInfo: Object,
+      reflushFlag: false,
+      videoLiveInfo: {
+        videoUrl: '',
+        poster: '',
+        videoId: '',
+        scene: 'allguess_',
+        videoType: 1
+      },
+      tabType: 1,
+      activatedFlag: true,
+      moreNoData: false,
+      endNoData: false
+      // stopRepeat:false, //防止频发刷新
+    };
+  },
+  computed: {
+    ...mapGetters({
+      getBetData: 'getBetData',
+      userInfo: 'getUserInfo'
+    })
+  },
+  watch: {
+    getBetData(val) {
+      //当用户点击投注弹出，先暂停刷新
+      // if (val.toCurBet) {
+
+      // }
+      console.log('getBetData', val);
+      if (val.toReflushBalance) {
+        //下单完刷新余额
+        this.getUserWallet();
+      }
+    }
+  },
+  activated() {
+    this.activatedFlag = true;
+    this.getUserWallet();
+    if (this.$route.meta.isBack) {
+      this.matchId = this.$route.query.matchId;
+      this.getCurrPageData();
+      this.tabType = 1;
+    }
+    this.$route.meta.isBack = true;
+    this.intoWebsocketRoom();
+  },
+  destroyed() {
+    //关闭websocket
+    this.socketGuess.websocketclose();
+  },
+  deactivated() {
+    this.activatedFlag = false;
+  },
+  beforeRouteEnter(to, from, next) {
+    if (from.name == 'recharge') {
+      // 这个name是下一级页面的路由name
+      to.meta.isBack = false; // 设置为true说明你是返回到这个页面，而不是通过跳转从其他页面进入到这个页面
+    }
+    next();
+  },
+  created() {
+    this.matchId = this.$route.query.matchId;
+    this.queryQuizMatch(this.matchId);
+  },
+  mounted() {
+    //初始化赛事监听
+    this.webSocketConfig();
+    this.matchId = this.$route.query.matchId;
+    this.getMorePlayByMatchId(); //赛中，未开赛
+    this.getEndingPlayByMatchId(); //完结
+  },
+  methods: {
+    ...mapActions(['setUserInfo']),
+    changeTabType(type) {
+      if (this.tabType == type) {
+        return;
+      }
+      this.tabType = type;
+    },
+    //刷新页面数据
+    onClickRefresh() {
+      if (this.reflushFlag) {
+        this.$toast('请勿要频繁刷新');
+        return;
+      }
+      this.reflushFlag = true;
+      setTimeout(() => {
+        this.reflushFlag = false;
+      }, 5000);
+      this.getCurrPageData();
+    },
+    //获取当前页面所有数据
+    getCurrPageData() {
+      this.queryQuizMatch(this.matchId);
+
+      this.getMorePlayByMatchId();
+      this.getEndingPlayByMatchId();
+    },
+    //进入websocket赛事玩法列表房间
+    intoWebsocketRoom() {
+      console.log('this.matchId', this.matchId);
+      let userId = this.socketGuess.socketObeject.userId;
+      // if (userId == null) {
+      //    userId = this.userInfo.userId;
+      // }
+      console.log('userId', userId);
+      let initScene = this.socketGuess.getGameRoomSceneMsg(userId, this.matchId);
+      this.socketGuess.socketObeject.currContextObject = this;
+      this.socketGuess.socketObeject.initScene = initScene;
+      console.log('websock', this.socketGuess.isConneted);
+      if (this.socketGuess.isConneted) {
+        this.socketGuess.socketObeject.initScene = initScene;
+        console.log('initScene—进入场景参数', initScene);
+        this.socketGuess.toSendSocketMessage(initScene);
+      } else {
+        //刷新当前页面，则重新初始化websocket
+        console.log('准备wsSocket');
+        this.openAndinitWebSocket();
+      }
+    },
+    //赛事推送监听
+    webSocketConfig() {
+      //监听websocket推送
+      this.$bus.$on('webMessage', data => {
+        console.log('事件触发接受');
+        this.handleUpdateData(data);
+      });
+    },
+
+    //查询设置用户钱包
+    getUserWallet() {
+      return this.$post('/api/starNum/queryStarNum')
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log(dataResponse.data.ableRecScore, '获取用户的星星');
+            this.setUserInfo({
+              ...this.userInfo,
+              recScore: dataResponse.data.recScore,
+              giftRecScore: dataResponse.data.giftRecScore,
+              ableRecScore: dataResponse.data.ableRecScore,
+              nickName: dataResponse.data.nickName,
+              icon: dataResponse.data.icon
+            });
+            console.log(this.userInfo);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    toCharge() {
+      this.showRechargePop = true;
+    },
+
+    /**关闭支付弹窗 */
+    closeRechargePop() {
+      this.showRechargePop = false;
+    },
+    openPopAlert() {
+      this.showPop = true;
+    },
+    /**h5支付后 */
+    confirm() {
+      this.showPop = false;
+      this.getUserWallet();
+    },
+    //获取赛事对阵信息
+    queryQuizMatch(matchId) {
+      let param = {};
+      param.matchId = matchId;
+      return this.$post('/api/quiz/match/queryQuizMatch', param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.matchInfo = dataResponse.data;
+            this.handleLive(); //直播
+          }
+        })
+        .catch(error => {
+          console.log(error, '异常');
+        });
+    },
+    /**
+     * 处理直播相关一些
+     */
+
+    handleLive() {
+      let urlList = this.matchInfo.liveVideoUrlList;
+      if (urlList != null && urlList.length > 0) {
+        this.videoLiveInfo.videoUrl = urlList[0];
+        this.videoLiveInfo.videoId = this.matchId;
+        if (this.videoLiveInfo.videoUrl.includes('.m3u8')) {
+          this.videoLiveInfo.videoType = 1;
+        } else if (this.videoLiveInfo.videoUrl.includes('.flv')) {
+          this.videoLiveInfo.videoType = 2;
+        }
+      }
+    },
+    /**
+     *  玩法排序优先规则
+     * 场数
+     * 玩法
+     * 让分大小
+     */
+    sortArrayList(dataList) {
+      if (dataList.length > 1) {
+        dataList.sort(function(a, b) {
+          if (a.gameNumber != b.gameNumber) {
+            return a.gameNumber - b.gameNumber;
+          }
+          if (a.playOrder != b.playOrder) {
+            return a.playOrder - b.playOrder;
+          }
+          if (a.playExtendNum && b.playExtendNum && a.playExtendNum != b.playExtendNum) {
+            return a.playExtendNum - b.playExtendNum;
+          }
+          return a.id - b.id;
+        });
+      }
+    },
+
+    /**
+     *  处理webSocket推送的数据
+     */
+    handleUpdateData(data) {
+      if (data.execType == 12) {
+        console.log('ws连接成功');
+        return;
+      }
+      let _this = this;
+      let matchResponse = JSON.parse(data.playload);
+      if (data.execType == 19) {
+        console.log('收到赛事推送，开始处理', matchResponse);
+        if (matchResponse.refresh != null && matchResponse.refresh == 'updateMatchStatus') {
+          //更新赛事状态
+          if (this.matchInfo.matchId == matchResponse.matchId) {
+            console.log('matchResponse.status', matchResponse.status);
+            this.matchInfo.matchStatus = matchResponse.data.status;
+            if (matchResponse.data.homeScore != null) {
+              this.matchInfo.homeScore = matchResponse.data.homeScore;
+            }
+            if (matchResponse.data.awayScore != null) {
+              this.matchInfo.awayScore = matchResponse.data.awayScore;
+            }
+          }
+          return;
+        }
+
+        if (matchResponse.refresh != null && matchResponse.refresh == 'add') {
+          //说明有新增玩法，把数据填入，再重新排序
+          console.log('add');
+          if (matchResponse.data && matchResponse.data.length > 0) {
+            //非重复玩法拼接
+            let tempArr = matchResponse.data.filter(function(game) {
+              //防止出现重复数据
+              for (const quizGame of _this.morePlayList) {
+                if (quizGame.id == game.id) {
+                  return false;
+                }
+              }
+              return true;
+            });
+            //重复玩法，就去覆盖原来的数据
+            let sameTempArr = matchResponse.data.filter(function(game) {
+              for (const quizGame of _this.morePlayList) {
+                if (quizGame.id == game.id) {
+                  return true;
+                }
+              }
+              return false;
+            });
+
+            if (sameTempArr.length > 0) {
+              console.log('sameTempArr', sameTempArr);
+              sameTempArr.forEach(temGame => {
+                this.morePlayList.forEach((quizGame, b) => {
+                  if (quizGame.id == temGame.id) {
+                    // console.log('quizGame.id', quizGame.id);
+                    this.morePlayList[b] = temGame;
+                  }
+                });
+              });
+            }
+
+            this.morePlayList = this.morePlayList.concat(tempArr);
+            //新加赛事重排序
+            this.sortArrayList(this.morePlayList);
+          }
+        }
+
+        //推送赛果更新
+        if (matchResponse.refresh != null && matchResponse.refresh == 'updateResult') {
+          //查找玩法是否还没有赛果 ，备注：部分赛事未完场，但已有赛果
+          // let delElement = [];
+          this.morePlayList.forEach(matchInfo => {
+            matchResponse.data.forEach(quizGame => {
+              if (matchInfo.id == quizGame.matchGameId) {
+                this.endingPlayList.push(matchInfo);
+                this.morePlayList = this.removeById(this.morePlayList, matchInfo);
+              }
+            });
+          });
+
+          this.endingPlayList.forEach(matchInfo => {
+            matchResponse.data.forEach(quizGame => {
+              if (matchInfo.id == quizGame.matchGameId) {
+                matchInfo.awardStatus = quizGame.awardStatus != null ? quizGame.awardStatus : matchInfo.awardStatus;
+                matchInfo.awardResult = quizGame.awardResult != null ? quizGame.awardResult : matchInfo.awardResult;
+              }
+            });
+          });
+          this.sortArrayList(this.endingPlayList);
+          return;
+        }
+
+        let delArray = [];
+        this.morePlayList.forEach((matchInfo, q) => {
+          if (data.matchType == 'match_game') {
+            if (matchResponse.data.length > 0) {
+              matchResponse.data.forEach(quizGame => {
+                if (matchInfo.id == quizGame.matchGameId) {
+                  matchInfo.status = quizGame.status != null ? quizGame.status : matchInfo.status;
+                  matchInfo.suspended = quizGame.suspended != null ? quizGame.suspended : matchInfo.suspended;
+                  matchInfo.visible = quizGame.visible != null ? quizGame.visible : matchInfo.visible;
+                  matchInfo.awardStatus = quizGame.awardStatus != null ? quizGame.awardStatus : matchInfo.awardStatus;
+                  matchInfo.awardResult = quizGame.awardResult != null ? quizGame.awardResult : matchInfo.awardResult;
+                  /** 需要移动或者删除数据的情况如下
+                   * 1、完场、异常取消
+                   * 2、奖池有结果
+                   * 3、奖池取消
+                   * 4、有赛果
+                   * 5、隐藏
+                   */
+                  if (
+                    (quizGame.status != null && quizGame.status >= 2) ||
+                    (quizGame.awardStatus != null && quizGame.awardStatus != 0) ||
+                    quizGame.awardResult != null ||
+                    (quizGame.visible != null && quizGame.visible == 0)
+                  ) {
+                    //删除或者移动到完结列表
+                    delArray.push(q); //保存要移动数据的下标
+                  }
+                  //update赔率
+                  let deleOption = [];
+                  matchInfo.quizOptions.forEach((option, k) => {
+                    quizGame.quizOptions.forEach(quizGameOtion => {
+                      if (option.index == quizGameOtion.index) {
+                        option.limit = quizGameOtion.limit;
+                        option.odds = quizGameOtion.odds;
+                      }
+                    });
+                    //有小于1的赔率选项，剔除该投注项
+                    if (option.odds <= 1) {
+                      deleOption.push(k);
+                    }
+                  });
+
+                  if (deleOption.length > 0) {
+                    console.log('deleOption', deleOption);
+                    matchInfo.quizOptions = this.removeByindexArr(matchInfo.quizOptions, deleOption);
+                  }
+                  //当前玩法只剩下一个投注项，剔除该玩法
+                  if (matchInfo.quizOptions.length <= 1) {
+                    delArray.push(q);
+                    //把赛事隐藏掉
+                    matchInfo.visible = 0;
+                  }
+                }
+              });
+            }
+          }
+        });
+        if (delArray.length == 0) {
+          return;
+        }
+        console.log('delArray', delArray);
+        let endingObejectArray = [];
+        let newarr = [];
+        if (delArray.length > 0) {
+          for (const i in delArray) {
+            // let element = {};
+            let index = delArray[i]; //获取删除元素的下标
+            let gameObject = this.morePlayList[index];
+            if (gameObject.visible != null && gameObject.visible == 0) {
+              //隐藏类型直接删掉，不需要移动
+            } else {
+              endingObejectArray.push(gameObject);
+            }
+            // this.morePlayList.splice(index, 1);
+          }
+          this.morePlayList = this.removeByindexArr(this.morePlayList, delArray);
+        }
+        if (endingObejectArray.length == 0) {
+          return;
+        }
+        console.log('endingObejectArray', endingObejectArray);
+        if (endingObejectArray.length > 0) {
+          this.endingPlayList = this.endingPlayList.concat(
+            endingObejectArray.filter(function(v) {
+              //防止出现重复数据
+              for (const quizGame of _this.endingPlayList) {
+                if (v.id == quizGame.id) {
+                  return false;
+                }
+              }
+              return true;
+            })
+          );
+          //赛果列表新加赛事重排序
+          this.sortArrayList(this.endingPlayList);
+        }
+      }
+    },
+    //根据下标数组删除元素
+    removeByindexArr(elementArr, indexArr) {
+      var newarr = [];
+      if (elementArr.length == 0) {
+        return newarr;
+      }
+      elementArr.forEach(function(element, index) {
+        if (!indexArr.includes(index)) {
+          newarr.push(element);
+        }
+      });
+      return newarr;
+    },
+    removeById(elementArr, tagetObj) {
+      var newarr = [];
+      if (elementArr.length == 0) {
+        return newarr;
+      }
+      elementArr.forEach(function(element, index) {
+        if (!(element.id == tagetObj.id)) {
+          newarr.push(element);
+        }
+      });
+      return newarr;
+    },
+
+    /**
+     * 打开websocket
+     *
+     * */
+    openAndinitWebSocket() {
+      console.log('获取websocket');
+      if (this.socketGuess.stopRepeat) {
+        return;
+      }
+      this.socketGuess.stopRepeat = true;
+      return this.$post('/api/user/getUserWebsocket')
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse);
+          this.socketGuess.socketObeject.socketUrl = dataResponse.data.socketUrl;
+          this.socketGuess.socketObeject.userId = dataResponse.data.userId;
+          var initScene = this.socketGuess.getGameRoomSceneMsg(this.socketGuess.socketObeject.userId, this.matchId);
+          this.socketGuess.socketObeject.initScene = initScene;
+          console.log('更多玩法页', this.socketGuess.socketObeject);
+          this.socketGuess.initWebSocket(this.socketGuess.socketObeject, this);
+          this.socketGuess.stopRepeat = false;
+        })
+        .catch(error => {
+          console.log(error);
+          this.socketGuess.lockReconnect = false;
+        });
+    },
+
+    visibilitychange() {
+      document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState == 'hidden') {
+          //记录页面隐藏时间
+          let hiddenTime = new Date().getTime();
+          console.log('隐藏', hiddenTime);
+        } else {
+          let visibleTime = new Date().getTime();
+          //页面再次可见的时间-隐藏时间>10S,重连
+          if ((visibleTime - hiddenTime) / 1000 > 20) {
+            // 主动关闭连接
+            // WebSockets.webSocketClose();
+            console.log('主动关闭连接');
+            // 1.5S后重连 因为断开需要时间，防止连接早已关闭了
+            setTimeout(function() {
+              console.log(' 1.5S后重连');
+            }, 1500);
+          } else {
+            console.log('还没有到断开的时间');
+          }
+        }
+      });
+    },
+    //获取赛中，未开赛
+    getMorePlayByMatchId() {
+      let param = {};
+      param.matchId = this.matchId;
+      param.distinctIndex = true;
+      return this.$post('/api/quiz/match/gameList', param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log('更多玩法');
+            let dataList = dataResponse.data;
+            let tempList = [];
+            dataList.forEach(element => {
+              element.forEach(match => {
+                tempList.push(match);
+              });
+            });
+            this.morePlayList = tempList;
+            this.sortArrayList(this.morePlayList);
+            // this.morePlayList = dataResponse.data;
+            if (dataResponse.data.length > 0) {
+              this.moreNoData = false;
+            } else {
+              this.moreNoData = true;
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //获取完结赛果
+    getEndingPlayByMatchId() {
+      let param = {};
+      param.matchId = this.matchId;
+      param.distinctIndex = true;
+      param.finished = true;
+      console.log(param);
+      return this.$post('/api/quiz/match/gameList', param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            console.log('更多玩法');
+            let dataList = dataResponse.data;
+            let tempList = [];
+            dataList.forEach(element => {
+              element.forEach(match => {
+                tempList.push(match);
+              });
+            });
+            this.endingPlayList = tempList;
+            if (dataResponse.data.length > 0) {
+              this.endNoData = false;
+            } else {
+              this.endNoData = true;
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+@import '../../assets/common/_base';
+@import '../../assets/common/_mixin';
+
+.allGuessPage {
+  background-color: $color_main;
+  .back {
+    height: 10.67vw !important;
+    &::before,
+    &::after {
+      background-color: #fff !important;
+    }
+  }
+  .guess_item {
+    margin-bottom: 0 !important;
+    background-color: #3d3b51 !important;
+  }
+  .end_list {
+    .title {
+      padding: 3.2vw 0 1.0667vw;
+      font-size: 3.2vw;
+      color: rgba(255, 255, 255, 0.3);
+      text-align: center;
+    }
+    .bet {
+      background-color: #242330;
+    }
+  }
+  .match_info {
+    border-radius: 0 !important;
+    .more_options {
+      display: none !important;
+    }
+    .header {
+      display: none;
+    }
+  }
+  .con {
+    padding: 2.6667vw 3.2vw;
+    @include getBorder(top, #565279);
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import '../../assets/common/_base';
+@import '../../assets/common/_mixin';
+
+.mod_header {
+  // @include getRadiusBorder(#ddd, bottom, 0);
+  background-color: $color_item;
+}
+
+.nav_bar {
+  line-height: 44px !important;
+  @extend .flex_v_h;
+  min-height: 11.7333vw;
+  .title {
+    @extend .g_v_c_mid;
+    @extend .flex_v_h;
+    width: 75%;
+    p {
+      @include t_nowrap(90%);
+      font-size: 3.7334vw;
+      line-height: 1.2;
+      color: #fff;
+    }
+  }
+  .game_logo {
+    @extend .flex_v_h;
+    width: 4.2667vw;
+    height: 4.2667vw;
+    margin-right: 2.1333vw;
+    background-color: #32191e;
+    border-radius: 50%;
+    img {
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+}
+
+.ban_slide {
+  overflow: hidden;
+}
+
+.live {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  video {
+    width: 100%;
+  }
+}
+
+.tab {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  z-index: 1;
+  @extend .flex_v_justify;
+  margin: 0 22.6667vw;
+  overflow: hidden;
+  background-color: $color_main;
+  span {
+    display: inline-block;
+    padding: 3.4667vw 0 4.5333vw;
+    font-size: 3.7333vw;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.5);
+    &.active {
+      position: relative;
+      color: #fff;
+      &::after {
+        content: '';
+        @extend .g_c_mid;
+        bottom: 2.1333vw;
+        width: 4vw;
+        height: 1.0667vw;
+        border-radius: 0.8vw;
+        background-color: #fff;
+      }
+    }
+  }
+}
+
+.battle_team {
+  @extend .g_v_c_mid;
+  @extend .flex_v_justify;
+  width: 74.67vw;
+  height: 100%;
+  padding: 0 6.4vw;
+  @include getBgImg('../../assets/images/guess/guess_title_bg.png');
+  img {
+    width: 7.2vw;
+    height: 7.2vw;
+    border-radius: 50%;
+  }
+  .name {
+    margin: 0 1.07vw;
+    font-size: 3.73vw;
+    color: #fedcd7;
+    @include t_nowrap(18.67vw);
+  }
+  .vs {
+    @extend .g_v_c_mid;
+    font-size: 4.8vw;
+    font-weight: bold;
+    font-style: italic;
+    color: #5b3732;
+  }
+}
+
+.item {
+  margin-top: 2.1333vw;
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.bet {
+  margin: 0 4.2667vw;
+  padding: 3.2vw;
+  background-color: $color_item;
+  border-radius: $border_radius;
+}
+
+.refresh_btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  @include getBgImg('../../assets/images/match/refresh_btn.png');
+
+  position: fixed;
+  z-index: 10;
+  right: 5px;
+  bottom: 150px;
+}
+
+.refresh_btn.active {
+  animation: rotate 0.5s;
+}
+
+@keyframes rotate {
+  form {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes rotate {
+  form {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

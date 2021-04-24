@@ -1,0 +1,15 @@
+const home = () => import( './views/home/index.vue')
+const match = () => import( './views/match/index.vue')
+
+const routers = [{
+    path: '/',
+    component: home
+},{
+    path: '/home',
+    component: home
+},{
+    path: '/match',
+    component: match
+}];
+
+export default routers;

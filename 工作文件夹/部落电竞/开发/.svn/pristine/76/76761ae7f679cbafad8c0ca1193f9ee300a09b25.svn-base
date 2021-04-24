@@ -1,0 +1,340 @@
+<template>
+  <div class="Page store_Page">
+    <header class="mod_header">
+      <h2 class="header_title"><span class="my_exchange" @click="goTomyexchange()"></span>商城</h2>
+    </header>
+    <div class="main">
+      <scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" @pullingUp="onPullingUp">
+
+        <section class="product_group">
+          <ul class="list">
+            <li class="item" v-for="item in categoryList" @click="goMore(item.id,item.name)">
+              <i class="" :style="{'background-image':'url('+item.image+')'}"></i>
+              <span>{{item.name}}</span>
+            </li>
+          </ul>
+        </section>
+        <section class="banner">
+          <img :src="item.picUrl" alt="" v-for="item in adList">
+        </section>
+        <navList :dataList="goodTab" @changeTab="relodDataByTab"></navList>
+        <goodsList :goodList="shopGoodList" :type='1'></goodsList>
+      </scroll>
+
+    </div>
+
+    <footer class="mod_footer">
+      <tabbar></tabbar>
+    </footer>
+    <!-- <router-view></router-view> -->
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index";
+import navList from "../../components/header/nav_list/index";
+import goodsList from "../../components/store/goodsList";
+import Scroll from "components/common/scroll";
+import tabbar from "../../components/tabbar/index";
+
+export default {
+  data() {
+    return {
+      categoryList: [],
+      adList: [],
+      clientType: 6,
+      goodTab: [
+        { contentType: 1, name: "热门推荐" },
+        { contentType: 2, name: "上新" },
+        { contentType: 3, name: "人气排行" }
+      ],
+      shopGoodList: [],
+      goodParam: {
+        pageNo: 1,
+        pageSize: 5,
+        goodsQueryType: 1
+      },
+
+      currPageSize: 0,
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "到底啦~" }
+      }
+    };
+  },
+  created() {
+    window.sessionStorage.selectedTab = this.goodParam.goodsQueryType;
+  },
+  mounted() {
+    this.getIndexData();
+    this.getGoodsData();
+  },
+  methods: {
+    goTomyexchange() {
+      this.$router.push({
+        name: "myExchange",
+        params: {
+          // userId: id,
+        }
+      });
+    },
+    getIndexData() {
+      let param = {};
+      param.clientType = this.clientType;
+      console.log("切换tab", param);
+      this.$post("/api/shop/indexData", param)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp.data;
+          if ((dataResponse.code = "200")) {
+            console.log("setHeader---请求成功", dataResponse);
+            this.categoryList = dataResponse.categoryList;
+            this.adList = dataResponse.adList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    goMore(id, name) {
+      console.log(id);
+      this.$router.push({
+        name: "goodsList",
+        params: {
+          pageType: id,
+          pageName: name,
+          tabFlag: true
+        }
+      });
+    },
+    relodDataByTab(tabId) {
+      let name = "上新";
+      if (tabId == 3) {
+        name = "人气排行";
+      }
+      this.$router.push({
+        name: "goodsList",
+        params: {
+          pageType: tabId,
+          pageName: name,
+          tabFlag: false
+        }
+      });
+      // console.log(tabId);
+      // let param = this.goodParam
+      // param.clientType = this.clientType;
+      // this.contentType = tabId
+      // param.contentType = this.contentType
+      // this.getGoodsData(param)
+    },
+    getGoodsData(param) {
+      if (!param) {
+        param = {};
+        param.goodsQueryType = this.goodParam.goodsQueryType;
+      }
+      console.log("切换tab", param);
+      return this.$post("/api/shop/getGooods", param)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp.data;
+          if ((dataResponse.code = "200")) {
+            console.log("setHeader---请求成功", dataResponse);
+            this.currPageSize = dataResponse.shopGoodList.length;
+            this.shopGoodList = this.shopGoodList.concat(
+              dataResponse.shopGoodList
+            );
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+      if (this.currPageSize < this.goodParam.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+
+    /** 上拉加载*/
+    loadMore() {
+      let param = {};
+      this.goodParam.pageNo += 1;
+      param.pageNo = this.goodParam.pageNo;
+      param.pageSize = this.goodParam.pageSize;
+      param.goodsQueryType = this.goodParam.goodsQueryType;
+      this.getGoodsData(param).then(data => {
+        this.$refs.scroll.forceUpdate();
+      });
+    }
+  },
+
+  components: {
+    navBar,
+    navList,
+    goodsList,
+    Scroll,
+    tabbar
+  }
+};
+</script>
+
+<style lang="scss">
+@import "../../assets/common/_base";
+@import "../../assets/common/_var";
+
+.store_Page {
+  .nav_list {
+    background: transparent !important;
+    ul {
+      padding-left: 10px !important;
+    }
+  }
+  .goods_list {
+    padding: 5px;
+    background-color: #fff;
+    ul {
+      @extend .flex_hc;
+      flex-wrap: wrap;
+      -webkit-flex-wrap: wrap;
+    }
+    .goods_item {
+      width: 50%;
+      padding: 5px;
+    }
+    .goods_img {
+      position: relative;
+      width: 100%;
+      padding-top: 50%;
+      img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 2px;
+      }
+    }
+    .goods_title {
+      padding-top: 10px;
+      font-size: 14px;
+      color: #333;
+    }
+    .goods_detail {
+      @extend .flex_v_justify;
+      padding-top: 8px;
+      color: #ccc;
+      span {
+        @extend .flex_hc;
+      }
+    }
+    .num {
+      padding-right: 5px;
+    }
+    .mark {
+      color: $color_main;
+      font-size: 14px;
+    }
+  }
+}
+</style>
+
+
+
+<style lang='scss' scoped>
+@import "../../assets/common/_var";
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.mod_header {
+  background-color: $color_main;
+}
+.header_title {
+  position: relative;
+  line-height: 44px;
+  font-size: 19px;
+  color: #fff;
+  font-weight: 500;
+  text-align: center;
+  .my_exchange {
+    @extend .g_v_mid;
+    left: 0;
+    width: 44px;
+    height: 44px;
+    @include getBgImg("../../assets/images/store/user_icon.png");
+    background-size: 19px;
+  }
+}
+
+.product_group {
+  background-color: #fff;
+  .list {
+    @extend .flex;
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    padding-top: 10px;
+  }
+  .item {
+    width: 25%;
+    padding-bottom: 12px;
+    text-align: center;
+    i {
+      display: block;
+      width: 29px;
+      height: 29px;
+      margin: 0 auto 2px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+    }
+    span {
+      font-size: 13px;
+      color: #666;
+    }
+  }
+  .around_icon {
+    @include getBgImg("../../assets/images/store/around_icon.png");
+  }
+  .garage_icon {
+    @include getBgImg("../../assets/images/store/garage_icon.png");
+  }
+  .skin_icon {
+    @include getBgImg("../../assets/images/store/skin_icon.png");
+  }
+  .digital_icon {
+    @include getBgImg("../../assets/images/store/digital_icon.png");
+  }
+  .earphone_icon {
+    @include getBgImg("../../assets/images/store/earphone_icon.png");
+  }
+  .computer_icon {
+    @include getBgImg("../../assets/images/store/computer_icon.png");
+  }
+  .rat_icon {
+    @include getBgImg("../../assets/images/store/rat_icon.png");
+  }
+  .hardware_icon {
+    @include getBgImg("../../assets/images/store/hardware_icon.png");
+  }
+}
+
+.banner {
+  padding-top: 8px;
+  img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+  }
+}
+</style>
+

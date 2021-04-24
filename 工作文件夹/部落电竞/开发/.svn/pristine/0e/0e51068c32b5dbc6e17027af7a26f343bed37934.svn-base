@@ -1,0 +1,27 @@
+<view class="{{myClass}}">
+    <slot></slot>
+    <ul>
+      <h3>7月18日 周日</h3>
+      <li class="goods_item">
+        <view class="goods_img">
+          <image mode="aspectFill" src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1860037186,2129045815&fm=26&gp=0.jpg"
+            alt=""></image>
+        </view>
+        <view class="goods_info">
+          <i class="rank_first"></i>
+          <view class="goods_title">
+            <span class="goods_name">妲己电玩皮肤</span>
+            <span class="tag">待发货</span>
+          </view>
+          <view class="goods_grade">王者</view>
+					<i class='goods_recommend'>推荐</i>
+					<i class='goods_discount'>折扣</i>
+					<i class='goods_new'>新品</i>
+          <view class="goods_detail">
+            <span class="mark"><i class="star_coin"></i>399</span>
+            <span>合计：<i class="star_coin"></i><span class="num">56098</span>人兑换</span>
+          </view>
+        </view>
+      </li>
+    </ul>
+  </view>

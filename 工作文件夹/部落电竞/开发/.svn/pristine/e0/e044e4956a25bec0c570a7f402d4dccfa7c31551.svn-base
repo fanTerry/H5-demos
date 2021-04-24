@@ -1,0 +1,121 @@
+<template>
+  <div class="Page">
+    <div class="main">
+      <div id="html" ref="html">
+        <div id="body" ref="imageWrapper" style="background:red;">
+          <div style="background:green;">
+            <div style="background:blue;border-color:white;">
+              <div style="background:yellow;">
+                <div style="background:orange;">
+                  <h1>Heading</h1>
+                  Text that isn't wrapped in anything.
+                  <p>Followed by some text wrapped in a <b>&lt;p&gt; paragraph.</b> </p>
+                  Maybe add a <a href="#">link</a> or a different style of <a href="#" style="background:white;"
+                    id="highlight">link with a highlight</a>.
+                  <hr />
+                  <h2>More content</h2>
+                  <div style="width:10px;height:10px;border-width:10px;padding:0;">a</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <img class="real_pic" :src="dataURL" />
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script>
+import html2canvas from "html2canvas";
+
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {
+      dataURL: ""
+    };
+  },
+  mounted() {
+    // this.$nextTick(() => {
+    //   this.toImage();
+    //   document.documentElement.style.position = "";
+    // });
+
+    setTimeout(() => {
+      //获取到当前元素的高度
+      let getHeight = document.getElementById("body").clientHeight;
+      document.getElementById("body").clientHeight;
+      html2canvas(this.$refs.imageWrapper, {
+        backgroundColor: null,
+        y: getHeight
+      }).then(canvas => {
+        let dataURL = canvas.toDataURL("image/png");
+        this.dataURL = dataURL;
+        console.log(this.dataURL);
+      });
+    }, 1000);
+  },
+  methods: {
+    // A() {
+    //   html2canvas(document.querySelector("#html")).then(function(canvas) {
+    //     document.querySelector("#html").appendChild(canvas);
+    //   });
+    // }
+
+    toImage() {
+      html2canvas(this.$refs.body, {
+        backgroundColor: null,
+        useCORS: true,
+        async: true,
+        logging: false,
+        scale: 3
+      }).then(canvas => {
+        document.querySelector("#html").appendChild(canvas);
+        let dataURL = canvas.toDataURL("image/png");
+        this.dataURL = dataURL;
+        console.log(this.dataURL, dataURL);
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+.feedback-overlay-black {
+  background-color: #000;
+  opacity: 0.5;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+#html {
+  width: 300px;
+  height: 100%;
+  padding: 0;
+}
+#body {
+  width: 300px;
+  height: 400px;
+  overflow: hidden;
+}
+div {
+  padding: 20px;
+  margin: 0 auto;
+  border: 5px solid black;
+}
+
+h1 {
+  border-bottom: 2px solid white;
+}
+
+h2 {
+  background: #efefef;
+  padding: 10px;
+}
+</style>

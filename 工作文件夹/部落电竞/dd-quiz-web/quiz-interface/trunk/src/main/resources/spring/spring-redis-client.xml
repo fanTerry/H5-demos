@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+<!-- 	<bean id="redisSubpubClient" class="com.aicai.redisclient.core.JedisClusterPubSubClientImpl"
+		destroy-method="destoryPool">
+		<constructor-arg index="0" value="${redis.server.address}" />
+		<constructor-arg index="1" value="10" /> 
+	</bean>-->
+	
+	<bean id="redisClusterClient" class="com.esportzoo.common.redisclient.core.JedisClusterClientImpl"
+		destroy-method="destoryPool">
+		<constructor-arg index="0" value="${redis.server.address}" />
+		<constructor-arg index="1" value="10" />
+	</bean>
+
+
+    <!-- Redis集群配置 -->
+    <bean id="redisClusterConfig" class="org.springframework.data.redis.connection.RedisClusterConfiguration">
+        <property name="maxRedirects" value="3"></property>
+        <property name="clusterNodes">
+            <set>
+                <bean class="org.springframework.data.redis.connection.RedisNode">
+                    <constructor-arg name="host" value="${redis.host1}"></constructor-arg>
+                    <constructor-arg name="port" value="${redis.port1}"></constructor-arg>
+                </bean>
+
+               <bean class="org.springframework.data.redis.connection.RedisNode">
+                    <constructor-arg name="host" value="${redis.host2}"></constructor-arg>
+                    <constructor-arg name="port" value="${redis.port2}"></constructor-arg>
+                </bean>
+                <bean class="org.springframework.data.redis.connection.RedisNode">
+                    <constructor-arg name="host" value="${redis.host3}"></constructor-arg>
+                    <constructor-arg name="port" value="${redis.port3}"></constructor-arg>
+                </bean>
+            </set>
+        </property>
+    </bean>
+
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <!--最大空闲数-->
+        <property name="maxIdle" value="${redis.maxIdle}"/>
+        <!--连接池的最大数据库连接数  -->
+        <property name="maxTotal" value="${redis.maxTotal}"/>
+        <!--最大建立连接等待时间-->
+        <property name="maxWaitMillis" value="${redis.maxWaitMillis}"/>
+        <property name="testOnBorrow" value="true"/>
+        <!--开启空闲资源检测-->
+        <property name="testWhileIdle" value="${redis.testWhileIdle}"/>
+        <!--空闲资源的检测周期-->
+        <property name="timeBetweenEvictionRunsMillis" value="${redis.timeBetweenEvictionRunsMillis}"/>
+        <!--做空闲资源检测时，每次检测资源的个数。-->
+        <property name="numTestsPerEvictionRun" value="${redis.numTestsPerEvictionRun}"/>
+        <!--资源池中资源的最小空闲时间（单位为毫秒），达到此值后空闲资源将被移除-->
+        <property name="minEvictableIdleTimeMillis" value="${redis.minEvictableIdleTimeMillis}"/>
+    </bean>
+
+    <!-- ReDis连接工厂 -->
+    <bean id="redisCacheConnectionFactory"
+          class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <constructor-arg name="clusterConfig" ref="redisClusterConfig"/>
+        <!--<property name="hostName" value="${redis.host1}"/>-->
+        <!--<property name="port" value="${redis.port1}"/>-->
+        <property name="timeout" value="${redis.timeout}"/>
+        <property name="poolConfig" ref="jedisPoolConfig"/>
+    </bean>
+
+    <!-- 存储序列化 -->
+    <bean name="stringRedisSerializer"
+          class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+    <!-- 集群Resis使用模板 -->
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+        <property name="connectionFactory" ref="redisCacheConnectionFactory"/>
+        <property name="defaultSerializer" ref="stringRedisSerializer"/>
+        <property name="keySerializer" ref="stringRedisSerializer"/>
+    </bean>
+
+    <bean id="redisClientManager" class="com.esportzoo.esport.manager.RedisClientManager">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+
+</beans>
+
+

@@ -1,0 +1,97 @@
+<template>
+  <div class="swiper-container banner_swiper">
+    <ul class="swiper-wrapper">
+      <li class="swiper-slide" @click="goUrlPage(item.location,item.locationType)" v-for="(item,index) in adList "
+        :key="index">
+        <slot :data='item'></slot>
+        <img v-if="item.picUrl" :src="item.picUrl" alt="">
+      </li>
+    </ul>
+    <div class="swiper-pagination"></div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: ["adList"],
+  data() {
+    return {
+      commonSwiper: null
+    };
+  },
+  mounted() {
+    this.$nextTick(() => {
+      // console.log(newValue.length, 111111111111111111111);
+      this.initSwiper();
+    });
+  },
+  activated() {
+    this.initSwiper();
+  },
+  deactivated() {
+    this.commonSwiper.destroy();
+  },
+  methods: {
+    initSwiper() {
+      this.commonSwiper = new Swiper(".banner_swiper", {
+        pagination: ".swiper-pagination",
+        loop: true,
+        speed: 1000,
+        autoplay: 3000,
+        autoplayDisableOnInteraction: false,
+        observer: true,
+        observeParents: true
+      });
+    },
+    goUrlPage(location, locationType) {
+      console.log(location, locationType, "跳转信息");
+      //0：不跳转；1：功能弹窗；2：跳转url
+      if (locationType == 2) {
+        window.open(location, "_self");
+      } else if (locationType == 1) {
+        //跳转相应的弹窗
+        this.$emit("toPop", location);
+      } else {
+        return;
+      }
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+@import "../../../assets/common/_base";
+
+.banner_swiper {
+  .swiper-pagination {
+    @extend .flex_hc;
+    width: auto;
+    left: auto;
+    right: 2.1333vw;
+  }
+  .swiper-pagination-bullet {
+    width: 1.6vw;
+    height: 1.6vw;
+    background: rgba(#fff, 0.5);
+  }
+  .swiper-pagination-bullet-active {
+    background-color: #fff;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+ul,
+li {
+  width: 100%;
+  height: 100%;
+}
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+</style>
+

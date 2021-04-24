@@ -1,0 +1,32 @@
+<div class="Page">
+	<div class="main">
+		<div class="count_tips">{{quetionTime}}</div>
+		<div class="rank_title">
+			第<span class="num">{{subjectNum}}</span>题
+		</div>
+		<div class="title">{{currSubject.name}}</div>
+		<div class="option_group">
+			<!-- 答对加active -->
+			<div :class="{'active': index == active}" v-for="(item ,index) in currSubject.hdSubjectOptions"
+				click="verigyAswer(item.id,index)">
+
+				{{index==0?'A.':index==1?'B.':index==2?'C.':'D.'}} {{item.name}}</div>
+			<!-- <div class="">B. WE</div> -->
+		</div>
+	</div>
+	<!-- 答题倒计时提醒 -->
+	<div class="pop_count_att" :class="{'none':prepareDialog}">
+		<div class="tips">
+			<p>每题限时10秒</p>
+			<p>每次续命操作限时1分钟</p>
+			<p>准备好了吗?</p>
+		</div>
+		<div class="count">{{prepareTime}}</div>
+	</div>
+	<!-- 弹窗集合组件 -->
+	<pops ref="popRef" :shareCode='shareCode' reStartTimeCountDown="reStartTimeCountDown" payToRestartGame="payToRestartGame"></pops>
+
+	<!-- <footer class="mod_footer">
+		<tabs></tabs>
+	</footer> -->
+</div>

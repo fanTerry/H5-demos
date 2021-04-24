@@ -1,0 +1,223 @@
+<template>
+  <div class='Page'>
+    <header class='mod_header'>
+      <nav-bar :pageTitle="'销售管理'"></nav-bar>
+    </header>
+
+    <div class='main'>
+      <div class="title_list">
+        <div class="item">
+          <p class="txt"><i class="register_icon"></i>注册</p>
+          <p class="num">96700000</p>
+        </div>
+        <div class="item">
+          <p class="txt"><i class="recharge_icon"></i>充值</p>
+          <p class="num">96700000</p>
+        </div>
+        <div class="item">
+          <p class="txt"><i class="value_icon"></i>流水</p>
+          <p class="num">96700000</p>
+        </div>
+      </div>
+      <div class="info">
+        <div class="title">
+          <span class="phone">手机</span>
+          <span class="register active">注册<i></i></span>
+          <span class="recharge active">充值<i></i></span>
+          <span class="bet active">投注<i></i></span>
+        </div>
+        <ul class="list">
+          <li v-for="(item,index) in 20" :key="index">
+            <span class="phone">18812341234</span>
+            <span class="register ">2999/12/30/23:23</span>
+            <span class="recharge ">10,000,000</span>
+            <span class="bet ">10,000,000</span>
+          </li>
+        </ul>
+      </div>
+      <div class="tips">
+        <p>更新时间：2020/4/23/11:10</p>
+        <p>每10分钟更新统计数据，请手动刷新页面获取实时数据</p>
+      </div>
+    </div>
+    <footer class='mod_footer'>
+
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index.vue";
+
+export default {
+  components: { navBar },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_mixin";
+@import "../../assets/common/_base";
+
+.title_list {
+  @extend .flex_v_h;
+  flex: none;
+  -webkit-flex: none;
+  height: 24vw;
+  @include getBgLinear(bottom, #ba3129, #942d27);
+  .item {
+    position: relative;
+    flex: 1;
+    -webkit-flex: 1;
+    text-align: center;
+    &:first-child {
+      text-align: left;
+      padding-left: 3.6vw;
+      .txt {
+        justify-content: flex-start;
+        -webkit-justify-content: flex-start;
+      }
+      &::after {
+        content: "";
+        @extend .g_v_mid;
+        right: 0;
+        width: 1px;
+        height: 6.6667vw;
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+    }
+    &:last-child {
+      text-align: right;
+      padding-right: 3.6vw;
+      .txt {
+        justify-content: flex-end;
+        -webkit-justify-content: flex-end;
+      }
+      &::after {
+        content: "";
+        @extend .g_v_mid;
+        left: 0;
+        width: 1px;
+        height: 6.6667vw;
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+  .txt {
+    @extend .flex_v_h;
+    color: #fff;
+    i {
+      width: 4vw;
+      height: 4vw;
+      margin-right: 0.9333vw;
+    }
+  }
+  .num {
+    padding-top: 3.2vw;
+    font-size: 5.6vw;
+    font-weight: bold;
+    color: #fff;
+  }
+  .register_icon {
+    @include getBgImg(
+      "../../assets/images/user_center/sales/register_icon.png"
+    );
+  }
+  .recharge_icon {
+    @include getBgImg(
+      "../../assets/images/user_center/sales/recharge_icon.png"
+    );
+  }
+  .value_icon {
+    @include getBgImg("../../assets/images/user_center/sales/value_icon.png");
+  }
+}
+
+.main {
+  @extend .flex;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+}
+
+.info {
+  @extend .flex;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  flex: 1;
+  -webkit-flex: 1;
+  margin-top: -2.6667vw;
+  background-color: #fff;
+  border-radius: 2.6667vw 2.6667vw 0 0;
+  overflow: hidden;
+  .title {
+    @extend .flex_hc;
+    font-size: 3.4667vw;
+    padding: 3.7333vw 0;
+    font-weight: bold;
+    color: #333;
+  }
+  .phone {
+    width: 25.3333vw;
+    text-align: center;
+  }
+  .register {
+    width: 28vw;
+    text-align: center;
+  }
+  .recharge {
+    width: 21.3333vw;
+    text-align: right;
+  }
+  .bet {
+    width: 21.3333vw;
+    text-align: right;
+  }
+  .register,
+  .recharge,
+  .bet {
+    i {
+      position: relative;
+      top: 0.5333vw;
+      margin-left: 1.3333vw;
+      @include getTriangle(1.2vw, #333, down);
+    }
+    &.active {
+      i {
+        top: -0.5333vw;
+        transform: rotate(180deg);
+      }
+    }
+  }
+}
+
+.list {
+  flex: 1;
+  -webkit-flex: 1;
+  overflow: auto;
+  li {
+    @extend .flex_hc;
+    font-size: 3.2vw;
+    height: 8vw;
+    color: #333;
+    &:nth-child(2n-1) {
+      background-color: #f8f8f8;
+    }
+  }
+}
+
+.tips {
+  flex: none;
+  -webkit-flex: none;
+  padding: 2.6667vw 0 3.2vw 0;
+  text-align: center;
+  p {
+    line-height: 5.8667vw;
+    font-size: 3.2vw;
+    color: #999;
+  }
+}
+</style>

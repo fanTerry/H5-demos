@@ -1,0 +1,79 @@
+<template>
+  <div id="screen" ref="screen">
+    <ul style="background:red;">
+      <li style="background:green;">
+        <div style="background:blue;border-color:white;">
+          <div style="background:yellow;">
+            <div style="background:orange;">
+              <h1>Heading</h1>
+              Text that isn't wrapped in anything.
+              <p>Followed by some text wrapped in a <b>&lt;p&gt; paragraph.</b> </p>
+              Maybe add a <a href="#">link</a> or a different style of <a href="#" style="background:white;"
+                id="highlight">link with a highlight</a>.
+              <hr />
+              <h2>More content</h2>
+              <div style="width:10px;height:10px;border-width:10px;padding:0;">a</div>
+            </div>
+          </div>
+
+        </div>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+import html2canvas from "html2canvas";
+
+export default {
+  name: "HelloWorld",
+  data() {
+    return {
+      msg: "Welcome to Your Vue.js App"
+    };
+  },
+  mounted() {
+    // console.log(document.body);
+    // html2canvas(document.getElementById("screen"), {
+    //   useCORS: true, //（图片跨域相关）
+    //   // allowTaint: false, //允许跨域（图片跨域相关）
+    //   // taintTest: true, //是否在渲染前测试图片
+    //   width: window.screen.availWidth, //显示的canvas窗口的宽度
+    //   height: window.screen.availHeight //显示的canvas窗口的高度
+    //   // windowWidth: document.body.scrollWidth // 获取X轴方向滚动条中的内容
+    //   // windowHeight: document.body.scrollHeight // 获取Y轴方向滚动条中的内容
+    //   // x: 0, // 页面在X轴上没有滚动，故设为0
+    //   // y: window.pageYOffset // 页面在垂直方向的滚动距离
+    // }).then(function(canvas) {
+    //   document.getElementById("app").appendChild(canvas);
+    // });
+    html2canvas(document.getElementById("screen"), {
+      width: window.screen.availWidth,
+      height: window.screen.availHeight,
+      windowWidth: document.body.scrollWidth, // 获取X轴方向滚动条中的内容
+      windowHeight: document.body.scrollHeight
+    }).then(function(canvas) {
+      document.getElementById("app").appendChild(canvas);
+    });
+  }
+};
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+h1,
+h2 {
+  font-weight: normal;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+}
+</style>

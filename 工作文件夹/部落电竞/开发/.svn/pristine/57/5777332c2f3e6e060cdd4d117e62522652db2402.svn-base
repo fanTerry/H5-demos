@@ -1,0 +1,30 @@
+
+
+<!--component/chatedit/chat-edit.wxml-->
+<view class='article-page-edit {{showLineInput ? "" : "article-page-edit-focus"}}'>
+
+
+  <!-- 输入框部分 bindblur='bindDTextAreaBlur  wx:if='{{!showLineInput}}''-->
+  <view style="float:left">
+    <view class='atc-e-t-view {{showLineInput ? "" : "atc-e-t-view-focus"}}'>
+      <textarea  bindinput="_contentInput"   value='{{contentValue}}'
+       class='atc-e-t {{focus && "atc-e-t-focus"}}' placeholder="{{placeholder}}" bindblur='bindDTextAreaBlur' placeholder-class	='atc-e-t-ph' bindfocus='bindDTextAreaFocus' focus='{{focus}}' maxlength='500' 
+       cursor-spacing='100' />
+      <!-- <text  style='position:absolute;left:0;top:0' style='display:{{showLineInput?"block":"none"}}' class='atc-e-text' bindtouchstart='bindDTextAreaFocus'>我来发表一点意见吧</text> -->
+      <!-- <i class="iconfont icon-tianxie act-p-e-i act-p-e-i-ed"></i> -->
+    </view>
+  </view>
+
+  <!-- 表情发送部分 -->
+  <!-- <view class='dsp-cell'>
+    <i class='iconfont icon-xiaolian atc-p-c-icon'></i>
+  </view> -->
+  
+  <!-- 发送按钮 -->
+  <view class='a-p-e-send-view' catchtap='_sendButtonChat'>
+    <button class='a-p-e-send-button'>
+      <text class='a-p-e-send'>发送</text>
+    </button>
+  </view>
+
+</view>

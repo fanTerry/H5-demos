@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "expert-rech-item": "/component/popup/ppexpert/expertrechitem/expert-rech-item"
+  }
+}

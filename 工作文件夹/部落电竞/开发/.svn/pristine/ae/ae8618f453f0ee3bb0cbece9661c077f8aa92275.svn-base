@@ -1,0 +1,280 @@
+page{
+	line-height: 1;
+}
+.no_data {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
+
+.icon-tianxie {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+  right: 20rpx;
+  font-size: 40rpx;
+  color: #818181;
+}
+
+.list-wrapper {
+  // height: calc(100% - 44px);
+}
+
+.mod_header {
+  
+}
+
+.mod_header .tab {
+	display: flex;
+	margin-bottom: 20rpx;
+	background-color: #fff;
+}
+.mod_header .tab view {
+	position: relative;
+	flex: 1;
+	padding: 24rpx 0;
+	font-size: 26rpx;
+	color: #818181;
+	text-align: center;     
+}
+
+.tab view.active {
+	color: #FEA21B;
+}
+
+.tab view.active::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: 0;
+	width: 40rpx;
+	height: 6rpx;
+	background-color: #FEA21B;
+	border-radius: 4rpx;
+}
+
+.main {
+  position: relative;
+  overflow: hidden;
+  
+}
+
+.nav_list {
+	margin-bottom: 14rpx;
+}
+
+.my_follow_topic {
+	padding: 0 20rpx;
+	background-color: #fff;
+}
+
+.my_follow_topic ul {
+	display:flex;
+	flex-wrap: wrap;
+	-webkit-flex-wrap: wrap;
+}
+.my_follow_topic li {
+	position: relative;
+	width: 21.7%;
+	padding-top: 21.7%;
+	margin-right: 4.4%;
+	margin-bottom: 28rpx;
+	box-shadow: 0 0 8rpx rgba(#000000, 0.1);
+}
+
+.my_follow_topic li:nth-child(4n) {
+	margin-right: 0;
+}
+
+
+.mod_follow .team {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%,-50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	-webkit-flex-direction: column;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}
+
+.mod_follow .team image {
+	width: 65%;
+	height: 65%;
+}
+.mod_follow .team p {
+	padding-top: 10rpx;
+	font-size: 24rpx;
+	color: #333;
+}
+
+.mod_follow h3 {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 24rpx 0 40rpx;
+	font-size: 28rpx;
+	font-weight: normal;
+	color: #000;
+}
+
+.mod_follow h3 a {
+	display: flex;
+	align-items: center;
+	font-size: 24rpx;
+	color: #999;
+}
+
+.mod_follow h3 a span {
+	position: relative;
+	width: 28rpx;
+	height: 28rpx;
+	transform: rotate(-90deg);
+}
+
+.mod_follow h3 a span::before,.mod_follow h3 a span::after{
+	content: " ";
+	display: inline-block;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 2rpx;
+	height: 14rpx;
+	background-color: #999;
+	-webkit-transform-origin: bottom;
+	transform-origin: bottom;
+}
+
+.mod_follow h3 a span::before{
+	transform: translate3d(-50%, -50%, 0) rotate(45deg);
+}
+
+.mod_follow h3 a span::after{
+	transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+}
+
+.myfollow_tab {
+}
+
+.myfollow_tab .user_list,
+.myfollow_tab .search_result {
+	padding-left: 20rpx;
+	background-color: #fff;
+}
+
+.myfollow_tab .search_result {
+	position: relative;
+	padding-left: 0;
+}
+
+.myfollow_tab .search_result .user_info:last-child:after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: 0;
+	width: 80%;
+	height: 1rpx;
+	background-color: #ddd;
+}
+
+.myfollow_tab .user_list {
+	/* border-radius: 16rpx; */
+}
+
+.myfollow_tab .user_list h2 {
+	padding-top: 6rpx;
+}
+
+.myfollow_tab .search_con {
+	position: relative;
+	display: flex;
+	padding: 14rpx 90rpx 14rpx;
+}
+
+.myfollow_tab .search_con input {
+	flex: 1;
+	height: 48rpx;
+	padding-left: 60rpx;
+	border-radius: 48rpx;
+	background-color: #fff;
+	border: none;
+}
+.myfollow_tab .search_con .search {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	left: 104rpx;
+	width: 32rpx;
+	height: 32rpx;
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/home/search.png') no-repeat top center;
+	background-size: cover;
+}
+
+.release_btn {
+  position: fixed;
+  right: 10rpx;
+  bottom: 200rpx;
+  width: 112rpx;
+  height: 112rpx;
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/follow/release_icon.png') no-repeat top center;
+	background-size: cover;
+}
+
+.ui_pop {
+  transform: translateY(100%);
+  -webkit-transform: translateY(100%);
+}
+.ui_pop .tab {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	display: flex;
+	background-color: #fff;
+}
+
+.ui_pop .tab view {
+	position: relative;
+	flex: 1;
+	-webkit-flex: 1;
+	padding: 34rpx 0;
+	font-size: 32rpx;
+	color: #000;
+	text-align: center;
+}
+
+.ui_pop .tab view .active {
+	color: #FEA21B;
+}
+
+@media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+	.ui_pop .tab{
+		padding-bottom: constant(safe-area-inset-bottom) !important;
+		padding-bottom: env(safe-area-inset-bottom) !important;
+	}
+}
+
+.sidebar {
+  position: fixed;
+  z-index: 99;
+  bottom: 190rpx;
+  right: 30rpx;
+  color: #c2c2c2;
+  text-align: center;
+}
+
+.sidebar .icon-sousuo {
+	font-size: 24rpx;
+	color: #c2c2c2;
+}
+.sidebar a {
+	display: block;
+	padding-top: 16rpx;
+	color: #c2c2c2;
+}

@@ -1,0 +1,25 @@
+    const state = {
+        loginState: {}
+    };
+    const getters = {
+        getLoginPop: state => state.loginState
+    };
+    const mutations = {
+        setLoginPop(state, object) {
+            state.loginState = object;
+        }
+    };
+    const actions = {
+        setLoginPop({
+            commit
+        }, object) {
+            commit('setLoginPop', object);
+        }
+    };
+
+    export default {
+        state,
+        getters,
+        actions,
+        mutations
+    };

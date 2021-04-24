@@ -1,0 +1,759 @@
+<template>
+  <div class="ui_pop" v-if="showGuessType">
+    <!-- 竞猜记录 -->
+    <div class="guessRecord" v-if="type == 1">
+      <a v-if="recordType" class="close" @click="closePop"></a>
+      <h2 v-if="recordType">竞猜记录</h2>
+      <div class="guessRecord_con">
+        <h3>
+          <span class="time">竞猜时间</span>
+          <span class="content">竞猜内容</span>
+          <span class="all" :class="{active:foldFlag}" @click="foldFlag=!foldFlag">
+            {{firstFont}}<span></span>
+            <ul v-if="foldFlag">
+              <li :class="{current:foldType == index}" @click="queryRecord(index)" v-for="(item,index) in foldFlagList"
+                :key="index">
+                {{item}}</li>
+            </ul>
+          </span>
+          <span class="detail">详情</span>
+        </h3>
+        <ul class="guessRecord_list">
+          <scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" @pullingUp="onPullingUp">
+            <li class="guessRecord_item" v-for="(item,index) in recordList" :key="index"
+              @click='guessRecordClick(index)'>
+              <div class="flex_hc">
+                <!-- 竞猜时间 -->
+                <span class="time">{{item.createTime | dateFmt('MM-dd hh:mm')}}</span>
+                <!-- 竞猜内容 主队、客队、局数、玩法、投注选项、赔率-->
+                <span class="content">{{item.homeTeamName|subTeamStr}}<span
+                    class="pk_tips">VS</span>{{item.awayTeamName|subTeamStr}}
+                  [{{item.matchNo | gameFightNum(true)}}] {{item.playName}}
+                </span>
+                <!-- 全部竞猜 -->
+                <p class="all" :class="{bingo:item.winStatus == 2}">
+                  <span v-if="item.winStatus==2">+{{item.prize}}星星</span>
+                  <span v-else-if="item.winStatus=0">{{item.status | betPlan}} </span>
+                  <span v-else>{{item.winStatus | openStatus}} </span>
+                </p>
+                <a class="detail" :class="{'up':index == RecordMark}">{{index == RecordMark?"收起详情":"展开详情"}}</a>
+              </div>
+              <div class="guessRecord_detail" v-if="RecordMark == index">
+                <div>方案内容：<span>{{item.option}}({{item.betSp}})</span></div>
+                <p class="result">比赛结果：
+                  <span v-if="item.answer==null">暂无</span>
+                  <span v-else>{{item.answer}}</span>
+                </p>
+                <p class="money">竞猜金额 X 奖励倍数：<span>{{item.cost}} X {{item.betSp}}</span></p>
+                <p class="number">方案编号：<span>{{item.planNo}}</span></p>
+                <p class="number">方案状态：<span>{{item.status |betPlan}}</span></p>
+              </div>
+            </li>
+            <!-- 没有数据时展示 -->
+            <div class="no_data" v-if="noData">
+              <div>
+                <span class="no_data_icon"></span>
+                <p class="tips">暂无竞猜记录</p>
+              </div>
+            </div>
+          </scroll>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 星星流水 -->
+    <div class="starRecord" v-if="type == 2">
+      <a class="close" @click="closePop"></a>
+      <h2>星星流水</h2>
+      <div class="starRecord_con">
+        <h3>
+          <span class="time">时间</span>
+          <span class="content">事件</span>
+          <span class="all">金额</span>
+          <span class="detail">余额</span>
+        </h3>
+        <ul class="starRecord_list">
+          <scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0" @pullingUp="onPullingUp">
+            <li class="starRecord_item" v-for="(item,index) in starList" :key="index">
+              <div class="flex_hc">
+                <!-- 时间 -->
+                <span class="time">{{item.createTime | dateFmt('MM-dd  hh:mm:ss')}}</span>
+                <!--事件 -->
+                <span class="content">{{item.remarks}}</span>
+                <!-- 金额 -->
+                <p class="all">
+                  <span v-if="item.walletOperType==1">+{{item.recScore+item.giftRecScore}}星星</span>
+                  <span class="loss" v-else-if="item.walletOperType==2">-{{item.recScore+item.giftRecScore}}星星</span>
+                </p>
+                <!-- 余额 -->
+                <a class="detail">{{item.recScoreBalance+item.giftRecScoreBalance}}星星</a>
+              </div>
+            </li>
+            <!-- 没有数据时展示 -->
+            <div class="no_data" v-if="noData">
+              <div>
+                <span class="no_data_icon"></span>
+                <p class="tips">暂无星星流水</p>
+              </div>
+            </div>
+          </scroll>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 玩法规则 -->
+    <div class="gameRules" v-if="type == 3">
+      <a class="close" @click="closePop"></a>
+      <h2>玩法规则</h2>
+      <div class="gameRules_con">
+        <section>
+          <h3>橘子电竞<span>(橘子电竞是什么?)</span></h3>
+          <p>
+            橘子电竞是一款有趣专业的电竞赛事平台，这里有丰富的电竞赛事内容，覆盖LOL，王者，DOTA2，CSGO，守望先锋等多款游戏；有全球电竞赛事过往比赛视频及对战信息；有业余赛事可供参赛原你职业电竞梦想；也有互动赛事竞猜满你单车变摩托的心愿。
+          </p>
+        </section>
+        <section>
+          <h3>橘子电竞为您提供多元竞猜渠道，满足您的体验需求。</h3>
+          <p>
+            ① PC竞猜页面：http://quiz.esportzoo.com<br>
+            ② 微信竞猜页面：https://m.esportzoo.com/guess/home?agentId=10006&biz=1&clientType=7<br>
+            ③ 微信小程序：橘子电竞-竞猜<br>
+            ④ 微信公众号：橘子电竞服务号-竞猜
+          </p>
+        </section>
+        <section>
+          <h3>竞猜星星<span>(星星是什么？如何使用?)</span></h3>
+          <p>竞猜星星为橘子电竞中的虚拟积分，是官方唯一可用来参与电竞赛事竞猜娱乐的平台积分。竞猜星星仅可通过平台每日签到，或通过微信支付系统赠送获得。其中竞猜星星仅可用来赛事竞猜，不可赠送他人，不可转让他人，不可兑换现金。
+          </p>
+        </section>
+        <section>
+          <h3>每日签到<span>(如何签到获取官方赠送的竞猜星星？)</span></h3>
+          <p>
+            每日签到采取“自然周连续签到”奖励规则：首日领取星星为100，第二日200，第三日300，第四日400，第五日500，第六日600，第七日随机金豆（700及以上随机)，用户按自然周进行累计统计，累积日为用户签到天数的累积，积累签到越多后续签到获得星星数量越多。
+          </p>
+          <p>
+            例：星期一至星期日一个自然周的7天时间内，玩家小明共在周二，周四到访并成功签到，若周日再来签到，周日为该用户累积签到第三天，则周日小明应可一次性领取300星星，用户当周三天签到所得星星数为：100（周二）+200（周四）+300（周日）=600（当周总共领取）。时间到了下周一，则重新开启自然周累积统计。
+          </p>
+          <p>因此最有效的领取方式是从周一到周日每天都来签到领取，最高单周可领取2800+以上星星总额。</p>
+          <p>每日签到获取的竞猜星星具备使用有效期，7天内不消耗使用即会清空，请玩家领取后尽快使用。</p>
+        </section>
+        <section>
+          <h3>椰子分<span>(椰子分有何用？如何兑换椰子分？)</span></h3>
+          <p>
+            椰子分为官方唯一竞猜兑奖积分，玩家可通过竞猜星星1000：1等值兑换（即1000星星=1椰子分），星星一经兑换为椰子分后不可回退，请玩家根据所需使用数量合理进行兑换。椰子分可用于兑换椰子分平台所提供的各项服务，包括“黄金兑换，话费充值，加油卡充值，超市购物，生活缴费，卡券兑换，海南旅游，海南特产，信用卡还款”等，服务内容和椰子分产品体验均归属椰子积分平台负责，如对积分使用有任何疑问及兑换跟踪问题请在椰子分页面内联系客服进行处理，联系电话“0898-3130-5180”；微信号“COCOGC2018”；QQ号“403292023”；
+          </p>
+        </section>
+        <section>
+          <h3>椰子分商城兑换规则</h3>
+          <p>
+            ① 椰子分商城兑换尽可使用椰子分一次性全额兑换，不可使用椰子分+现金的形式兑换。<br>
+            ② 椰子分商城的兑换将在3个工作日内发货。<br>
+            ③ 兑换过程中的实名认证是根据相关规定进行纳税申报使用。<br>
+            ④ 成功兑换商品或服务的用户，可在商城查看“我的椰子分”，纳税申报将在次月20日前进行。<br>
+            ⑤
+            椰子分可在“椰子竞技积分”平台的“兑换商城”兑换商品或服务，兑换的商品或服务自商家发货之日起，大部分兑换的商品支持7天无理由退换货服务（兑换的服务或生鲜易腐定制商品等不支持退换货，详情查看以下内容），特殊商品除外。<br>
+            ⑥ 发生退货时支持部分自动退回椰子分余额，可以并仅限未超过7天无理由退货时限的商品或服务；特殊情况下的退款，已缴纳的税款将不予退还。<br>
+          </p>
+        </section>
+        <section>
+          <h3>竞猜规则<span>(如何进行星星竞猜？结果如何判定？)</span></h3>
+          <p>
+            1，通用结果判定<br>
+            ① 投注结算将以指定赛事、广播或游戏API的相关管理机构宣布的官方结果为依据。对无效/无结果/未参赛的投注将视为无效。<br>
+            ② 出于结算目的，未进行或被推迟的比赛将视为无效/无结果/未参赛，除非相关比赛能在原定开赛时间后的48小时内进行。否则投注将视为无效。<br>
+            ③ 如果在整场比赛中，有一局比赛因为弃赛或被主办方判负或胜（未进行），影响到全局胜负的判定，则单局胜负按主办方判定结算，当局其他竞猜项视为无效。全局按主办方判定结算。<br>
+            ④ 如果所列赛事不正确，投注将视为无效。<br>
+            ⑤ 如果由于队伍离开组织，加入另一组织或正式更名而使队伍名称有所改变，所有投注仍然成立。<br>
+            ⑥ 如果比赛在预定开始日期/时间前举行，所有在实际开始时间后进行的投注将视为无效。所有在实际开始时间前进行的投注仍然成立。[滚盘类玩法不受此条限制]<br>
+            ⑦ 如果参赛者/参赛队在赛事开始后由于自身原因临时造成的被判失败，仅胜负类投注视为有效，其他投注视为无效。<br>
+            ⑧ 如果由于数据异常造成的明显不符合战队实力盘口的投注，会被视为无效退回。<br>
+            ⑨ 如果赛事或者单局比赛由于断线或者非玩家相关的技术问题而被重新进行，赛前投注将在重新进行的比赛成立，并根据官方结果进行结算。重新进行的赛事或单局比赛将被单独看待。<br>
+            ⑩ 如果比赛开始但未完成，则所有投注将视为无效，除非结果已被确定。<br>
+          </p>
+          <p>
+            2，特殊结果判定<br>
+            ①“英雄联盟”(LOL)<br>
+            单局比赛投注：除非平局投注在指定盘口中列出，否则出现平局“哪个队伍会获胜”盘口将视无效。<br>
+            “一血”盘口：只有被对方队伍/玩家杀死才可计算在内。<br>
+            “击杀”盘口：将根据官方记分板、广播或游戏API结算，未产生退还。<br>
+            “小龙”盘口：将根据官方记分板、广播或游戏API结算，未产生退还。<br>
+            “峡谷先锋”盘口：将根据广播或游戏API结算，未产生、打断、未拾取先锋之眼退还。<br>
+            “大龙”盘口：将根据官方记分板、广播或游戏API结算，未产生退还。<br>
+            “建筑物”盘口：出于结算目的，无论最后一击来自英雄或小兵，或建筑物是否刷新过，所有被摧毁的建筑物均计为被对方队伍摧毁。<br>
+            “让局”盘口：预先指定对阵双方的一方获得一定的让局数，最终赛果基于该让分来结算。中括号内为让局数（例如，[-1.5]即主队让客队1.5局）。该玩法只适用于总局。结算方法：若主队小局获胜局数-客队小局获胜局数+中括号内的数值>0，则为主胜。若主队小局获胜局数-客队小局获胜局数+中括号内的数值
+            < 0，则为客胜。<br>
+              “第*局击杀数(得分)让分”盘口：即预先指定对阵双方的一方获得一定的让击杀（得分）数，最终赛果基于该让击杀（得分）数来结算。中括号内为让击杀数（例如，[-6.5]即主队让客队6.5次击杀）。该玩法只适用于小局。结算方法：若主队该小局击杀（得分）数-客队该小局击杀（得分）数+中括号内的数值>0，则为主胜。若主队该小局击杀（得分）数-客队该小局击杀（得分）数+中括号内的数值
+              < 0，则为客胜。<br>
+                如果出现投降情况，摧毁的塔和水晶的最终数量将根据投降时赢得比赛所需塔和水晶的最少数量进行结算。这些额外建筑物将被视为被获胜队伍摧毁，但仅限于五座塔及一个水晶。所有基于时间的投注将根据游戏内时钟结算，且不包括小兵刷新前的时间。如果比赛开始但未完成，则所有投注将视为无效，除非结果已被确定。<br>
+                ②“王者荣耀”<br>
+                单局比赛投注：除非平局投注在指定盘口中列出，否则出现平局“哪个队伍会获胜”盘口将视无效。<br>
+                “一血”盘口：只有被对方队伍/玩家杀死才可计算在内。<br>
+                “击杀”盘口：将根据官方记分板、广播或游戏API结算。<br>
+                “主宰/暴君”盘口：将根据官方记分板、广播或游戏API结算。<br>
+                “建筑物”盘口：出于结算目的，无论最后一击来自英雄或小兵，或建筑物是否刷新过，所有被摧毁的建筑物均计为被对方队伍摧毁。<br>
+                如果出现投降情况，摧毁的塔和水晶的最终数量将根据投降时赢得比赛所需塔和水晶的最少数量进行结算。这些额外建筑物将被视为被获胜队伍摧毁，但仅限于五座塔及一个水晶。<br>
+                所有基于时间的投注将根据游戏内时钟结算，且不包括小兵刷新前的时间。如果比赛开始但未完成，则所有投注将视为无效，除非结果已被确定。<br>
+                ③“DOTA2”<br>
+                单局比赛投注：除非平局投注在指定盘口中列出，否则出现平局“哪个队伍会获胜”盘口将视无效。<br>
+                “一血”盘口：只有被对方队伍/玩家杀死才可计算在内。<br>
+                “击杀”盘口：将根据官方记分板、广播或游戏API结算。<br>
+                “肉山”盘口：将根据官方的记分板、广播或游戏API进行结算。结算取决于杀死肉山而非拿起“不朽之守护”的队伍。<br>
+                “建筑物”盘口：出于结算目的，无论最后一击来自英雄或小兵，所有被摧毁的建筑物均计为被对方队伍摧毁。兵营的数量取决于所摧毁的各个远程兵营和近战兵营。<br>
+                “让局”盘口：预先指定对阵双方的一方获得一定的让局数，最终赛果基于该让分来结算。中括号内为让局数（例如，[-1.5]即主队让客队1.5局）。该玩法只适用于总局。结算方法：若主队小局获胜局数-客队小局获胜局数+中括号内的数值>0，则为主胜。若主队小局获胜局数-客队小局获胜局数+中括号内的数值
+                < 0，则为客胜。<br>
+                  “第*局击杀数(得分)让分”盘口：即预先指定对阵双方的一方获得一定的让击杀（得分）数，最终赛果基于该让击杀（得分）数来结算。中括号内为让击杀数（例如，[-6.5]即主队让客队6.5次击杀）。该玩法只适用于小局。结算方法：若主队该小局击杀（得分）数-客队该小局击杀（得分）数+中括号内的数值>0，则为主胜。若主队该小局击杀（得分）数-客队该小局击杀（得分）数+中括号内的数值
+                  < 0，则为客胜。<br>
+                    如果出现投降情况，摧毁的塔和水晶的最终数量将根据投降时赢得比赛所需塔和水晶的最少数量进行结算。这些额外建筑物将被视为被获胜队伍摧毁，但仅限于五座塔及一个水晶。<br>
+                    如果出现投降情况，在“摧毁的下一建筑物”盘口上的投注将被视为无效。<br>
+                    所有基于时间的投注将根据游戏内时钟结算，且不包括小兵刷新前的时间。如果比赛开始但未完成，则所有投注将视为无效，除非结果已被确定。<br>
+                    ④“反恐精英：全球攻势”(CS:GO)<br>
+                    若有加时赛，其将包括在盘口结算内;除非平局投注在指定盘口中列出，此时结算仅取决于常规时间。<br>
+                    单局比赛投注：如果规定的单局数有所更改或与所提供的有差异，出于结算目的所有投注将视无效。<br>
+                    “让局”盘口：预先指定对阵双方的一方获得一定的让局数，最终赛果基于该让分来结算。中括号内为让局数（例如，[-1.5]即主队让客队1.5局）。该玩法只适用于总局。结算方法：若主队小局获胜局数-客队小局获胜局数+中括号内的数值>0，则为主胜。若主队小局获胜局数-客队小局获胜局数+中括号内的数值
+                    < 0，则为客胜。<br>
+                      “第*局击杀数(得分)让分”盘口：即预先指定对阵双方的一方获得一定的让击杀（得分）数，最终赛果基于该让击杀（得分）数来结算。中括号内为让击杀数（例如，[-6.5]即主队让客队6.5次击杀）。该玩法只适用于小局。结算方法：若主队该小局击杀（得分）数-客队该小局击杀（得分）数+中括号内的数值>0，则为主胜。若主队该小局击杀（得分）数-客队该小局击杀（得分）数+中括号内的数值
+                      < 0，则为客胜。<br>
+                        ⑤“守望先锋”(Overwatch)<br>
+                        单局比赛投注：除非平局投注在指定盘口中列出，否则出现平局“哪个队伍会获胜”盘口将视无效。<br>
+                        全场比赛投注：如果比赛开始但未完成，则所有投注将视为无效，除非结果已被确定。<br>
+          </p>
+        </section>
+        <section>
+          <h3>开奖结算<span>(何时开奖？何时派奖？)</span></h3>
+          <p>
+            系统会根据单局比赛赛果，单局比赛内事件结果进行开奖，开奖时间取决于游戏赛事官方记分板、广播或游戏API结算周期。系统会产生“待开奖”“开奖中”“派奖中”等状态，请玩家耐心等待。单场比赛胜负项会在比赛结束后15分钟内完成派奖；其他竞猜项会在比赛结束30分钟内完成派奖；
+          </p>
+        </section>
+        <section>
+          <h3>信息联络<span>(如何联系我们？)</span></h3>
+          <p>客服微信号①：JuziDJ08
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;客服微信号②：jzdj08<br>微信公众号：橘子电竞服务号<br>微信小程序：橘子电竞<br>玩家可以绑定关注橘子电竞微信号，绑定账号之后，可实时收到即时结算信息。<br>
+          </p>
+        </section>
+        <section>
+          <p>请各位玩家珍惜橘子电竞这样一个轻松的娱乐互动平台，共同维护平台的健康成长!</p>
+          <p>橘子电竞保留对规则的最终解释权以及随时修改规则的必要权利。感谢大家的监督与喜爱，你们的支持驱动我们不断前行。</p>
+        </section>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import Scroll from "../../../components/common/scroll.vue";
+
+export default {
+  components: { Scroll },
+  props: ["type", "showGuessType", "recordType"],
+  data() {
+    return {
+      foldFlag: false,
+      RecordMark: Number,
+      foldType: 0,
+      showOrderDetails: false,
+      recordList: [], //查询用户竞猜记录
+      starList: [], //查询星星流水
+      currPageSize: 0,
+      recordQueryParam: {
+        pageNo: 1,
+        pageSize: 10,
+        winStatus: "" //初始加载全部竞猜记录
+      },
+      firstFont: "全部竞猜",
+      foldFlagList: ["全部竞猜", "待开奖", "未中奖", "已中奖"],
+      // 下拉组件相关
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "到底啦~" }
+      },
+      noData: false
+    };
+  },
+
+  methods: {
+    //点击进入时清空starList
+    toGetStarPage() {
+      this.starList = [];
+      this.recordQueryParam.pageNo = 1;
+      this.getStarPage();
+    },
+    //星星流水
+    getStarPage(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/usercenter/getWalletPCLog", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if ((dataResponse.code = "200")) {
+            if (dataResponse.data.dataList.length > 0) {
+              console.log(dataResponse, "钱包流水查询--getPageData--请求成功");
+              this.currPageSize = dataResponse.data.dataList.length;
+              this.starList = this.starList.concat(dataResponse.data.dataList);
+            }
+            console.log(this.starList.length, "this.starList.length");
+            if (this.starList.length == 0) {
+              console.log("jlllll");
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+          } else {
+            this.$toast(dataResponse.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+      if (this.currPageSize < this.recordQueryParam.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+
+    closePop() {
+      this.$emit("closePop");
+    },
+    guessRecordClick(index) {
+      if (this.RecordMark == index) {
+        this.RecordMark = -1;
+      } else {
+        this.RecordMark = index;
+      }
+    },
+
+    queryRecord(index) {
+      this.foldType = index;
+      this.recordList = [];
+      this.firstFont = this.foldFlagList[index];
+      if (index == 0) {
+        index = null;
+      } else {
+        index = index - 1;
+      }
+      this.recordQueryParam.pageNo = 1;
+      this.recordQueryParam.pageSize = 10;
+      this.recordQueryParam.winStatus = index;
+      this.quizzesPopRecord(this.recordQueryParam);
+    },
+
+    //点击进入时清空recordList
+    toQuizRecord(param) {
+      this.recordList = [];
+      this.recordQueryParam.pageNo = 1;
+      this.quizzesPopRecord(param);
+    },
+
+    //查询竞猜记录
+    quizzesPopRecord(param) {
+      return this.$post("/api/quiz/record/recordPage", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(param, "传入的参数");
+          if (dataResponse.code == 200) {
+            if (dataResponse.data.length > 0) {
+              this.currPageSize = dataResponse.data.length;
+              // console.log(dataResponse,"接收的数据")
+              this.recordList = this.recordList.concat(dataResponse.data);
+            }
+            if (this.recordList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+            return this.recordList;
+          }
+        })
+        .catch(error => {
+          console.log(error, "查询竞猜记录失败");
+        });
+    },
+
+    /** 上拉加载*/
+    loadMore() {
+      console.log(this.type, "传过来的type");
+      this.recordQueryParam.pageNo += 1;
+      let param = {};
+      param.pageNo = this.recordQueryParam.pageNo;
+      param.pageSize = this.recordQueryParam.pageSize;
+      //竞猜记录
+      if (this.type == 1) {
+        param.winStatus = this.recordQueryParam.winStatus;
+        console.log(param, "加载更多");
+        this.quizzesPopRecord(param).then(data => {
+          this.$refs.scroll.forceUpdate();
+        });
+        //星星流水
+      } else {
+        console.log(param, "加载更多");
+        this.getStarPage(param).then(data => {
+          this.$refs.scroll.forceUpdate();
+        });
+      }
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.guessRecord,
+.starRecord {
+  .bscroll-indicator {
+    border-radius: 3px !important;
+    border: 3px solid #453130 !important;
+  }
+  .bscroll-vertical-scrollbar {
+    width: 6px !important;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.ui_pop > div {
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  width: 20px;
+  height: 20px;
+}
+
+.pop_tips {
+  @extend .g_v_c_mid;
+  width: 215px;
+  padding: 20px 10px;
+  text-align: center;
+  p {
+    font-size: 14px;
+    color: #fff;
+  }
+  span {
+    display: block;
+    padding-top: 20px;
+    font-size: 20px;
+    color: #f6b70d;
+  }
+}
+
+.gameRules {
+  height: 470px;
+  color: #ffdcd7;
+  .gameRules_con {
+    height: 320px;
+    margin: 0 30px 0 40px;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 6px;
+      background-color: #453130;
+    }
+  }
+  section {
+    padding-top: 15px;
+  }
+  h3 {
+    @extend .flex_hc;
+    font-size: 16px !important;
+    line-height: 30px;
+    font-weight: bold;
+    span {
+      color: #fe5049;
+    }
+  }
+  p {
+    padding-top: 4px;
+    font-size: 16px;
+    line-height: 30px;
+    text-align: justify;
+    word-break: break-all;
+  }
+}
+
+.guessRecord,
+.starRecord,
+.gameRules {
+  width: 914px;
+  background-color: #311e1d;
+  h2 {
+    line-height: 90px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff6ea;
+    text-align: center;
+  }
+  h3 {
+    @extend .flex;
+    font-size: 0;
+    .all {
+      position: relative;
+      @extend .flex_v_h;
+      &.active {
+        span {
+          transform: translateY(-2px) rotate(180deg);
+          -webkit-transform: translateY(-2px) rotate(180deg);
+        }
+      }
+      span {
+        display: block;
+        margin-left: 4px;
+        border: 6px solid transparent;
+        border-top-color: currentColor;
+        transform: translateY(4px);
+        -webkit-transform: translateY(4px);
+      }
+      ul {
+        @extend .g_c_mid;
+        top: 40px;
+        z-index: 2;
+        border: 1px solid #5e3b23;
+        background-color: #221518;
+      }
+      li {
+        width: 150px;
+        font-size: 14px;
+        line-height: 30px;
+        color: #ffbea3;
+        border-top: 1px solid #3b211f;
+        text-align: center;
+        &:first-child {
+          border: none;
+        }
+      }
+      .current {
+        background-color: #3b211f;
+      }
+    }
+    .detail {
+      width: 158px;
+      padding-right: 20px;
+    }
+    .content {
+      text-align: center;
+    }
+  }
+  .time,
+  .content,
+  .all,
+  .detail,
+  .order_time,
+  .order_num,
+  .goods_name,
+  .order_status,
+  .order_detail {
+    display: inline-block;
+    margin-right: 1px;
+    font-size: 14px;
+    color: #7f5c51;
+    line-height: 40px;
+    background-color: #221518;
+    text-align: center;
+  }
+  .time,
+  .result,
+  .all,
+  .content {
+    // padding: 0 20px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .time {
+    width: 150px;
+  }
+  .detail {
+    width: 136px;
+  }
+  .all {
+    width: 132px;
+    .loss {
+      color: #24a3ac;
+    }
+    &.bingo {
+      color: #f3d40c;
+    }
+  }
+  .content {
+    width: 470px;
+    padding: 0 20px;
+    @include t_nowrap(100%);
+    text-align: left;
+  }
+  .pk_tips {
+    padding: 0 5px;
+    color: #f5b457;
+  }
+  .order_time {
+    width: 180px;
+    padding-left: 40px;
+  }
+  .order_num {
+    width: 190px;
+  }
+  .goods_name {
+    width: 200px;
+    padding: 0 20px;
+    @include t_nowrap(100%);
+  }
+  .order_status {
+    width: 150px;
+  }
+  .order_detail {
+    width: 166px;
+    text-decoration: underline;
+  }
+}
+
+.starRecord {
+  .all {
+    span {
+      color: #f3d40c;
+    }
+  }
+  .starRecord_list .detail {
+    color: #ffdcd7;
+  }
+}
+
+.guessRecord_con,
+.starRecord_con {
+  background-color: #130c0e;
+}
+
+.guessRecord_list,
+.starRecord_list {
+  height: 340px;
+  margin-right: 4px;
+  // overflow-y: scroll;
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    margin-right: 4px;
+  }
+
+  .time,
+  .content,
+  .all,
+  .detail,
+  .order_time,
+  .order_num,
+  .goods_name,
+  .order_status,
+  .order_detail {
+    margin-top: 1px;
+    line-height: 50px;
+    color: #ffdcd7;
+    background-color: #311e1d;
+  }
+
+  .detail {
+    color: #f3d40c;
+    &.up {
+      &::after {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-width: 1px 0 0 1px;
+        border-style: solid;
+        border-color: #f3d40c;
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform-origin: bottom;
+        -webkit-transform-origin: bottom;
+        -ms-transform-origin: bottom;
+        margin-left: 4px;
+        vertical-align: middle;
+      }
+    }
+  }
+  .order_num,
+  .order_detail {
+    color: #f3d40c;
+  }
+}
+
+.guessRecord_item,
+.starRecord_item {
+  position: relative;
+  &:last-child {
+    margin-bottom: 100px;
+  }
+}
+
+.guessRecord_detail {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 1;
+  width: 891px;
+  padding: 16px 24px;
+  font-size: 12px;
+  color: #ffdcd7;
+  background-color: #221518;
+  div,
+  p {
+    line-height: 36px;
+  }
+  p {
+    display: inline-block;
+    padding-right: 20px;
+  }
+  span {
+    color: #f3d40c;
+  }
+}
+
+.no_data {
+  @extend .flex_v_h;
+  padding-top: 80px;
+  text-align: center;
+  .tips {
+    padding-top: 18px;
+    font-size: 18px;
+    color: #fedcd7;
+  }
+}
+.no_data_icon {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  @include getBgImg("../../../assets/images/icon/no_data_icon.png");
+  background-size: 100% 100%;
+}
+.confirm_pay,
+.orderDetails,
+.recharge,
+.prize,
+.qrCodePay,
+.payStatus,
+.pointsExchange,
+.pop_tips {
+  background: linear-gradient(to right bottom, #34201d, #2a181c);
+  background: -webkit-linear-gradient(left top, #34201d, #2a181c);
+  background: -ms-linear-gradient(left top, #34201d, #2a181c);
+  box-shadow: 0px 0px 15px 0px rgba(10, 2, 4, 0.5);
+}
+</style>

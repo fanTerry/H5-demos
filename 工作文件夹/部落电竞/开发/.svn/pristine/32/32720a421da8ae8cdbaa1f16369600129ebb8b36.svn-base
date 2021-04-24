@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "popAlert": "/component/popup/pop_alert"
+  }
+}

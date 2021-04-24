@@ -1,0 +1,42 @@
+<!--modules/expertpage/expertagreepage/expert-agree-page.wxml-->
+
+<view class='expert-agree-page'>
+
+  <view class='e-a-v-title-h1'>
+    <text class='e-a-t-title-h1'>【官方】   电竞吧 专家评到用户指南</text>
+  </view>
+
+  <view class='e-a-v-sub'>
+    <text class='e-a-t-tag'>电竞吧</text>
+    <text class='e-a-t-sub'>官方  2019-01-09  17：01：22</text>
+  </view>
+
+  <view class='e-a-v-title-h2'>
+    <text class='e-a-t-title-h2'>专家评到简介</text>
+  </view>
+
+  <view class='e-a-v-paragraph'>
+    <text class='e-a-t-tag'>电竞吧</text>
+    <text>专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本.专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本.</text>
+  </view>
+
+
+  <view class='e-a-v-title-h2'>
+    <text class='e-a-t-title-h2'>专家评到简介</text>
+  </view>
+
+  <view class='e-a-v-title-h3'>
+    <text>1.专家文本文</text>
+  </view>
+  <view class='e-a-v-paragraph'>
+    <text>本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本.</text>
+  </view>
+
+  <view class='e-a-v-title-h3'>
+    <text>2.专家文本文</text>
+  </view>
+  <view class='e-a-v-paragraph'>
+    <text>本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本专家文本文本文本.</text>
+  </view>
+
+</view>

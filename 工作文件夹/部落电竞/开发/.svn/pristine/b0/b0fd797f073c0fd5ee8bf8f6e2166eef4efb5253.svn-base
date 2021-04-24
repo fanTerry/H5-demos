@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "userinfo-bar": "/component/userinfobar/userinfo-bar",
+    "expert-banner": "/component/expert/expertbanner/expert-banner",
+    "hot-expert-item": "/component/expert/hotexpertitem/hot-expert-item",
+    "report-expert-item": "/component/reportlist/reportexpertitem/report-expert-item"
+  }
+}

@@ -1,0 +1,250 @@
+<!--modules/reportpage/mddata/md-data.wxml-->
+<wxs src="../../../utils/tools.wxs" module="tools" />
+<!-- 第一部分数据总况信息 -->
+<view class='md-data-info clear'  wx:if="{{detailData.homeTeamData!=null}}">
+  <text class='m-d-i-text-l'>数据对比</text>
+  <text class='m-d-i-text-r'>近5场均值数据</text>
+</view>
+<view class='md-data-view' wx:if="{{detailData.homeTeamData!=null}}">
+  <!-- 第一行 -->
+  <view class='md-data-table dsp-table'>
+    <view class='dsp-cell t-l'>
+      <image class='m-d-img m-d-img-l' src='{{matchDetail.homeTeamLogo?matchDetail.homeTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFill' />
+      <text class='m-d-text'>{{tools.sub(matchDetail.homeTeamName)}}</text>
+    </view>
+    <view class='dsp-cell t-r'>
+      <text class='m-d-text'>{{tools.sub(matchDetail.awayTeamName)}}</text>
+      <image class='m-d-img m-d-img-r' src='{{matchDetail.awayTeamLogo?matchDetail.awayTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFill' />
+    </view>
+  </view>
+
+  <!-- 第二行 -->
+  <view class='md-data-table dsp-table'>
+    <view class='dsp-cell t-l m-d-t-c1'>
+      <text>{{detailData.homeTeamData.kda}}</text>
+      <text class='m-d-t-sub'>{{detailData.homeTeamData.kills}}/{{detailData.homeTeamData.deaths}}/{{detailData.homeTeamData.assists}}</text>
+    </view>
+    <view class='dsp-cell t-c'>
+      <text class='m-d-t-big'>KDA</text>
+    </view>
+    <view class='dsp-cell t-r m-d-t-c1'>
+      <text class='m-d-t-sub'>{{detailData.awayTeamData.kills}}/{{detailData.awayTeamData.deaths}}/{{detailData.awayTeamData.assists}}</text>
+      <text>{{detailData.awayTeamData.kda}}</text>
+    </view>
+  </view>
+
+  <!-- 第三行：表格数据 -->
+  <view class='md-data-table-view' wx:if="{{detailData.homeTeamData!=null}}">
+    <!-- Line 1 -->
+    <view class='md-data-table dsp-table m-d-t-text'>
+      <view class='dsp-cell t-l m-d-t-c1'>{{detailData.homeTeamData.minionsKilled}}</view>
+      <view class='dsp-cell t-c'>分均补刀</view>
+      <view class='dsp-cell t-r m-d-t-c1'>{{detailData.awayTeamData.minionsKilled}}</view>
+    </view>
+    <view class='md-data-progress-view'>
+      <progress percent="{{tools.calAvgForTeam(detailData.homeTeamData.minionsKilled*1,detailData.awayTeamData.minionsKilled*1)}}" stroke-width="6" border-radius="3" activeColor="#fe5049" backgroundColor="#556fb5" />
+    </view>
+
+    <!-- Line 2 -->
+    <view class='md-data-table dsp-table m-d-t-text'>
+      <view class='dsp-cell t-l m-d-t-c1'>{{detailData.homeTeamData.goldEarned}}</view>
+      <view class='dsp-cell t-c'>分均经济</view>
+      <view class='dsp-cell t-r m-d-t-c1'>{{detailData.awayTeamData.goldEarned}}</view>
+    </view>
+    <view class='md-data-progress-view'>
+      <progress percent="{{tools.calAvgForTeam(detailData.homeTeamData.goldEarned*1,detailData.awayTeamData.goldEarned*1)}}" stroke-width="6" border-radius="3" activeColor="#fe5049" backgroundColor="#556fb5" />
+    </view>
+
+    <!-- Line 3 -->
+    <view class='md-data-table dsp-table m-d-t-text'>
+      <view class='dsp-cell t-l m-d-t-c1'>{{detailData.homeTeamData.damage}}</view>
+      <view class='dsp-cell t-c'>分均伤害</view>
+      <view class='dsp-cell t-r m-d-t-c1'>{{detailData.awayTeamData.damage}}</view>
+    </view>
+    <view class='md-data-progress-view'>
+      <progress percent="{{tools.calAvgForTeam(detailData.homeTeamData.damage*1,detailData.awayTeamData.damage*1)}}" stroke-width="6" border-radius="3" activeColor="#fe5049" backgroundColor="#556fb5" />
+    </view>
+
+  </view>
+
+</view>
+
+<!-- 第二部分数据表格 -->
+<block wx:if="{{detailData.teamBattleInfoVos!=null}}">
+<view class='md-data-info clear'>
+  <text class='m-d-i-text-l'>双方交战</text>
+  <text class='m-d-i-text-r'>近期交锋3场</text>
+</view>
+
+<view class='md-data-view-blue'>
+  <!-- 第一行 -->
+  <view class='dsp-table m-d-b-title'>
+    <view class='dsp-cell m-d-b-c1'>赛事</view>
+    <view class='dsp-cell m-d-b-c3'>人头比</view>
+    <view class='dsp-cell m-d-b-c1'>日期/时长</view>
+  </view>
+
+  <!-- 第二行 -->
+  <view class='dsp-table m-d-b-line line-border' wx:for="{{detailData.teamBattleInfoVos}}" wx:key="">
+    <view class='dsp-cell m-d-b-c1'>
+      <image class='m-d-logo1' src='{{item.leagueLogo}}' mode='aspectFill' />
+    </view>
+    <view class='dsp-cell m-d-b-c3'>
+      <view class='dsp-cell m-d-b-c4 t-r'>
+        <image class='m-d-logo2' src='{{matchDetail.homeTeamLogo?matchDetail.homeTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFill' />
+        <!-- <image wx:if="{{item.winnerTeam==1}}" class='m-d-win' src='https://rs.esportzoo.com/svn/esport-res/mini/images/iconimg/win.jpg' mode='aspectFill' /> -->
+        <i wx:if="{{item.winnerTeam==1}}"  class="iconfont icon-shengli icon-win"></i>
+      </view>
+      <view class='dsp-cell m-d-b-c5'>{{item.homeTeamKills}}-{{item.awayTeamKills}}</view>
+      <view class='dsp-cell m-d-b-c4 t-l'>
+        <image class='m-d-logo2' src='{{matchDetail.awayTeamLogo?matchDetail.awayTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFill' />
+        <!-- <image wx:if="{{item.winnerTeam==0}}" class='m-d-win' src='https://rs.esportzoo.com/svn/esport-res/mini/images/iconimg/win.jpg' mode='aspectFill' /> -->
+        <i wx:if="{{item.winnerTeam==0}}"  class="iconfont icon-shengli icon-win"></i>
+      </view>
+    </view>
+    <view class='dsp-cell m-d-b-c1'>
+      <view class='m-d-b-time'>{{item.matchBeginAt}}</view>
+      <view class='m-d-b-time'>{{item.length/60 |Int}}’{{item.length%60}}”</view>
+    </view>
+  </view>
+</view>
+</block>
+
+<!-- 第三部分数据表格 -->
+<view class='md-data-info clear' wx:if="{{matchResData.length>0||curLiveDetail!=null}}">
+  <text class='m-d-i-text-l'>比赛数据</text>
+</view>
+<view class='md-data-view-blue  m-d-v-b-data' wx:for="{{matchResData}}" wx:key="" wx:for-index="index">
+  <!-- 第一行 -->
+  <view class="m-d-win-view">
+    <!-- <image class='m-d-win' src='https://rs.esportzoo.com/svn/esport-res/mini/images/iconimg/win.jpg' mode='aspectFill' /> -->
+    <i wx:if="{{item.winnerTeam==0}}" class="iconfont icon-shengli icon-win m-d-win m-d-win-r"></i>
+    <i wx:if="{{item.winnerTeam==1}}" class="iconfont icon-shengli icon-win m-d-win"></i>
+  </view>
+
+  <!-- 第二行 -->
+  <view class='dsp-table m-d-report'>
+    <view class='dsp-cell m-d-r-c1'>
+      <view class='clear'>
+        <view class='m-d-r-item m-d-r-il' wx:if="{{item.homeTeamPentaKills==1}}">
+          <i class="iconfont icon-sha icon-kill"></i>
+          <view><text>五杀</text></view>
+        </view>
+        <view class='m-d-r-item m-d-r-il' wx:if="{{item.homeTeamFirstBlood==1}}">
+          <i class="iconfont icon-yixie icon-blood"></i>
+          <view><text>一血</text></view>
+        </view>
+      </view>
+     
+    </view>
+    <view class='dsp-cell'>
+      <view class='dsp-cell m-d-r-c2'>{{item.homeTeamKills}}</view>
+      <view class='dsp-cell m-d-r-c3'>
+        <view class='m-d-r-num'><text>第{{index+1}}场</text></view>
+        <view><text class='m-d-r-time'>{{item.length/60 |Int}}:{{item.length%60}}</text></view>
+      </view>
+      <view class='dsp-cell m-d-r-c2'>{{item.awayTeamKills}}</view>
+    </view>
+    <view class='dsp-cell m-d-r-c1'>
+      <view class='clear'>
+        <view class='m-d-r-item m-d-r-ir' wx:if="{{item.awayTeamPentaKills==1}}">
+           <i class="iconfont icon-sha icon-kill"></i>
+          <view><text>五杀</text></view>
+        </view>
+        <view class='m-d-r-item m-d-r-ir' wx:if="{{item.awayTeamFirstBlood==1}}">
+         <i class="iconfont icon-yixie icon-blood"></i>
+          <view><text>一血</text></view>
+        </view>
+      </view>
+      
+    </view>
+  </view>
+
+  <!-- 第三行 -->
+  <view class='dsp-table m-d-picture'>
+    <view class='dsp-cell m-d-p-c1'>
+      <view class='m-d-r-name t-l'><text>{{tools.sub(matchDetail.homeTeamName)}}</text></view>
+      <view class='clear'>
+         <image class='m-d-p-pic pic-l'   wx:for="{{item.homeTeamHeros}}" wx:key="" src='{{item.heroLogo}}' mode='aspectFill' />
+      </view>
+    </view>
+    <!-- <view class='dsp-cell m-d-p-c2'> -->
+      <!-- <text class='m-d-p-check' style="background:#fff">查看战报数据</text>暂时不需要 -->
+    <!-- </view> -->
+    <!-- <view class='dsp-cell m-d-p-c2'>
+      <view class='m-d-p-check-v'><text class='m-d-p-check'>查看战报数据</text></view>
+    </view> -->
+    
+    <view class='dsp-cell m-d-p-c1'>
+      <view class='m-d-r-name t-r'><text>{{tools.sub(matchDetail.awayTeamName)}}</text></view>
+      <view class='clear'>
+        <image class='m-d-p-pic pic-r' wx:for="{{item.awayTeamHeros}}" wx:key="" src='{{item.heroLogo}}' mode='aspectFill' />
+      </view>
+    </view>
+  </view>
+</view>
+
+
+<!-- 直播时数据-->
+<view class='md-data-view-blue' wx:if="{{curLiveDetail!=null}}">
+  <!-- 第一行 -->
+  <!-- <view class="m-d-win-view {{curLiveDetail.winnerTeam==0?'t-r':''}}">
+    <image class='m-d-win' src='https://rs.esportzoo.com/svn/esport-res/mini/images/iconimg/win.jpg' mode='aspectFill' />
+  </view> -->
+
+  <!-- 第二行 -->
+  <view class='dsp-table m-d-report'>
+    <view class='dsp-cell m-d-r-c1'>
+      <view class='clear'>
+        <view class='m-d-r-item m-d-r-il' wx:if="{{curLiveDetail.homeTeamPentaKills==1}}">
+          <i class="iconfont icon-guanbi m-d-icon"></i>
+          <view><text>五杀</text></view>
+        </view>
+        <view class='m-d-r-item m-d-r-il' wx:if="{{curLiveDetail.homeTeamFirstBlood==1}}">
+          <i class="iconfont icon-guanbi m-d-icon"></i>
+          <view><text>一血</text></view>
+        </view>
+      </view>
+    </view>
+    <view class='dsp-cell'>
+      <view class='dsp-cell m-d-r-c2'>{{curLiveDetail.homeTeamKills}}</view>
+      <view class='dsp-cell m-d-r-c3'>
+        <view class='m-d-r-num'><text>第{{matchResData.length+1}}场</text></view>
+        <view><text class='m-d-r-time'>{{curLiveDetail.length/60 |Int}}:{{curLiveDetail.length%60}}</text></view>
+      </view>
+      <view class='dsp-cell m-d-r-c2'>{{curLiveDetail.awayTeamKills}}</view>
+    </view>
+    <view class='dsp-cell m-d-r-c1'>
+      <view class='clear'>
+        <view class='m-d-r-item m-d-r-ir' wx:if="{{curLiveDetail.awayTeamPentaKills==1}}">
+          <view><i class="iconfont icon-guanbi m-d-icon"></i></view>
+          <view><text>五杀</text></view>
+        </view>
+        <view class='m-d-r-item m-d-r-ir' wx:if="{{curLiveDetail.awayTeamFirstBlood==1}}">
+          <i class="iconfont icon-guanbi m-d-icon"></i>
+          <view><text>一血</text></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 第三行 -->
+  <view class='dsp-table m-d-picture clear'>
+    <view class='dsp-cell m-d-p-c1 clear' wx:for="{{curLiveDetail.homeTeamHeros}}" wx:key="">
+      <image class='m-d-p-pic pic-l' src='{{item.heroLogo}}' mode='aspectFill' />
+    </view>
+    <view class='dsp-cell m-d-p-c2'>
+      <text class='m-d-p-check' style='background: #fff;' wx:if="{{curLiveDetail.finished}}"></text><!--暂时不需要-->
+      <text class='m-d-p-check' wx:if="{{!curLiveDetail.finished}}">进行中</text><!--暂时不需要-->
+    </view>
+    <view class='dsp-cell m-d-p-c1 clear' wx:for="{{curLiveDetail.awayTeamHeros}}" wx:key="">
+      <image class='m-d-p-pic pic-r' src='{{item.heroLogo}}' mode='aspectFill' />
+     
+    </view>
+  </view>
+</view>
+
+<!-- 暂无数据显示 -->
+<block wx:if="{{ready}}">
+  <no-data  wx:if="{{matchDetail.status!=1&&detailData.homeTeamData==null&&detailData.teamBattleInfoVos==null&&matchResData.length==0}}"></no-data>
+</block>

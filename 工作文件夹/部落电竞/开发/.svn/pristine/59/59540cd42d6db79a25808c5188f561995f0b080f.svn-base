@@ -1,0 +1,74 @@
+/* component/popup/pop_alert.wxss */
+.ui_pop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.contact_customService {
+  width: 270px;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.contact_customService p {
+	display: block;
+  line-height: 52px;
+  font-size: 15px;
+  color: #333;
+  text-align: center;
+}
+
+.contact_customService  .btn_con {
+  display: flex;
+  align-items: center;
+}
+
+.contact_customService  .btn_con button {
+  flex: 1;
+  -webkit-flex: 1;
+  line-height: 52px;
+  font-size: 17px;
+  color: #333;
+  text-align: center;
+  border-top: 1rpx solid #ddd;
+	background: none;
+	border-radius: 0;
+}
+
+.btn_con button::after{
+	display: none;
+}
+
+.btn_con button:first-child {
+  position: relative;
+}
+
+.btn_con button:first-child::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  background-color: #ddd;
+  transform: scaleX(0.5);
+}
+
+.btn_con button:last-child::before {
+  display: none;
+}
+
+.contact_customService  .btn_con  .confirm_btn {
+  color: #fea21b;
+}
+.contact_customService  .btn_con  .confirm_btn1 {
+  color:  #333;
+}

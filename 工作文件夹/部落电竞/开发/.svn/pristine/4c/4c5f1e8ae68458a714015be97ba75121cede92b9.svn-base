@@ -1,0 +1,14 @@
+<!--component/submenubar/submenu-bar.wxml-->
+<submenu-bar>
+  <view class="sub-menu">
+    <!-- <image class="sub-menu-icon" src="https://rs.esportzoo.com/svn/esport-res/mini/images/icon/menu.png" /> -->
+    <movable-area class="sub-menu-mov-area">
+      <movable-view class="sub-menu-mov-view" x="0" y="0" direction="horizontal">
+        <view wx:for="{{titleArray}}" wx:key="" data-index="{{index}}" bindtap="changeTag">
+            <text  class="sub-menu-item {{item.contentType==selectedTag?'sub-menu-item-act':''}}" >{{item.name}}</text>
+          <!-- 当前状态样式sub-menu-item-act -->
+        </view>
+      </movable-view>
+    </movable-area>
+  </view>  
+</submenu-bar>

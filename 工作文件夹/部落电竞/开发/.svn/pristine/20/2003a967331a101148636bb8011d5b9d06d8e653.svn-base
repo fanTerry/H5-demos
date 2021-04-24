@@ -1,0 +1,403 @@
+<template>
+  <div class="Page gameTopicPage">
+    <header class="mod_header"
+      style="background-image:url(https://static.wanplus.com/data/event/banner/block/115410.png?v=0&imageView2/1/w/308/h/208)">
+      <navBar>
+        <span class="more_action"></span>
+      </navBar>
+      <div class="topic_title">
+        <h2>APEX英雄</h2>
+        <p class="tag">
+          <span>18万人已关注</span>
+          <span>11亿阅读</span>
+          <span>100万评论</span>
+        </p>
+        <p class="intro">技术细腻，内容诙谐幽默谐幽默（素质三联吧）内容诙谐幽默内容诙谐幽默,内容诙谐幽默.</p>
+        <!-- followed 已关注 -->
+        <span class="follow">+ 关注</span>
+      </div>
+      <div class="active_user">
+        <p>
+          <img src="https://rs.esportzoo.com/upload/league/team/LoL/1_405.png" alt="">
+        </p>
+        <p>
+          更多活跃用户<span></span>
+        </p>
+      </div>
+      <navList :dataList='dataList' @changeTab="relodDataByTab"></navList>
+    </header>
+    <div class="main">
+      <articleTab :showType='showType' :cmsContentList='cmsContentList'></articleTab>
+    </div>
+    <a class="release_btn"></a>
+    <div class="ui_pop" :class="{fadeToTop:false}">
+      <div class="tab">
+        <div class="active">短文</div>
+        <div>文章</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar";
+import navList from "../../../components/header/nav_list";
+import articleTab from "../../../components/follow/articleTab";
+
+export default {
+  components: {
+    navBar,
+    navList,
+    articleTab
+  },
+  props: [],
+  data() {
+    return {
+      dataList: [
+        { name: "全部", contentType: 100 },
+        { name: "文章", contentType: 1 },
+        { name: "视频", contentType: 2 },
+        { name: "短文", contentType: 3 },
+        { name: "关注", contentType: 110 }
+      ],
+      followList: [],
+      cmsContentList: [],
+      searchVal: "", //默认输入为空
+      pageNo: 1,
+      pageSize: 10,
+      currPageSize: 0,
+      contentType: 1,
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "没有更多数据了" }
+      },
+      index: 1,
+      turnToPrev: false,
+      turnToNext: false,
+      showType: 1,
+      noData: false,
+      loading: false
+    };
+  },
+  created() {
+    window.sessionStorage.selectedTab = 1;
+  },
+  mounted() {
+    this.getPageContenList();
+    // this.getPageData();
+    fixScroll.tofix();
+  },
+  methods: {
+    relodDataByTab(tabId) {
+      this.showType = tabId;
+      this.contentType = tabId;
+      this.pageNo = 1;
+      this.currPageSize = 0;
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      if (tabId < 10) {
+        param.contentType = tabId;
+      }
+      if (tabId == 110) {
+        this.followList = [];
+        this.loading = true;
+        this.getPageData().then(res => {
+          this.loading = false;
+        });
+      } else {
+        this.loading = true;
+        this.cmsContentList = [];
+        this.getPageContenList(param).then(res => {
+          this.loading = false;
+        });
+      }
+    },
+
+    getPageContenList(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+        param.contentType = this.contentType;
+      }
+      console.log(param);
+      return this.$post("/api/follow/cmsList", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if ((dataResponse.code = "200")) {
+            this.currPageSize = dataResponse.data.cmsContentList.length;
+            if (dataResponse.data.cmsContentList.length > 0) {
+              this.cmsContentList = this.cmsContentList.concat(
+                dataResponse.data.cmsContentList
+              );
+            }
+
+            if (this.cmsContentList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+            return this.cmsContentList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getPageData(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/user/pageFollowedUser", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if ((dataResponse.code = "200")) {
+            console.log(dataResponse, "关注首页--getPageData--请求成功");
+            this.currPageSize = dataResponse.data.followedUserList.length;
+            if (dataResponse.data.followedUserList.length > 0) {
+              this.followList = this.followList.concat(
+                dataResponse.data.followedUserList
+              );
+            }
+            if (this.followList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+            return this.followList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    follow(val) {
+      console.log(val);
+      for (var i = 0; i < this.followList.length; i++) {
+        if (this.followList[i].userId == val.userId) {
+          let folloewer = this.followList[i];
+          this.updateFollowStatus(val.userId, val.followStatus).then(res => {
+            if (res == "200") {
+              console.log("res", res);
+              folloewer.followStatus = val.followStatus;
+            }
+          });
+        }
+      }
+    },
+    updateFollowStatus(userId, status) {
+      let param = { type: status, usrId: userId };
+      let message = "";
+      if (status == 1) {
+        message = "关注成功";
+        localStorage.set("comment_follow_" + userId, true); //新增关注的usrId
+      } else {
+        message = "取消成功";
+        localStorage.remove("comment_follow_" + userId); //删除取消关注的usrId
+      }
+      console.log("update-关注", param);
+      return this.$post("/api/user/follow", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.$toast(message);
+            return dataResponse.code;
+          }
+        })
+        .catch(error => {
+          this.$toast("网络异常，稍后再试");
+          console.log(error);
+          return dataResponse.code;
+        });
+    },
+
+    onPullingDown() {
+      console.log("you are onPullingDown");
+      if (this._isDestroyed) {
+        return;
+      }
+      if (this.showType == 110) {
+        this.followList = [];
+        this.getPageData().then(() => {
+          this.$refs.scroll.forceUpdate();
+        });
+      } else {
+        this.cmsContentList = [];
+        this.getPageContenList().then(data => {
+          this.$refs.scroll.forceUpdate();
+        });
+      }
+    },
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+
+      if (this.currPageSize < this.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+    /** 上拉加载*/
+    loadMore() {
+      this.pageNo = this.pageNo + 1;
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      if (this.showType < 10) {
+        param.contentType = this.showType;
+      }
+      /**
+       * 关注列表
+       */
+      if (this.showType == 110) {
+        this.getPageData(param).then(data => {
+          this.$refs.scroll.forceUpdate();
+        });
+      } else {
+        this.getPageContenList(param).then(data => {
+          this.$refs.scroll.forceUpdate();
+        });
+      }
+    }
+  }
+};
+</script>
+
+
+<style lang="scss">
+.gameTopicPage {
+  .user_info {
+    padding-top: 14px;
+    padding-bottom: 4px !important;
+  }
+}
+</style>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+.mod_header {
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: 100% auto;
+}
+.nav_bar {
+  height: 44px;
+  background: none !important;
+}
+.more_action {
+  @extend .g_v_mid;
+  right: 0;
+  width: 45px;
+  height: 45px;
+  @include getBgImg("../../../assets/images/home/more.png");
+  background-size: 70%;
+}
+.topic_title {
+  position: relative;
+  padding-left: 27px;
+  padding-bottom: 18px;
+  color: #fff;
+  h2 {
+    font-size: 28px;
+  }
+  .tag {
+    font-size: 8px;
+    padding-top: 5px;
+    span {
+      padding-right: 15px;
+    }
+  }
+  .intro {
+    width: 170px;
+    padding-top: 18px;
+    font-size: 9px;
+    line-height: 14px;
+  }
+  .follow,
+  .followed {
+    position: absolute;
+    right: 5px;
+    bottom: 18px;
+    @include getBtn(57px, 23px, $color_main, #fff, 23px);
+  }
+  .followed {
+    background: #fff;
+    color: #afafaf;
+  }
+}
+.active_user {
+  @extend .flex_v_justify;
+  height: 42px;
+  padding: 0 10px;
+  background-color: #fff;
+  img {
+    width: 28px;
+    height: 28px;
+    margin-right: 3px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  p {
+    @extend .flex_hc;
+    font-size: 12px;
+    color: #818181;
+    span {
+      position: relative;
+      width: 14px;
+      height: 14px;
+      @include getArrow(7px, #999, right);
+    }
+  }
+}
+
+.release_btn {
+  position: fixed;
+  right: 5px;
+  bottom: 100px;
+  z-index: 100;
+  width: 56px;
+  height: 56px;
+  @include getBgImg("../../../assets/images/follow/release_icon.png");
+}
+
+.ui_pop {
+  transform: translateY(100%);
+  -webkit-transform: translateY(100%);
+  .tab {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    @extend .flex;
+    background-color: #fff;
+    @media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+      only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+      padding-bottom: constant(safe-area-inset-bottom) !important;
+      padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+    div {
+      position: relative;
+      flex: 1;
+      -webkit-flex: 1;
+      padding: 17px 0;
+      font-size: 16px;
+      color: #000;
+      text-align: center;
+      &.active {
+        color: $color_main;
+      }
+    }
+  }
+}
+</style>

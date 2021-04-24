@@ -1,0 +1,6 @@
+/* component/reportlist/reportprocessitem/report-process-item.wxss */
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/base/clear.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+@import "/component/reportlist/wxss/report-item.wxss";
+

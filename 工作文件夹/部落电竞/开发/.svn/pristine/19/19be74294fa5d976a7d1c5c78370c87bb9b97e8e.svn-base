@@ -1,0 +1,199 @@
+<template>
+  <div class="goods_list">
+    <slot></slot>
+    <ul v-if="type===1">
+      <!-- <h3>7月18日 周日</h3> -->
+      <li class="goods_item" v-for="item in goodList" @click="gotoDetail(item.id)">
+        <div class="goods_img">
+          <i class="no_goods_icon" v-if="item.stock==0"></i>
+          <img :src="item.image" alt="">
+        </div>
+        <div class="goods_info">
+          <i class="rank_first"></i>
+          <div class="goods_title">
+            <span class="goods_name">{{item.name}}</span>
+            <!-- <span class="tag">待发货</span> -->
+          </div>
+          <!-- <div class="goods_grade">王者</div> -->
+          <div class="goods_detail">
+            <span class="mark">
+              <!--<i class="star_coin"></i>-->￥{{item.payScore}}</span>
+            <span>
+              <!-- <span> 合计：<i class="star_coin"></i>￥ 55500  </span> -->
+              <span> <span class="num">{{item.purchases?item.purchases:"0"}}</span>人购买 </span>
+            </span>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <ul v-if="type===2">
+      <!-- <h3>7月18日 周日</h3> -->
+      <li class="goods_item" v-for="(item,index) in goodList" @click="gotoDetail(item.id)">
+        <div class="goods_img">
+           <i class="no_goods_icon" v-if="item.stock==0" ></i>
+          <img :src="item.image" alt="">
+        </div>
+        <div class="goods_info">
+          <i
+            :class="{rank_first:pageType==3&&index==0,rank_second:pageType==3&&index==1,rank_third:pageType==3&&index==2}"></i>
+          <div class="goods_title">
+            <span class="goods_name">{{item.name}}</span>
+            <!-- <span class="tag">待发货</span> -->
+          </div>
+          <i :class="{'goods_recommend':item.label==1,'goods_discount':item.label==2,'goods_new':item.label==3}"
+            v-if="item.label>0">{{item.labelName}}</i>
+          <i class="goods_detail">
+            <span class="mark">
+              <!--<i class="star_coin"></i>-->￥{{item.payScore}}</span>
+            <span>
+              <!-- <span> 合计：<i class="star_coin"></i>￥ 55500  </span> -->
+              <span> <span class="num">{{item.purchases?item.purchases:"0"}}</span>人购买 </span>
+            </span>
+          </i>
+        </div>
+      </li>
+    </ul>
+
+    <ul v-if="type===3">
+      <!-- <h3>7月18日 周日</h3> -->
+      <li class="goods_item" v-for="(item,index) in goodList" @click="gotoExchangeDetail(item.orderId)">
+        <div class="goods_img">
+          <img :src="item.goodImg" alt="">
+        </div>
+        <div class="goods_info">
+          <!-- <i :class="{rank_first:pageType==3&&index==0,rank_second:pageType==3&&index==1,rank_third:pageType==3&&index==2}"></i> -->
+          <div class="goods_title">
+            <span class="goods_name">{{item.goodsName}}</span>
+            <span class="tag">{{item.orderStausDec}}</span>
+          </div>
+          <!-- <div class="goods_grade" v-if="item.labelName">{{item.labelName}}</div> -->
+          <div class="goods_detail">
+            <!-- <span class="mark">{{item.payScore}}</span> -->
+            <span>
+              <span>{{item.quantity}}件商品 合计：
+                <!--<i class="star_coin"></i>-->￥ {{item.scoreTotal}} </span>
+              <!-- <span> <span class="num">{{item.purchases?item.purchases:"0"}}</span>人购买  </span> -->
+            </span>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+  </div>
+</template>
+
+<script>
+export default {
+  props: ["goodList", "type", "pageType"],
+  data() {
+    return {};
+  },
+  methods: {
+    /**商品详情页 */
+    gotoDetail(id) {
+      this.$router.push({
+        name: "goodsDetail",
+        params: {
+          goodsId: id
+        }
+      });
+    },
+    /**购买订单详情页 */
+    gotoExchangeDetail(id) {
+      this.$router.push({
+        name: "orderDetails",
+        params: {
+          orderId: id
+        }
+      });
+    }
+  },
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_mixin";
+@import "../../assets/common/_var";
+
+.star_coin {
+  display: block;
+  width: 14px;
+  height: 14px;
+  margin-right: 3px;
+  @include getBgImg("../../assets/images/user_center/star_coin.png");
+}
+.goods_img {
+  position: relative;
+  // @include getRadiusBorder(#eee, all, 4px);
+  background-color: #fafafa;
+  img {
+    object-fit: contain;
+  }
+  .no_goods_icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 51px;
+    height: 51px;
+    @include getBgImg("../../assets/images/store/no_goods.png");
+  }
+}
+
+.goods_discount,
+.goods_new,
+.goods_recommend {
+  display: block;
+  width: 50px;
+  height: 16px;
+  margin-top: 5px;
+  padding-right: 8px;
+  font-size: 11px;
+  line-height: 16px;
+  text-align: right;
+  color: #fff;
+}
+
+.goods_discount {
+  @include getBgImg("../../assets/images/store/goods_discount.png");
+}
+.goods_new {
+  @include getBgImg("../../assets/images/store/goods_new.png");
+}
+.goods_recommend {
+  @include getBgImg("../../assets/images/store/goods_recommend.png");
+}
+
+.goods_grade {
+  display: block;
+  margin-top: 5px;
+  padding: 3px 5px;
+  font-size: 11px;
+  color: $color_main;
+  @include getRadiusBorder($color_main, all, 4px);
+}
+.goods_name {
+  @include t_nowrap(122px);
+  line-height: 1.2;
+  @media screen and (max-width: 320px) {
+    @include t_nowrap(105px);
+  }
+}
+.rank_first,
+.rank_second,
+.rank_third {
+  width: 23px;
+  height: 23px;
+}
+.rank_first {
+  @include getBgImg("../../assets/images/store/rank_first.png");
+}
+.rank_second {
+  @include getBgImg("../../assets/images/store/rank_second.png");
+}
+.rank_third {
+  @include getBgImg("../../assets/images/store/rank_third.png");
+}
+</style>

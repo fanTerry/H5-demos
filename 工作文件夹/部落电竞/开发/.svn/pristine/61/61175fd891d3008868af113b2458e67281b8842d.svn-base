@@ -1,0 +1,42 @@
+/* component/popup/ppexpert/expertrechitem/expert-rech-item.wxss */
+
+.expert-rech-item {
+  width: 210rpx;
+  height: 160rpx;
+  border-radius: 15rpx;
+  background: #f5f6f8;
+
+  float: left;
+  margin-left: 25rpx;
+  margin-bottom: 20rpx;
+
+  text-align: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.e-r-i-act {
+  width: 208rpx;
+  height: 158rpx;
+  border: solid 2rpx #ffb358;
+  background: #ffe4bf;
+}
+
+.e-r-i-coins {
+  color: #333;
+  font-size: 32rpx;
+  line-height: 40rpx;
+}
+.e-r-i-cost-a {
+  color: #999;
+  font-size: 24rpx;
+  line-height: 24rpx;
+  text-decoration: line-through;
+}
+.e-r-i-cost-b {
+  color: #fc5557;
+  font-size: 34rpx;
+  line-height: 40rpx;
+}

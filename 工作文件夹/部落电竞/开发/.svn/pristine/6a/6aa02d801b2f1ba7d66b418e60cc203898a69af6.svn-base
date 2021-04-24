@@ -1,0 +1,152 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar pageTitle='地址管理'></navBar>
+    </header>
+    <div class="main mescroll-touch-y">
+      <div class="location_address" v-for="item in shopAddressList">
+        <div @click="toSelectAddress(item)">
+          <p><span class="name">{{item.receiverName}}</span><span class="phone_num">{{item.receiverPhone}}</span><span
+              class="default" v-if="item.defaulted==1">默认</span></p>
+          <p class="address">{{item.receiverProvince}} {{item.receiverCity}} {{item.receiverDistrict}} {{item.receiverAddress}}</p>
+        </div>
+        <span class="link_icon" @click="editAdress(item)"></span>
+      </div>
+    </div>
+    <footer class="mod_footer">
+      <a class="exchange_btn" @click="addAdress()">+ 添加新地址</a>
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar";
+export default {
+  data() {
+    return {
+      shopAddressList: []
+    };
+  },
+  mounted() {
+    this.getAddress();
+  },
+  methods: {
+    toSelectAddress(item) {
+      var _self = this;
+      let redirect = decodeURIComponent(_self.$route.query.redirect || "/");
+      if (redirect.indexOf("goodsDetai") > -1) {
+        _self.$store.dispatch("setUserAddress", item);
+        _self.$router.go(-1);
+      } else {
+        console.log("不是特殊页面不处理");
+        return;
+      }
+    },
+    editAdress(item) {
+      let address = {
+        id: item.id,
+        receiverName: item.receiverName,
+        receiverPhone: item.receiverPhone,
+        receiverProvince: item.receiverProvince,
+        receiverCity: item.receiverCity,
+        receiverDistrict: item.receiverDistrict,
+        receiverAddress: item.receiverAddress,
+        defaulted: item.defaulted
+      };
+      this.$router.push({
+        path: "/addressEdit",
+        query: {
+          address: address,
+          type: 2
+        }
+      });
+    },
+    addAdress() {
+      this.$router.push({
+        path: "/addressEdit",
+        query: {
+          type: 1
+        }
+      });
+    },
+    getAddress() {
+      return this.$post("/api/shopAddress/listAddress")
+        .then(rsp => {
+          console.log(rsp);
+          if (rsp.code === "200") {
+            this.shopAddressList = rsp.data.shopAddressList;
+          } else {
+            this.$toast(response.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  components: {
+    navBar
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_var";
+.Page {
+  background-color: #fff;
+}
+.location_address {
+  position: relative;
+  @extend .flex_hc;
+  margin-top: 15px;
+  padding: 12px 94px 12px 12px;
+  .location_icon {
+    width: 22px;
+    height: 22px;
+    margin-right: 8px;
+    @include getBgImg("../../../assets/images/store/location_icon.png");
+  }
+  .name {
+    font-size: 17px;
+    @include t_nowrap(100px);
+    line-height: 1.2;
+  }
+  .phone_num {
+    color: #999;
+    padding-left: 13px;
+  }
+  p {
+    @extend .flex_hc;
+    color: #333;
+    font-size: 14px;
+  }
+  .address {
+    display: block;
+    padding-top: 5px;
+    line-height: 16px;
+  }
+  .link_icon {
+    @extend .g_v_mid;
+    right: 25px;
+    width: 24px;
+    height: 24px;
+    @include getBgImg("../../../assets/images/store/edit_icon.png");
+  }
+  .default {
+    color: $color_main;
+    font-size: 11px;
+    padding: 1px 3px;
+    margin-left: 8px;
+    background-color: rgba($color_main, 0.1);
+  }
+}
+.exchange_btn {
+  @extend .flex_v_h;
+  margin: 4px auto;
+  font-size: 17px;
+  @include getBtn(210px, 40px, transparent, #fff, 40px);
+  background: linear-gradient(to right, #ffa200, #ff7b1c);
+}
+</style>

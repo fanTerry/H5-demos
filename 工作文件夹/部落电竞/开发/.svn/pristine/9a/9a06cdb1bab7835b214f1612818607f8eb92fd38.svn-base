@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "userinfo-bar":"/component/userinfobar/userinfo-bar",
+    "submenu-bar":"/component/submenubar/submenu-bar",
+    "bigimage-swiper": "/component/bigimageswiper/bigimage-swiper",
+    "news-list": "/component/newslist/news-list"
+  }
+}

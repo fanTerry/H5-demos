@@ -1,0 +1,23 @@
+.c_red{
+	color: #FF444D;
+}
+
+.c_orange{
+	color: #EC9805;
+}
+
+.c_yellow{
+	color: #FFFC00;
+}
+
+.c_black{
+	color: #000;
+}
+
+.c_aaa{
+	color: #aaa;
+}
+
+.bg_fff{
+	background-color: #fff;
+}

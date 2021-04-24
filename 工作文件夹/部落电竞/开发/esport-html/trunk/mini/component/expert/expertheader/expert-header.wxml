@@ -1,0 +1,29 @@
+<!--component/expert/expertheader/expert-header.wxml-->
+
+<!-- 专家信息 -->
+<view class='expert-info-bg'></view>
+<view class='expert-info'>
+  <view class='expert-basic dsp-table'>
+    <view class='dsp-cell e-b-c1'>
+      <image class="expert-avatar" src="/resources/images/avatar/cat.jpg" mode="aspectFill" />
+    </view>
+    <view class='dsp-cell e-b-c2'>
+      <view class='e-b-f-line'>
+        <text class='expert-name'>老毛精算</text>
+        <i class='expert-tag'>近7中6</i>
+      </view>
+      <view>
+        <text class='expert-num'>66%</text> <text class='expert-sub'>预计回报率</text> 
+        <text class='expert-num'>150W</text> <text class='expert-sub'>粉丝数</text>
+      </view>
+    </view>
+    <view class='dsp-cell e-b-c3'>
+      <text class='expert-follow'>+关注</text>
+    </view>
+  </view>
+
+  <view class='expert-detail'>
+  专业资深电竞专家，曾经2元博14场胜负中13场，现专业小窜精选，稳定盈利模式，关注跟单必有收获，感谢支持！！！
+  </view>
+
+</view>

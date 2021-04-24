@@ -1,0 +1,273 @@
+<template>
+  <div class="Page storeDetail_Page">
+    <header class="mod_header">
+      <navBar :pageTitle="pageName"></navBar>
+      <navList :dataList="goodTab" @changeTab="relodDataByTab" v-if="tabFlag"></navList>
+    </header>
+    <div class="main" :class="{flex_v_h:shopGoodList.length==0}">
+
+      <scroll v-if="shopGoodList.length>0" ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :startY="0"
+        @pullingUp="onPullingUp">
+
+        <goodsList :goodList="shopGoodList" :type='2' :pageType="pageType"></goodsList>
+
+      </scroll>
+      <noData v-else> </noData>
+
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar";
+import navList from "../../../components/header/nav_list";
+import goodsList from "../../../components/store/goodsList";
+import noData from "components/no_data/index";
+import Scroll from "components/common/scroll";
+
+export default {
+  data() {
+    return {
+      shopGoodList: [],
+      goodTab: [],
+      pageType: Number,
+      pageName: "",
+      tabFlag: true,
+      goodParam: {
+        pageNo: 1,
+        pageSize: 10,
+        contentType: 0
+      },
+      currPageSize: 0,
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "到底啦~" }
+      }
+    };
+  },
+  created() {
+    this.pageType = parseInt(this.$route.query.pageType);
+    this.pageName = this.$route.query.pageName;
+    if (
+      this.$route.query.tabFlag == true ||
+      this.$route.query.tabFlag == "true"
+    ) {
+      this.tabFlag = true;
+    } else {
+      this.tabFlag = false;
+    }
+
+    // if (this.$route.query.tabFlag) {
+    // }
+    window.sessionStorage.selectedTab = this.pageType;
+    this.goodTab.push({
+      contentType: 0,
+      name: "全部"
+    });
+  },
+  mounted() {
+    if (this.tabFlag) {
+      this.getTab();
+    }
+    this.getGoodsData();
+  },
+  methods: {
+    relodDataByTab(tabId) {
+      window.sessionStorage.selectedTab = tabId;
+      this.goodParam.pageNo = 1;
+      this.goodParam.pageSize = 10;
+      this.shopGoodList = [];
+      this.pageType = tabId;
+      let param = this.goodParam;
+      param.clientType = this.clientType;
+      param.contentType = this.pageType;
+      this.goodTab.forEach(element => {
+        if (element.contentType == this.pageType) {
+          this.pageName = element.name;
+        }
+      });
+      this.getGoodsData(param);
+    },
+    getTab() {
+      let param = {};
+      param.clientType = this.clientType;
+      console.log("切换tab", param);
+      this.$post("/api/shop/indexData", param)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp.data;
+          if ((dataResponse.code = "200")) {
+            console.log("getTab---请求成功", dataResponse);
+            let temp = [];
+            dataResponse.categoryList.forEach(element => {
+              temp.push({
+                contentType: element.id,
+                name: element.name
+              });
+            });
+            this.goodTab = this.goodTab.concat(temp);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getGoodsData(param) {
+      if (!param) {
+        param = this.goodParam;
+        if (!this.tabFlag) {
+          param.goodsQueryType = this.pageType;
+        } else {
+          param.contentType = this.pageType;
+        }
+      }
+
+      console.log("切换tab", param);
+      return this.$post("/api/shop/getGooods", param)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp.data;
+          if ((dataResponse.code = "200")) {
+            console.log("getGoodsData---请求成功", dataResponse);
+            this.currPageSize = dataResponse.shopGoodList.length;
+            this.shopGoodList = this.shopGoodList.concat(
+              dataResponse.shopGoodList
+            );
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+      if (this.currPageSize < this.goodParam.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+
+    /** 上拉加载*/
+    loadMore() {
+      this.goodParam.pageNo += 1;
+      let param = {};
+      param.pageNo = this.goodParam.pageNo;
+      param.pageSize = this.goodParam.pageSize;
+      if (!this.tabFlag) {
+        param.goodsQueryType = this.pageType;
+      } else {
+        param.contentType = this.pageType;
+      }
+      this.getGoodsData(param).then(data => {
+        this.$refs.scroll.forceUpdate();
+      });
+    }
+  },
+  components: {
+    navBar,
+    navList,
+    goodsList,
+    noData,
+    Scroll
+  }
+};
+</script>
+
+<style lang="scss">
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+
+.storeDetail_Page {
+  .nav_list {
+    ul {
+      padding-left: 10px !important;
+    }
+  }
+  .goods_list {
+    margin-top: 8px;
+    padding-bottom: 10px;
+    background-color: #fff;
+    h3 {
+      line-height: 35px;
+      font-size: 13px;
+      color: #999;
+      font-weight: normal;
+      text-align: center;
+    }
+    .goods_item {
+      position: relative;
+      @extend .flex_v_justify;
+      padding: 10px 10px 0;
+    }
+    .goods_img {
+      position: relative;
+      width: 50%;
+      padding-top: 25%;
+      margin-right: 15px;
+      img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 2px;
+      }
+    }
+    .goods_title {
+      @extend .flex_v_justify;
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+    }
+    .goods_info {
+      flex: 1;
+      -webkit-flex: 1;
+    }
+
+    .goods_grade {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 3px 5px;
+      font-size: 11px;
+      color: $color_main;
+      @include getRadiusBorder($color_main, all, 4px);
+    }
+    .goods_detail {
+      @extend .flex_v_justify;
+      padding-top: 18px;
+      color: #ccc;
+      span {
+        @extend .flex_hc;
+      }
+    }
+    .rank_first,
+    .rank_second,
+    .rank_third {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
+    .tag {
+      font-size: 13px;
+      color: $color_main;
+    }
+    .num {
+      padding-right: 5px;
+    }
+    .mark {
+      color: $color_main;
+      font-size: 14px;
+    }
+  }
+}
+</style>
+<style lang='scss' scoped>
+</style>

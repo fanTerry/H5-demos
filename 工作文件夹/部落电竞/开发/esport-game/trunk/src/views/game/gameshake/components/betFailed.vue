@@ -1,0 +1,78 @@
+<template>
+  <div class="ui_pop">
+    <div class="betFailed">
+      <a class="close" @click="closeBetPop()"></a>
+      <div>
+        <div class="flex_v_h">
+          <!-- <span class="sad_icon"></span> -->
+          余额不足
+        </div>
+        <a class="go_recharge" @click="toCharge()">去充值</a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {
+    closeBetPop() {
+      this.$emit('closeBetPop');
+    },
+    toCharge() {
+      this.$emit('toCharge');
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../../../assets/common/_base';
+@import '../../../../assets/common/_mixin';
+
+.close {
+  position: absolute;
+  right: 2.67vw;
+  top: 2.67vw;
+  z-index: 1;
+  width: 5.33vw;
+  height: 5.33vw;
+  // @include getBgImg("../../../../assets/images/guess/close.png");
+  background-size: contain;
+}
+
+.betFailed {
+  position: relative;
+  @extend .flex_v_h;
+  width: 56vw;
+  height: 37.3333vw;
+  font-size: 4.8vw;
+  color: #fff;
+  text-align: center;
+  background-color: #391a1c;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 1);
+  border-radius: 1.3333vw;
+  .tips {
+    margin-top: 4.8vw;
+    font-size: 3.2vw;
+    color: #f58079;
+  }
+}
+
+.go_recharge {
+  display: inline-block;
+  width: 38.67vw;
+  margin-top: 4.8vw;
+  border-radius: 3px;
+  line-height: 10.67vw;
+  font-size: 4.2667vw;
+  color: #fff2f0;
+  background: linear-gradient(to bottom, #df2f26, #86171a);
+  background: -webkit-linear-gradient(top, #df2f26, #86171a);
+}
+</style>

@@ -1,0 +1,181 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar :pageTitle="'发布的文章'"></navBar>
+      <!-- <expertUsercard :userId="userId" ></expertUsercard> -->
+    </header>
+
+    <div class="main" id='mainId'>
+      <mescroll ref="mescroll" @downCallback="downCallback" @upCallback="upCallback" @mescrollInit="mescrollInit">
+        <!-- <scroll ref="scroll" :scrollbar="scrollbar" :pullDownRefresh="pullDownRefresh" :pullUpLoad="pullUpLoad"
+        :startY="0" @pullingDown="onPullingDown" @pullingUp="onPullingUp"> -->
+
+        <section class="mod_expert">
+          <!-- <h2 class="expert_title">
+            <template v-if="!noData">
+              文章列表
+            </template>
+          </h2> -->
+
+          <!-- 文章列表组件 -->
+          <articleTab :cmsContentList='cmsContentList' :videoType="1">
+          </articleTab>
+        </section>
+        <noData v-if="noData"> </noData>
+        <!-- </scroll> -->
+      </mescroll>
+    </div>
+
+  </div>
+</template>
+
+<script>
+import articleTab from "../../../components/follow/articleTab.vue";
+import noData from "components/no_data/index";
+import navBar from "../../../components/header/nav_bar/index";
+import mescroll from "../../../components/common/mescroll.vue";
+import globalConst from "../../../globalConst";
+export default {
+  data() {
+    return {
+      cmsContentList: [],
+      hasNext:false,//是否有下一页
+      noData: false,
+      userId: Number,
+      queryParam: {
+        pageNo: 1,
+        pageSize: 10
+      },
+      currPageSize: 10,
+      mescroll: null,
+      mescrollConfig: {
+        warpId: "mainId", //设置置顶时，必须设置父容器ID
+        hasToTop: true //默认不开启回到顶部项
+      }
+    };
+  },
+  created() {
+    this.userId = this.$route.query.id;
+    console.log("用户发布的短文userId", this.userId);
+  },
+  
+  mounted() {
+    // this.getPageData();
+    this.$refs.mescroll.config = this.mescrollConfig;
+  },
+
+activated() {
+      console.log("进来1");
+    if (!this.$route.meta.isBack) {
+      console.log("进来2");
+       let param = {};
+      this.queryParam.pageNo = 1;
+      param = this.queryParam;
+      param.userId = this.$route.query.id;
+      this.cmsContentList = [];
+      this.currPageSize = 10;
+      this.getPageData(param)
+    }
+    this.$route.meta.isBack = true;
+  },
+
+  beforeRouteEnter(to, from, next) {
+    if (from.name == "homeDetail"||"myRelease" ||"myFollow") {
+      // 这个name是下一级页面的路由name
+      to.meta.isBack = false; // 设置为true说明你是返回到这个页面，而不是通过跳转从其他页面进入到这个页面
+    }
+    next();
+  },
+
+
+  methods: {
+    mescrollInit(mescroll) {
+      this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
+      // this.mescroll.setBounce(true);
+    },
+
+    downCallback() {
+      let param = {};
+      this.queryParam.pageNo = 1;
+      param = this.queryParam;
+      param.userId = this.userId;
+      this.cmsContentList = [];
+      this.currPageSize = 10;
+      this.getPageData(param).then(() => {
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize,this.hasNext);
+        });
+      });
+    },
+    upCallback() {
+      this.loadMore();
+    },
+    loadMore() {
+      this.queryParam.pageNo += 1;
+      let param = {};
+      param = this.queryParam;
+      param.userId = this.userId;
+      this.getPageData(param).then(() => {
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize,this.hasNext);
+        });
+      });
+    },
+
+    /**获取分页资讯数据 */
+    getPageData(param) {
+      if (!param) {
+        param = this.queryParam;
+        param.userId = this.userId;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/userContent/getUserContent", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log("1=-----", dataResponse.data);
+            this.currPageSize = dataResponse.data.dataList.length;
+            this.hasNext=dataResponse.data.hasNext;
+            if (dataResponse.data.dataList.length > 0) {             
+              this.cmsContentList = this.cmsContentList.concat(
+                dataResponse.data.dataList
+              );
+            } 
+            if (this.cmsContentList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+            return this.cmsContentList;
+          }else if (dataResponse.code == "9999") {
+            this.$toast(dataResponse.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  components: {
+    articleTab,
+    mescroll,
+    noData,
+    navBar
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin.scss";
+@import "../../../assets/common/_base.scss";
+@import "../../../assets/common/_var.scss";
+
+.mod_expert {
+  padding-top: 1px;
+}
+.expert_title {
+  padding: 15px 12px 10px;
+  font-size: 18px;
+  font-weight: 500;
+}
+</style>

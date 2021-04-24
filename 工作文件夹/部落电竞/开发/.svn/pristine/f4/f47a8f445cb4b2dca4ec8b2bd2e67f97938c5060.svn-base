@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "user-avatar": "/component/comm/useravatar/user-avatar"
+  }
+}

@@ -1,0 +1,22 @@
+
+/* resources/wxss/base/clear.wxss */
+
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+/*清除浮动*/
+.clear {
+  zoom: 1;
+}
+ 
+.clear::after {
+  clear: both;
+  content: '.';
+  display: block;
+  width: 0;
+  height: 0;
+  visibility: hidden;
+}

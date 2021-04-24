@@ -1,0 +1,54 @@
+/* modules/store/my_exchange/my_exchange.wxss */
+
+.product_group {
+  background-color: #fff;
+}
+
+.product_group .list {
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 20rpx;
+}
+
+.product_group  .item {
+  width: 25%;
+  padding-bottom: 24rpx;
+  text-align: center;
+}
+
+.product_group  .item i {
+  display: block;
+  width: 58rpx;
+  height: 58rpx;
+  margin: 0 auto 4rpx;
+}
+
+.product_group  .item  span {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.allExchange_icon {
+	background: url(https://rs.esportzoo.com/svn/esport-res/mini/images/store/all_goods_icon.png) no-repeat center;
+	background-size: cover;
+  }
+  .pay_icon {
+		background: url(https://rs.esportzoo.com/svn/esport-res/mini/images/store/pay_icon.png) no-repeat center;
+	background-size: cover;
+  }
+  .get_icon {
+		background: url(https://rs.esportzoo.com/svn/esport-res/mini/images/store/get_icon.png) no-repeat center;
+	background-size: cover;
+  }
+  .done_icon {
+		background: url(https://rs.esportzoo.com/svn/esport-res/mini/images/store/done_icon.png) no-repeat center;
+	background-size: cover;
+  }
+  .address_icon {
+		background: url(https://rs.esportzoo.com/svn/esport-res/mini/images/store/address_icon.png) no-repeat center;
+	background-size: cover;
+  }
+  .contact_icon {
+		background: url(https://rs.esportzoo.com/svn/esport-res/mini/images/store/contact_icon.png) no-repeat center;
+	background-size: cover;
+  }

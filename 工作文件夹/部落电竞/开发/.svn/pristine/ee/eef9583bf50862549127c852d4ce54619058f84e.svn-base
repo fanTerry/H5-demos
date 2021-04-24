@@ -1,0 +1,245 @@
+<template>
+  <div class="ui_pop">
+    <!-- 兑换数量 -->
+    <section class="exchange_quantity">
+      <a class="close"></a>
+      <div class="card">
+        <img src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1860037186,2129045815&fm=26&gp=0.jpg"
+          alt="">
+        <span><i class="star_coin"></i>399.00</span>
+      </div>
+      <div class="exchange_num">
+        <span>兑换数量</span>
+        <div class="data">
+          <span class="reduce"></span>
+          <span class="num">2</span>
+          <span class="add"></span>
+        </div>
+      </div>
+      <a class="exchange_btn">确定</a>
+    </section>
+
+    <!-- 填写收获地址 -->
+    <section class="receive_adress">
+      <a class="close"></a>
+      <h3 class="title">请添加一个收货地址</h3>
+      <div>
+        <label for="receive_user">收货人</label>
+        <input type="text" id="receive_user" placeholder="">
+      </div>
+      <div>
+        <label for="phone_num">手机号码</label>
+        <input type="text" id="phone_num" placeholder="">
+      </div>
+      <div>
+        <label>所在地区</label>
+        <span class="choose">请选择<i></i></span>
+      </div>
+      <div class="detail_adress">
+        <span>详细地址：</span>
+        <textarea name="" id="" cols="30" rows="5" placeholder="详细地址：如道路、门牌号、小区、楼栋号、单元室等">
+        </textarea>
+      </div>
+      <div class="set_address">
+        <span><i class="select"></i>设置为默认地址</span>
+      </div>
+      <a class="exchange_btn">确定</a>
+    </section>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {};
+  },
+  methods: {},
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+.close {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  @include getClose(10px, #999);
+  border: 1px solid #999;
+  border-radius: 50%;
+}
+.exchange_btn {
+  @extend .flex_v_h;
+  margin: 4px auto;
+  font-size: 17px;
+  @include getBtn(147px, 40px, transparent, #fff, 40px);
+  background: linear-gradient(to right, #ffa200, #ff7b1c);
+}
+.exchange_quantity,
+.receive_adress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 0 10px;
+  border-radius: 6px 6px 0 0;
+  background-color: #fff;
+}
+.exchange_quantity {
+  .card {
+    @extend .flex_hc;
+    padding-bottom: 15px;
+    margin-top: -10.6vw;
+    @include getBorder(bottom, #eee);
+    img {
+      width: 45.3vw;
+      height: 22.6vw;
+      border-radius: 6px;
+    }
+    span {
+      @extend .flex_hc;
+      font-size: 16px;
+      padding-left: 15px;
+      padding-top: 7vw;
+      color: $color_main;
+    }
+    .star_coin {
+      width: 20px;
+      height: 20px;
+      margin-right: 3px;
+      @include getBgImg("../../../assets/images/user_center/star_coin.png");
+    }
+  }
+  .exchange_num {
+    @extend .flex_v_justify;
+    padding: 12px 0 13px;
+    font-size: 13px;
+    color: #666;
+    @include getBorder(bottom, #eee);
+    .data {
+      @extend .flex_hc;
+      span {
+        text-align: center;
+        background-color: #eee;
+      }
+    }
+    .reduce,
+    .add {
+      position: relative;
+      width: 24px;
+      height: 24px;
+    }
+    .reduce,
+    .add {
+      &::after {
+        content: "";
+        @extend .g_v_c_mid;
+        width: 10px;
+        height: 1px;
+        background-color: #999;
+      }
+    }
+    .add {
+      &::before {
+        content: "";
+        @extend .g_v_c_mid;
+        height: 10px;
+        width: 1px;
+        background-color: #999;
+      }
+    }
+    .num {
+      width: 35px;
+      line-height: 24px;
+      margin: 0 1px;
+      font-size: 13px;
+      color: #333;
+      font-weight: 500;
+    }
+  }
+}
+.receive_adress {
+  .title {
+    padding: 13px 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    @include getBorder(bottom, #eee);
+  }
+  > div {
+    @extend .flex_v_justify;
+    @include getBorder(bottom, #eee);
+    font-size: 13px;
+    color: #999;
+  }
+  input {
+    flex: 1;
+    -webkit-flex: 1;
+  }
+  label {
+    width: 94px;
+  }
+  label,
+  input {
+    @extend .flex_hc;
+    height: 48px;
+    font-size: 13px;
+  }
+  input,
+  textarea {
+    border: none;
+    font-size: 13px;
+  }
+  .choose {
+    position: relative;
+    padding-right: 24px;
+    i {
+      @extend .g_v_mid;
+      right: 0;
+      margin-right: 10px;
+      @include getArrow(8px, #999, right);
+    }
+  }
+  .detail_adress {
+    position: relative;
+    padding: 15px 0;
+    textarea {
+      flex: 1;
+      line-height: 15px;
+      text-indent: 64px;
+    }
+    span {
+      position: absolute;
+      left: 0;
+      top: 15px;
+      font-size: 13px;
+      color: #999;
+    }
+  }
+  .set_address {
+    @extend .flex_hc;
+    height: 48px;
+    span {
+      @extend .flex_hc;
+      i {
+        width: 16px;
+        height: 16px;
+        margin-right: 7px;
+        border: 1px solid #999;
+        border-radius: 50%;
+      }
+    }
+  }
+}
+
+// iphoneX,iphone Xs max适配
+@media only screen and (min-device-width: 375px) and (min-device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+  only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+  .exchange_quantity {
+    padding-bottom: constant(safe-area-inset-bottom) !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
+  }
+}
+</style>

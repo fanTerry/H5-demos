@@ -1,0 +1,262 @@
+// pages/hd/hd101/answering/answering.js
+const app = getApp();
+var api = require('../../../../libs/http');
+var time = null;
+Page({
+
+	/**
+	 * 页面的初始数据
+	 */
+	data: {
+		quetionTime: 10,
+		prepareTime: 3,
+		prepareDialog: false,
+		currSubject: {},
+		subjectNum: 1,
+		active: null,
+		subjectParam: {
+			hdUserLogId: '', //参与流水ID
+			subjectLogId: '',//答题流水ID
+			subjectId: '' //题目ID
+		},
+		showPopType: 0,
+		verigyAswerStatus: 1, //暂停题目标记 控制是否可以回答题目，答题结束时，设置为0,当续命成功，再次进行答题是，设置1
+		shareCode: null,
+
+		ansewrButtom: 1,
+	},
+
+	/**
+	 * 生命周期函数--监听页面加载
+	 */
+	onLoad: function (options) {
+		this.prepareDialogCountDonwn()
+
+		let query = {
+			hdUserLogId: options.hdUserLogId, //参与流水ID
+			subjectLogId: options.subjectLogId,//答题流水ID
+			subjectId: options.subjectId //题目ID
+		}
+		this.setData({
+			subjectParam: query,
+		})
+
+	},
+
+	/**
+	 * 生命周期函数--监听页面初次渲染完成
+	 */
+	onReady: function () {
+
+	},
+
+	/**
+	 * 生命周期函数--监听页面显示
+	 */
+	onShow: function () {
+
+	},
+
+	/**
+	 * 生命周期函数--监听页面隐藏
+	 */
+	onHide: function () {
+
+	},
+
+	/**
+	 * 生命周期函数--监听页面卸载
+	 */
+	onUnload: function () {
+
+	},
+
+	/**
+	 * 页面相关事件处理函数--监听用户下拉动作
+	 */
+	onPullDownRefresh: function () {
+
+	},
+
+	/**
+	 * 页面上拉触底事件的处理函数
+	 */
+	onReachBottom: function () {
+
+	},
+
+	/**
+	 * 用户点击右上角分享
+	 */
+	onShareAppMessage: function () {
+
+	},
+
+
+	prepareDialogCountDonwn: function () {
+		console.log("0000");
+		let _self = this;
+		setTimeout(() => {
+			this.setData({
+				prepareTime: _self.data.prepareTime - 1,
+			});
+			if (_self.data.prepareTime == 0) {
+				this.setData({
+					prepareDialog: true,
+				});
+				_self.getFirstSubject();
+			} else {
+				_self.prepareDialogCountDonwn();
+			}
+		}, 1000);
+	},
+
+	getFirstSubject: function () {
+		let param = this.data.subjectParam;
+		console.log(param, "param");
+		var url = "/subject/startGame";
+		api._postAuth(url, param).then(res => {
+			if (res.code == "200") {
+				console.log(res, "getFirstSubject");
+				this.setData({
+					currSubject: res.data
+				})
+				this.subjectTimeCountDown();
+				// this.wxShare(this.currSubject.shareCode);
+			} else {
+				api._showToast(res.message, 1.5);
+			}
+
+		});
+	},
+
+	subjectTimeCountDown: function () {
+		let _self = this;
+		time = setTimeout(() => {
+			if (_self.data.verigyAswerStatus == 0) {
+				clearTimeout(time);
+				return;
+			}
+			_self.setData({
+				quetionTime: _self.data.quetionTime - 1
+			});
+			if (_self.data.quetionTime == -1) {
+				_self.setData({
+					quetionTime: 0
+				});
+				clearTimeout(time);
+			}
+			if (_self.data.quetionTime == 0) {
+				console.log("时间到");
+				// this.$toast("时间到，答题结束");
+				//时间到自动校验答案
+				_self.setData({
+					quetionTime: 0
+				});
+				clearTimeout(time);
+				this.verigyAswer();
+			} else {
+				_self.subjectTimeCountDown();
+			}
+		}, 1000);
+	},
+
+	verigyAswer: function (event) {
+		if (this.data.verigyAswerStatus == 0) {
+			return;
+		}
+		let optinId;
+		let index;
+		if (event) {
+			optinId = event.currentTarget.dataset.id
+			index = event.currentTarget.dataset.index
+			this.setData({
+				active: index
+			})
+		}
+		let param = this.data.subjectParam;
+		param.userOptionIdList = optinId;
+		var url = "/subject/verifyAnswer";
+		api._postAuth(url, param).then(res => {
+			//处理返回结果,
+			this.handleReponse(res)
+		});
+
+	},
+
+	/**
+	 * 如下为处理弹窗组件逻辑
+	 */
+	handleReponse: function (rsp) {
+		console.log(rsp, "verigyAswer");
+		const dataResponse = rsp;
+		if (dataResponse.code == "200") {
+			this.setData({
+				currSubject: dataResponse.data,
+				['subjectParam.subjectId']: dataResponse.data.id,
+				active: null,
+				quetionTime: 10,
+				subjectNum: this.data.subjectNum + 1
+			})
+
+			// clearTimeout(this.subjectTimeCountDown())
+			// this.subjectTimeCountDown();
+			// this.selectComponent('#countdown');
+		} else if (dataResponse.code == "3222") {
+			//答案出错并结束答题
+			let prizeInfo = dataResponse.data;
+			this.$refs.popRef.answerOver(
+				this.subjectParam.subjectLogId,
+				6,
+				prizeInfo
+			);
+			console.log("答案出错并结束答题");
+			this.verigyAswerStatus = 0;
+		} else if (
+			dataResponse.code == "3111" ||
+			dataResponse.code == "3222"
+		) {
+			let prizeInfo = dataResponse.data;
+			this.$refs.popRef.answerOver(
+				this.subjectParam.subjectLogId,
+				6,
+				prizeInfo
+			);
+			console.log("所有题目正确，没有获得头奖");
+			this.verigyAswerStatus = 0;
+		} else if (dataResponse.code == "3333") {
+			let prizeInfo = dataResponse.data;
+			this.$refs.popRef.answerOver(
+				this.subjectParam.subjectLogId,
+				5,
+				prizeInfo
+			);
+			console.log("所有题目正确，并获得头奖");
+			this.verigyAswerStatus = 0;
+		} else if (dataResponse.code == "3444") {
+			window.clearTimeout(time);
+			this.$refs.popRef.answerWrong(
+				this.subjectParam.subjectLogId,
+				this.subjectParam.hdUserLogId
+			);
+			this.verigyAswerStatus = 0;
+			console.log("弹出续命窗口");
+		} else if (dataResponse.code == "2111") {
+			this.verigyAswerStatus = 0;
+			this.$refs.popRef.openDialog(2);
+			console.log("支付1毛继续挑战");
+		} else if (dataResponse.code == "1607") {
+			this.verigyAswerStatus = 0;
+			this.$refs.popRef.openDialog(4);
+			console.log("今天没有答题机会");
+		} else {
+			this.$toast("答题出现异常");
+		}
+
+	}
+
+
+
+
+
+})

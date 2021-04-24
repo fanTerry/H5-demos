@@ -1,0 +1,453 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar :type="'1'"></navBar>
+    </header>
+    <div class="main">
+      <!--手机号密码登录-->
+      <template v-if='loginType==1'>
+        <div class="user_num">
+          <input type="text" placeholder="请输入手机号" v-model="account" @blur='scrollToTop' />
+        </div>
+        <div class="user_pwd">
+          <input type="password" placeholder="请输入密码" v-model="password" @blur='scrollToTop' />
+          <router-link to="/resetPassword">忘记密码</router-link>
+        </div>
+        <a class="login_btn" :class="{'disabled':!activeFlag}" @click="login">登录</a>
+      </template>
+      <!--手机号验证码登录-->
+      <template v-if='loginType==2'>
+        <phone-send-code ref='phoneSend' :time="60" :btnTxt="'验证码登录'" @doConfirm="login"
+          @getSendPhoneCode="getSendPhoneCode">
+        </phone-send-code>
+      </template>
+      <p class="tar">
+        <a class="register_link" @click="changeLoginType()"> {{getLoginTypeStr()}}</a>
+        <router-link to="/register">
+          <a class="register_link">注册账号</a>
+        </router-link>
+      </p>
+      <div class="agreement">
+        <span class="select" :class="{active:selected}" @click="selected = !selected"></span>
+        <p>同意橘子电竞<a @click="goUrlPage('/login/agreement')">用户协议>></a>和<a @click="goUrlPage('/login/pravicy')">隐私政策>></a>
+        </p>
+      </div>
+      <div class="third_party">
+        <p>第三方账户登陆</p>
+        <ul>
+          <!-- <li class="wx"></li> -->
+          <li class="qq" @click="qqLoginClick('qq')"></li>
+          <!-- <li class="wb"></li> -->
+        </ul>
+      </div>
+    </div>
+    <!-- <footer class="mod_footer" > -->
+
+    <!-- </footer> -->
+    <pop-agreement :agreementType=agreementType></pop-agreement>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar/index";
+import jsencrypt from "../../../libs/jsencrypt-rsa.js";
+import popAgreement from "../../../components/pop_up/pop_agreement.vue";
+import localStorage from "../../../libs/storages/localStorage";
+import phoneSendCode from "../../../components/user_info/phoneSendCode.vue";
+import QC from "../../../libs/qqLogin.js";
+import { getCookie, delCookie } from "../../../libs/utils";
+//下单状态弹窗
+const loginTypeJson = {
+  ACCOUNT: 1, //1:账号密码登录
+  PHONECODE: 2 //2:手机号验证码登录
+};
+export default {
+  components: {
+    navBar,
+    popAgreement,
+    localStorage,
+    phoneSendCode,
+    QC
+  },
+  data() {
+    return {
+      account: "",
+      password: "",
+      selected: true,
+      agreementType: Boolean, //是否展示用户协议,
+      loginType: 1 //默认账号密码登录
+      // qqLoginType:false
+    };
+  },
+  computed: {
+    activeFlag() {
+      let input1 = this.account;
+      let input2 = this.password;
+      if (input1 && input2) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
+  created() {
+    console.log(this.agreementType, 1111);
+    this.agreementType = localStorage.get("agreementType");
+    if (this.agreementType == null) {
+      this.agreementType = true;
+    }
+    //  var qqLogin = this.GetURLString('qqLogin');
+    //  console.log("登录标志",qqLogin);
+    //   console.log("登录标志",this.qqLoginType);
+    //  if(qqLogin!=null&&qqLogin=="true"){
+    //    this.qqLoginType=true;
+    //     console.log("登录标志",this.qqLoginType);
+    //  };
+  },
+
+  methods: {
+    // QQ 第三方登录
+    qqLoginClick(value) {
+      //  直接弹出授权页面，授权过后跳转到回调页面进行登录处理
+      // console.log("qqAppId88:"+this.globalConst.qqAppId);
+      // console.log("qqRedirectURI:"+this.globalConst.qqRedirectURI);
+      //   QC.Login.showPopup({
+      //   appId:this.globalConst.qqAppId,
+      //   redirectURI:this.globalConst.qqRedirectURI,  //登录成功后会自动跳往该地址
+      //  });
+      // window.location.href=this.globalConst.openqqLoginUrl;
+      //删除H5cookie
+      delCookie("h5_login_cookie_sid");
+      /**通过接口方式 */
+      this.$get("/api/qqlogin/toqqlogin")
+        .then(dataResponse => {
+          if (dataResponse.code != "200") {
+            this.$toast(dataResponse.message);
+            return;
+          }
+          window.localStorage.setItem("qqLoginType",1);
+          window.location.href = dataResponse.message;
+        })
+        .catch(error => {
+          this.$toast("登录失败,请稍后重试");
+          console.log(error, 8888);
+        });
+    },
+    //获取当前URL?后面的参数
+    GetURLString(name) {
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+      var r = window.location.search.substr(1).match(reg); //获取url中"?"符后的字符串并正则匹配
+      var context = "";
+      if (r != null) context = r[2];
+      reg = null;
+      r = null;
+      return context == null || context == "" || context == "undefined"
+        ? ""
+        : context;
+    },
+
+    //统一登录方法
+    login(phone, phoneSendCode) {
+      console.log(phone, phoneSendCode);
+      if (localStorage.get("agreementType") != false) {
+        this.agreementType = true;
+        return;
+      }
+      let curLoginType = this.loginType;
+      if (curLoginType == loginTypeJson.ACCOUNT) {
+        this.accountLogin();
+      } else if (curLoginType == loginTypeJson.PHONECODE) {
+        this.phoneSendCodeLogin(phone, phoneSendCode);
+      }
+    },
+    //账号/手机号,密码登录
+    accountLogin() {
+      if (this.account == "") {
+        this.$toast("请输入账号");
+        return;
+      }
+      if (this.password == "") {
+        this.$toast("请输入密码");
+        return;
+      }
+      let encryPassword = jsencrypt.encryptPwd(this.password);
+      let param = {
+        accountOrPhone: this.account,
+        password: encryPassword,
+        biz: this.baseParamConfig.biz
+      };
+      if (!this.selected) {
+        this.$toast("请先同意用户协议");
+        return;
+      }
+      this.$post("/api/phonelogin/", param)
+        .then(dataResponse => {
+          if (dataResponse.code != "200") {
+            this.$toast(dataResponse.message);
+            return;
+          }
+          delCookie("h5_login_cookie_sid");
+          this.afterLoginSuccess(dataResponse.data);
+        })
+        .catch(error => {
+          this.$toast("登录失败,请稍后重试");
+          console.log(error);
+        });
+    },
+    //手机号验证码登录
+    phoneSendCodeLogin(phone, phoneSendCode) {
+      console.log(phone, phoneSendCode, "验证码登录");
+      if (!this.phoneSendCodeLoginCheck(phone, phoneSendCode)) {
+        return;
+      }
+      let param = {
+        phone: phone,
+        code: phoneSendCode
+      };
+      this.$post("/api/phoneCodeLogin", param)
+        .then(dataResponse => {
+          console.warn(dataResponse, "phoneSendCodeLogin");
+          if (dataResponse.code != "200") {
+            this.$toast(dataResponse.message);
+            return;
+          }
+          this.afterLoginSuccess(dataResponse.data);
+        })
+        .catch(error => {
+          this.$toast("登录失败,请稍后重试");
+          console.log(error);
+        });
+    },
+    //手机号验证码登录校验
+    phoneSendCodeLoginCheck(phone, phoneSendCode) {
+      if (!phone) {
+        this.$toast("请先输入手机号");
+        return false;
+      }
+      if (!this.checkPhone(phone)) {
+        this.$toast("手机号码有误，请重填");
+        return false;
+      }
+      if (!phoneSendCode) {
+        this.$toast("请先输入验证码");
+        return false;
+      }
+      return true;
+    },
+    //调用登录接口成功后处理逻辑
+    afterLoginSuccess(member) {
+      if (/^1(3|4|5|6|7|8|9)\d{9}$/.test(member.nickName)) {
+        member.nickName = member.nickName.substring(0, 7) + "XXXX";
+      }
+      let user = {
+        nickName: member.nickName,
+        icon: member.icon ? member.icon : this.globalConst.userDefaultIcon,
+        userId: member.id,
+        phone: member.phone
+      };
+      //window.sessionStorage.user = JSON.stringify(user);
+      window.localStorage.setItem("user", JSON.stringify(user));
+      window.localStorage.user = JSON.stringify(user);
+      var acookie = member.token;
+      // console.log("acookie",acookie);
+      // window.localStorage.setItem("token", acookie);
+      window.localStorage.token = acookie;
+      console.log("更新本地cookie", window.localStorage.token);
+      this.$store.dispatch("setUserInfo", user);
+      let redirect = decodeURIComponent(this.$route.query.redirect || "/");
+      console.log(redirect, "redirect");
+      this.$router.push({
+        path: redirect,
+        replace:true
+      });
+      setTimeout(() => {
+        window.localStorage.removeItem("toRedirectUrl");
+      }, 1000);
+    },
+    //链接跳转
+    goUrlPage(path) {
+      this.$router.push({
+        path: path,
+        query: {}
+      });
+    },
+    //切换登录方式
+    changeLoginType() {
+      if (this.loginType == 1) {
+        this.loginType = 2;
+      } else {
+        this.loginType = 1;
+      }
+    },
+    getLoginTypeStr() {
+      var descStr = {
+        "1": "验证码登录",
+        "2": "账号登录"
+      };
+      return descStr[this.loginType];
+    },
+    //验证码登录获取手机验证码
+    getSendPhoneCode(phone) {
+      console.log("获取验证码", "getSendPhoneCode");
+      if (phone == "") {
+        this.$toast("请先输入手机号");
+        return;
+      }
+      if (!this.checkPhone(phone)) {
+        this.$toast("手机号码有误，请重填");
+        return;
+      }
+      let param = {
+        phone: phone,
+        smsType: 1
+      };
+      this.$post("/api/user/sendPhoneCode", param)
+        .then(dataResponse => {
+          console.log(dataResponse, "phoneLoginGetCode");
+          if (dataResponse.code == 200 && dataResponse.data) {
+            this.$toast("发送成功,请注意查收~");
+          } else {
+            this.$toast(dataResponse.message);
+            this.$refs.phoneSend.setClickFlag(false);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //验证输入的手机号
+    checkPhone(phone) {
+      if (!/^1(3|4|5|6|7|8|9)\d{9}$/.test(phone)) {
+        return false;
+      }
+      return true;
+    },
+    //键盘顶起后处理
+    scrollToTop: function() {
+      setTimeout(function() {
+        window.scrollTo(0, 200);
+      }, 100);
+    },
+    changeType() {
+      this.agreementType = false;
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_var";
+
+.Page {
+  @include getBgImg("../../../assets/images/user_center/login_logo.png");
+  background-size: 50%;
+  background-position: center -4vw;
+  background-color: #fff;
+}
+
+.mod_header {
+  background: none;
+  h2 {
+    position: relative;
+    height: 40px;
+  }
+}
+
+.main {
+  position: relative;
+  padding-top: 54vw;
+  padding-bottom: 5.3333vw;
+  .user_num,
+  .user_pwd {
+    @extend .flex_v_justify;
+    margin: 0 20px;
+    @include getBorder(bottom, #e7e7e7);
+    input {
+      flex: 1;
+      height: 57px;
+      font-size: 15px;
+      border: none;
+    }
+    a {
+      font-size: 14px;
+      color: #a1a1a1;
+    }
+  }
+  .login_btn {
+    display: block;
+    margin: 20px 20px 25px;
+    padding: 15px;
+    font-size: 18px;
+    color: #fff;
+    border-radius: 8px;
+    text-align: center;
+    background-color: $color_main;
+    &.disabled {
+      opacity: 0.5;
+    }
+  }
+  .register_link {
+    padding-right: 20px;
+    font-size: 16px;
+    color: $color_main;
+  }
+}
+
+.agreement {
+  @extend .flex_v_h;
+  margin-top: 20px;
+  width: 100%;
+  color: #a1a1a1;
+  .select {
+    @extend .flex_v_h;
+    width: 14px;
+    height: 14px;
+    margin-right: 5px;
+    border: 1px solid currentColor;
+    &.active {
+      &::before {
+        content: "";
+        width: 7px;
+        height: 3px;
+        border-left: 2px solid #fea21b;
+        border-bottom: 2px solid #fea21b;
+        transform: rotate(-47deg) translate(1px, -1px);
+        -webkit-transform: rotate(-47deg) translate(1px, -1px);
+      }
+    }
+  }
+  a {
+    padding: 0 4px;
+    color: #fea21b;
+  }
+}
+
+.third_party {
+  margin-top: 20px;
+  p {
+    padding-bottom: 18px;
+    color: #7c7c7c;
+    text-align: center;
+  }
+  ul {
+    @extend .flex_v_h;
+    padding-bottom: 30px;
+    li {
+      width: 50px;
+      height: 50px;
+      margin: 0 15px;
+    }
+    .wx {
+      @include getBgImg("../../../assets/images/user_center/wx_icon.png");
+    }
+    .qq {
+      @include getBgImg("../../../assets/images/user_center/qq_icon.png");
+    }
+    .wb {
+      @include getBgImg("../../../assets/images/user_center/wb_icon.png");
+    }
+  }
+}
+</style>

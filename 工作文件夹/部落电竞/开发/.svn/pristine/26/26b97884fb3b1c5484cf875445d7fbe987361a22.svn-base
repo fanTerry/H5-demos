@@ -1,0 +1,4 @@
+/* modules/store/list/goodsList.wxss */
+.main{
+	line-height: 1;
+}

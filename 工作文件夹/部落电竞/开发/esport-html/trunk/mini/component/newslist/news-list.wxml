@@ -1,0 +1,9 @@
+<!--component/newslist/news-list.wxml-->
+<news-list>
+  <view class='news-list'>
+    <view wx:for="{{newsDataList}}" wx:key="">
+      <news-image-item wx:if="{{item.type==1}}" newsData="{{item}}"></news-image-item>
+      <news-video-item wx:elif="{{item.type==2}}" newsData="{{item}}"></news-video-item>
+    </view>
+  </view>
+</news-list>

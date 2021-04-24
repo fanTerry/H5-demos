@@ -1,0 +1,28 @@
+/* component/report/reportsubmenu/report-sub-menu.wxss */
+@import "/resources/wxss/base/clear.wxss";
+
+.report-sub-menu {
+  width: 690rpx;
+  margin: 20rpx auto;
+}
+
+.report-sub-menu-item {
+  width: 140rpx;
+  height: 50rpx;
+  line-height: 50rpx;
+
+  float: left;
+  margin-right: 30rpx;
+
+  text-align: center;
+  font-size: 24rpx;
+  color: #6d6d6d;
+  background: #fff;
+
+  border: solid 2rpx #dfe1e7;
+  border-radius: 25rpx;
+}
+.report-s-m-i-cur {
+  border-color: #138bfe;
+  color: #138bfe;
+}

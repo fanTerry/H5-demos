@@ -1,0 +1,27 @@
+@import '_base';
+
+// 点赞icon
+.good_icon {
+  @include getBgImg("../images/home/good_icon.png");
+  background-size: contain;
+}
+// 评论icon
+.comment_icon {
+  @include getBgImg("../images/home/comment_icon.png");
+  background-size: contain;
+}
+// 收藏icon
+.collect_icon {
+  @include getBgImg("../images/home/collect_icon.png");
+  background-size: contain;
+}
+// 分享icon
+.share_icon {
+  @include getBgImg("../images/home/share_icon.png");
+  background-size: contain;
+}
+// 奖励icon
+.reward_icon {
+  @include getBgImg("../images/home/reward_icon.png");
+  background-size: contain;
+}

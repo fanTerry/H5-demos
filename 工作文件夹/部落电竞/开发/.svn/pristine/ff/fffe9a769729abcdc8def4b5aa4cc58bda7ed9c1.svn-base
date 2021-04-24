@@ -1,0 +1,84 @@
+const home = () => import('./views/home/index.vue');
+const match = () => import('./views/match/index.vue');
+const follow = () => import('./views/follow/index.vue');
+const expert = () => import('./views/expert/index.vue');
+const userCenter = () => import('./views/user_center/index.vue');
+const wallet = () => import('./views/user_center/wallet');
+const recharge = () => import('./views/user_center/recharge');
+const login = () => import('./views/user_center/login');
+const register = () => import('./views/user_center/register/index.vue');
+const registerUserinfo = () => import('./views/user_center/register/userInfo');
+const homeDetail = () => import('./views/home/detail');
+const matchDetail = () => import('./views/match/detail');
+const expertHome = () => import('./views/expert/home');
+const expertApply = () => import('./views/expert/apply');
+const userArticle = () => import('./views/user_center/article');
+const articleDetail = () => import('./views/expert/articleDetail');
+
+
+
+const routers = [{
+    path: '/',
+    component: home
+}, {
+    path: '/home',
+    name: 'home',
+    component: home,
+    meta: { requiresAuth: true }
+}, {
+    path: '/match',
+    component: match
+}, {
+    path: '/homeDetail/:id',
+    name: 'homeDetail',
+    component: homeDetail
+}, {
+    path: '/follow',
+    component: follow
+}, {
+    path: '/expert',
+    component: expert
+}, {
+    path: '/userCenter',
+    component: userCenter
+}, {
+    path: '/wallet',
+    component: wallet
+}, {
+    path: '/recharge',
+    component: recharge
+}, {
+    path: '/login',
+    name: 'login',
+    component: login
+}, {
+    path: '/register',
+    component: register
+}, {
+    path: '/registerUserinfo',
+    name: 'registerUserinfo',
+    component: registerUserinfo
+}, {
+    path: '/matchDetail/:matchId',
+    name: 'matchDetail',
+    meta: { requiresAuth: true },
+    component: matchDetail
+}, {
+    path: '/expertHome',
+    component: expertHome
+}, {
+    path: '/expertApply',
+    component: expertApply
+}, {
+    path: '/userArticle',
+    component: userArticle
+}, {
+    path: '/articleDetail',
+    component: articleDetail
+},{
+    path: '*',
+    component: home
+},
+];
+
+export default routers;

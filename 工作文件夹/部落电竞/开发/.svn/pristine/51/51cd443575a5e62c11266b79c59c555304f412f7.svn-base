@@ -1,0 +1,32 @@
+const home = () => import('./views/home/index.vue');
+const match = () => import('./views/match/index.vue');
+const follow = () => import('./views/follow/index.vue');
+const expert = () => import('./views/expert/index.vue');
+const userCenter = () => import('./views/user_center/index.vue');
+const inforDetails = () => import('./views/home/infor_details');
+
+const routers = [{
+    path: '/',
+    component: home
+}, {
+    path: '/home',
+    component: home
+}, {
+    path: '/match',
+    component: match
+}, {
+    path: '/inforDetails',
+    component: inforDetails
+}, {
+    path: '/follow',
+    component: follow
+}, {
+    path: '/expert',
+    component: expert
+}, {
+    path: '/userCenter',
+    component: userCenter
+}
+];
+
+export default routers;

@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "report-expert-item": "/component/reportlist/reportexpertitem/report-expert-item"
+  }
+}

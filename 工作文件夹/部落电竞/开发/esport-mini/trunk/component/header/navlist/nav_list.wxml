@@ -1,0 +1,8 @@
+<!--component/header/navlist/nav_list.wxml-->
+<nav class="nav_list {{myClass}}">
+  <ul ref="nav" class="list">
+    <li :class="{active:selectedTab==item.contentType}" bindtap="changeTab(item.contentType,$event)" wx:for="{{dataList}}" :key="index">{{item}}</li>
+  </ul>
+  <slot></slot>
+  <!-- <div class="list_more"></div> -->
+</nav>

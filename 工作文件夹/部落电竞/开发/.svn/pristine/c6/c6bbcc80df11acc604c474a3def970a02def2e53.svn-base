@@ -1,0 +1,35 @@
+/* component/follow/followtopmenu/follow-top-menu.wxss */
+
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+.follow-top-menu {
+  width: 710rpx;
+  height: 70rpx;
+  padding: 0 20rpx;
+
+  background: #fff;
+  border-top: solid 2rpx #ddd;
+  border-bottom: solid 2rpx #ddd;
+}
+
+.f-t-m-text {
+  display: inline-block;
+  line-height: 68rpx;
+  margin-right: 50rpx;
+
+  font-size: 28rpx;
+  color: #939393;
+}
+.f-t-m-t-act {
+  line-height: 66rpx;
+  color: #fea21b;
+  border-bottom: solid 4rpx #fea21b;
+}
+
+.f-t-m-icon {
+  float: right;
+  line-height: 68rpx;
+
+  font-size: 40rpx;
+  color: #939393;
+}

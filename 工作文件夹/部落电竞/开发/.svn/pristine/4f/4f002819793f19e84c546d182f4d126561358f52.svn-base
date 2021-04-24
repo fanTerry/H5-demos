@@ -1,0 +1,225 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar :pageTitle="'记录'"></navBar>
+      <nav class="nav_list">
+        <ul ref="nav" class="list">
+          <li :class="{active:tabIndex == index}" @click="switchTab(index)" v-for="(item,index) in dataList"
+            :key="index">{{item}}</li>
+        </ul>
+        <slot></slot>
+      </nav>
+    </header>
+
+    <div class="main" id='mainId'>
+      <mescroll ref="mescroll" @downCallback="downCallback" @upCallback="upCallback" @mescrollInit="mescrollInit">
+        <!-- <scroll ref="scroll" :scrollbar="scrollbar" :pullDownRefresh="pullDownRefresh" :pullUpLoad="pullUpLoad"
+        :startY="0"  @pullingDown="onPullingDown" @pullingUp="onPullingUp"> -->
+
+        <section class="mod_expert">
+          <!-- <h2 class="expert_title">
+            <template v-if="!noData">
+              文章列表
+            </template>
+          </h2> -->
+
+          <!-- 文章列表组件 -->
+          <articleTab :cmsContentList='cmsContentList' :videoType="1" :showCommon="2">
+          </articleTab>
+        </section>
+        <noData v-if="noData"> </noData>
+
+        <!-- </scroll> -->
+      </mescroll>
+    </div>
+
+  </div>
+</template>
+
+<script>
+import navList from "../../../components/header/nav_list/index.vue";
+import articleTab from "../../../components/follow/articleTab.vue";
+import noData from "components/no_data/index";
+import navBar from "../../../components/header/nav_bar/index";
+import mescroll from "../../../components/common/mescroll.vue";
+import globalConst from "../../../globalConst";
+import sessionStorage from "../../../libs/storages/sessionStorage";
+export default {
+  components: {
+    articleTab,
+    mescroll,
+    noData,
+    navBar,
+    navList
+  },
+  data() {
+    return {
+      dataList: ["我的发布", "我的收藏", "我的点赞", "我的评论"],
+      cmsMsgTypeList: [4, 3, 2, 1],
+      cmsContentList: [],
+      hasNext: false, //是否有下一页
+      noData: false,
+      userId: Number,
+      cmsMsgType: Number, //场景  4：我的发布；3：我的收藏；2：我的点赞；1：我的评论
+      tabIndex: 0,
+      queryParam: {
+        pageNo: 1,
+        pageSize: 10
+      },
+      currPageSize: 10,
+      mescroll: null,
+      mescrollConfig: {
+        warpId: "mainId", //设置置顶时，必须设置父容器ID
+        hasToTop: true //默认不开启回到顶部项
+      }
+    };
+  },
+  created() {
+    this.tabIndex = sessionStorage.get("tabIndex");
+    this.cmsMsgType = this.cmsMsgTypeList[this.tabIndex];
+    console.log(this.cmsMsgType, this.tabIndex, "获得的消息类型");
+  },
+  mounted() {
+    // this.getPageData();
+    this.$refs.mescroll.config = this.mescrollConfig;
+  },
+  methods: {
+    mescrollInit(mescroll) {
+      this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
+      // this.mescroll.setBounce(true);
+    },
+
+    switchTab(index) {
+      this.tabIndex = index;
+      sessionStorage.set("tabIndex", index);
+      this.downCallback();
+    },
+
+    downCallback() {
+      let param = {};
+      this.queryParam.pageNo = 1;
+      this.cmsMsgType = this.cmsMsgTypeList[this.tabIndex];
+      param = this.queryParam;
+      param.cmsMsgType = this.cmsMsgType;
+      this.cmsContentList = [];
+      this.currPageSize = 10;
+      this.getPageData(param).then(() => {
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize, this.hasNext);
+        });
+      });
+    },
+    upCallback() {
+      this.loadMore();
+    },
+    loadMore() {
+      this.queryParam.pageNo += 1;
+      let param = {};
+      param = this.queryParam;
+      param.cmsMsgType = this.cmsMsgTypeList[this.tabIndex];
+      this.getPageData(param).then(() => {
+        this.$nextTick(() => {
+          this.mescroll.endSuccess(this.currPageSize, this.hasNext);
+        });
+      });
+    },
+
+    /**获取分页资讯数据 */
+    getPageData(param) {
+      if (!param) {
+        param = this.queryParam;
+        param.cmsMsgType = this.cmsMsgType;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/userContent/getUserRecord", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log("1=-----", dataResponse.data);
+            this.currPageSize = dataResponse.data.dataList.length;
+            this.hasNext = dataResponse.data.hasNext;
+            if (dataResponse.data.dataList.length > 0) {
+              this.cmsContentList = this.cmsContentList.concat(
+                dataResponse.data.dataList
+              );
+            }
+            if (this.cmsContentList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+            return this.cmsContentList;
+          } else if (dataResponse.code == "9999") {
+            this.$toast(dataResponse.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin.scss";
+@import "../../../assets/common/_base.scss";
+@import "../../../assets/common/_var.scss";
+
+.mod_expert {
+  padding-top: 1px;
+}
+.expert_title {
+  padding: 15px 12px 10px;
+  font-size: 18px;
+  font-weight: 500;
+}
+.nav_list {
+  position: relative;
+  height: 36px;
+  overflow: hidden;
+  background-color: #fff;
+  ul {
+    height: calc(100% + 6px);
+    padding-left: 5px;
+    font-size: 0;
+    white-space: nowrap;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+  li {
+    display: inline-block;
+    padding: 10px;
+    margin-right: 10px;
+    font-size: 15px;
+    color: #999;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+  .active {
+    position: relative;
+    color: #333;
+    &::after {
+      content: "";
+      @extend .g_c_mid;
+      bottom: 0;
+      width: 23px;
+      height: 3px;
+      background-color: #ff7e00;
+      border-radius: 3px;
+    }
+  }
+  .list_more {
+    @extend .g_v_mid;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    @include getBgImg("../../../assets/images/home/list_more.png");
+    background-size: 16px;
+  }
+}
+.no_data {
+  margin-top: 100px;
+}
+</style>

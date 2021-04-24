@@ -1,0 +1,53 @@
+/* modules/expertpage/expertagreepage/expert-agree-page.wxss */
+
+.expert-agree-page {
+  width: 690rpx;
+  padding: 20rpx;
+  margin: 10rpx auto;
+
+  background: #fff;
+  border-radius: 15rpx;
+}
+
+/* modules/expertpage/wxss/expert-paragraph.wxss */
+.e-a-v-title-h1 {
+  padding: 20rpx 0 0;
+  text-align: center;
+}
+.e-a-t-title-h1 {
+  font-size: 34rpx;
+  font-weight: bold;
+}
+.e-a-v-sub {
+  padding-bottom: 40rpx;
+  line-height: 30rpx;
+  font-size: 24rpx;
+}
+.e-a-t-tag {
+  color: #000;
+  font-weight: bold;
+  padding-right: 50rpx;
+}
+.e-a-t-sub {
+  color: #818181;
+}
+.e-a-v-title-h2 {
+  /* padding-bottom: 40rpx; */
+  padding-top: 20rpx;
+}
+.e-a-t-title-h2 {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.e-a-v-paragraph {
+  font-size: 28rpx;
+  /* color: #818181; */
+  text-indent: 40rpx;
+  padding-bottom: 10rpx;
+}
+
+.e-a-v-title-h3 {
+  font-size: 28rpx;
+  padding-bottom: 40rpx;
+}

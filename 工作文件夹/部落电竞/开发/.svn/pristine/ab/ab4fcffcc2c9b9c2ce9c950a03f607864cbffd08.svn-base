@@ -1,0 +1,221 @@
+<template>
+  <div class="Page">
+    <header class="mod_header header_nav_list">
+      <!-- <userHeader :num="isIf"></userHeader> -->
+    </header>
+
+    <div class="main" id='mainId'>
+      <scroll ref="scroll" :scrollbar="scrollbar" :pullUpLoad="pullUpLoad" :freeScroll="freeScroll" :startY="0"
+        @pullingUp="onPullingUp">
+
+        <template v-if="!isLoading">
+          <banner v-if="adList.length>0" ref="banner" :adList="adList"></banner>
+
+          <!-- 热门专家 -->
+          <section class="mod_expert" v-if="recExpertList.length>0" id='scrollId'>
+            <h2 class="expert_title">热门专家</h2>
+            <div class="expert_con">
+              <ul>
+
+                <li class="item" v-for="(item ,index) in recExpertList" :key="index" @click="toExpertHome(item.userId)">
+                  <img :src="item.avatarImgUrl|getDefaultImg(globalConst.userDefaultIcon)" alt />
+                  <p>{{item.nickName}}</p>
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- 热门推荐 -->
+          <section class="mod_expert" v-if="!isLoading">
+            <h2 class="expert_title">热门推荐</h2>
+            <hotRecommend :article="item" v-for="(item,index) in articleList " :key="index"></hotRecommend>
+          </section>
+        </template>
+      </scroll>
+    </div>
+
+    <loading v-if="isLoading"></loading>
+
+    <footer class="mod_footer">
+      <tabbar></tabbar>
+    </footer>
+  </div>
+</template>
+
+<script>
+import tabbar from "../../components/tabbar/index";
+import userHeader from "../../components/header/user_header";
+import banner from "../../components/header/banner";
+import hotRecommend from "../../components/hot_recommend/index";
+import loading from "../../components/common/loading";
+import Scroll from "components/common/scroll";
+import fixScroll from "../../libs/common/fix-scroll-ios";
+
+export default {
+  data() {
+    return {
+      isIf: false,
+      recExpertList: [],
+      gameList: [],
+      adList: [],
+      articleList: [],
+      currPageSize: 0,
+      articlrQueryParam: {
+        pageNo: 1,
+        pageSize: 10,
+        showAuthPage: true
+        // returnUrl: api.getCurrentPageUrlWithArgs()
+      },
+      isLoading: true,
+      // 下拉组件相关
+      scrollbar: { fade: true },
+      freeScroll: true,
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "没有更多数据了" }
+      },
+      index: 1,
+      turnToPrev: false,
+      turnToNext: false
+    };
+  },
+
+  mounted() {
+    this.setHeader();
+    this.getPageData();
+    fixScroll.tofix();
+  },
+  methods: {
+    /**获取菜单栏 */
+    setHeader() {
+      let param = {};
+      param.pageNo = 1;
+      param.pageSize = 10;
+      param.clientType = 6;
+      this.$post("/api/expert/expertIndexdata", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          this.isLoading = false;
+          if (dataResponse.code == "200") {
+            console.log("专家首页--setHeader---请求成功");
+            this.adList = dataResponse.data.adList;
+            this.recExpertList = dataResponse.data.recExpertList;
+            // this.$nextTick(() => {
+            //   this.$refs.banner.update("更新");
+            // });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    /**获取分页资讯数据 */
+    getPageData(param) {
+      if (!param) {
+        param = this.articlrQueryParam;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/expert/articleList/nologin", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log(dataResponse.data, "getPageData---请求成功");
+            if (dataResponse.data.length > 0) {
+              this.currPageSize = dataResponse.data.length;
+              this.articleList = this.articleList.concat(dataResponse.data);
+            }
+            return this.articleList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+      if (this.currPageSize < this.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+
+    /** 上拉加载*/
+    loadMore() {
+      let param = {};
+      this.articlrQueryParam.pageNo = this.articlrQueryParam.pageNo + 1;
+      param.pageNo = this.articlrQueryParam.pageNo;
+      param.pageSize = this.articlrQueryParam.pageSize;
+      this.getPageData(param).then(data => {
+        this.$refs.scroll.forceUpdate();
+      });
+    },
+    toExpertHome(id) {
+      this.$router.push({
+        path: "/expertHome",
+        query: {
+          id: id
+        }
+      });
+    }
+  },
+  components: {
+    tabbar,
+    userHeader,
+    banner,
+    hotRecommend,
+    loading,
+    Scroll
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+@import "../../assets/common/_var.scss";
+
+.banner {
+  padding: 0;
+}
+
+.expert_title {
+  padding: 15px 12px 10px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.expert_con {
+  background-color: #fff;
+  padding-bottom: 10px;
+  ul {
+    width: 100%;
+    @extend .flex;
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+  }
+  .item {
+    width: 25%;
+    padding: 17px 0 10px;
+    font-size: 0;
+    text-align: center;
+  }
+  img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+  p {
+    margin: 12px auto 0;
+    font-size: 12px;
+    @include t_nowrap(45px);
+    line-height: 1.2;
+    color: #333;
+  }
+}
+</style>

@@ -1,0 +1,52 @@
+<!--modules/mypage/mywallet/my-wallet.wxml-->
+
+<!-- 第一行：钱包基础信息 -->
+<view class='my-wallet-info clear'>
+  <navigator url='/modules/mypage/myrecharge/my-recharge'>
+    <view class='m-w-i-btn fr'><text>充值</text></view>
+  </navigator>
+  <view class='m-w-i-title'><text>金币余额</text></view>
+  <view class='m-w-i-num'><text>00000000.00</text></view>
+  <view class='m-w-i-title m-w-i-t2'><text>账户余额</text></view>
+  <view class='m-w-i-num'><text>00000000.00</text></view>
+</view>
+
+<!-- 第二行：菜单栏 -->
+<view class='my-section my-wallet-menu-view'>
+
+  <!-- 菜单栏 -->
+  <view class='my-wallet-menu'>
+    <view class='m-w-m-item'>
+      <text class='m-w-m-text m-w-m-t-act'>金币明细</text>
+      <i class="iconfont icon-xiangxia m-w-m-icon m-w-m-i-act"></i>
+    </view>
+    <view class='m-w-m-item m-w-m-i2'>
+      <text class='m-w-m-text'>限额明细</text>
+      <i class="iconfont icon-xiangxia m-w-m-icon"></i>
+    </view>
+    <view class='m-w-m-item'>
+      <text class='m-w-m-text'>充值明细</text>
+      <i class="iconfont icon-xiangxia m-w-m-icon"></i>
+    </view>
+  </view>
+
+  <!-- 菜单下拉框 -->
+  <view class='my-wallet-menu-sub'>
+    <!-- 当前状态样式：m-w-m-s-i-act -->
+    <view class='m-w-m-s-item' wx:for="{{12}}"><text>LOL</text></view>
+  </view>
+
+</view>
+
+
+<!-- 第三行：明细数据列表 -->
+<view class='my-wallet-time'>2019年5月</view>
+<view class='my-section'>
+  <my-record-item wx:for="12"></my-record-item>
+</view>
+
+<!-- 第四行：明细数据列表 -->
+<view class='my-wallet-time'>2019年5月</view>
+<view class='my-section'>
+  <my-record-item wx:for="123456"></my-record-item>
+</view>

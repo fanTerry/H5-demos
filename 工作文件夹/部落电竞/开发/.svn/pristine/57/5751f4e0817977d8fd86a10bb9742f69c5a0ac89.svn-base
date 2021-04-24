@@ -1,0 +1,198 @@
+<template>
+  <div class="Page guessRecord">
+    <header class="mod_header">
+      <navBar :pageTitle="'竞猜'"></navBar>
+      <ul>
+        <li :class="{active:tabFlag == index}" @click="tabFlag = index" v-for="(item,index) in tabList" :key="index">
+          {{item}}</li>
+      </ul>
+    </header>
+    <div class="main">
+      <ul class="record_list">
+        <li class="record_item">
+          <div class="title">
+            <span class="team">Estar VS 超会玩</span>
+            <span class="bet_title">[第一局比赛谁会赢]</span>
+            <i class="show_icon" :class="{active:showDetails}" @click="showDetails=showDetails == false?true:false"></i>
+          </div>
+          <div class="bet_info">
+            <div>09-17 10:29:30 投100金币 </div>
+            <span class="waiting" v-if="type == 1 || type == 0">等待开奖</span>
+            <span class="failed" v-if="type == 2  || type == 0">未猜中</span>
+            <span class="bingo" v-if="type == 3  || type == 0">猜中+44000EP</span>
+          </div>
+          <div class="details" v-if="showDetails">
+            <p>投注：Estar胜 1.01</p>
+            <p>赛果：超会玩胜</p>
+            <p>方案编号：123456789012345624822125233</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <footer class="mod_footer">
+      <a class="return_home" @click="goUrlPage('/guess/home')">返回竞猜</a>
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar/index";
+
+export default {
+  components: { navBar },
+  props: [],
+  data() {
+    return {
+      tabList: ["全部", "待开奖", "中奖"],
+      tabFlag: 0,
+      type: 1,
+      showDetails: false
+    };
+  },
+  methods: {
+    goUrlPage(url) {
+      this.$router.push({
+        path: url,
+        query: {}
+      });
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.guessRecord {
+  .back {
+    &::before,
+    &::after {
+      background-color: #a26767 !important;
+    }
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  background-color: #1f1212;
+}
+.mod_header {
+  background-color: #321919;
+  ul {
+    @extend .flex_hc;
+    margin: 8px 10px;
+    background-color: #4e2823;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  li {
+    flex: 1;
+    -webkit-flex: 1;
+    font-size: 14px;
+    line-height: 24px;
+    color: #fedcd7;
+    text-align: center;
+    &.active {
+      background-color: #ba3129;
+    }
+  }
+}
+.nav_bar {
+  color: #fedcd7 !important;
+}
+
+.main {
+  padding: 15px 10px 0;
+}
+
+.record_item {
+  margin-bottom: 10px;
+  background-color: #321919;
+  @include getRadiusBorder(#412121, all, 0);
+}
+.title {
+  padding: 15px 40px 0 10px;
+}
+.team {
+  font-size: 14px;
+  color: #fedcd7;
+}
+.bet_title {
+  padding-left: 12px;
+  line-height: 17px;
+  color: #f58079;
+}
+.show_icon {
+  position: absolute;
+  right: 10px;
+  top: 18px;
+  width: 12px;
+  height: 12px;
+  transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  @include getBgImg("../../../assets/images/guess/red_link_icon.png");
+  &.active {
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+  }
+}
+
+.bet_info {
+  @extend .flex_v_justify;
+  padding: 10px;
+  color: #86564e;
+}
+
+.waiting,
+.failed,
+.bingo {
+  font-size: 10px;
+}
+
+.waiting {
+  color: #cd948d;
+}
+.failed {
+  color: #86564e;
+}
+.bingo {
+  color: #d6a638;
+}
+
+.details {
+  position: relative;
+  padding: 5px 0 15px 10px;
+  background-color: #4e2823;
+  &::after {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: 18px;
+    @include getTriangle(4px, #4e2823, up);
+  }
+  p {
+    padding-top: 10px;
+    color: #cd948d;
+  }
+}
+
+.mod_footer {
+  background-color: #4e2823;
+}
+
+.return_home {
+  display: block;
+  width: 133px;
+  margin: 8px auto;
+  border-radius: 34px;
+  line-height: 34px;
+  font-size: 14px;
+  color: #fedcd7;
+  text-align: center;
+  background: linear-gradient(to bottom, #df2f26, #86171a);
+  background: -webkit-linear-gradient(top, #df2f26, #86171a);
+}
+</style>

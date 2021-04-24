@@ -1,0 +1,176 @@
+<template>
+  <div class="Page userAuthPage">
+    <header class="mod_header">
+      <navBar :pageTitle="canBindCard?'添加银行卡':'银行卡信息'"></navBar>
+    </header>
+    <div class="main">
+      <section>
+        <label>真实姓名</label>
+        <input v-model="bankInfo.trueName" :disabled="!canBindCard" type="text" maxlength="20" placeholder="请输入银行卡对应的姓名" @blur="scrollToTop" />
+      </section>
+      <section>
+        <label>所属银行</label>
+        <input v-model="bankInfo.bankName" :disabled="!canBindCard" type="text" maxlength="20" placeholder="请输入所属银行" @blur="scrollToTop" />
+      </section>
+      <section>
+        <label>分行信息</label>
+        <input v-model="bankInfo.branchBank" :disabled="!canBindCard" type="text" placeholder="请输入分行信息" maxlength="18" @blur="scrollToTop" />
+      </section>
+
+      <section>
+        <label>银行卡号</label>
+        <input v-model="bankInfo.bankNo" :disabled="!canBindCard" type="tel" placeholder="请输入银行卡号" maxlength="25" @blur="scrollToTop" />
+      </section>
+      <a class="submit_btn" @click="toSubmit()" v-if="canBindCard">提交</a>
+      <a class="submit_btn" @click="goback()" v-else>返回</a>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from '../../../components/header/nav_bar/index';
+import { getCheck } from '../../../libs/utils';
+import { mapMutations } from 'vuex';
+
+export default {
+  components: {
+    navBar
+  },
+  data() {
+    return {
+      bankInfo: {
+        trueName: '',
+        bankName: '',
+        branchBank: '',
+        bankNo: ''
+      },
+      canBindCard: false
+    };
+  },
+  created() {},
+  mounted() {
+    this.getUserBankCard();
+  },
+  methods: {
+    getUserBankCard() {
+      this.$post('/api/usercenter/getBankCard')
+        .then(rsp => {
+          let response = rsp.data;
+          console.log(response.bankCard, 'response');
+          if (rsp.code === '200') {
+            this.canBindCard = response.canBindCard;
+            if (!this.canBindCard && null != response.bankCard) {
+              this.bankInfo.trueName = response.bankCard.bankAccountName;
+              this.bankInfo.bankName = response.bankCard.bankName;
+              this.bankInfo.branchBank = response.bankCard.bankBranch;
+              this.bankInfo.bankNo = response.bankCard.bankAccountNo;
+            }
+          } else {
+            this.$toast(rsp.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    toSubmit() {
+      if (!this.bankInfo.trueName || !this.bankInfo.bankName || !this.bankInfo.branchBank || !this.bankInfo.bankNo) {
+        this.$toast('必要参数为空');
+        return;
+      }
+      this.$post('/api/usercenter/bindCard', this.bankInfo)
+        .then(rsp => {
+          let response = rsp.data;
+          if (rsp.code === '200') {
+            this.$toast('银行卡绑定成功!');
+            setTimeout(() => {
+              this.$router.go(-1);
+            }, 3 * 1000);
+          } else {
+            this.$toast(rsp.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    goback(){
+      this.$router.go(-1);
+    },
+    scrollToTop: function() {
+      setTimeout(function() {
+        window.scrollTo(0, 0);
+        console.log('回滚');
+      }, 100);
+    }
+  }
+};
+</script>
+
+
+<style lang='scss' scoped>
+@import '../../../assets/common/_base';
+@import '../../../assets/common/_mixin';
+@import '../../../assets/common/_var';
+
+section {
+  position: relative;
+  @extend .flex_hc;
+  @include getBorder(bottom, rgba(0, 0, 0, 0.1));
+  height: 44px;
+  margin-top: 10px;
+  padding: 0 20px;
+  font-size: 14px;
+  background-color: #fff;
+  label {
+    width: 65px;
+    line-height: 44px;
+  }
+  input {
+    flex: 1;
+    -webkit-flex: 1;
+    line-height: 44px;
+    border: none;
+  }
+}
+.personal_sign {
+  align-items: flex-start;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+  height: initial;
+  padding: 15px 20px;
+  label {
+    line-height: 1;
+  }
+  textarea {
+    margin-top: 10px;
+    width: 100%;
+    padding-top: 5px;
+    line-height: 16px;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+.submit_btn {
+  display: block;
+  margin: 20px 20px 25px;
+  padding: 15px;
+  font-size: 18px;
+  color: #fff;
+  border-radius: 8px;
+  text-align: center;
+  background-color: $color_main;
+}
+.phonecode_div {
+  background-color: #fff;
+  padding-top: 10px;
+  padding-bottom: 2px;
+}
+.tips {
+  padding-top: 15px;
+  // padding-bottom: 5px;
+  padding-left: 20px;
+  color: #da3a40;
+  line-height: 1.5;
+}
+</style>

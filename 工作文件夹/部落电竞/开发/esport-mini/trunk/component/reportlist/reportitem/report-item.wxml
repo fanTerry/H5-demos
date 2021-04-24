@@ -1,0 +1,80 @@
+<!--component/reportlist/reportitem/report-item.wxml-->
+<wxs src="../../../utils/tools.wxs" module="tools" />
+<view class='report-item'>
+
+
+  <!-- 第一格 -->
+  <view class='dsp-cell r-p-i-r1' bindtap="goToDetailPage">
+    <view class='r-p-i-time'><text>{{matchResult.formatBeginDate}}</text></view>
+    <view class='r-p-i-title'><text>BO{{matchResult.numberOfGames==null?'':matchResult.numberOfGames}}</text></view>
+  </view>
+
+  <!-- 第二格 -->
+   <!-- <navigator  url="/modules/reportpage/report-page?matchId={{matchResult.matchId}}">
+    </navigator>-->
+    <view class='dsp-cell r-p-i-r2' bindtap="goToDetailPage">
+    <view class='r-p-i-d-info clear'>
+      <image class='r-p-i-d-img' src='{{matchResult.homeTeamLogo?matchResult.homeTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFill' />
+      <view class='r-p-i-d-text'>
+        <text class="font26">{{tools.sub(matchResult.homeTeamName)}}</text>
+      </view>
+      <view class='r-p-i-d-score'>
+        <block wx:if="{{matchResult.status!=2}}">
+           <text class='{{matchResult.status==1?"r-p-i-d-s-blue":""}}'>{{matchResult.status==0?'-':matchResult.homeScore}}</text>
+        </block>
+       <block wx:if="{{matchResult.status==2}}">
+          <text class='{{matchResult.homeScore>matchResult.awayScore?"":"r-p-i-d-s-gray"}}'>{{matchResult.status==0?'-':matchResult.homeScore}}</text>
+        </block>
+       </view>
+    </view>
+    <view class='r-p-i-d-info'>
+      <image class='r-p-i-d-img' src='{{matchResult.awayTeamLogo?matchResult.awayTeamLogo:"https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_team.png"}}' mode='aspectFill' />
+      <view class='r-p-i-d-text'>
+        <text class="font26">{{tools.sub(matchResult.awayTeamName)}}</text>
+      </view>
+      <view class='r-p-i-d-score'>
+        <block wx:if="{{matchResult.status!=2}}">
+            <text class='{{matchResult.status==1?"r-p-i-d-s-blue":""}}'>{{matchResult.status==0?'-':matchResult.awayScore}}</text>
+        </block>
+        <block wx:if="{{matchResult.status==2}}">
+          <text class='{{matchResult.awayScore>matchResult.homeScore?"":".r-p-i-d-s-gray"}}'>{{matchResult.status==0?'-':matchResult.awayScore}}</text>
+        </block>
+      </view>
+    </view>
+  </view>
+
+
+  <!-- 第三格 暂时不显示红包 -->
+ <view class='dsp-cell r-p-i-r3'  bindtap="goToDetailPage">
+    <!-- <image class='r-p-i-d-img-gift' src='https://rs.esportzoo.com/svn/esport-res/mini/images/image2.png' mode='aspectFill' /> -->
+  </view>
+
+  <!-- 第四格 -->
+  <view class='dsp-cell r-p-i-r4'>
+    <!-- icon铃铛 未开赛 -->
+    <block wx:if="{{matchResult.status==0}}">
+      <i wx:if="{{matchResult.followType==0}}" class='iconfont icon-naozhong icon-bell-a' bindtap="userFollow" data-index="1"></i>
+      <i wx:if="{{matchResult.followType==1}}" class='iconfont icon-naozhong icon-bell-a icon-bell-a-act' bindtap="userFollow" data-index="0"></i>
+    </block>
+    <block wx:if="{{matchResult.status==1&&liveFlag}}"><!-- 进行中-->
+      <view class='r-p-i-status r-p-i-s-ing'  bindtap="goToDetailPage"><!-- 视频直播-->
+        <view class='r-p-i-status-text'>
+          <i class='iconfont icon-bofang icon-play'></i>
+          <text class="font25">图文直播</text>
+        </view>
+        <!-- <view>
+          <text wx:if="{{matchResult.status==1}}" class="font25">进行中</text>
+        </view> -->
+        <view class='r-p-i-status-text'>
+          <text wx:if="{{matchResult.status==1}}" class="font25">进行中</text>
+        </view>
+      </view>
+    </block>
+    <block wx:if="{{matchResult.status==2}}"><!-- 已结束-->
+        <view class='r-p-i-status r-p-i-s-over'  bindtap="goToDetailPage">
+          <view wx:if="{{matchResult.status>0}}"><i class='iconfont icon-icon_tianjia r-p-i-i r-p-i-i-cur'></i><text class="font25">集锦,回放</text></view>
+        </view>
+    </block>
+  </view>
+
+</view>

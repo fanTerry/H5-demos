@@ -1,0 +1,62 @@
+/* resources/wxss/layout.wxss */
+
+.section {
+  width: 730rpx;
+  margin: 0 auto;
+}
+
+.dsp-table {
+  display: table;
+  border-collapse: separate;
+}
+
+.dsp-row {
+  display: table-row;
+}
+
+.dsp-cell {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.t-l {
+  text-align: left;
+}
+.t-c {
+  text-align: center;
+}
+.t-r {
+  text-align: right;
+}
+.v-t {
+  vertical-align: top;
+}
+
+
+.dsp-none { display: none; }
+.border-none { border-bottom: none; }
+
+
+.pr {
+  position: relative;
+}
+
+.pa {
+  position: absolute;
+}
+
+/* 宽 */
+.w400 { width: 490rpx; }
+
+/* 间距部分 */
+.pad-t20 { padding-top: 20rpx; }
+.pad-r20 { padding-right: 20rpx; }
+
+
+
+/* 间距部分 */
+.margin-t15 { margin-top: 15rpx; }
+.margin-t20 { margin-top: 20rpx; }
+.margin-t25 { margin-top: 25rpx; }
+.margin-t40 { margin-top: 40rpx; }
+.margin-b40 { margin-bottom: 40rpx; }

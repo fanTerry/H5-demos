@@ -1,0 +1,64 @@
+<template>
+  <div class="goods_list">
+    <slot></slot>
+    <ul>
+      <h3>7月18日 周日</h3>
+      <li class="goods_item">
+        <div class="goods_img">
+          <img src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1860037186,2129045815&fm=26&gp=0.jpg"
+            alt="">
+        </div>
+        <div class="goods_info">
+          <i class="rank_first"></i>
+          <div class="goods_title">
+            <span class="goods_name">妲己电玩皮肤</span>
+            <span class="tag">待发货</span>
+          </div>
+          <div class="goods_grade">王者</div>
+          <div class="goods_detail">
+            <span class="mark"><i class="star_coin"></i>399</span>
+            <span>合计：<i class="star_coin"></i><span class="num">56098</span>人兑换</span>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {};
+  },
+  methods: {},
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_mixin";
+@import "../../assets/common/_var";
+
+.star_coin {
+  display: block;
+  width: 14px;
+  height: 14px;
+  margin-right: 3px;
+  @include getBgImg("../../assets/images/user_center/star_coin.png");
+}
+.rank_first,
+.rank_second,
+.rank_third {
+  width: 23px;
+  height: 23px;
+}
+.rank_first {
+  @include getBgImg("../../assets/images/store/rank_first.png");
+}
+.rank_second {
+  @include getBgImg("../../assets/images/store/rank_second.png");
+}
+.rank_third {
+  @include getBgImg("../../assets/images/store/rank_third.png");
+}
+</style>

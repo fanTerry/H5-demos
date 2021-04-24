@@ -1,0 +1,16 @@
+{
+  "usingComponents": {
+    "report-header": "/component/report/reportheader/report-header",
+    "md-data": "mddata/md-data",
+    "md-member": "mdmember/md-member",
+    "md-charts": "mdcharts/md-charts",
+    "md-expert": "mdexpert/md-expert",
+    "md-odds": "mdodds/md-odds",
+    "md-bet": "mdbet/md-bet",
+    "chat-edit": "/component/chatedit/chat-edit",
+    "no-data": "/component/comm/no-data/no-data"
+  },
+  "navigationBarTitleText": "赛事详情",
+  "navigationBarBackgroundColor":"#fff",
+  "navigationBarTextStyle": "black"
+}

@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "expert-header": "/component/expert/expertheader/expert-header",
+    "pp-expert": "/component/popup/ppexpert/pp-expert"
+  }
+}

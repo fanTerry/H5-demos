@@ -1,0 +1,89 @@
+/* component/chatedit/chat-edit.wxss */
+
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+.article-page-edit {
+  width: 710rpx;
+  min-height: 60rpx;
+
+  padding: 0 20rpx 15rpx 20rpx;
+  background: #fff;
+
+  position: fixed;
+  bottom: 0;
+}
+.article-page-edit-focus {
+  padding: 0 20rpx 20rpx 20rpx;
+}
+.atc-e-t-view {
+  width: 540rpx;
+  min-height: 40rpx;
+  padding: 10rpx;
+
+  margin-top: 15rpx;
+
+  background: #f0efee;
+  border-radius: 10rpx;
+}
+.atc-e-t-view-focus {
+  margin-top: 20rpx;
+}
+.atc-e-t {
+  width: 540rpx;
+  height: 40rpx;
+  bottom: 10rpx;
+  color: #aaa;
+}
+.atc-e-t-focus {
+  height: 120rpx;
+}
+.atc-e-text {
+  display: inline-block;
+  width: 540rpx;
+  color: #aaa;
+}
+.atc-e-t-ph {
+  color: #aaa;
+}
+.act-p-e-i {
+  position: absolute;
+  left: 15rpx;
+  top: 0;
+
+  font-size: 40rpx;
+  color: #aaa;
+}
+.atc-p-c-icon {
+  line-height: 50rpx;
+  font-size: 50rpx;
+  color: #aaa;
+  margin: 0 10rpx;
+}
+
+.a-p-e-send-view {
+  vertical-align: top;
+  padding-top: 6rpx;
+}
+.article-page-edit-focus .a-p-e-send-view {
+  padding-top: 0;
+}
+.a-p-e-send-button {
+  background: none !important;
+  border: none !important;
+}
+.a-p-e-send-button::after {
+  border: none;
+}
+.a-p-e-send {
+  display: inline-block;
+  width: 120rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  font-size: 28rpx;
+
+  color: #fff;
+  background: #0f87ff;
+  border-radius: 10rpx;
+}
+

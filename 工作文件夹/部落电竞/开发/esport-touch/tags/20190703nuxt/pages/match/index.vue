@@ -1,0 +1,301 @@
+<template>
+  <section>
+    <div class="m_content">
+      <div class="m_date">04月28日 星期日</div>
+      <div class="m_list">
+        <h3>
+          <span class="m_title"><i class="icon-lol"></i>2019KPL夏季赛</span>
+          <span class="m_sub_title">小组赛</span>
+        </h3>
+        <ul>
+          <li>
+            <div class="m_time">
+              <p class="p_time">08:00</p>
+              <p class="p_type">BO1</p>
+            </div>
+            <div class="m_teams">
+              <p>
+                <img src="~assets/images/team_home.png" alt="">
+                <span>A队伍名字</span>
+              </p>
+              <p>
+                <img src="~assets/images/team_guest.png" alt="">
+                <span>B队伍名字...</span>
+              </p>
+            </div>
+            <div class="m_score">
+              <p class="gray">-</p>
+              <p class="gray">-</p>
+            </div>
+            <div class="m_gift"><img src="~assets/images/gift.png" alt=""></div>
+            <div class="m_status gray"><i class="icon-naozhong1"></i></div>
+          </li>
+          <li>
+            <div class="m_time">
+              <p class="p_time">08:00</p>
+              <p class="p_type">BO1</p>
+            </div>
+            <div class="m_teams">
+              <p>
+                <img src="~assets/images/team_home.png" alt="">
+                <span>A队伍名字</span>
+              </p>
+              <p>
+                <img src="~assets/images/team_guest.png" alt="">
+                <span>B队伍名字...</span>
+              </p>
+            </div>
+            <div class="m_score">
+              <p class="gray">-</p>
+              <p class="gray">-</p>
+            </div>
+            <div class="m_gift"><img src="~assets/images/gift.png" alt=""></div>
+            <div class="m_status orange"><i class="icon-naozhong"></i></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="m_content">
+      <div class="m_date">04月28日 星期日</div>
+      <div class="m_list">
+        <h3>
+          <span class="m_title"><i class="icon-lol"></i>2019KPL春季赛</span>
+          <span class="m_sub_title" style="display:none">小组赛</span>
+        </h3>
+        <ul>
+          <li>
+            <div class="m_time">
+              <p class="p_time">08:00</p>
+              <p class="p_type">BO1</p>
+            </div>
+            <div class="m_teams">
+              <p>
+                <img src="~assets/images/team_home.png" alt="">
+                <span>A队伍名字</span>
+              </p>
+              <p>
+                <img src="~assets/images/team_guest.png" alt="">
+                <span>B队伍名字...</span>
+              </p>
+            </div>
+            <div class="m_score">
+              <p class="orange">1</p>
+              <p class="orange">2</p>
+            </div>
+            <div class="m_gift"><img src="~assets/images/gift.png" alt=""></div>
+            <div class="m_status orange"><i class="icon-naozhong"></i>图文直播<br>进行中</div>
+          </li>
+          <li>
+            <div class="m_time">
+              <p class="p_time">08:00</p>
+              <p class="p_type">BO1</p>
+            </div>
+            <div class="m_teams">
+              <p>
+                <img src="~assets/images/team_home.png" alt="">
+                <span>A队伍名字</span>
+              </p>
+              <p>
+                <img src="~assets/images/team_guest.png" alt="">
+                <span>B队伍名字...</span>
+              </p>
+            </div>
+            <div class="m_score">
+              <p class="orange">1</p>
+              <p class="orange">2</p>
+            </div>
+            <div class="m_gift"><img src="~assets/images/gift.png" alt=""></div>
+            <div class="m_status orange"><i class="icon-naozhong"></i>图文直播</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="m_content">
+      <div class="m_date">04月28日 星期日</div>
+      <div class="m_list">
+        <h3>
+          <span class="m_title"><i class="icon-lol"></i>2019KPL春季赛</span>
+          <span class="m_sub_title">小组赛</span>
+        </h3>
+        <ul>
+          <li>
+            <div class="m_time">
+              <p class="p_time">08:00</p>
+              <p class="p_type">BO1</p>
+            </div>
+            <div class="m_teams">
+              <p>
+                <img src="~assets/images/team_home.png" alt="">
+                <span>A队伍名字</span>
+              </p>
+              <p>
+                <img src="~assets/images/team_guest.png" alt="">
+                <span>B队伍名字...</span>
+              </p>
+            </div>
+            <div class="m_score">
+              <p class="gray">1</p>
+              <p class="gray">2</p>
+            </div>
+            <div class="m_gift"><img src="~assets/images/gift.png" alt=""></div>
+            <div class="m_status gray"><i class="icon-yuanquanyou"></i>集锦</div>
+          </li>
+          <li>
+            <div class="m_time">
+              <p class="p_time">08:00</p>
+              <p class="p_type">BO1</p>
+            </div>
+            <div class="m_teams">
+              <p>
+                <img src="~assets/images/team_home.png" alt="">
+                <span>A队伍名字</span>
+              </p>
+              <p>
+                <img src="~assets/images/team_guest.png" alt="">
+                <span>B队伍名字...</span>
+              </p>
+            </div>
+            <div class="m_score">
+              <p class="gray">1</p>
+              <p class="gray">2</p>
+            </div>
+            <div class="m_gift"><img src="~assets/images/gift.png" alt=""></div>
+            <div class="m_status gray"><i class="icon-yuanquanyou"></i>集锦,回放</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <Footer />
+  </section>
+</template>
+
+<script>
+import Footer from "~/components/common/footer/index"
+export default {
+  components: {
+    Footer
+  },
+  data() {
+    return {
+    };
+  },
+}
+</script>
+
+<style lang="less" scoped>
+section{
+  background: url('../../assets/images/match_bg.jpg');
+  padding-top:7px;
+  min-height: 900px
+}
+.m_content{
+  margin: 20px 9px 0 9px;
+}
+.m_date{
+  height: 44px;
+  line-height: 44px;
+  font-size: 20px;
+  color: #666;
+  margin-left: 20px;
+}
+.m_list{
+  height: 319px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  h3{
+    margin-left: 16px;
+    color: #666;
+    .m_title{
+      font-size: 24px;
+      height: 44px;
+      line-height: 44px;
+      i{
+        color: #1c545f;
+        font-size: 24px;
+      }
+    }
+    .m_sub_title{
+      height: 44px;
+      line-height: 44px;
+      font-size: 20px;
+      float: right;
+      padding-right: 40px;
+    }
+  }
+  ul{
+    margin: 0 13px 0 11px;
+    li{
+      padding: 37px 9px 31px 9px;
+      border-top: 1px solid #dfdfdf;
+      height: 141px;
+      .m_time{
+        float: left;
+        margin-right: 115px;
+        .p_time{
+          line-height: 38px;
+          color: #252525;
+          font-size: 24px;
+        }
+        .p_type{
+          line-height: 38px;
+          font-size: 20px;
+          color: #9f9f9f;
+        }
+      }
+      .m_teams{
+        width: 200px;
+        margin-right: 42px;
+        float: left;
+        p{
+          img{
+            width: 34px;
+            height: 34px;
+            vertical-align: middle;
+          }
+          span{
+            width: 107px;
+            font-size: 24px;
+            line-height: 38px;
+            color: #252525;
+            margin-left: 25px;
+            margin-right: 46px;
+          }
+        }
+      }
+      .m_score{
+        float: left;
+        p{
+          font-size: 22px;
+          line-height: 38px;
+          width: 20px;
+          text-align: center;
+        }
+      }
+      .m_gift{
+        float: right;
+        width: 37px;
+        height: 45px;
+        margin-right: 170px;
+        margin-top: 18px;
+        img{
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .m_status{
+        float: right;
+        width: 135px;
+        text-align: center;
+        margin-top: -50px;
+        font-size: 20px;
+      }
+      .gray{
+        color: #bbb;
+      }
+      .orange{
+        color: #ff9333;
+      }
+    }
+  }
+}
+</style>

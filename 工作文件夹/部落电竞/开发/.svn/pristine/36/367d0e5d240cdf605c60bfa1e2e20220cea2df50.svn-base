@@ -1,0 +1,18 @@
+<!--component/comm/expertitem/expert-item.wxml-->
+
+<view class='expert-item dsp-table'>
+  <view class='dsp-cell'>
+    <user-avatar showSize="100"></user-avatar>
+  </view>
+  <view class='dsp-cell e-i-m'>
+    <view class='expert-name'><text>强主播欧阳向日葵</text></view>
+    <view class='expert-sub'>
+      <view class='expert-info'><text>19万人</text></view>
+      <view class='expert-info'><text>已关注</text></view>
+    </view>
+  </view>
+  <view class='dsp-cell'>
+    <text class='expert-follow'>+关注</text>
+    <!-- <text class='expert-follow expert-followed'>已关注</text> -->
+  </view>
+</view>

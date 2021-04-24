@@ -1,0 +1,152 @@
+<template>
+    <div class="ui_pop">
+        <div class="pop_pay">
+            <div class="order">充值方式选择
+                <a class="close" @click="close()"></a>
+            </div>
+            <div class="pay_method" v-for="item in chargeWayList " @click="choose(item.index)">
+                <img :src="item.icon" alt="">{{item.name}}
+            </div>
+            <a class="pay_btn" @click="confirm()">确认</a>
+            <div class="att_tips">温馨提示:1元友宝余额价值与1星星价值一致</div>
+        </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+    props:["chargeWayList"],
+    data() {
+        return {
+          choosedChargeWay: -1,
+        };
+    },
+    methods: {
+        close(){
+          this.$emit("close")
+        },
+        choose(chargeWay) {
+          this.choosedChargeWay = chargeWay;
+          console.log(this.choosedChargeWay, "选择的充值方式");
+        },
+        confirm(){
+            if (this.choosedChargeWay == -1) {
+              this.$toast("请先选择充值方式");
+              return;
+            }
+            this.$emit("confirmCharge",this.choosedChargeWay)
+         }
+    },
+    components: {}
+};
+</script>
+
+<style lang='scss'>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_var";
+
+.pop_pay {
+  position: relative;
+  width: 100%;
+  margin: 0 20px;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #b7b7b7;
+
+  .close {
+    @include getClose(20px, #000);
+    @extend .g_v_mid;
+    right: 0;
+  }
+  .order,
+  .discount,
+  .balance {
+    @extend .flex_v_justify;
+  }
+  .order {
+    position: relative;
+    padding: 18px 0 14px 15px;
+    font-size: 17px;
+    color: #000;
+    border-bottom: 1px solid #ddd;
+  }
+  .discount {
+    margin: 0 15px;
+    padding: 12px 0;
+    font-size: 15px;
+    border-bottom: 1px solid #ddd;
+    .icon-xiangyou {
+      font-size: 15px;
+    }
+    div {
+      @extend .flex_hc;
+    }
+  }
+  .balance {
+    margin: 0 15px;
+    padding: 12px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+  }
+  .pay_num {
+    padding: 10px 0 15px;
+    font-size: 42px;
+    text-align: center;
+    color: #ee322b;
+  }
+  .pay_num span {
+    font-size: 19px;
+  }
+  .pay_method {
+    @extend .flex_hc;
+    justify-content: flex-start;
+    -webkit-justify-content: flex-start;
+
+    margin: 0 15px 10px;
+    height: 45px;
+    font-size: 17px;
+    color: #000;
+    border: 1px solid #a0a0a0;
+    border-radius: 8px;
+
+    position: relative;
+    img {
+      width: 26px;
+      height: 26px;
+      object-fit: cover;
+      margin-right: 5px;
+      margin-left: 7px;
+    }
+    span {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      -webkit-transform: translateY(-50%);
+
+      font-size: 14px;
+      color: #b7b7b7;
+    }
+  }
+  .yb_icon {
+    @include getBgImg("../../../assets/images/user_center/yb_coin.png");
+  }
+  .att_tips {
+    padding: 4px 0 8px;
+    text-align: center;
+  }
+  .pay_title {
+    padding-top: 20px;
+    font-size: 15px;
+    text-align: center;
+    color: #000;
+  }
+  .warn_tips {
+    padding-bottom: 5px;
+    color: $color_red;
+    text-align: center;
+  }
+}
+</style>

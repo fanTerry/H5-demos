@@ -1,0 +1,9 @@
+{
+  "component": true,
+  "usingComponents": {
+    "report-banner" : "/component/report/reportbanner/report-banner",
+    "report-sub-menu": "/component/report/reportsubmenu/report-sub-menu",
+    "odd-lock-item": "/component/report/oddlockitem/odd-lock-item",
+    "odd-result-item" : "/component/report/oddresultitem/odd-result-item"
+  }
+}

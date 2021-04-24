@@ -1,0 +1,432 @@
+// pages/hd/hd101/components/pops.js
+Component({
+	/**
+	 * 组件的属性列表
+	 */
+	properties: {
+		"type":Number,
+		"shareCode":Number
+	},
+
+	/**
+	 * 组件的初始数据
+	 */
+	data: {
+		showFlag: true,
+		// curType: this.type,
+		clickFlag: -1,
+		totalTime: 60, //记录具体倒计时时间
+		wayList: [],
+		subjectLogId: null,
+		hdUserLogId: null,
+		prizeInfo: {},
+		isDoSubject: false,
+		withdrawMoney: 0,
+		closeNum: 300
+	},
+
+	/**
+	 * 组件的方法列表
+	 */
+	methods: {
+		//支付1毛，再次挑战
+    payToJoin(type, giftId) {
+      let _self = this;
+      if (giftId) {
+        _self.getYourPrize(giftId);
+      }
+      //支付1毛挑战
+      _self.getWxConfig().then(res => {
+        _self.toPayStart(type);
+      });
+    },
+    //去领取奖品
+    getYourPrize(userGiftLogId, type) {
+      let param = {};
+      param.userGiftLogId = userGiftLogId;
+      param.subjectLogId = this.subjectLogId;
+      api._post("/subject/getGifts", param)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            //领取完成，弹出申请弹窗
+            this.showFlag = true;
+            if (type == 1) {
+              this.curType = 11;
+            } else {
+              this.curType = 3;
+            }
+          } else {
+            this.$toast("礼品领取失败，请联系客服");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //答题结束弹窗
+    answerOver(subjectLogId, showType, prizeInfo) {
+      this.curType = showType;
+      this.showFlag = true;
+      this.subjectLogId = subjectLogId;
+      console.log(prizeInfo);
+      this.prizeInfo = prizeInfo;
+      this.closeDown();
+    },
+
+    closeDown() {
+      //五分钟自动关闭，并返回首页
+      let _self = this;
+      setTimeout(() => {
+        _self.closeNum--;
+        if (_self.closeNum == 0) {
+          _self.showFlag = false;
+          _self.toHdHome();
+        } else {
+          this.closeDown();
+        }
+      }, 1000);
+    },
+
+    openDialog(showType) {
+      this.curType = showType;
+      this.showFlag = true;
+    },
+
+    openWithdarwDialog(money) {
+      this.curType = 8;
+      this.showFlag = true;
+      this.withdrawMoney = money;
+    },
+    goWithdrawMonery() {
+      api._post("/hd101/userWithdraw")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.curType = 9;
+            this.showFlag = true;
+          } else if (dataResponse.code == 1999) {
+            this.$toast("每天只可以提现一次");
+          } else {
+            this.$toast("提现失败");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    answerWrong(subjectLogId, hdUserLogId) {
+      //回答错误弹窗
+      this.curType = 7;
+      this.showFlag = true;
+      this.subjectLogId = subjectLogId;
+      this.hdUserLogId = hdUserLogId;
+      this.totalTime = 60;
+      this.getContinueWay();
+    },
+    wayContinue(wayItem, curIdx) {
+      let _self = this;
+      if (!wayItem.canActive) {
+        _self.$toast("该续命方式已使用~");
+        return;
+      }
+      if (_self.totalTime == 0) {
+        _self.$toast("时间已到,不支持续命~");
+        return;
+      }
+      if (wayItem.wayType == 2) {
+        //支付续命
+        _self.getWxConfig().then(res => {
+          _self.toPayContinue();
+        });
+      } else {
+        //分享续命
+        _self.curType = 1;
+        _self.toShareContinue();
+      }
+      this.clickFlag = curIdx;
+      setTimeout(() => {
+        this.clickFlag = -1;
+      }, 1 * 300);
+    },
+    //分享续命
+    toShareContinue() {
+      let _self = this;
+      api._post("/hd101/share/getShareUrl", {
+        hdSubjectLogId: _self.subjectLogId
+      })
+        .then(res => {
+          console.log(res, "分享续命");
+          if ((res.code = "200" && res.data != null)) {
+            this.$toast("选择分享续命");
+          } else {
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //判断续命方式
+    getContinueWay() {
+      let _self = this;
+      api._post("/hd101/getContinueWay", {
+        hdSubjectLogId: _self.subjectLogId
+      })
+        .then(res => {
+          console.log(res, "续命方式");
+          if ((res.code = "200" && res.data != null)) {
+            _self.wayList = res.data;
+            _self.countDown();
+          } else {
+            _self.$toast("获取续命方式异常");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    countDown() {
+      let _self = this;
+      clock = window.setInterval(() => {
+        if (_self.totalTime > 0) {
+          _self.checkContinueStatus();
+          _self.totalTime--;
+        }
+        if (_self.totalTime == 0) {
+          //当倒计时等于0时清除定时器
+          window.clearInterval(clock);
+          // 超时 结束答题
+          this.toEndGame();
+        }
+      }, 1000);
+    },
+    toEndGame() {
+      if (null != clock) {
+        //清空定时器
+        window.clearInterval(clock);
+      }
+      let _self = this;
+      _self
+        .$post("/subject/endGame", {
+          subjectLogId: _self.subjectLogId,
+          hdUserLogId: _self.hdUserLogId
+        })
+        .then(res => {
+          if ((res.code = "200" && res.data != null)) {
+            let prizeInfo = res.data;
+            _self.answerOver(_self.subjectLogId, 6, prizeInfo);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    checkContinueStatus() {
+      let _self = this;
+      api._post("/hd101/share/checkContinueStatus", {
+        hdSubjectLogId: _self.subjectLogId,
+        hdUserLogId: _self.hdUserLogId
+      })
+        .then(res => {
+          console.log(res, "查询续命状态");
+          if ((res.code = "200" && res.data != null)) {
+            if (res.data.continueVo.isDoSubject) {
+              //alert('刷新续命成功');
+              //继续答题,关闭当前弹窗,继续答题 TODO
+              _self.isDoSubject = true;
+              _self.$toast("恭喜你,续命成功~", "4");
+              _self.closePop();
+              _self.$emit("reStartTimeCountDown");
+            }
+          } else {
+          }
+          //_self.countDown();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    closePop(nextType) {
+      if (Number.parseInt(nextType)) {
+        //关闭当前弹窗,显示其他弹窗
+        this.curType = nextType;
+      } else {
+        this.showFlag = false;
+        if (null != clock) {
+          window.clearInterval(clock);
+        }
+      }
+    },
+    toPayContinue() {
+      let _self = this;
+      let shareCode = this.shareCode;
+      console.log(shareCode, "toPayContinue-shareCode");
+      let param = {
+        hdSubjectLogId: _self.subjectLogId,
+        choosedPayWay: 4
+      };
+      if (shareCode) {
+        param.shareCode = shareCode;
+      }
+      _self
+        .$post("/hd101/subjectPay", param)
+        .then(res => {
+          console.log(res, "subjectPay");
+          if ((res.code = "200" && res.data != null)) {
+            _self.weixinPay(res.data, _self, 2);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    toPayStart(type) {
+      let _self = this;
+      let shareCode = this.shareCode;
+      console.log(shareCode, "toPayStart-shareCode");
+      let param = { choosedPayWay: 4 };
+      if (shareCode) {
+        param.shareCode = shareCode;
+      }
+      _self
+        .$post("/hd101/subjectJoinPay", param)
+        .then(res => {
+          console.log(res, "subjectJoinPay");
+          if ((res.code = "200" && res.data != null)) {
+            _self.weixinPay(res.data, _self, type);
+          } else {
+            _self.$toast("系统繁忙,请稍后重试~");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getWxConfig: function() {
+      return api._post("/wxlogin/getJsConfig")
+        .then(rsp => {
+          console.log(rsp, "rsp");
+          if (rsp) {
+            this.wx.config({
+              debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+              appId: rsp.appId, // 必填，公众号的唯一标识
+              timestamp: rsp.timestamp, // 必填，生成签名的时间戳
+              nonceStr: rsp.nonceStr, // 必填，生成签名的随机串
+              signature: rsp.signature, // 必填，签名，见附录1
+              jsApiList: ["chooseWXPay"]
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    weixinPay: function(params, _self, type) {
+      console.log(params, "params");
+      _self.wx.ready(function() {
+        _self.wx.chooseWXPay({
+          timestamp: params.requestParams.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+          nonceStr: params.requestParams.nonceStr, // 支付签名随机串，不长于 32 位
+          package: params.requestParams.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+          signType: "MD5", // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+          paySign: params.requestParams.paySign, // 支付签名
+          success: function(res) {
+            if (type == 1 || type == 3) {
+              //答题首页支付||继续挑战支付
+              _self.callbackPayStart(params, type);
+            } else if (type == 2) {
+              //续命支付
+              _self.callbackPayContinue(params);
+            }
+          },
+          cancel: function(res) {
+            _self.$toast("支付取消", 2);
+          },
+          fail: function(res) {
+            _self.$toast("支付失败", 2);
+          }
+        });
+      });
+    },
+    callbackPayContinue(params) {
+      this.$toast("支付成功，请继续答题", 4);
+      setTimeout(() => {
+        this.closePop();
+        if (this.isDoSubject) {
+          this.$emit("reStartTimeCountDown");
+        }
+      }, 2 * 1000);
+    },
+    callbackPayStart(params, type) {
+      let apiParam = {
+        subjectLogId: params.outOrderId,
+        thirdOrderId: params.thirdId,
+        joinType: 1
+      };
+      console.log(params, "callbackPayStart-params");
+      console.log(apiParam, "callbackPayStart-apiParam");
+      console.log(type, "支付类型");
+      if (type == 1) {
+        //答题首页支付
+        this.$emit("joinHdSubject", apiParam);
+      } else if (type == 3) {
+        this.joinHdSubject(apiParam);
+      }
+      console.log("the end");
+    },
+    closePropCompoment() {
+      this.$emit("close");
+    },
+    joinHdSubject(apiParam) {
+      apiParam = apiParam ? apiParam : {};
+      console.log(apiParam, "pop调用joinHdSubject");
+      let _self = this;
+      _self
+        .$post("/subject/joinSubject", apiParam)
+        .then(rsp => {
+          console.log(rsp);
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            _self.showFlag = false;
+            let subject = dataResponse.data;
+            //跳转答题页
+            let queryParam = {
+              hdUserLogId: subject.hdUserLogId,
+              subjectId: subject.subjectId,
+              subjectLogId: subject.subjectLogId
+            };
+            let shareCode = this.shareCode;
+            if (shareCode) {
+              queryParam.shareCode = shareCode;
+            }
+            this.$emit("payToRestartGame", queryParam);
+          } else if (dataResponse.code == "1607") {
+            _self.openDialog(4);
+          } else if (dataResponse.code == "4444") {
+            _self.$toast("请勿频繁重复点击");
+          } else if (dataResponse.code == "2111") {
+            _self.openDialog(2);
+          } else {
+            _self.$toast("参加答题异常，请稍后再试");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    toHdHome() {
+      let shareCode = this.shareCode;
+      console.log(shareCode, "toHdHome");
+      let queryParam = {};
+      if (shareCode) {
+        queryParam.shareCode = shareCode;
+      }
+      this.$router.push({
+        name: "hd101Home",
+        query: queryParam
+      });
+    }
+  }
+})

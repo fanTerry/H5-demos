@@ -1,0 +1,90 @@
+<template>
+  <section class="mod_points_exchange">
+    <modTitle :titleTxt="'积分兑换'">
+      <div class="points_exchange">
+        <img src="../../assets/images/pop/coco_icon.png" alt="">椰子分
+        <a>兑换</a>
+      </div>
+    </modTitle>
+    <div class="exchange_con">
+      <ul>
+        <li>
+          <img src="../../assets/images/home/exchange_gold.png" alt="">
+          <p>黄金兑换</p>
+        </li>
+        <li>
+          <img src="../../assets/images/home/exchange_fee.png" alt="">
+          <p>话费充值</p>
+        </li>
+        <li>
+          <img src="../../assets/images/home/exchange_oil.png" alt="">
+          <p>加油卡充值</p>
+        </li>
+        <li>
+          <img src="../../assets/images/home/exchange_supermarket.png" alt="">
+          <p>小椰超市</p>
+        </li>
+        <li>
+          <img src="../../assets/images/home/exchange_livecost.png" alt="">
+          <p>生活缴费</p>
+        </li>
+        <li>
+          <img src="../../assets/images/home/exchange_vip.png" alt="">
+          <p>会员卡券</p>
+        </li>
+        <li>
+          <img src="../../assets/images/home/exchange_travel.png" alt="">
+          <p>海南旅游</p>
+        </li>
+        <li>
+          <img src="../../assets/images/home/exchange__special.png" alt="">
+          <p>海南特产</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+</template>
+
+<script>
+import modTitle from "../../components/title/title";
+
+export default {
+  components: { modTitle },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+
+.mod_points_exchange {
+  display: table;
+  margin: 30px auto 0;
+  .exchange_con {
+    margin-top: 43px;
+    padding: 60px 0;
+    background-color: #2f1c20;
+    ul {
+      @extend .flex_v_justify;
+      padding: 0 10px;
+      text-align: center;
+    }
+    li {
+      margin: 0 9px;
+    }
+    img {
+      width: 134px;
+      height: 148px;
+    }
+    p {
+      padding-top: 30px;
+      font-size: 22px;
+      color: #ffdcd7;
+    }
+  }
+}
+</style>

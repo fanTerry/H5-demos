@@ -1,0 +1,324 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <nav-bar :pageTitle="'创建赛事'"></nav-bar>
+    </header>
+    <div class="main">
+      <div class="create_match">
+        <div class="item select_game">
+          <div class="flex_v_justify">
+            <label>选择游戏</label>
+            <div class="flex_hc">和平精英<img class="game_img"
+                src="https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg" alt=""><i
+                class="toggle_icon"></i></div>
+          </div>
+          <div class="game_list">
+            <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg" alt="">
+          </div>
+        </div>
+        <div class="item">
+          <label for="match_name">赛事名称</label>
+          <div><input type="text" id="match_name"><i class="edit_icon"></i></div>
+        </div>
+        <div class="item">
+          <label for="join_team">参赛队伍</label>
+          <div><input type="text" id="join_team"><i class="edit_icon"></i></div>
+        </div>
+        <div class="item">
+          <label for="team_person">每队人数</label>
+          <div><input type="text" id="team_person"><i class="edit_icon"></i></div>
+        </div>
+        <div class="item match_model">
+          <label>赛事模式</label>
+          <div>淘汰制</div>
+        </div>
+        <div class="item">
+          <label for="regist_time">报名时间</label>
+          <div><input type="text" id="regist_time"><i class="edit_icon"></i></div>
+        </div>
+        <div class="item">
+          <label for="game_time">比赛时间</label>
+          <div><input type="text" id="game_time"><i class="edit_icon"></i></div>
+        </div>
+        <div class="item race_round">
+          <div class="flex_v_justify">
+            <label>赛程轮次</label>
+            <div class="flex_hc">3<i class="toggle_icon"></i></div>
+          </div>
+          <div class="item">
+            <label>第1轮</label>
+            <div><input type="text"><i class="edit_icon"></i></div>
+          </div>
+        </div>
+        <div class="item award_tips">
+          <label for="award_tips">奖励说明</label>
+          <textarea name="" id="award_tips" cols="30" rows="10" placeholder="请填写奖励机制"></textarea>
+        </div>
+
+        <a class="next_btn">下一步</a>
+      </div>
+    </div>
+    <div class="ui_pop">
+      <div class="pop_confirm">
+        <a class='close'></a>
+        <h3>创建赛事信息确认</h3>
+        <div class="pop_list">
+          <div class="pop_item">
+            <span>选择游戏：</span>
+            <p>和平精英</p>
+          </div>
+          <div class="pop_item">
+            <span>赛事名称：</span>
+            <p>小橘子创建的和平精英比赛</p>
+          </div>
+          <div class="pop_item">
+            <span>参赛队伍数：</span>
+            <p>16</p>
+          </div>
+          <div class="pop_item">
+            <span>每队人数：</span>
+            <p>5</p>
+          </div>
+          <div class="pop_item">
+            <span>赛事模式：</span>
+            <p>淘汰制</p>
+          </div>
+          <div class="pop_item">
+            <span>报名时间</span>
+            <p>2019.12.14 19:00</p>
+          </div>
+          <div class="pop_item">
+            <span>比赛时间</span>
+            <p>2019.12.14 21:00</p>
+          </div>
+          <div class="pop_item">
+            <span>赛程轮次：</span>
+            <p>3</p>
+          </div>
+          <div class="pop_item pop_match_round">
+            <span>第1轮</span>
+            <p>2019.12.14 21:00</p>
+          </div>
+          <div class="pop_item pop_award_tips">
+            <span>奖励说明：</span>
+            <p>获胜的那支队伍，队员可获得王者荣耀皮肤一件。</p>
+          </div>
+        </div>
+        <a class='next_btn'>创建比赛</a>
+      </div>
+    </div>
+    <footer class="mod_footer">
+
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "components/header/nav_bar/index.vue";
+
+export default {
+  components: {
+    navBar
+  },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.main {
+  padding: 28vw 4vw 8.6667vw;
+  background-color: #090709;
+}
+
+.edit_icon {
+  @extend .g_v_mid;
+  right: 0;
+  width: 5.3333vw;
+  height: 5.3333vw;
+  @include getBgImg("../../assets/images/matchtool/edit_icon.png");
+  background-size: contain;
+}
+
+.toggle_icon {
+  width: 5.3333vw;
+  height: 5.3333vw;
+  @include getBgImg("../../assets/images/matchtool/toggle_icon.png");
+}
+
+.create_match {
+  padding-bottom: 8.5333vw;
+  background-color: #fff;
+  border-radius: 1.0667vw;
+}
+
+.game_img {
+  width: 8vw;
+  height: 8vw;
+  margin: 0 3.6vw 0 1.3333vw;
+  object-fit: contain;
+}
+
+.item {
+  position: relative;
+  @extend .flex_v_justify;
+  height: 14.6667vw;
+  padding: 0 4.5333vw 0 3.2vw;
+  font-size: 3.7333vw;
+  color: #333;
+  > div {
+    position: relative;
+    @extend .flex_hc;
+    height: 100%;
+  }
+  label {
+    height: 100%;
+    font-size: 4.2667vw;
+    line-height: 14.6667vw;
+  }
+  input {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    padding-right: 8.8vw;
+    text-align: right;
+    color: #333;
+  }
+}
+
+.match_model > div {
+  padding-right: 8.8vw;
+}
+
+.race_round {
+  display: block;
+  height: initial;
+  padding: 0;
+  > div {
+    height: 14.6667vw;
+    padding: 0 4.5333vw 0 3.2vw;
+  }
+  .toggle_icon {
+    margin-left: 3.6vw;
+  }
+  .item {
+    padding-left: 7.2vw;
+    background-color: #f4f4f4;
+  }
+}
+
+.select_game {
+  display: block;
+  padding: 0;
+  height: initial;
+  > div {
+    height: 14.6667vw;
+    padding: 0 4.5333vw 0 3.2vw;
+    label {
+      font-size: 4vw;
+    }
+  }
+  .game_list {
+    @extend .flex_hc;
+    background-color: #f4f4f4;
+    img {
+      width: 8vw;
+      height: 8vw;
+      margin-left: 4vw;
+      object-fit: contain;
+    }
+  }
+}
+
+.award_tips {
+  display: block;
+  height: initial;
+  padding: 0;
+  label {
+    padding-left: 3.2vw;
+  }
+  textarea {
+    width: 100%;
+    height: 29.8667vw;
+    padding: 3.2vw;
+    line-height: 6vw;
+    background-color: #f4f4f4;
+    &::placeholder {
+      color: #ccc;
+    }
+  }
+}
+
+.next_btn {
+  display: block;
+  margin: 8.5333vw 4vw 0;
+  line-height: 11.7333vw;
+  font-size: 4.5333vw;
+  color: #fff;
+  text-align: center;
+  border-radius: 11.7333vw;
+  @include bgLinear(right, #ee701d, #f5951d);
+}
+
+.pop_confirm {
+  position: relative;
+  width: 92vw;
+  padding-bottom: 6.9333vw;
+  background-color: #fff;
+  border: 1px #979797 inset;
+  border-radius: 1.0667vw;
+  color: #333;
+  .close {
+    position: absolute;
+    right: 3.2vw;
+    top: 3.2vw;
+    width: 4.2667vw;
+    height: 4.2667vw;
+    @include getBgImg("../../assets/images/matchtool/close.png");
+  }
+  h3 {
+    line-height: 14.6667vw;
+    font-size: 4.5333vw;
+    text-align: center;
+    @include getBorder(bottom, #e6e6e6);
+  }
+  .pop_list {
+    padding-top: 2.4vw;
+  }
+  .pop_item {
+    @extend .flex_v_justify;
+    padding: 2.4vw 5.3333vw;
+    font-size: 4vw;
+    span {
+      font-weight: 600;
+    }
+  }
+  .pop_match_round {
+    background-color: #f4f4f4;
+    padding-left: 9.3333vw;
+    background-color: #f4f4f4;
+  }
+  .pop_award_tips {
+    display: block;
+    padding: 0;
+    span {
+      display: block;
+      padding: 2.4vw 5.3333vw;
+    }
+    p {
+      padding: 2.4vw 5.3333vw 4.8vw;
+      line-height: 5.6vw;
+      background-color: #f4f4f4;
+    }
+  }
+  .next_btn {
+    margin-top: 6.9333vw;
+  }
+}
+</style>

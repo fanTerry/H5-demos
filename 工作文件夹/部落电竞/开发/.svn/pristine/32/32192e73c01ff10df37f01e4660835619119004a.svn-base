@@ -1,0 +1,283 @@
+<template>
+  <div>
+    <div class="bet_item" v-if="guessEnd">
+      <h3>
+        <span class="round">{{quizMathGame.gameNumber|gameFightNum }}</span>
+        <span>{{quizMathGame.subjectName}}</span>
+        <!-- <span class="end_time" v-if="quizMathGame.deadLine">{{quizMathGame.deadLine}}截止</span> -->
+      </h3>
+      <div class="battle_team">
+        <!-- 下单结束加上disabled -->
+        <a v-for="(item,index) in quizMathGame.quizOptions" :key="index" :class="{select:getBetData.toCurBet == matchGameId+'_'+index,
+          disabled:quizMathGame.suspended==1 ||quizMathGame.visible==0 || quizMathGame.status>=2}" @click="selectItem(item,index,$event)">
+          <p class="answer">
+            {{item.teamName|formatName(4)}}<i v-if="item.teamName.length>5">..</i> {{item.name}}</p>
+          <span class="odds" v-if="quizMathGame.suspended==0"> {{item.odds.toFixed(2)}}</span>
+          <span class="odds" v-if="quizMathGame.suspended==1">封盘</span>
+          <!-- 已经下注的选项-->
+          <span class="selected" v-if='item.quizzedCount>0'></span>
+          <!-- v-if='item.quizzedCount>0||(item.index == userSelectItem.index && userSelectItem.quizzedCount>0)'></span> -->
+          <!-- 下单弹窗 -->
+          <bet-pops ref="uiPop" v-if="getBetData.toCurBet==matchGameId+'_'+index" :selectItem="userSelectItem">
+          </bet-pops>
+        </a>
+      </div>
+    </div>
+
+    <div class="bet_item end_item" v-else>
+      <h3>
+        <span class="round">{{quizMathGame.gameNumber|gameFightNum }}</span>
+        <span>{{quizMathGame.subjectName}}</span>
+      </h3>
+      <div class="battle_team">
+        <a v-for="(item,index) in quizMathGame.quizOptions" :key="index" :class="{guessed:true}">
+          <p class="answer">{{item.teamName|formatName(4)}}<i v-if="item.teamName.length>5">..</i> {{item.name}}
+          </p>
+          <span class="selected" v-if='item.quizzedCount>0'></span>
+          <!-- v-if='item.quizzedCount>0||(item.index == userSelectItem.index && userSelectItem.quizzedCount>0)'></span> -->
+          <!-- 赛果出来后的正确和错误 -->
+          <span class="succeed" v-if="quizMathGame.awardResult==item.index"></span>
+          <span class="failed" v-if="quizMathGame.awardStatus==-1 || item.result=='R'"></span>
+          <!-- <span class="failed" v-else></span> -->
+        </a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import betPops from './betpops.vue';
+import { mapGetters, mapActions } from 'vuex';
+import { gameFightNum } from '../../../filters';
+export default {
+  components: { betPops },
+  props: ['quizMathGame', 'guessEnd'],
+  filters: {
+    gameFightNum(num) {
+      return gameFightNum(num + '');
+    }
+  },
+  data() {
+    return {
+      showProp: false,
+      userSelectItem: Object,
+      matchGameId: null //quiz_match_game表中的id
+    };
+  },
+  computed: {
+    ...mapGetters({
+      getBetData: 'getBetData'
+    })
+  },
+  mounted() {
+    this.matchGameId = this.quizMathGame.id;
+  },
+  watch: {
+    quizMathGame(newVal, oldVal) {
+      this.matchGameId = newVal.id;
+      // console.warn(newVal.id, "newVal.id");
+    }
+  },
+  methods: {
+    ...mapActions(['setBetData']),
+    selectItem(item, index, e) {
+      //e.stopPropagation();
+      if (this.quizMathGame.suspended == 1 || this.quizMathGame.visible == 0) {
+        this.$toast('暂停投注');
+        return;
+      }
+      console.log(item, 'selectItem');
+      console.log(this.quizMathGame, 'this.quizMathGame');
+      this.showProp = true;
+      let toCurBet = this.matchGameId + '_' + index;
+      this.userSelectItem = item;
+      this.userSelectItem.matchGameId = this.matchGameId;
+      this.userSelectItem.matchNo = this.quizMathGame.matchNo;
+      this.userSelectItem.playNo = this.quizMathGame.playNo;
+      this.userSelectItem.playName = this.quizMathGame.playName;
+      this.userSelectItem.homeTeamName = this.quizMathGame.homeTeamName;
+      this.userSelectItem.awayTeamName = this.quizMathGame.awayTeamName;
+      this.userSelectItem.subjectName = this.quizMathGame.subjectName;
+      this.userSelectItem.matchStatus = this.quizMathGame.status;
+
+      this.setBetData({ toCurBet: toCurBet });
+    },
+    //刷新用户已猜状态
+    reflushQuizzedCount() {
+      this.userSelectItem.quizzedCount = +1;
+    },
+    //去充值
+    toCharge() {
+      this.$parent.toCharge();
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../../assets/common/_base';
+@import '../../../assets/common/_mixin';
+
+h3 {
+  position: relative;
+  @include line_clamp(2);
+  font-weight: normal;
+  font-size: 0;
+  line-height: 3.7334vw;
+  span {
+    vertical-align: middle;
+    font-size: 3.2vw;
+  }
+  .round {
+    display: inline-block;
+    margin-right: 2.1333vw;
+    padding: 0.5333vw 1.6vw;
+    font-size: 2.6667vw;
+    line-height: 1;
+    color: #fff;
+    background-color: #d13840;
+    border-radius: 0.8vw;
+  }
+}
+
+.battle_team {
+  @extend .flex_v_justify;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  a {
+    position: relative;
+    width: 42.1333vw;
+    height: 8.5334vw;
+    margin-top: 2.4vw;
+    padding: 0 3.2vw;
+    font-size: 3.7333vw;
+    border-radius: 6px;
+    @include getRadiusBorder(#999, all, 12px);
+    &:nth-child(2n-1) {
+      .answer {
+        float: left;
+      }
+      .odds {
+        float: right;
+      }
+    }
+    &:nth-child(2n) {
+      .answer {
+        float: right;
+      }
+      .odds {
+        float: left;
+      }
+      .selected {
+        left: 0;
+        @include getBgImg('../../../assets/images/guess/guessed_left.png');
+      }
+    }
+    &::after {
+      content: '';
+      display: table;
+      clear: both;
+    }
+    &.select {
+      position: relative;
+      color: #fff;
+      background-color: #d13840;
+      &::before {
+        border-color: transparent;
+      }
+    }
+    &.guessed {
+      background-color: $color_main;
+      &::before {
+        display: none;
+      }
+    }
+
+    &.disabled {
+      background-color: #999;
+      color: #fff;
+    }
+    .answer,
+    .odds {
+      line-height: 8.5334vw;
+    }
+    .answer {
+      font-size: 3.4667vw;
+    }
+    .odds {
+      font-weight: bold;
+    }
+  }
+}
+
+.end_time {
+  padding-left: 2.67vw;
+  font-size: 3.2vw;
+  color: #86564e;
+}
+
+.selected {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  width: 7.2vw;
+  height: 7.2vw;
+  @include getBgImg('../../../assets/images/guess/guessed.png');
+  background-size: contain;
+}
+
+.end_item {
+  color: #fff;
+  a {
+    &:nth-child(2n-1) {
+      .answer {
+        float: right;
+      }
+      .succeed,
+      .failed {
+        left: 0;
+      }
+      .failed {
+        transform: rotate(180deg);
+        -webkit-transform: rotate(180deg);
+      }
+      .succeed {
+        @include getBgImg('../../../assets/images/guess/left_succeed.png');
+      }
+    }
+    &:nth-child(2n) {
+      .answer {
+        float: left;
+      }
+      .succeed,
+      .failed {
+        right: 0;
+      }
+      .selected {
+        left: 0;
+        @include getBgImg('../../../assets/images/guess/guessed_left.png');
+      }
+    }
+  }
+  a::before {
+    border-color: #b7565c;
+  }
+}
+
+.succeed,
+.failed {
+  position: absolute;
+  top: 0;
+  width: 10.9333vw;
+  height: 8.5334vw;
+}
+
+.succeed {
+  @include getBgImg('../../../assets/images/guess/succeed.png');
+}
+
+.failed {
+  @include getBgImg('../../../assets/images/guess/failed.png');
+}
+</style>

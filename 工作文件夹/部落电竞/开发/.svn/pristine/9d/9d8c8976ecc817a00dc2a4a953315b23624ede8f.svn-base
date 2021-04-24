@@ -1,0 +1,5 @@
+<!--modules/reportpage/mdexpert/md-expert.wxml-->
+
+<view class='md-expert'>
+  <report-expert-item wx:for="list" wx:key=''></report-expert-item>
+</view>

@@ -1,0 +1,451 @@
+<template>
+  <div class="Page follow_Page">
+    <header class="mod_header">
+      <navBar pageTitle="发现"></navBar>
+      <div class="tab">
+        <div class="active">关注</div>
+        <div @click="gotoTopic()">话题</div>
+      </div>
+    </header>
+
+    <div class="main" id='mainId'>
+      <scroll ref="scroll" :scrollbar="scrollbar" :pullDownRefresh="pullDownRefresh" :pullUpLoad="pullUpLoad"
+        :startY="0" @pullingDown="onPullingDown" @pullingUp="onPullingUp">
+        <section class="mod_follow">
+          <div class="my_follow_topic" v-if="this.userFollowTopics.length > 0">
+
+            <h3>我关注的话题<a @click="gotoTopic()">更多热门话题<span></span></a></h3>
+            <ul>
+              <li v-for="(item,index) in userFollowTopics" :key="index" @click="gotoDetailTopic(item.id)">
+                <div class="team " :class="{'active':item.newDatas}">
+                  <img :src="item.iconUrl|getDefaultImg(globalConst.topicDefaultIcon)" alt="">
+                  <p>{{item.name}}</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <!-- 文章列表组件 -->
+          <articleTab :showType='showType' :cmsContentList='cmsContentList'></articleTab>
+        </section>
+        <!-- </scroll> -->
+        <!-- <noData v-if="noData"> </noData> -->
+        <loading v-if="loading"></loading>
+      </scroll>
+    </div>
+    <publishIcon></publishIcon>
+    <footer class="mod_footer">
+      <tabbar></tabbar>
+    </footer>
+  </div>
+</template>
+<script>
+import navBar from "components/header/nav_bar/index";
+import topic from "components/user_follow/topic";
+import publishIcon from "components/user_follow/publishIcon";
+import Scroll from "components/common/scroll";
+import localStorage from "../../libs/storages/localStorage";
+import fixScroll from "../../libs/common/fix-scroll-ios";
+import noData from "components/no_data/index";
+import loading from "components/common/loading";
+import articleTab from "components/follow/articleTab";
+import tabbar from "components/tabbar/index";
+import wxApi from "../../libs/weixinShare";
+
+
+
+export default {
+  components: {
+    navBar,
+    topic,
+    Scroll,
+    noData,
+    loading,
+    articleTab,
+    publishIcon,
+    tabbar
+  },
+  data() {
+    return {
+      currTab: 1,
+      userFollowTopics: [],
+      showType: 100,
+      noData: false,
+      loading: false,
+      showPublish: false,
+      cmsContentList: [],
+      scrollbar: { fade: true },
+      pullDownRefresh: { threshold: 90, stop: 40, txt: "刷新成功" },
+      pullUpLoad: {
+        threshold: 10,
+        txt: { more: "加载更多", noMore: "没有更多数据了" }
+      },
+      pageNo: 1,
+      pageSize: 10
+    };
+  },
+  created() {
+    window.sessionStorage.selectedTab = 1;
+  },
+  mounted() {
+    // wxApi.wxRegister(this.wxRegCallback())
+    this.wxShare()
+    this.getMyFollowList();
+    this.getPageContenList();
+
+  },
+  methods: {
+    wxShare() {
+      // 用于微信JS-SDK回调
+      let option = {
+        title: "橘子电竞关注有奖哦", // 分享标题, 请自行替换
+        desc: "一个专注电竞赛事的平台", // 分享描述
+        link:  location.href.split('#')[0] , // 分享链接，根据自身项目决定是否需要split
+        imgUrl: "https://rs.esportzoo.com/svn/esport-res/mini/images/game/dlq.jpg", // 分享图标, 请自行替换，需要绝对路径
+      };
+      wxApi.wxRegister(option)
+    },
+    
+    gotoDetailTopic(topicId) {
+      this.$router.push({
+        path: "/detailTopic",
+        query: {
+          id: topicId
+        }
+      });
+    },
+    gotoTopic() {
+      this.$router.push({
+        path: "/topic",
+        query: {}
+      });
+    },
+    getMyFollowList() {
+      let _self = this;
+      _self
+        .$post("/api/cmsTopic/listCmsTopic")
+        .then(res => {
+          if (res.code == "200") {
+            console.log(res);
+            this.userFollowTopics = res.data.followList.slice(0, 8);
+          } else {
+            _self.$toast(res.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getPageContenList(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+        param.contentType = this.contentType;
+      }
+      param.id = this.topicId;
+      console.log(param);
+      // return this.$post("/api/cmsTopic/showCmsTopicContent", param)
+      return this.$post("/api/follow/cmsList", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse.data.cmsContentList);
+          if (dataResponse.code == "200") {
+            this.currPageSize = dataResponse.data.cmsContentList.length;
+            if (dataResponse.data.cmsContentList.length > 0) {
+              this.cmsContentList = this.cmsContentList.concat(
+                dataResponse.data.cmsContentList
+              );
+            }
+
+            if (this.cmsContentList.length == 0) {
+              this.noData = true;
+            } else {
+              this.noData = false;
+            }
+            return this.cmsContentList;
+          } else if (dataResponse.code == "9999") {
+            this.$toast(dataResponse.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    toPublish(type) {
+      this.showPublish = false;
+      this.$router.push({
+        name: "publishEssays",
+        query: {
+          type: type
+        }
+      });
+    },
+    onPullingDown() {
+      console.log("you are onPullingDown");
+      if (this._isDestroyed) {
+        return;
+      }
+
+      this.cmsContentList = [];
+      this.getPageContenList().then(data => {
+        this.$refs.scroll.forceUpdate();
+      });
+    },
+    onPullingUp() {
+      console.log("you are onPullingUp");
+      if (this._isDestroyed) {
+        return;
+      }
+
+      if (this.currPageSize < this.pageSize) {
+        console.log("currPageSize", this.currPageSize);
+        this.$refs.scroll.forceUpdate();
+      } else {
+        this.loadMore();
+      }
+    },
+    /** 上拉加载*/
+    loadMore() {
+      this.pageNo = this.pageNo + 1;
+      let param = {};
+      param.pageNo = this.pageNo;
+      param.pageSize = this.pageSize;
+      if (this.showType < 10) {
+        param.contentType = this.showType;
+      }
+      /**
+       * 关注列表
+       */
+
+      this.getPageContenList(param).then(data => {
+        this.$refs.scroll.forceUpdate();
+      });
+    }
+  },
+  computed: {}
+};
+</script>
+
+
+<style lang='scss'>
+.follow_Page {
+  .user_info {
+    padding-right: 40px !important;
+    padding-bottom: 4px !important;
+    .user_img {
+      width: 35px !important;
+      height: 35px !important;
+    }
+  }
+  .myfollow_tab {
+    .user_info {
+      padding-bottom: 14px !important;
+    }
+  }
+  .article_tab {
+    .user_info {
+      padding-right: 10px !important;
+      .user_img {
+        width: 28px !important;
+        height: 28px !important;
+      }
+    }
+  }
+}
+</style>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+@import "../../assets/common/_var.scss";
+@import "../../assets/common/iconfont.css";
+
+.no_data {
+  @extend .g_v_c_mid;
+}
+
+.icon-tianxie {
+  @extend .g_v_mid;
+  right: 10px;
+  font-size: 20px;
+  color: #818181;
+}
+
+.list-wrapper {
+  // height: calc(100% - 44px);
+}
+
+.mod_header {
+  .tab {
+    @extend .flex;
+    margin-bottom: 10px;
+    background-color: #fff;
+    div {
+      position: relative;
+      flex: 1;
+      -webkit-flex: 1;
+      padding: 12px 0;
+      font-size: 13px;
+      color: #818181;
+      text-align: center;
+      &.active {
+        color: $color_main;
+        &::after {
+          content: "";
+          @extend .g_c_mid;
+          bottom: 0;
+          width: 20px;
+          height: 3px;
+          background-color: $color_main;
+          border-radius: 2px;
+        }
+      }
+    }
+  }
+}
+
+.main {
+  position: relative;
+  .nav_list {
+    margin-bottom: 7px;
+  }
+}
+
+.mod_follow {
+  .my_follow_topic {
+    padding: 0 10px;
+    background-color: #fff;
+    ul {
+      @extend .flex;
+      flex-wrap: wrap;
+      -webkit-flex-wrap: wrap;
+    }
+    li {
+      position: relative;
+      width: 21.7%;
+      padding-top: 21.7%;
+      margin-right: 4.4%;
+      margin-bottom: 14px;
+      box-shadow: 0 0 4px rgba(#000000, 0.1);
+      &:nth-child(4n) {
+        margin-right: 0;
+      }
+    }
+  }
+  .team {
+    @extend .g_v_c_mid;
+    @extend .flex_v_h;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    &.active::after {
+      content: "";
+      position: absolute;
+      right: 3px;
+      top: 3px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: $color_main;
+    }
+    img {
+      width: 65%;
+      height: 65%;
+      object-fit: contain;
+    }
+    p {
+      @include t_nowrap(100%);
+      padding-top: 5px;
+      font-size: 12px;
+      color: #333;
+    }
+  }
+  h3 {
+    @extend .flex_v_justify;
+    padding: 12px 0 18px;
+    font-size: 14px;
+    font-weight: normal;
+    color: #000;
+    a {
+      @extend .flex_hc;
+      font-size: 12px;
+      color: #999;
+      span {
+        position: relative;
+        width: 14px;
+        height: 14px;
+        @include getArrow(7px, #999, right);
+      }
+    }
+  }
+}
+
+.myfollow_tab {
+  .user_list,
+  .search_result {
+    padding-left: 10px;
+    background-color: #fff;
+  }
+
+  .search_result {
+    position: relative;
+    padding-left: 0;
+    .user_info:last-child:after {
+      content: "";
+      @extend .g_c_mid;
+      bottom: 0;
+      width: 80%;
+      height: 1px;
+      background-color: #ddd;
+    }
+  }
+
+  .user_list {
+    border-radius: 8px;
+    h2 {
+      padding-top: 3px;
+    }
+  }
+  .search_con {
+    position: relative;
+    @extend .flex;
+    padding: 7px 45px 7px;
+    input {
+      flex: 1;
+      height: 24px;
+      padding-left: 30px;
+      border-radius: 24px;
+      background-color: #fff;
+      border: none;
+    }
+    .search {
+      @extend .g_v_mid;
+      left: 52px;
+      width: 16px;
+      height: 16px;
+      @include getBgImg("../../assets/images/home/search.png");
+    }
+  }
+}
+
+.sidebar {
+  position: fixed;
+  z-index: 99;
+  bottom: 95px;
+  right: 15px;
+  color: #c2c2c2;
+  text-align: center;
+  .icon-sousuo {
+    font-size: 12px;
+    color: currentColor;
+  }
+  a {
+    display: block;
+    padding-top: 8px;
+    color: currentColor;
+  }
+}
+</style>
+

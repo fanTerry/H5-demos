@@ -1,0 +1,17 @@
+<!--component/userinfo/user_info.wxml-->
+<view class="user_info">
+  <view>
+    <view class="user_img " :class="{active:follower.followStatus==0}">
+      <image :src="follower.userIcon|getDefaultImg(globalConst.userDefaultIcon)" alt=""></image>
+    </view>
+    <view>
+      <view class="name">{{follower.userNickName}}</view>
+      <p class="tips">
+        <span>{{follower.fans}}粉丝</span>
+        <!-- <span>100万阅读</span> -->
+      </p>
+    </view>
+  </view>
+  <view class="follow_btn" bindtap="follow(follower.userId,1)" wx:if="follower.followStatus==0">+ 关注</view>
+  <view class="followed_btn" bindtap="follow(follower.userId,0)" wx:if="follower.followStatus==1">- 已关注</view>
+</view>

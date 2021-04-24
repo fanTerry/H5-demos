@@ -1,0 +1,376 @@
+<template>
+  <div class="ui_pop" :class="{fadeToTop:showBetOuterFlag == true}" v-if="showBetOuterFlag" @click="closePop($event)">
+    <div class="bet" v-if="showType == 1">
+      <a class="close" @click="closePop($event)"></a>
+      <div class="title">
+        <p class="tips">
+          投注{{userBetNum}}，可得{{(userBetNum * (selectItem&&selectItem.odds?selectItem.odds:0)).toFixed(0)}} 星星</p>
+        <div class="flex_hc">
+          <span class="coin"></span>
+          <span class="balance">余额 {{userInfo.ableRecScore}}</span>
+        </div>
+      </div>
+      <div class="bet_num">
+        <ul>
+          <template v-for="(num,index) in betNumList">
+            <li v-if="index == betNumList.length -1" :class="{select:userBetNum == num}" :key="index"
+              @click="chooseBetNum(num,$event)"><input type="text" placeholder="自定义" /></li>
+            <li v-else :class="{select:userBetNum == num}" :key="index" @click="chooseBetNum(num,$event)">{{num}}</li>
+          </template>
+        </ul>
+      </div>
+      <a class="confirm_btn" @click="checkOut()">确认投注</a>
+      <div class="mod_footer"></div>
+    </div>
+
+    <div class="betSuccess" v-if="showType == 2">
+      <a class="close" @click="closePop($event)"></a>
+      <div>
+        <div class="flex_v_h">
+          <span class="happy_icon"></span>
+          投注成功
+        </div>
+        <p class="tips">投注结果见邮件通知</p>
+      </div>
+    </div>
+
+    <div class="betFailed" v-if="showType == 3">
+      <a class="close" @click="showType = 1"></a>
+      <div>
+        <div class="flex_v_h">
+          <span class="sad_icon"></span>
+          余额不足
+        </div>
+        <a class="go_recharge">去充值</a>
+      </div>
+    </div>
+  </div>
+
+</template>
+
+<script>
+import { mapGetters, mapActions } from "vuex";
+//投注状态弹窗
+const betStatusJson = {
+  NONE: 0, //0:不弹窗
+  NO_BALANCE: 1, //1:余额不足
+  BET_SUCCESS: 2, //2:投注成功
+  BET_ING: 3, //3:投注进行中
+  BET_FALI: 4 //4:投注失败
+};
+export default {
+  components: {},
+  props: ["selectItem"],
+  data() {
+    return {
+      userBetNum: 0, //用户投入数
+      betNumList: [2000, 5000, 10000], //投注选择数组
+      inputNum: null, //用户输入数
+      isSubmit: false, //防止重复提交
+      showBetPop: false, //投注相关弹窗控制(弹窗总控制)
+      betStatus: 0, //投注涉及状态:0:不弹窗,1:余额不足,2:投注成功,3:投注进行中,4:投注失败
+      betFailTips: {
+        title: "",
+        desc: ""
+      },
+      betStatusJson: betStatusJson,
+      showBetOuterFlag: true,
+      showType: 1
+    };
+  },
+  computed: {
+    ...mapGetters({
+      getBetData: "getBetData",
+      userInfo: "getUserInfo"
+    })
+  },
+  //实时监听用户星星状态
+  watch: {
+    betStatus(newValue, oldValue) {
+      if (newValue != 0 && newValue != 3) {
+        this.showBetPop = true;
+        if (newValue == 2 || newValue == 4) {
+          //投注成功弹窗自动消失
+          setTimeout(() => {
+            this.showBetPop = false;
+          }, 2 * 1000);
+        }
+      } else {
+        this.showBetPop = false;
+      }
+    }
+  },
+  mounted() {
+    this.chooseBetNum(this.betNumList[0]);
+  },
+  methods: {
+    ...mapActions(["setBetData"]),
+    quizImmediately() {
+      this.betStatus = betStatusJson.BET_ING;
+      if (this.checkLogin()) {
+        if (!this.checkBalance()) {
+          return;
+        }
+        //比赛日期+赛事编号+“*”+玩法+“|”+竟猜选项+“@”+赔率;
+        let quizData = {
+          matchGameId: this.selectItem.matchGameId,
+          matchNo: this.selectItem.matchNo, //比赛日期+赛事编号
+          playThirdName: this.selectItem.playThirdName, //玩法
+          optIndex: this.selectItem.index, //竞猜选项
+          betSp: this.selectItem.odds, //赔率
+          userBetNum: this.userBetNum //用户投注数量
+        };
+        if (this.isSubmit) {
+          this.$toast("正在提交中，请稍等");
+          return;
+        }
+        this.doSubmit(quizData);
+      }
+    },
+    //提交竞猜
+    doSubmit(quizData) {
+      console.warn(quizData, "doSubmit-quizData");
+      this.isSubmit = true;
+      this.$post("/api/quiz/bet/doSubmit", quizData)
+        .then(data => {
+          console.log(data, "调用接口返回数据");
+          if (data.code == 200) {
+            //投注成功处理
+            this.betSuccess(data);
+          } else {
+            //投注失败处理
+            this.betFail(data);
+          }
+          this.isSubmit = false;
+        })
+        .catch(error => {
+          this.isSubmit = false;
+          console.log(error, "提交竞猜投注失败");
+        });
+    },
+    betSuccess(data) {
+      this.betStatus = betStatusJson.BET_SUCCESS;
+      //刷新用户余额
+      this.setBetData({ ...this.getBetData, toReflushBalance: true });
+    },
+    betFail(data) {
+      this.setBetFailTips("投注失败", data.message);
+    },
+    //检查账户余额
+    checkBalance() {
+      if (!this.userBetNum) {
+        this.$toast("请输入投注金额(1000的倍数)");
+        return false;
+      }
+      if (this.userBetNum > this.getUserData.starNum) {
+        setTimeout(() => {
+          this.betStatus = betStatusJson.NO_BALANCE;
+        }, 50);
+        return false;
+      }
+      if (this.userBetNum / 1000 >= this.selectItem.limit) {
+        //此选项上用户最多能投多少钱
+        this.$toast(
+          "该选项最多可投" + this.selectItem.limit * 1000 + "星星",
+          4
+        );
+        return false;
+      }
+      return true;
+    },
+    //检查是否登录
+    checkLogin() {
+      if (this.getLoginData.loginState == true) {
+        return true;
+      } else {
+        console.log("用户没有登录");
+        this.setLoginData({
+          ...this.getLoginData,
+          loginShowType: true,
+          codeType: 1
+        });
+        return false;
+      }
+    },
+    //选择投注金额
+    chooseBetNum(num,e) {
+      if (e) {
+        e.stopPropagation();
+      }
+
+      this.userBetNum = num;
+      if (null != this.inputNum) {
+        this.inputNum = null;
+      }
+    },
+    //处理用户输入
+    handleInput(e) {
+      this.inputNum = e.target.value;
+      // if (this.inputNum > this.getUserData.starNum) {
+      //   this.$toast("您的星星余额不足", 3);
+      //   this.inputNum = null;
+      //   return;
+      // }
+      this.userBetNum = this.inputNum;
+    },
+    inputBlur() {
+      if (this.inputNum % 1000 != 0) {
+        this.$toast("请输入投注金额(1000的倍数)");
+        this.inputNum = null;
+        this.userBetNum = this.inputNum;
+        return;
+      }
+    },
+    setBetFailTips(title, desc) {
+      this.betStatus = betStatusJson.BET_FALI;
+      this.betFailTips.title = title;
+      this.betFailTips.desc = desc;
+    },
+    toCharge() {
+      this.showBetPop = false;
+      this.setBetData({ ...this.getBetData, toCharge: true });
+    },
+    closePop(e) {
+      e.stopPropagation();
+      this.showBetOuterFlag = false;
+      this.setBetData({ toCurBet: null });
+      console.log(this.getBetData);
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  @include getBgImg("../../../assets/images/guess/close.png");
+}
+
+.bet {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding-bottom: 20px;
+  background-color: #261314;
+  .title {
+    @extend .flex_v_justify;
+    height: 40px;
+    padding: 0 46px 0 10px;
+    background-color: #2e1a1b;
+  }
+  .tips {
+    font-size: 14px;
+    color: #fedcd7;
+  }
+  .coin {
+    width: 18px;
+    height: 18px;
+    @include getBgImg("../../../assets/images/guess/coin.png");
+  }
+  .balance {
+    margin-left: 10px;
+    font-size: 11px;
+    color: #86564e;
+  }
+
+  .confirm_btn {
+    display: block;
+    margin: 0 10px;
+    line-height: 42px;
+    font-size: 14px;
+    color: #fedcd7;
+    text-align: center;
+    background: linear-gradient(to bottom, #dc2f26, #8c191a);
+    background: -webkit-linear-gradient(top, #dc2f26, #8c191a);
+  }
+}
+
+.bet_num {
+  padding: 15px 5px;
+  ul {
+    @extend .flex_hc;
+    text-align: center;
+  }
+  li {
+    flex: 1;
+    -webkit-flex: 1;
+    margin: 0 5px;
+    font-size: 18px;
+    line-height: 40px;
+    color: #cd948d;
+    border-radius: 3px;
+    background-color: #4e2823;
+    &.select,
+    input.select {
+      @include getRadiusBorder(#bb3129, all, 6px);
+      &:after {
+        content: "";
+        position: absolute;
+        right: -5px;
+        top: -5px;
+        width: 14px;
+        height: 14px;
+        @include getBgImg("../../../assets/images/guess/select.png");
+      }
+    }
+    input,
+    input::-webkit-input-placeholder {
+      width: 100%;
+      height: 38px;
+      color: #cd948d;
+      text-align: center;
+    }
+  }
+}
+
+.betSuccess,
+.betFailed {
+  position: relative;
+  @extend .flex_v_h;
+  width: 320px;
+  height: 190px;
+  font-size: 18px;
+  color: #f58079;
+  text-align: center;
+  background-color: #261314;
+  .tips {
+    margin-top: 18px;
+    font-size: 12px;
+    color: #cd948d;
+  }
+}
+
+.happy_icon,
+.sad_icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
+}
+
+.go_recharge {
+  display: inline-block;
+  width: 145px;
+  margin-top: 18px;
+  border-radius: 3px;
+  line-height: 40px;
+  font-size: 14px;
+  color: #fff2f0;
+  background: linear-gradient(to bottom, #dc2f26, #8c191a);
+  background: -webkit-linear-gradient(top, #dc2f26, #8c191a);
+}
+
+.happy_icon {
+  @include getBgImg("../../../assets/images/guess/happy_icon.png");
+}
+
+.sad_icon {
+  @include getBgImg("../../../assets/images/guess/sad_icon.png");
+}
+</style>

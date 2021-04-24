@@ -1,0 +1,238 @@
+<template>
+  <div class='Page guessRankPage'>
+    <header class='mod_header'>
+      <nav-bar>
+        <div class="slot">
+          <ul class="tab">
+            <li :class="{active:tabCheck==index}" @click="tabCheck = index" v-for="(item,index) in rankTab"
+              :key="index">
+              {{item}}</li>
+          </ul>
+          <a class="rules">规则</a>
+        </div>
+      </nav-bar>
+    </header>
+    <div class="award">
+      <div class="award_info">
+        <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/icon/avatar.png" alt="">
+        <div>
+          <p class="award_name">卖碳的</p>
+          <p class="award_rank">No.6</p>
+        </div>
+      </div>
+      <div class="award_gift">
+        <p class="gift_name">奖励iphone 1台</p>
+        <p class="award_num"><span>10000</span>星星</p>
+      </div>
+    </div>
+    <div class='main'>
+      <div>
+        <h3>
+          <span class="rank">排名</span>
+          <span class="id">用户ID</span>
+          <span class="num">中奖金额</span>
+          <span class="reward">奖励</span>
+        </h3>
+        <ul class="award_list">
+          <li v-for="(item,index) in 10" :key="index">
+            <span class="rank">{{index+1}}</span>
+            <p class="users">
+              <img src="https://rs.esportzoo.com/svn/esport-res/mini/images/icon/avatar.png" alt="">
+              <span>弹***</span>
+              <!--只显示名字第一个字符 -->
+            </p>
+            <span class="num">10000</span>
+            <span class="gift_name">iphone</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <footer class='mod_footer'>
+
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../../components/header/nav_bar/index.vue";
+
+export default {
+  components: {
+    navBar
+  },
+  props: [],
+  data() {
+    return {
+      rankTab: ["实时排行", "上周排行"],
+      tabCheck: 0
+    };
+  },
+  methods: {}
+};
+</script>
+
+
+<style lang="scss">
+.guessRankPage {
+  .nav_bar .back {
+    &::before,
+    &::after {
+      background-color: #fedcd7;
+    }
+  }
+}
+</style>
+
+<style lang='scss' scoped>
+@import "../../../../assets/common/_base";
+@import "../../../../assets/common/_mixin";
+
+.mod_header {
+  background-color: #321919;
+  .slot {
+    height: 44px;
+  }
+  .tab {
+    @extend .g_v_c_mid;
+    @extend .flex_hc;
+    background-color: #4e2823;
+    border-radius: 1.3333vw;
+    overflow: hidden;
+  }
+  .tab li {
+    padding: 0 8.4vw;
+    font-size: 4vw;
+    line-height: 8.5333vw;
+    color: #fedcd7;
+    &.active {
+      background-color: #ba3129;
+    }
+  }
+  .rules {
+    @extend .g_v_mid;
+    right: 4.6667vw;
+    font-size: 3.7333vw;
+    color: #733633;
+  }
+}
+
+.award {
+  @extend .flex_v_justify;
+  padding: 6.9333vw 4.5333vw 4.8vw 4vw;
+  @include getBgImg("../../../../assets/images/rank/rank_bg.png");
+  color: #fedcd7;
+}
+
+.award_info {
+  @extend .flex_hc;
+  img {
+    width: 17.3333vw;
+    height: 17.3333vw;
+    border-radius: 50%;
+  }
+}
+
+.award_name {
+  padding-left: 4.6667vw;
+  font-size: 4vw;
+}
+
+.award_rank {
+  padding-left: 3.7333vw;
+  padding-top: 1.6vw;
+  font-size: 9.7333vw;
+  font-style: italic;
+}
+
+.award_gift {
+  font-size: 3.4667vw;
+  text-align: right;
+}
+
+.award_num {
+  padding-top: 1.7333vw;
+  span {
+    padding-right: 0.9333vw;
+    font-size: 5.3333vw;
+  }
+}
+
+.main {
+  padding: 0 2.6667vw;
+  background-color: #1f1212;
+  h3 {
+    padding: 3.7333vw 0 2.9333vw 0;
+    font-size: 0;
+    .rank {
+      padding-left: 2vw;
+    }
+    .id {
+      padding-left: 9.8667vw;
+    }
+    .num {
+      padding-left: 18.4vw;
+    }
+    .reward {
+      padding-left: 14.2667vw;
+    }
+  }
+  h3 span {
+    font-size: 4vw;
+    font-weight: normal;
+    color: #733633;
+  }
+}
+
+.award_list li {
+  @extend .flex_hc;
+  position: relative;
+  height: 16vw;
+  margin-bottom: 2.6667vw;
+  border-radius: 1.3333vw;
+  background-color: #321919;
+  &:first-child,
+  &:nth-child(2),
+  &:nth-child(3) {
+    @include getBgLinear(right, #ba3129, #321919);
+    .rank {
+      font-size: 11.2vw;
+      color: #fedcd7;
+    }
+  }
+  .rank {
+    width: 18vw;
+    padding-left: 2.6667vw;
+    font-size: 9.7333vw;
+    font-weight: bold;
+    font-style: italic;
+    color: #733633;
+  }
+  .users {
+    @extend .flex_hc;
+    img {
+      width: 10.6667vw;
+      height: 10.6667vw;
+      border-radius: 50%;
+    }
+    span {
+      padding-left: 2.9333vw;
+      font-size: 4vw;
+      letter-spacing: 2px;
+      color: #fedcd7;
+    }
+  }
+  .num {
+    padding-left: 7.4667vw;
+    font-size: 5.3333vw;
+    font-weight: bold;
+    color: #fedcd7;
+  }
+  .gift_name {
+    @extend .g_v_mid;
+    @include t_nowrap(16vw);
+    right: 4vw;
+    font-size: 4vw;
+    color: #fedcd7;
+  }
+}
+</style>

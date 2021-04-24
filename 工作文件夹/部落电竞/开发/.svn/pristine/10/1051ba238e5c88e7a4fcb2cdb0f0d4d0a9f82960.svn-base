@@ -1,0 +1,47 @@
+.rank_record {
+	background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/rank_record.png") no-repeat center;
+	background-size: cover;
+  
+}
+
+.rank_record.cur {
+	background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/rank_record_cur.png") no-repeat center;
+	background-size: cover;
+}
+
+.rules_lists {
+	background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/rules_lists.png") no-repeat center;
+	background-size: cover;
+}
+
+.rules_lists.cur {
+	background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/rules_lists_cur.png") no-repeat center;
+	background-size: cover;
+}
+
+.user_wallet {
+	background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/user_wallet.png") no-repeat center;
+	background-size: cover;
+}
+
+.user_wallet.cur {
+	background: url("https://rs.esportzoo.com/svn/esport-res/mini/images/hd/hd101/user_wallet_cur.png") no-repeat center;
+background-size: cover;
+}
+
+
+.tab_con {
+	/* @extend .flex; */
+	display: flex;
+  
+}
+
+.tab_con .tabs {
+	flex: 1;
+	-webkit-flex: 1;
+	height: 126rpx;
+	margin: 0 4rpx;
+	border-bottom: 4rpx solid #333;
+	background-size: 100% 100%;
+	box-sizing: content-box;
+}

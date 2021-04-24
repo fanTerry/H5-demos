@@ -1,0 +1,237 @@
+// component/popup/store/exchange.js
+var api = require('../../../libs/http.js')
+var strUtil = require('../../../libs/strUtil');
+Component({
+  /**
+   * 组件的属性列表
+   */
+  properties: {
+    goodsDetail: Object
+  },
+
+  /**
+   * 组件的初始数据
+   */
+  data: {
+    step1Flag: true,
+    step2Flag: false,
+    receiveAddress: null,
+    hasDefaultAddress: false,
+    finalNum: 1,
+    showPay: false,
+    noAddress: [2],
+    needAddressFlag: true,
+    remark: '',
+    payWay: [],
+    showTextArea:false,
+    
+  },
+
+  ready() {
+    this.getUserAddress();
+  },
+  reflushData() {
+
+  },
+
+  /**
+   * 组件的方法列表
+   */
+  methods: {
+    closePop1: function() {
+      console.log('点击事件');
+      this.setData({
+        step1Flag: false
+      });
+    },
+    closePop2: function() {
+      console.log("111");
+      this.setData({
+        step1Flag: true,
+        step2Flag: false
+      });
+    },
+    // successSave: function (address) {
+    //   // console.log("sdfadsfadfaf");
+    //   //  this.$router.go(-1);
+    //   this.receiveAddress = address;
+    //   console.log(address, "sss");
+    // },
+    toConfirmAddress() {
+      var _self = this;
+      if (_self.data.goodsDetail.stock == 0) {
+        api._showToast("商品太火爆,被抢光啦~", 2);
+        return;
+      }
+      var re = /^[0-9]+$/;
+      var isPositive = re.test(_self.data.finalNum);
+      if (!isPositive || _self.data.finalNum == null || _self.data.finalNum <= 0) {
+        _self.data.finalNum = 0;
+        api._showToast("请先填写购买数量", 2);
+        return;
+      }
+      if (_self.data.finalNum > _self.data.goodsDetail.stock) {
+        api._showToast("商品库存不足", 2);
+        return;
+      }
+      _self.setData({
+        step1Flag: false,
+        step2Flag: true
+      });
+    },
+    getUserAddress() {
+      var _self = this;
+      if (!_self.needAddress()) {
+        return;
+      }
+      api._postAuth("/shopAddress/default", {
+          showAuthPage: true,
+          returnUrl: api.getCurrentPageUrlWithArgs()
+        })
+        .then(res => {
+          console.log(res);
+          if ((res.code = "200" && res.data != null)) {
+            _self.setData({
+              hasDefaultAddress: true,
+              receiveAddress: res.data
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    /*点击减号*/
+    bindMinus: function() {
+      var finalNum = this.data.finalNum;
+      if (finalNum > 1) {
+        finalNum--;
+        this.setData({
+          finalNum: finalNum
+        })
+      }
+    },
+    /*点击加号*/
+    bindPlus: function() {
+      var finalNum = this.data.finalNum;
+      finalNum++;
+      if (finalNum > this.properties.goodsDetail.stock) {
+        api._showToast('超过商品库存', 2);
+        return;
+      }
+      this.setData({
+        finalNum: finalNum
+      })
+    },
+    /*输入框事件*/
+    bindManual: function(e) {
+      var finalNum = e.detail.value;
+      this.setData({
+        finalNum: finalNum
+      })
+    },
+    needAddress() {
+      //true 需要填写地址
+      let res = this.data.noAddress.indexOf(this.data.goodsDetail.type) == -1;
+      this.setData({
+        needAddressFlag: res
+      });
+      return res;
+    },
+    confimPayChange() {
+      if (null == this.data.receiveAddress && this.needAddress()) {
+        api._showToast("请先填写收货地址", 2);
+        return;
+      }
+      this.getPayWay();
+      this.dialog = this.selectComponent("#dialog");
+      this.dialog.show();
+    },
+    getPayWay: function() {
+      var _self = this;
+      api._postAuth('/article/getPayWayList').then(res => {
+        _self.setData({
+          payWay: res.data
+        })
+        console.log(this.data.payWay, "返回的可选支付方式")
+      }).catch(e => {
+        console.log(e)
+      })
+    },
+    confirm: function() {
+      console.log('confirmconfirmconfirm');
+    },
+    handleConfirmDialog: function(e) {
+      this.payGoods(e.detail.choosedValue);
+    },
+    payGoods(index) {
+      let param = {};
+      param.choosedPayWay = index;
+      if (this.needAddress()) {
+        param.addressId = this.data.receiveAddress.id;
+      }
+      param.goodsId = this.data.goodsDetail.id;
+      param.num = this.data.finalNum;
+      param.remark = this.data.remark;
+      api._postAuth("/shopOrder/submit/" + this.data.goodsDetail.id, param)
+        .then(res => {
+          console.log(res);
+          if ((res.code = "200" && res.data != null)) {
+            api._showToast("购买成功", 2);
+            this.dialog.close();
+            this.setData({
+              step1Flag: false,
+              step2Flag: false
+            });
+            setTimeout(() => {
+              wx.redirectTo({
+                url: '/pages/store/order/orderDetails?orderId=' + res.data.orderId
+              })
+            }, 500);
+
+          } else {
+            api._showToast(res.message, 2);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    successSave: function(e) {
+      console.log(e.detail, "sss");
+      this.setData({
+        receiveAddress: e.detail
+      });
+    },
+    /**绑定输入内容 */
+    remarkInput: function(e) {
+      this.setData({
+        remark: e.detail.value
+      })
+    },
+    toSelectAddress: function() {
+      console.log(api.getCurrentPageUrlWithArgs(), 'api.getCurrentPageUrlWithArgs()');
+      var returnUrl = api.getCurrentPageUrlWithArgs();
+      returnUrl = strUtil.base64encode(returnUrl);
+      console.log(returnUrl, 'returnUrlreturnUrl');
+      wx.navigateTo({
+        url: '/pages/store/address/manage?returnUrl=' + returnUrl
+      });
+    },
+
+    showInput:function(){
+
+      this.setData({
+        showTextArea:!this.data.showTextArea
+      })
+
+    },
+    showView:function(e){
+      let remark = e.detail.value
+      this.setData({
+        showTextArea:!this.data.showTextArea,
+        remark:remark,
+      })
+    }
+  }
+})

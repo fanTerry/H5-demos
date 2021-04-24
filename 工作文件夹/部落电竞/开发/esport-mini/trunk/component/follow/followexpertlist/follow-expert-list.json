@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "expert-item": "/component/comm/expertitem/expert-item"
+  }
+}

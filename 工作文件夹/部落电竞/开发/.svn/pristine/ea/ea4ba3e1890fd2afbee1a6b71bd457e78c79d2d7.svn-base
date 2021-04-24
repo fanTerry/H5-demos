@@ -1,0 +1,101 @@
+<template>
+  <div class="bar_item">
+    <input v-model="rangeValue" type="range" step="25">
+    <span class="num" :class="{active:index == selectFlag}" v-for="(item,index) in despositLimit" :key="index">
+      <i>{{item}}</i>
+    </span>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: ['despositLimit'],
+  data() {
+    return {
+      selectFlag: 4,
+      rangeValue: 100
+    };
+  },
+  watch: {
+    rangeValue(newValue, oldValue) {
+      console.log(newValue);
+      if (newValue == 0) {
+        this.selectFlag = 0;
+        console.log(this.selectFlag);
+        this.$emit('changeLimit', this.selectFlag);
+      } else if (newValue == 25) {
+        this.selectFlag = 1;
+        console.log(this.selectFlag);
+        this.$emit('changeLimit', this.selectFlag);
+      } else if (newValue == 50) {
+        this.selectFlag = 2;
+        console.log(this.selectFlag);
+        this.$emit('changeLimit', this.selectFlag);
+      } else if (newValue == 75) {
+        this.selectFlag = 3;
+        console.log(this.selectFlag);
+        this.$emit('changeLimit', this.selectFlag);
+      } else if (newValue == 100) {
+        this.selectFlag = 4;
+        console.log(this.selectFlag);
+        this.$emit('changeLimit', this.selectFlag);
+      }
+    }
+  },
+  mounted() {},
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import '../../../../assets/common/_base';
+@import '../../../../assets/common/_mixin';
+
+.bar_item {
+  position: relative;
+  @extend .flex_v_justify;
+  padding: 13.0667vw 3.2vw 3.2vw;
+  .num {
+    position: relative;
+    width: 25%;
+    font-size: 3.7333vw;
+    line-height: 4.2667vw;
+    color: #fff;
+    &:last-of-type {
+      width: auto;
+    }
+    &.active {
+      color: $color_yellow;
+    }
+    i {
+      padding-left: 3.3333vw;
+    }
+  }
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  position: absolute;
+  left: 3.2vw;
+  top: 5.8667vw;
+  width: 85.0667vw;
+  border-radius: 1.3333vw;
+  border-radius: 1.3333vw;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  height: 1.3333vw;
+  border-radius: 1.3333vw;
+  background-color: $color_yellow;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 6.6667vw;
+  height: 6.6667vw;
+  margin-top: -2.6667vw;
+  border: 0.5333vw solid $color_item;
+  background-color: $color_yellow;
+  border-radius: 50%;
+}
+</style>

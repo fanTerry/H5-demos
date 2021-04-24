@@ -1,0 +1,5 @@
+<!--component/report/memnewsitem/mem-news-item.wxml-->
+
+<view class='mem-news-item'>
+  <text>恭喜“<text class='m-n-i-blue'>篮球火</text>”会员第二局十杀胜利！！！</text><i class="iconfont icon-xiaolian"></i>
+</view>

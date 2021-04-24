@@ -1,0 +1,45 @@
+package com.esportzoo.esport.interceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.esportzoo.esport.constant.ResponseConstant;
+import com.esportzoo.esport.manager.CachedManager;
+import com.esportzoo.esport.vo.MemberSession;
+
+public class LoginInterceptor extends HandlerInterceptorAdapter {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private static final String logPrefix = "小程序登陆拦截_";
+
+	@Autowired
+	@Qualifier("cachedManager")
+	private CachedManager cachedManager;
+
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		String sid = request.getParameter("sid");
+		logger.info(logPrefix + ",当前用户sid={}",sid);
+		if (StringUtils.isBlank(sid)) {
+			logger.info(logPrefix + "未通过,当前sid={}",sid);
+			response.setStatus(ResponseConstant.USR_NOT_LOGIN_CODE);
+			return false;
+		}
+		
+		MemberSession memberSession = cachedManager.getCachedMemberSession(sid);
+		if (memberSession != null && memberSession.getMember() != null) {
+			cachedManager.cachedMemberSession(memberSession.getMember(), sid);
+			logger.info(logPrefix + "已通过,获取登陆用户={}", memberSession.getMember().getId());
+			return true;
+		}
+		logger.info(logPrefix + "未通过,当前sid={},缓存已经失效",sid);
+		response.setStatus(ResponseConstant.USR_NOT_LOGIN_CODE);
+		return false;
+	}
+}

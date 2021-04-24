@@ -1,0 +1,202 @@
+<template>
+  <div>
+    <div id="my-node">
+      <div style="background:green;">
+        <div style="background:blue;border-color:white;">
+          <div style="background:yellow;">
+            <div style="background:orange;">
+              <h1>Heading</h1>
+              Text that isn't wrapped in anything.
+              <p>Followed by some text wrapped in a <b>&lt;p&gt; paragraph.</b> </p>
+              Maybe add a <a href="#">link</a> or a different style of <a href="#" style="background:white;"
+                id="highlight">link with a highlight</a>.
+              <hr />
+              <h2>More content</h2>
+              <div style="width:10px;height:10px;border-width:10px;padding:0;">a</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      <div>
+        122222222222222222213
+        12333333333333333
+      </div>
+    </div>
+    <img :src="imgageUrl" alt="">
+  </div>
+</template>
+
+<script>
+// import navBar from "components/header/nav_bar/index.vue";
+// import teamList from "./components/teamlist.vue";
+// import scheduleList from "./components/schedulelist.vue";
+// import chatRoom from "./components/chatroom.vue";
+// import pops from "./components/pops.vue";
+import html2canvas from "html2canvas";
+import domtoimage from "dom-to-image";
+export default {
+  components: {},
+  props: [],
+  data() {
+    return {
+      showPop: false,
+      popTitle: "",
+      imgageUrl: "",
+      shareFlag: false,
+      dialogShow: false
+    };
+  },
+  mounted() {
+    this.getImage();
+  },
+  methods: {
+    goUrlPage(url) {
+      this.$router.push({
+        path: url,
+        query: {}
+      });
+    },
+    cancelMatch() {
+      this.showPop = true;
+      this.popTitle = "您确定要退出参赛?";
+    },
+    getImage() {
+      this.shareFlag = true;
+      this.dialogShow = true;
+      let self = this;
+      setTimeout(() => {
+        var node = document.getElementById("my-node"); // 截图区域
+        console.log(node);
+        var width = node.offsetWidth; //获取dom 宽度
+        var height = node.offsetHeight; //获取dom 高度
+        var canvas = document.createElement("canvas"); //创建一个canvas节点
+        var scale = 1; //定义任意放大倍数 支持小数
+        canvas.width = width * scale; //定义canvas 宽度 * 缩放
+        canvas.height = height * scale; //定义canvas高度 *缩放
+        canvas.getContext("2d").scale(scale, scale);
+        console.log(width);
+        console.log(height);
+        // 设置html2canvas方法的配置
+        var opts = {
+          scale: scale, // 添加的scale 参数
+          canvas: canvas, //自定义 canvas
+          // allowTaint: true, //允许画布上有跨域图片 不建议使用 后面详细补充
+          logging: true, //日志开关，便于查看html2canvas的内部执行流程
+          width: width, //dom 原始宽度
+          height: height,
+          useCORS: true // 【重要】开启跨域配置
+        };
+        html2canvas(document.body, opts).then(canvas => {
+          var context = canvas.getContext("2d"); // 【重要】关闭抗锯齿
+          context.mozImageSmoothingEnabled = false;
+          context.webkitImageSmoothingEnabled = false;
+          context.msImageSmoothingEnabled = false;
+          context.imageSmoothingEnabled = false;
+          let dataURL = canvas.toDataURL("image/png");
+          console.log(dataURL);
+          self.imgageUrl = dataURL;
+          self.shareFlag = false;
+        });
+      }, 2000);
+    },
+
+    getImage1() {
+      this.dialogShow = true;
+      this.shareFlag = true;
+      let self = this;
+      this.$nextTick(() => {
+        setTimeout(() => {
+          var node = document.getElementById("my-node");
+          console.log(node);
+          domtoimage
+            .toPng(node)
+            .then(function(dataUrl) {
+              self.imgageUrl = dataUrl;
+              self.shareFlag = false;
+              console.log(self.imgageUrl, dataUrl);
+            })
+            .catch(function(error) {
+              console.error("oops, something went wrong!", error);
+            });
+        }, 3000);
+      });
+    },
+    getImage2() {
+      /*截取图片*/
+      this.dialogShow = true;
+      this.shareFlag = true;
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.screenshotsImg();
+        }, 3000);
+      });
+    },
+    screenshotsImg() {
+      console.log("2222");
+
+      let self = this;
+      var times = 1.1;
+      var _canvas = document.getElementById("my-node");
+      var id = "" + new Date().getTime();
+      _canvas.id = id;
+      var canvas = document.createElement("canvas");
+      var w = parseInt(_canvas.offsetWidth);
+      var h = parseInt(_canvas.offsetHeight);
+      //将canvas画布放大若干倍，然后盛放在较小的容器内，就显得不模糊了
+      var dpr = window.devicePixelRatio || 2;
+      console.log("kkk", window.devicePixelRatio);
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      //可以按照自己的需求，对context的参数修改,translate指的是偏移量
+      var context = canvas.getContext("2d");
+      //context.translate(0,0);
+      context.scale(2, 2);
+      html2canvas(_canvas, {
+        allowTaint: false,
+        useCORS: true,
+        canvas: canvas
+      }).then(canvas => {
+        console.log("11111");
+        self.shareFlag = false;
+        let dataURL = canvas.toDataURL("image/png");
+        self.imgageUrl = dataURL;
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_mixin";
+@import "../../assets/common/_base";
+
+#my-node {
+  @include getBgImg("../../assets/images/matchtool/share_bg.png");
+}
+// .feedback-overlay-black {
+//   background-color: #000;
+//   opacity: 0.5;
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+//   margin: 0;
+// }
+div {
+  padding: 20px;
+  margin: 0 auto;
+  border: 5px solid black;
+}
+h1 {
+  border-bottom: 2px solid white;
+}
+h2 {
+  background: #efefef;
+  padding: 10px;
+}
+</style>

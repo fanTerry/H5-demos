@@ -1,0 +1,186 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <h2>
+        <div class="back"></div>专家申请
+      </h2>
+    </header>
+
+    <div class="main">
+      <section class="draw_info">
+        <p class="warnings">请填写开通账号所需资料，同一申请无需填写多次。申请结果喝账号信息将会以邮件方式发送给您。</p>
+        <div class="draw_input">
+          <span class="name">达人号名称:</span>
+          <input type="text">
+        </div>
+        <div class="draw_input">
+          <span class="name">达人号简介:</span>
+          <textarea
+            name=""
+            id=""
+            cols="20"
+            rows="10"
+            placeholder="不超过100个字符，请勿包含政治，色情，广告等违规信息"
+          ></textarea>
+        </div>
+      </section>
+
+      <section class="draw_reason">
+        <div class="draw_input">
+          <span class="name">申请理由:</span>
+          <textarea
+            name=""
+            id=""
+            cols="20"
+            rows="10"
+            placeholder="不超过100个字符，请勿包含政治，色情，广告等违规信息"
+          ></textarea>
+        </div>
+      </section>
+
+      <section class="draw_user_info">
+        <div class="draw_input">
+          <span class="name">运营者姓名:</span>
+          <input
+            type="text"
+            placeholder="请填写真实姓名"
+          >
+        </div>
+        <div class="draw_input">
+          <span class="name">身份证号:</span>
+          <input
+            type="text"
+            placeholder="请填写身份证号"
+          >
+        </div>
+        <div class="draw_input">
+          <span class="name">达人号简介:</span>
+          <div class="pull_file">
+            <input type="file">
+          </div>
+        </div>
+        <p class="tips">请上传手持身份证正面照，要求图片信息可见，大小不超过5M，点击<a href="http://img4.imgtn.bdimg.com/it/u=2606860162,2259678976&fm=26&gp=0.jpg">查看示例照片</a></p>
+      </section>
+    </div>
+
+    <footer class="mod_footer">
+      <a class="commit_btn">提交申请</a>
+    </footer>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {};
+  },
+  methods: {},
+  components: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin.scss";
+@import "../../../assets/common/_base.scss";
+@import "../../../assets/common/_var.scss";
+
+.mod_header {
+  h2 {
+    color: #fff;
+    background: $color_main;
+  }
+  .back::before,
+  .back::after {
+    background-color: #fff;
+  }
+}
+
+.main {
+  margin: 10px 5px 0;
+  section {
+    background-color: #fff;
+  }
+}
+
+.warnings {
+  color: $color_main;
+  line-height: 18px;
+  padding: 10px 30px;
+  margin-bottom: 5px;
+  background-color: #f3e9c3;
+}
+
+.draw_info {
+  .name {
+    font-weight: bold;
+  }
+}
+
+.draw_input {
+  margin: 0 10px;
+  padding: 10px 0;
+  @include getBorder(bottom, #dfdfdf);
+  &:last-child {
+    background: none;
+  }
+  .name {
+    font-size: 14px;
+    margin-right: 5px;
+    color: #0e1a4e;
+  }
+  input,
+  textarea {
+    border: none;
+  }
+  textarea {
+    display: block;
+    width: 100%;
+    height: 50px;
+    line-height: 16px;
+    margin-top: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Droid Sans,
+      Helvetica Neue, Helvetica, Arial, sans-serif;
+  }
+}
+
+.draw_reason {
+  margin-top: 10px;
+  .name {
+    font-weight: bold;
+  }
+}
+
+.draw_user_info {
+  margin-top: 10px;
+  .pull_file {
+    width: 90px;
+    height: 56px;
+    margin-top: 10px;
+    @include getBgImg("../../../assets/images/expert/expert_apply.jpg");
+    input {
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+    }
+  }
+  .tips {
+    padding: 10px 10px 25px;
+    line-height: 18px;
+    color: #b7b7b7;
+    a {
+      color: #74c588;
+    }
+  }
+}
+
+.commit_btn {
+  display: block;
+  margin: 15px;
+  padding: 15px;
+  font-size: 18px;
+  border-radius: 8px;
+  text-align: center;
+  color: #fff;
+  background-color: $color_main;
+}
+</style>

@@ -1,0 +1,27 @@
+<!--component/bigimageswiper/bigimage-swiper.wxml-->
+<!-- <bigimage-swiper> -->
+<!-- <view class='bigimage-swiper'>
+    <swiper class="bigimage-swiper-swiper"
+    indicator-dots="true" autoplay="true" interval="3000" circular="true" duration="{{duration}}" indicator-color="{{indicatorColor}}" indicator-active-color="{{indicatorActiveColor}}" bindchange="onSwiperChange">
+        <block wx:for="{{swiperArray}}" wx:key="">
+          <swiper-item  bindtap = "goDetailPage" data-index="{{index}}" >
+            <image class="swiper-image" src="{{item.picUrl}}" mode="scaleToFill"  />
+          </swiper-item>
+        </block>
+    </swiper>
+    <view class="bigimage-note">
+        <text class="bigimage-text">{{curText}}</text>
+    </view>
+  </view> -->
+<!-- </bigimage-swiper> -->
+<view class="banner">
+	<swiper  indicator-dots="true" autoplay="true" interval="3000"  circular="true" duration="{{duration}}" indicator-color="{{indicatorColor}}" indicator-active-color="{{indicatorActiveColor}}" bindchange="onSwiperChange" style="{{styleObject}}">
+	
+		<block wx:for="{{swiperArray}}" wx:key="">
+			<swiper-item bindtap="goDetailPage" data-index="{{index}}">
+				<image class="banner_img" src="{{item.picUrl}}" mode="{{mode}}" />
+			</swiper-item>
+		</block>
+	</swiper>
+	<view class="banner_txt" wx:if="{{flag}}" >{{curText}}</view>
+</view>

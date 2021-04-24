@@ -1,0 +1,27 @@
+<!--component/newslist/newsimageitem/news-image-item.wxml-->
+<!-- <news-image-item> -->
+    <!-- 最后一个元素添加border-none -->
+    <view class='news-image-item'>
+        <view>
+            <image class='news-image' wx:if="{{newsData.type==1}}" src="{{newsData.imageSrc}}" mode='' bindtap="gotoDetail"/>
+            <image class='news-image' wx:elif="{{newsData.type==2}}" src="{{newsData.titleImg?newsData.titleImg:'https://rs.esportzoo.com/svn/esport-res/mini/images/default/default_video_img.png'}}" mode='' bindtap="gotoDetail"/>
+        </view>
+        <view class='dsp-cell news-paragraph'>
+            <view class='news-tag' wx:if="{{newsData.tag!=null}}"><text>#{{newsData.tag}}</text><text>{{newsData.publishTimeStr}}</text></view>
+            <!--<navigator url="/modules/articlepage/article-page?id={{newsData.aricleId}}&type=1">-->
+                <view class='news-title' bindtap="gotoDetail">
+                    <text>{{newsData.detail}}</text>
+                </view>
+            <!--</navigator>-->
+
+            <view class='news-info'>
+                <view class="news-info-item">
+                    <i class='iconfont icon-icon_yulan n-i-i-i'></i><text>{{newsData.seeNum}}</text>
+                </view>
+                <view class="news-info-item">
+                    <i class='iconfont icon-pinglun n-i-i-i'></i><text>{{newsData.discussNum}}</text>
+                </view>
+            </view>
+        </view>
+    </view>
+<!-- </news-image-item> -->

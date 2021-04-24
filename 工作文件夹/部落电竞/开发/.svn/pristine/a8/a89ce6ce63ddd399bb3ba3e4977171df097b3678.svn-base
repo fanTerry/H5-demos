@@ -1,0 +1,218 @@
+.star_coin {
+  display: block;
+  width: 28rpx;
+  height: 28rpx;
+  margin-right: 6rpx;
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/wallet/star_coin.png') no-repeat center;
+  background-size: cover;
+}
+
+.rank_first, .rank_second, .rank_third {
+  width: 46rpx;
+  height: 46rpx;
+}
+
+.rank_first {
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/store/rank_first.png') no-repeat center;
+  background-size: cover;
+}
+
+.rank_second {
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/store/rank_second.png') no-repeat center;
+  background-size: cover;
+}
+
+.rank_third {
+  background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/store/rank_third.png') no-repeat center;
+  background-size: cover;
+}
+
+.goods_name {
+  max-width: 200rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 首页 */
+
+.goods_list {
+  padding: 10rpx;
+  background-color: #fff;
+}
+
+.goods_list 	ul {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.goods_list    .goods_item {
+  width: 50%;
+  padding: 10rpx;
+}
+
+.goods_list   .goods_img {
+  position: relative;
+  width: 100%;
+  padding-top: 50%;
+}
+
+.goods_list   .goods_img 		image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 4rpx;
+}
+
+.goods_list   .goods_title {
+  padding-top: 20rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.goods_list   .goods_detail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16rpx;
+  color: #ccc;
+}
+
+.goods_list   .goods_detail		span {
+  display: flex;
+  align-items: center;
+}
+
+.goods_list   .num {
+  padding-right: 10rpx;
+}
+
+.goods_list   .mark {
+  color: #fea21b;
+  font-size: 28rpx;
+}
+
+/* 列表页 */
+
+.goodsList_Page {
+  margin-top: 16rpx;
+  padding-bottom: 20rpx;
+  background-color: #fff;
+}
+
+.goodsList_Page 	h3 {
+  display: block;
+  line-height: 70rpx;
+  font-size: 26rpx;
+  color: #999;
+  font-weight: normal;
+  text-align: center;
+}
+
+.goodsList_Page     .goods_item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 20rpx 0;
+}
+
+.goodsList_Page    .goods_img {
+  position: relative;
+  width: 50%;
+  padding-top: 25%;
+  margin-right: 30rpx;
+}
+
+.goodsList_Page    .goods_img image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 4rpx;
+}
+
+.goodsList_Page   .goods_title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.goodsList_Page   .goods_name {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.goodsList_Page   .goods_grade {
+  position: relative;
+  display: inline-block;
+  margin-top: 10rpx;
+  padding: 6rpx 10rpx;
+  font-size: 22rpx;
+  line-height: 1;
+  color: #fea21b;
+}
+
+.goodsList_Page  	.goods_grade:before {
+  content: "";
+  pointer-events: none;
+  box-sizing: border-box;
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  left: 0;
+  top: 0;
+  border-radius: 8rpx;
+  border: 1px solid #fea21b;
+  -webkit-transform: scale(0.5);
+  -webkit-transform-origin: 0 0;
+  transform: scale(0.5);
+  transform-origin: 0 0;
+}
+
+.goodsList_Page   .goods_detail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 36rpx;
+  color: #ccc;
+}
+
+.goodsList_Page .goods_info {
+  flex: 1;
+}
+
+.goodsList_Page   .goods_detail span {
+  display: flex;
+  align-items: center;
+}
+
+.goodsList_Page   .rank_first, .goodsList_Page  .rank_second,
+.goodsList_Page  .rank_third {
+  position: absolute;
+  right: 20rpx;
+  top: 20rpx;
+}
+
+.goodsList_Page   .tag {
+  font-size: 26rpx;
+  color: #fea21b;
+}
+
+.goodsList_Page    .num {
+  padding-right: 10rpx;
+}
+
+.goodsList_Page   .mark {
+  color: #fea21b;
+  font-size: 28rpx;
+}

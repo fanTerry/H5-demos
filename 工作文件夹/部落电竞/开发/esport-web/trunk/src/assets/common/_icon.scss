@@ -1,0 +1,59 @@
+@import '_base';
+@import '_mixin';
+
+
+// 通用货币图标
+.coin {
+  @include getBgImg("../../assets/images/icon/coin.png");
+}
+
+// 关闭按钮图标
+.close{
+  @include getBgImg('../../assets/images/icon/close.png');
+  background-size: 100%;
+}
+
+// 绿色对勾图标
+.success_icon{
+  @include getBgImg('../../assets/images/icon/success_icon.png');
+}
+
+// 红色感叹号图标
+.failed_icon{
+  @include getBgImg('../../assets/images/icon/att_icon.png');
+}
+
+// 笑脸图标
+.happy_icon{
+  @include getBgImg('../../assets/images/icon/happy_icon.png');
+}
+
+// 哭脸图标
+.sad_icon{
+  @include getBgImg('../../assets/images/icon/sad_icon.png');
+}
+
+// 人气榜火焰图标
+.popular_icon{
+  @include getBgImg('../../assets/images/icon/popular_icon.png');
+}
+
+// 贡献榜人气图标
+.contribution_icon{
+  @include getBgImg('../../assets/images/icon/contribution_icon.png');
+}
+
+// 点赞图标
+.like_icon{
+  @include getBgImg('../../assets/images/icon/like_icon.png');
+}
+
+// 时钟图标
+.time_icon{
+  @include getBgImg('../../assets/images/icon/time_icon.png');
+}
+
+// loading图标
+.loading_icon{
+  @include getBgImg('../../assets/images/icon/loading_icon.png');
+} 

@@ -1,0 +1,98 @@
+<!-- modules/store/order/orderDetails.wxml -->
+<view class="main">
+  <view wx:if="{{detail.shopAddress}}">
+    <locationAddress address="{{detail.shopAddress}}" showLinkIcon="{{false}}"></locationAddress>
+  </view>
+  <view class="order_details">
+    <view class="order_name" wx:for="{{detail.goodList}}" wx:key="">
+      <view class="goods_img">
+        <image mode="aspectFill" src="{{item.goodIcon}}" alt=""></image>
+      </view>
+      <view class="goods_info">
+        <p class="goods_name">
+          <span class="name">{{item.goodName}}</span>
+          <span>
+            <!-- <i class="star_coin"></i> -->
+            ￥{{item.goodPrice}}
+          </span>
+        </p>
+        <p>
+          <span></span>
+          <span class="num">X {{item.quantity}}件</span>
+        </p>
+      </view>
+    </view>
+    <view class="order_info">
+      <span>订单状态</span>
+      <span>{{detail.orderStatusDes}}</span>
+    </view>
+    <view class="order_info" wx:if="{{detail.shopExpressVo}}">
+      <span>发货状态</span>
+      <span>{{detail.shopExpressVo.statusDes}}</span>
+    </view>
+    <view class="order_info" wx:if="{{detail.shopExpressVo}}">
+      <span>快递公司</span>
+      <span>{{detail.shopExpressVo.expressCompany}}</span>
+    </view>
+    <view class="order_info" wx:if="{{detail.shopExpressVo}}">
+      <span>快递单号</span>
+      <span class="express_bill">
+        <span>{{detail.shopExpressVo.trackingNumber}}</span>
+        <span class="copy" bindtap="copyCommon" data-copycontent="{{detail.shopExpressVo.trackingNumber}}">
+          复制
+        </span>
+      </span>
+    </view>
+    <view class="order_info">
+      <span>创建时间</span>
+      <span>
+        <span>{{detail.orderCreatTime}}</span>
+      </span>
+    </view>
+    <view class="order_info">
+      <span>订单编号</span>
+      <span>{{detail.orderNo}}</span>
+    </view>
+    <view class="order_info">
+      <span class="pay_title">实付款</span>
+      <span class="pay_money">
+        <i wx:if="{{detail.payType==1}}" class="star_coin"></i>
+        {{detail.payType==3?'￥':""}}
+        
+        <span>{{detail.payScore}}</span>
+      </span>
+    </view>
+  </view>
+  <view class="card_info" wx:if="{{detail.cardList}}">
+    <ul class="">
+      <li wx:for="{{detail.cardList}}" wx:key="">
+        <div class="card_name">
+          <p>
+            <i>卡号：</i>
+            <span>{{item.cardNo}}</span>
+          </p>
+          <span class="copy" bindtap="copyCommon" data-copycontent="{{item.cardNo}}">复制</span>
+        </div>
+        <div class="card_pwd">
+          <p>
+            <i>密码：</i>
+            <span>{{item.cardPass}}</span>
+          </p>
+          <span class="copy" bindtap="copyCommon" data-copycontent="{{item.cardPass}}">复制</span>
+        </div>
+      </li>
+    </ul>
+  </view>
+  <view class="card_info" wx:if="{{detail.remark}}">
+    <ul class="">
+      <li>
+        <div class="card_name">
+          <p>
+            <i>订单备注：</i>
+            <span>{{detail.remark}}</span>
+          </p>
+        </div>
+      </li>
+    </ul>
+  </view>
+</view>

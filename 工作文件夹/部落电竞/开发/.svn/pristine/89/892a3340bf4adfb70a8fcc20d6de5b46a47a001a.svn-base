@@ -1,0 +1,27 @@
+<!--component/popup/pay/pay.wxml-->
+<wxs src="../../../utils/tools.wxs" module="tools" />
+<view class="ui_pop" wx:if="{{showDialog&&readyFlag}}">
+  <view class="pop_pay">
+    <view class="order">
+      <!-- 订单金额：{{price}}星星 -->
+      请选择充值方式
+      <a class="close" bindtap="close"></a>
+    </view>
+    <view class="pay_title">需支付</view>
+    <view class="pay_num">{{tools.numberFormat(price,2)}}
+      <span>{{unit?unit:'星星'}}</span>
+    </view>
+    <view class="pay_method" wx:for-items="{{payWay}}" data-item="{{item}}"  bindtap="choosePay">
+      <view>
+        <image mode="aspectFill" src="{{item.payIcon}}" alt=""></image>{{item.payName}}
+        <span wx:if="{{item.showBalance==1}}">(余额:{{item.balance}})</span>
+      </view>
+      <!-- <i class="select_icon" :class="choosedPayWay.payIndex==item.payIndex?'selected':''"></i> -->
+      <i class="select_icon {{choosedPayWay.payIndex==item.payIndex?'selected':''}}"></i> 
+    </view>
+    <a class="exchange_btn" bindtap="payMoney">{{buttonTxt}}</a>
+    <view class="att_tips" wx:for-items="{{payWay}}">
+      <block wx:if="{{item.payIndex==2}}"> 温馨提示:1元友宝余额价值与1星星价值一致</block>
+    </view>
+  </view>
+</view>

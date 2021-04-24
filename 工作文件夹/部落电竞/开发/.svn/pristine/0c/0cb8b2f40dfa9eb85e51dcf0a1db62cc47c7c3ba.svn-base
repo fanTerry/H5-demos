@@ -1,0 +1,215 @@
+<!--modules/reportpage/mddata/md-data.wxml-->
+
+<!-- 第一部分数据总况信息 -->
+<view class='md-data-info clear'>
+  <text class='m-d-i-text-l'>数据对比</text>
+  <text class='m-d-i-text-r'>近5场均值数据</text>
+</view>
+<view class='md-data-view'>
+  <!-- 第一行 -->
+  <view class='md-data-table dsp-table'>
+    <view class='dsp-cell t-l'>
+      <image class='m-d-img m-d-img-l' src='/resources/images/image1.png' mode='aspectFill' />
+      <text class='m-d-text'>DETONA...</text>
+    </view>
+
+    <view class='dsp-cell t-r'>
+      <text class='m-d-text'>DETONA...</text>
+      <image class='m-d-img m-d-img-r' src='/resources/images/image1.png' mode='aspectFill' />
+    </view>
+  </view>
+
+  <!-- 第二行 -->
+  <view class='md-data-table dsp-table'>
+    <view class='dsp-cell t-l m-d-t-c1'>
+      <text>3.45</text>
+      <text class='m-d-t-sub'>21.2/12.3/65.4</text>
+    </view>
+    <view class='dsp-cell t-c'>
+      <text class='m-d-t-big'>KDA</text>
+    </view>
+    <view class='dsp-cell t-r m-d-t-c1'>
+      <text class='m-d-t-sub'>21.2/12.3/65.4</text>
+      <text>3.45</text>
+    </view>
+  </view>
+
+  <!-- 第三行：表格数据 -->
+  <view class='md-data-table-view'>
+    <!-- Line 1 -->
+    <view class='md-data-table dsp-table m-d-t-text'>
+      <view class='dsp-cell t-l m-d-t-c1'>24.8</view>
+      <view class='dsp-cell t-c'>分均补刀</view>
+      <view class='dsp-cell t-r m-d-t-c1'>24.8</view>
+    </view>
+    <view class='md-data-progress-view'>
+      <progress percent="50" stroke-width="6" border-radius="3" activeColor="#fe5049" backgroundColor="#556fb5" />
+    </view>
+
+    <!-- Line 2 -->
+    <view class='md-data-table dsp-table m-d-t-text'>
+      <view class='dsp-cell t-l m-d-t-c1'>10978</view>
+      <view class='dsp-cell t-c'>分均经济</view>
+      <view class='dsp-cell t-r m-d-t-c1'>8754</view>
+    </view>
+    <view class='md-data-progress-view'>
+      <progress percent="90" stroke-width="6" border-radius="3" activeColor="#fe5049" backgroundColor="#556fb5" />
+    </view>
+
+    <!-- Line 3 -->
+    <view class='md-data-table dsp-table m-d-t-text'>
+      <view class='dsp-cell t-l m-d-t-c1'>7569</view>
+      <view class='dsp-cell t-c'>分均伤害</view>
+      <view class='dsp-cell t-r m-d-t-c1'>4567</view>
+    </view>
+    <view class='md-data-progress-view'>
+      <progress percent="50" stroke-width="6" border-radius="3" activeColor="#fe5049" backgroundColor="#556fb5" />
+    </view>
+
+  </view>
+
+</view>
+
+<!-- 第二部分数据表格 -->
+<view class='md-data-info clear'>
+  <text class='m-d-i-text-l'>双方交战</text>
+  <text class='m-d-i-text-r'>近期交锋3场</text>
+</view>
+
+<view class='md-data-view-blue'>
+  <!-- 第一行 -->
+  <view class='dsp-table m-d-b-title'>
+    <view class='dsp-cell m-d-b-c1'>赛事</view>
+    <view class='dsp-cell m-d-b-c3'>人头比</view>
+    <view class='dsp-cell m-d-b-c1'>日期/时长</view>
+  </view>
+
+  <!-- 第二行 -->
+  <view class='dsp-table m-d-b-line line-border'>
+    <view class='dsp-cell m-d-b-c1'>
+      <image class='m-d-logo1' src='/resources/images/iconimg/logo1.jpg' mode='aspectFill' />
+    </view>
+    <view class='dsp-cell m-d-b-c3'>
+      <view class='dsp-cell m-d-b-c4 t-r'>
+        <image class='m-d-logo2' src='/resources/images/iconimg/logo2.jpg' mode='aspectFill' />
+        <image class='m-d-logo2' src='/resources/images/iconimg/logo2.jpg' mode='aspectFill' />
+        <image class='m-d-logo2' src='/resources/images/image1.png' mode='aspectFill' />
+      </view>
+      <view class='dsp-cell m-d-b-c5'>03-20</view>
+      <view class='dsp-cell m-d-b-c4 t-l'>
+        <image class='m-d-logo2' src='/resources/images/image1.png' mode='aspectFill' />
+        <i class="iconfont icon-shengli icon-win"></i>
+        <image class='m-d-logo2' src='/resources/images/iconimg/logo2.jpg' mode='aspectFill' />
+        <image class='m-d-logo2' src='/resources/images/iconimg/logo2.jpg' mode='aspectFill' />
+      </view>
+    </view>
+    <view class='dsp-cell m-d-b-c1'>
+      <view class='m-d-b-time'>03-20</view>
+      <view class='m-d-b-time'>37’45”</view>
+    </view>
+  </view>
+
+  <!-- 第三行 -->
+  <view class='dsp-table m-d-b-line'>
+    <view class='dsp-cell m-d-b-c1'>
+      <image class='m-d-logo1' src='/resources/images/iconimg/logo1.jpg' mode='aspectFill' />
+    </view>
+    <view class='dsp-cell m-d-b-c3'>
+      <view class='dsp-cell m-d-b-c4 t-r'>
+        <image class='m-d-logo2' src='/resources/images/iconimg/logo2.jpg' mode='aspectFill' />
+        <image class='m-d-logo2' src='/resources/images/iconimg/logo2.jpg' mode='aspectFill' />
+        <i class="iconfont icon-shengli icon-win"></i>
+        <image class='m-d-logo2' src='/resources/images/image1.png' mode='aspectFill' />
+      </view>
+      <view class='dsp-cell m-d-b-c5'>03-20</view>
+      <view class='dsp-cell m-d-b-c4 t-l'>
+        <image class='m-d-logo2' src='/resources/images/image1.png' mode='aspectFill' />
+        <image class='m-d-logo2' src='/resources/images/iconimg/logo2.jpg' mode='aspectFill' />
+        <image class='m-d-logo2' src='/resources/images/iconimg/logo2.jpg' mode='aspectFill' />
+      </view>
+    </view>
+    <view class='dsp-cell m-d-b-c1'>
+      <view class='m-d-b-time'>03-20</view>
+      <view class='m-d-b-time'>37’45”</view>
+    </view>
+  </view>
+
+</view>
+
+<!-- 第三部分数据表格 -->
+<view class='md-data-info clear'>
+  <text class='m-d-i-text-l'>比赛数据</text>
+</view>
+
+<view wx:for="ab" class='md-data-view-blue m-d-v-b-data'>
+  <!-- 第一行 -->
+  <view class='m-d-win-view'>
+    <!-- 状态调整：m-d-win-l m-d-win-r -->
+    <i class="iconfont icon-shengli icon-win m-d-win m-d-win-l"></i>
+  </view>
+
+  <!-- 第二行 -->
+  <view class='dsp-table m-d-report'>
+    <view class='dsp-cell m-d-r-c1'>
+      <view class='clear'>
+        <view class='m-d-r-item m-d-r-il'>
+          <i class="iconfont icon-sha icon-kill"></i>
+          <view><text>十杀</text></view>
+        </view>
+        <view class='m-d-r-item m-d-r-il'>
+          <i class="iconfont icon-yixie icon-blood"></i>
+          <view><text>一血</text></view>
+        </view>
+      </view>
+    </view>
+    <view class='dsp-cell'>
+      <view class='dsp-cell m-d-r-c2'>14</view>
+      <view class='dsp-cell m-d-r-c3'>
+        <view class='m-d-r-num'><text>第1场</text></view>
+        <view><text class='m-d-r-time'>23:34</text></view>
+      </view>
+      <view class='dsp-cell m-d-r-c2'>23</view>
+    </view>
+    <view class='dsp-cell m-d-r-c1'>
+      <view class='clear'>
+        <view class='m-d-r-item m-d-r-ir'>
+          <i class="iconfont icon-sha icon-kill"></i>
+          <view><text>十杀</text></view>
+        </view>
+        <view class='m-d-r-item m-d-r-ir'>
+          <i class="iconfont icon-yixie icon-blood"></i>
+          <view><text>一血</text></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 第三行 -->
+  <view class='dsp-table m-d-picture'>
+    <view class='dsp-cell m-d-p-c1'>
+      <view class='m-d-r-name t-l'><text>WP</text></view>
+      <view class='clear'>
+        <image class='m-d-p-pic pic-l' src='/resources/images/iconimg/icon1.jpg' mode='aspectFill' />
+        <image class='m-d-p-pic pic-l' src='/resources/images/iconimg/icon1.jpg' mode='aspectFill' />
+        <image class='m-d-p-pic pic-l' src='/resources/images/iconimg/icon1.jpg' mode='aspectFill' />
+        <image class='m-d-p-pic pic-l' src='/resources/images/iconimg/icon1.jpg' mode='aspectFill' />
+        <image class='m-d-p-pic pic-l' src='/resources/images/iconimg/icon1.jpg' mode='aspectFill' />
+      </view>
+    </view>
+    <view class='dsp-cell m-d-p-c2'>
+      <view class='m-d-p-check-v'><text class='m-d-p-check'>查看战报数据</text></view>
+    </view>
+    <view class='dsp-cell m-d-p-c1'>
+      <view class='m-d-r-name t-r'><text>OGG</text></view>
+      <view class='clear'>
+        <image class='m-d-p-pic pic-r' src='/resources/images/iconimg/icon1.jpg' mode='aspectFill' />
+        <image class='m-d-p-pic pic-r' src='/resources/images/iconimg/icon1.jpg' mode='aspectFill' />
+        <image class='m-d-p-pic pic-r' src='/resources/images/iconimg/icon1.jpg' mode='aspectFill' />
+        <image class='m-d-p-pic pic-r' src='/resources/images/iconimg/icon1.jpg' mode='aspectFill' />
+        <image class='m-d-p-pic pic-r' src='/resources/images/iconimg/icon1.jpg' mode='aspectFill' />
+      </view>
+    </view>
+  </view>
+</view>
+
+

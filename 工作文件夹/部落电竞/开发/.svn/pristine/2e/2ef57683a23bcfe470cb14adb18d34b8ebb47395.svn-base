@@ -1,0 +1,55 @@
+<!--component/popup/pay/pay.wxml-->
+<view class="ui_pop" v-if="readyFlag">
+    <view class="pop_pay">
+      <view class="order">
+        <!-- 订单金额：{{price}}星星 -->
+        请选择支付方式
+        <a class="close" click="close()"></a>
+      </view>
+
+      <!-- <view class="discount">
+                <span>优惠券</span>
+                <view>无可用优惠券<span class="c_red">-4.00元</span><i class='iconfont icon-xiangyou'></i></view>
+            </view>
+            <view class="balance">
+                <span>余额抵扣</span>
+                <span class="c_red">-4.00元</span>
+            </view> -->
+
+      <view class="pay_title">需支付</view>
+      <view class="pay_num">{{price}}
+        <span>{{unit?unit:'星星'}}</span>
+      </view>
+      <view class="pay_method" v-for="(item,index) in payWay " click="choosePay(item)">
+        <view>
+          <image mode="aspectFill" :src="item.icon" alt=""></image>{{item.name}}
+          <span>(余额:{{item.balance}})</span>
+        </view>
+        <i class="select_icon" :class="choosedPayWay.index==item.index?'selected':''"></i>
+      </view>
+      <!-- <view class="pay_method">
+                <i class="yb_icon"></i>友宝余额支付
+                <span>余额:{{youbaoBalance}}</span>
+            </view> -->
+      <a class="exchange_btn" click="payMoney()">{{buttonTxt}}</a>
+      <view class="att_tips" v-for="item in payWay">
+        <template v-if="item.index==2"> 温馨提示:1元友宝余额价值与1星星价值一致</template>
+      </view>
+      <!-- <p class="warn_tips" v-if="tips">{{tips}}
+      </p> -->
+      <!-- <p class="warn_tips" v-if='notEnough'>
+        <template v-if="choosedPayWay.index==2">
+          友宝余额不足,
+          <a href='https://v.ubox.cn/weixinmp/recharge?source=jzdj'> 点击立即充值>> </a>
+        </template>
+        <template v-if="choosedPayWay.index==null||choosedPayWay.index==0">
+          星星余额不足,
+          <router-link :to="{path:'/recharge', query:{redirect:$route.fullPath}}"
+            v-if="choosedPayWay.index==null||choosedPayWay.index==0"> 点击立即充值>> </router-link>
+        </template>
+      </p> -->
+      <!-- <popAlert :showPop='showPop' close='showPop=false' confirm='toCharge' type="2">
+        <p>余额不足,是否去充值?</p>
+      </popAlert> -->
+    </view>
+  </view>

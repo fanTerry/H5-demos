@@ -1,0 +1,309 @@
+<template>
+  <div class=" main" style="
+    position: relative;
+    height: 100%;
+">
+    <v-scroll ref="scroll" @downCallback="downCallback" @upCallback="upCallback">
+
+      <section class="infor_list">
+        <template v-for="item in newsList">
+          <article class="item" v-if="item.type==1 " @click="toCmsDetail(item.aricleId,item.type)">
+            <div>
+              <img class="item_img" v-if="item.type==1" :src="item.imageSrc" alt
+                onerror="this.src='https://static.wanplus.com/data/default/banner.jpg?imageView2/1/w/308/h/208'" />
+              <img class="item_img" v-if="item.type==2" :src="item.titleImg" alt />
+            </div>
+            <div class="item_right">
+              <div>
+                <p class="item_title">
+                  <span>#{{item.tag}}</span>
+                  <span>{{item.publishTimeStr}}</span>
+                </p>
+                <p class="txt">{{item.detail}}</p>
+              </div>
+              <div class="visited">
+                <p>
+                  <i class="iconfont icon-icon_yulan"></i>
+                  <span>{{item.seeNum}}</span>
+                </p>
+                <p>
+                  <i class="iconfont icon-pinglun"></i>
+                  <span>{{item.discussNum}}</span>
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article class="item" v-else-if="item.type==2">
+            <div class="film_con">
+              <!-- <div class="video_img" v-if="item.imgShow" @click="playVideoImage($event,item)">
+                      <img :src="item.titleImg" alt="">
+                      <span class="video_play_icon"></span>
+                    </div> -->
+              <video height="200px" style="object-fit:fill" :poster="item.titleImg" :class="'video-'+item.aricleId"
+                @click="playVideo($event,item.aricleId)" controls webkit-playsinline="true" x-webkit-airplay="true"
+                playsinline="true" preload="auto" x5-video-player-type="h5" x5-video-orientation="h5"
+                x5-video-player-fullscreen="true">
+                <source :src="item.imageSrc">
+              </video>
+
+              <div class="film_title" @click="toCmsDetail(item.aricleId,item.type)">{{item.detail}}</div>
+              <div class="flex_v_justify" @click="toCmsDetail(item.aricleId,item.type)">
+                <span>#{{item.tag}}</span>
+                <div class="visited">
+                  <p>
+                    <i class="iconfont icon-icon_yulan"></i>
+                    <span>{{item.seeNum}}</span>
+                  </p>
+                  <p>
+                    <i class="iconfont icon-pinglun"></i>
+                    <span>{{item.discussNum}}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </section>
+    </v-scroll>
+  </div>
+</template>
+
+
+<script>
+import Scroll from "../../components/common/my-scroll";
+// import MiniRefreshTools from "minirefresh";
+// import "minirefresh/dist/debug/minirefresh.css";
+// import "minirefresh/dist/debug/themes/applet/minirefresh.theme.applet.js";
+// import "minirefresh/dist/debug/themes/applet/minirefresh.theme.applet.css";
+
+export default {
+  data() {
+    return {
+      newsList: []
+    };
+  },
+  mounted: function() {},
+  methods: {
+    downCallback() {
+      var self = this;
+      self.newsList = [];
+      self.getPageData();
+      self.$refs.scroll.miniRefresh.endDownLoading(true, "成功更新xx条数据");
+    },
+    upCallback() {
+      var self = this;
+      self.getPageData();
+    },
+
+    getPageData(param) {
+      if (!param) {
+        param = {};
+        param.pageNo = 1;
+        param.pageSize = 10;
+        param.contentType = 1;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/newlist", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if ((dataResponse.code = "200")) {
+            console.log(dataResponse.data, "getPageData---请求成功");
+            this.currPageSize = dataResponse.data.length;
+            if (dataResponse.data.length > 0) {
+              let list = dataResponse.data;
+
+              this.newsList = this.newsList.concat(list);
+            }
+            this.$refs.scroll.miniRefresh.endUpLoading(false);
+            return this.newsList;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.$refs.scroll.miniRefresh.endUpLoading(true);
+        });
+    }
+  },
+  components: {
+    "v-scroll": Scroll
+  }
+};
+</script>
+
+
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+@import "../../assets/common/iconfont.css";
+.scroll-list-wrap {
+  position: relative;
+  height: 100%; // border: 1px solid rgba(0,0,0,.1);
+  // border-radius: .3rem;
+  -webkit-transform: rotate(0deg);
+  transform: rotate(0deg);
+  overflow: hidden; //margin-top: 80px ;
+  //margin-bottom: 60px;
+}
+.header_nav_list {
+  background: linear-gradient(-15deg, #ffa904, #ff782f);
+  .nav_top {
+    @extend .flex_v_justify;
+    padding: 15px 10px 10px;
+    .user_img {
+      width: 24px;
+      height: 24px;
+      margin-right: 12px;
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+      }
+    }
+  }
+  .left,
+  .right {
+    @extend .flex_hc;
+  }
+  .left {
+    flex: 1;
+    -webkit-flex: 1;
+  }
+  .search_con {
+    position: relative;
+    flex: 1;
+    -webkit-flex: 1;
+    margin-right: 20px;
+  }
+  input {
+    width: 100%;
+    height: 24px;
+    padding-left: 30px;
+    border-radius: 24px;
+    background-color: #fff;
+    border: none;
+  }
+  .search {
+    @extend .g_v_mid;
+    left: 7px;
+    width: 16px;
+    height: 16px;
+    @include getBgImg("../../assets/images/home/search.png");
+  }
+  .message,
+  .comment {
+    position: relative;
+    width: 22px;
+    height: 22px;
+  }
+  .message {
+    @include getBgImg("../../assets/images/home/message.png");
+    .att {
+      @extend .flex_v_h;
+
+      position: absolute;
+      right: 0;
+      top: 0;
+      transform: translate(50%, -30%);
+      -webkit-transform: translate(50%, -30%);
+
+      @include getCircle(14px, #ff0000, #fff);
+      font-size: 11px;
+    }
+  }
+  .comment {
+    margin-left: 20px;
+    @include getBgImg("../../assets/images/home/comment.png");
+  }
+}
+.main {
+  margin: 5px 5px 0;
+  padding-top: 5px;
+  border-radius: 6px;
+  background-color: #fff;
+
+  .infor_list {
+    padding: 0 5px;
+  }
+  .infor_list .item {
+    @extend .flex_hc;
+    padding: 10px 0;
+    @include getBorder(bottom, #ddd);
+    .item_img {
+      width: 140px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    .item_right {
+      @extend .flex_justify;
+      flex-direction: column;
+      -webkit-flex-direction: column;
+      flex: 1;
+      -webkit-flex: 1;
+      height: 90px;
+      margin-left: 14px;
+    }
+    .item_title {
+      @extend .flex_justify;
+      font-size: 11px;
+      color: #a3a3a3;
+    }
+    .txt {
+      padding-top: 7px;
+      font-size: 13px;
+      line-height: 17px;
+      color: #000;
+      text-align: justify;
+      @include line_clamp(3);
+    }
+    .visited {
+      @extend .flex;
+      .iconfont {
+        font-size: 12px;
+        margin-right: 2px;
+      }
+      p {
+        margin-right: 10px;
+      }
+      i,
+      span {
+        color: #a3a3a3;
+      }
+    }
+    video {
+      width: 100%;
+      cursor: pointer;
+    }
+    .film_con {
+      width: 100%;
+      video {
+        width: 100%;
+      }
+      .video_img {
+        position: relative;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+        .video_play_icon {
+          @extend .g_v_c_mid;
+          display: block;
+          width: 48px;
+          height: 48px;
+          @include getBgImg("../../assets/images/home/video_icon.png");
+        }
+      }
+      span {
+        color: #a3a3a3;
+      }
+    }
+    .film_title {
+      padding: 10px 0;
+      @include t_nowrap(100%);
+      line-height: 1.2;
+    }
+  }
+}
+</style>

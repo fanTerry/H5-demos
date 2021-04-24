@@ -1,0 +1,108 @@
+/* modules/reportpage/mdcharts/md-charts.wxss */
+
+@import "/resources/wxss/layout.wxss";
+@import "/resources/wxss/base/clear.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+@import "/component/report/reportsubmenu/report-sub-menu.wxss";
+/* @import "/component/reportlist/wxss/report-item.wxss"; */
+
+.md-charts-half {
+  width: 730rpx;
+  padding: 20rpx 0;
+  margin: 20rpx auto;
+
+  background: #fff;
+  border-radius: 20rpx;
+}
+
+.r-p-i-d-text {
+  color: #9f9f9f;
+  font-size: 28rpx;
+
+  line-height: 70rpx;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+.r-p-i-d-img {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.r-p-i-score {
+  display: inline;
+  padding: 0 10rpx;
+
+  font-size: 42rpx;
+  color: #686868;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.r-p-i-s-win {
+  color: #138bfe;
+}
+.r-p-i-r2 {
+  width: 280rpx;
+}
+.r-p-i-r4 {
+  width: 280rpx;
+}
+.r-p-i-r3 {
+  width: 140rpx;
+  text-align: center;
+}
+
+
+.md-c-h-l-tit-view {
+  text-align: center;
+  padding: 0 20rpx;
+}
+.md-c-h-l-tit {
+  font-size: 24rpx;
+  color: #666;
+}
+.md-c-h-l-txt {
+  font-size: 32rpx;
+  font-weight: bold;
+  padding: 0 10rpx;
+}
+.md-c-h-l-table-tr {
+  padding-top: 10rpx;
+  padding-left: 10rpx;
+}
+.tr-box{
+  display: inline-block;
+  width: 45rpx;
+
+  text-align: center;
+  line-height: 30rpx;
+  font-size: 24rpx;
+  color: #878787;
+}
+
+.md-c-h-l-grid {
+  width: 705rpx;
+  margin: 0 auto;
+
+  display: grid;
+  grid: repeat(2, 45rpx) / auto-flow 45rpx;
+  border-right: solid 1rpx #ddd;
+  border-bottom: solid 1rpx #ddd;
+}
+
+.md-c-h-l-box {
+  width: 45rpx;
+  height: 45rpx;
+  text-align: center;
+
+  border-left: solid 1rpx #ddd;
+  border-top: solid 1rpx #ddd;
+  font-size: 24rpx;
+}
+
+/* 05.09 新方案分界线 */
+.md-charts-chat-list {
+  width: 690rpx;
+  padding: 20rpx;
+  margin: 20rpx auto;
+
+  background: #f5f6f7;
+  border-radius: 15rpx;
+}

@@ -1,0 +1,295 @@
+.main {
+  padding: 20rpx 0;
+}
+
+.mod_publish {
+  padding: 20rpx 0 10rpx;
+  background-color: #fff;
+}
+
+.publish_txt {
+  position: relative;
+  height: 320rpx;
+}
+
+.publish_txt textarea, .publish_txt .essays_con {
+  width: 100%;
+  height: 320rpx;
+  padding: 0 30rpx;
+  border: none;
+  color: transparent;
+  caret-color: #333;
+  word-break: break-all;
+  font: 34rpx/50rpx "Open Sans", sans-serif;
+}
+
+.publish_txt textarea::-webkit-input-placeholder {
+  color: #c0c0c0;
+}
+
+.publish_txt .title {
+  height: 140rpx;
+}
+
+.publish_txt .essays {
+  position: absolute;
+}
+
+.publish_txt .essays_con {
+  position: absolute;
+  word-wrap: break-word;
+  color: #333;
+}
+
+.add_container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.add_item {
+  position: relative;
+  width: 27.4%;
+  padding-top: 26.9%;
+  margin: 0 0 20rpx 20rpx;
+  border: 1rpx dashed #ddd;
+  border-radius: 16rpx;
+}
+
+.add_item input {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.add_item image, .add_item video {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 102%;
+  height: 102%;
+  border-radius: 16rpx;
+}
+
+.add_item .close {
+  position: absolute;
+  width: 48rpx;
+  height: 48rpx;
+  z-index: 100;
+  right: 6rpx;
+  top: 6rpx;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+}
+
+.close:before, .close:after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  content: " ";
+  display: inline-block;
+  width: 2rpx;
+  height: 24rpx;
+  background-color: #fff;
+}
+
+.close:before {
+  transform: translate3d(-50%, -50%, 0) rotate(45deg);
+}
+
+.close:after {
+  transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+}
+
+.add_item .edit {
+  position: absolute;
+  bottom: 6rpx;
+  left: 6rpx;
+  z-index: 100;
+  padding: 0 10rpx;
+  font-size: 26rpx;
+  line-height: 36rpx;
+  color: #fff;
+  border-radius: 10rpx;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.publish_img .add_item {
+  width: 95%;
+  margin: 20rpx auto 0;
+  padding-top: 36.8%;
+}
+
+.publish_img .add_item image, .publish_img .add_item video {
+  width: 102%;
+  height: 102%;
+  border-radius: 8rpx;
+}
+
+.publish_img .add_item input {
+  height: 280rpx;
+}
+
+.publish_img .essays {
+  height: 100rpx;
+}
+
+.publish_img .note_txt {
+  height: 280rpx;
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  line-height: 50rpx;
+}
+
+.publish_img .note_txt ::-webkit-input-placeholder {
+  text-align: center;
+}
+
+.add_icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.add_icon::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  width: 100%;
+  height: 6rpx;
+  border-radius: 10rpx;
+  background-color: #ddd;
+}
+
+.add_icon::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  width: 6rpx;
+  height: 100%;
+  border-radius: 10rpx;
+  background-color: #ddd;
+}
+
+.mod_project {
+  background-color: #fff;
+}
+
+.project_tab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20rpx;
+  background-color: #f5f4f3;
+}
+
+.project_tab a {
+  padding: 0 20rpx;
+  line-height: 48rpx;
+  font-size: 32rpx;
+  color: #fff;
+  background-color: #FEA21B;
+  border-radius: 46rpx;
+}
+
+.project_tab ul {
+  display: flex;
+	align-items: center;
+  flex: 1;
+  -webkit-flex: 1;
+  height: 84rpx;
+}
+
+.project_tab li {
+  margin-right: 40rpx;
+}
+
+.keyboard_icon {
+  width: 56rpx;
+  height: 41rpx;
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/follow/keyboard_icon.png') no-repeat center;
+  background-size: cover;
+}
+.keyboard_icon.active {
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/follow/keyboard_icon_active.png') no-repeat center;
+  background-size: cover;
+}
+
+.topic_icon {
+  width: 25px;
+  height: 23px;
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/follow/topic_icon.png') no-repeat center;
+  background-size: cover;
+}
+.topic_icon.active {
+	background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/follow/topic_icon_active.png') no-repeat center;
+  background-size: cover;
+}
+
+.project_con > ul {
+	display: block;
+	width: 100%;
+	overflow-x: scroll;
+	-webkit-overflow-scrolling: touch;
+	white-space: nowrap;
+}
+.project_con li {
+	display: inline-block;
+	width: 100%;
+}
+
+.topic_talk {
+  padding-top: 40rpx;
+  padding-bottom: 40rpx;
+}
+
+.topic_talk .search {
+    display: flex;
+		align-items: center;
+    height: 48rpx;
+    margin: 0 30rpx 24rpx;
+    padding: 0 20rpx;
+    background-color: #eee;
+    border-radius: 48rpx;
+  }
+
+  .topic_talk .search_icon {
+    width: 36rpx;
+    height: 36rpx;
+		background: url('https://rs.esportzoo.com/svn/esport-res/mini/images/home/search.png') no-repeat center;
+  background-size: cover;
+  }
+
+  .topic_talk input {
+    flex: 1;
+    height: 100%;
+    padding-left: 20rpx;
+    font-size: 28rpx;
+  }
+
+  .topic_talk .close {
+    width: 36rpx;
+		height: 36rpx;
+    position: relative;
+    border: 1rpx solid #ddd;
+    border-radius: 50%;
+  }
+
+  .topic_talk p {
+    padding-left: 110rpx;
+    line-height: 60rpx;
+    font-size: 28rpx;
+    color: #818181;
+  }

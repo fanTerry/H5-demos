@@ -1,0 +1,73 @@
+
+/* resources/wxss/grid.wxss */
+
+.grid-tit {
+  display: grid;
+  grid-template-columns: 208rpx 2rpx 100rpx 2rpx 208rpx 2rpx 208rpx;
+  grid-template-rows: auto 2rpx;
+}
+
+.grid-lump {
+  display: grid;
+  grid-template-columns: 208rpx 2rpx 100rpx 2rpx 208rpx 2rpx 208rpx;
+  grid-template-rows: auto 2rpx auto 2rpx;
+}
+
+.box {
+  text-align: center;
+  background: #fff;
+
+  padding: 10rpx 0;
+}
+.t1 {
+  grid-column: 1 / 4; 
+  grid-row: 1 / 2;
+}
+
+.t2 {
+  grid-column: 5 / 6; 
+  grid-row: 1 / 2;
+}
+
+.t3 {
+  grid-column: 7 / 8; 
+  grid-row: 1 / 2;
+}
+
+.l1 {
+  grid-column: 1 / 2; 
+  grid-row: 1 / 4;
+  line-height: 100rpx;
+  font-size: 26rpx; 
+}
+
+.l2 {
+  grid-column: 3 / 4; 
+  grid-row: 1 / 2;
+}
+
+.l3 {
+  grid-column: 5 / 6; 
+  grid-row: 1 / 2;
+}
+.l4 {
+  grid-column: 7 / 8; 
+  grid-row: 1 / 2;
+}
+.l5 {
+  grid-column: 3 / 4; 
+  grid-row: 3 / 4;
+}
+
+.l6 {
+  grid-column: 5 / 6; 
+  grid-row: 3 / 4;
+}
+.l7 {
+  grid-column: 7 / 8; 
+  grid-row: 3 / 4;
+}
+
+
+
+

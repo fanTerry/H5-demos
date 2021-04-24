@@ -1,0 +1,120 @@
+<!--component/reportlist/reportresultitem/report-result-item.wxml-->
+<view class='report-p-item'>
+  
+  <!-- 公共部分：状态栏 -->
+  <view class='report-item-detail pr'>
+    <!-- 状态标签层 -->
+    <view class='r-p-i-info clear'>
+      <view class='fl'>
+        <image class='r-p-i-icon-live' src='/resources/images/image3.png' mode='aspectFill' />
+      </view>
+      <view class='fr r-p-i-i-num'>
+        <text>90</text><i class='iconfont icon-dianzan'></i>
+      </view>
+    </view>
+
+    <!-- 第一格 -->
+    <view class='dsp-cell r-p-i-r1'>
+      <view class='r-p-i-title'><text>07:00</text></view>
+      <view class='r-p-i-title'><text>BO1</text></view>
+    </view>
+
+    <!-- 第二格 -->
+    <view class='dsp-cell r-p-i-r2'>
+      <view class='fr'>
+        <image class='r-p-i-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+      </view>
+      <view class='fr r-p-i-d-text'>
+        <text>DETONA...</text>
+      </view>
+    </view>
+
+    <!-- 第三格 -->
+    <view class='dsp-cell r-p-i-r3'>
+      <view class='dsp-cell r-p-i-score r-p-i-s-win'><text>3</text></view>
+      <view class='dsp-cell r-p-i-score'><text>-</text></view>
+      <view class='dsp-cell r-p-i-score'><text>2</text></view>
+    </view>
+
+    <!-- 第四格 -->
+    <view class='dsp-cell r-p-i-r4'>
+      <view class='fl'>
+        <image class='r-p-i-d-img' src='/resources/images/image1.png' mode='aspectFill' />
+      </view>
+      <view class='fl r-p-i-d-text'>
+        <text>DETONA...</text>
+      </view>
+    </view>
+
+    <!-- 第五格 -->
+    <view class='dsp-cell r-p-i-r5'>
+      <image class='r-p-i-d-img-gift' src='/resources/images/image2.png' mode='aspectFill' />
+      <image class='r-p-i-d-img-gift' src='/resources/images/image2.png' mode='aspectFill' />
+    </view>
+
+    <!-- 第六格 -->
+    <view class='dsp-cell r-p-i-r6'>
+      <i class='iconfont icon-icon_tianjia r-p-i-i r-p-i-i-cur'></i>
+    </view>
+
+    <view class='r-p-i-status-view'>
+      <view class='r-p-i-d-s-status r-p-i-d-s-s-over'>
+        <text>已结束</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 赛事一级页面：赛事结果元素 -->
+  <view wx:if="{{betType == 0}}" class='r-p-i-score-list'>
+    <view class='r-p-i-s-l-table-caption'>
+      <view class='r-p-i-s-l-t-cell'>局数</view>
+      <view class='r-p-i-s-l-t-cell'>胜负</view>
+      <view class='r-p-i-s-l-t-cell'>比分</view>
+      <view class='r-p-i-s-l-t-cell'>手局（上）</view>
+      <view class='r-p-i-s-l-t-cell'>手局（下）</view>
+    </view>
+    <view class='r-p-i-s-l-table-row' wx:for="ab" wx:key="">
+      <view class='r-p-i-s-l-t-cell'>第一局</view>
+      <view class='r-p-i-s-l-t-cell'>- -</view>
+      <view class='r-p-i-s-l-t-cell'>16-14</view>
+      <view class='r-p-i-s-l-t-cell'><image class='r-p-i-d-img' src='/resources/images/image1.png' mode='aspectFill' /></view>
+      <view class='r-p-i-s-l-t-cell'><image class='r-p-i-d-img' src='/resources/images/image1.png' mode='aspectFill' /></view>
+    </view>
+  </view>
+
+  <!-- TODO：赛事二级页面状态下公共部分中间内容的对齐问题 -->
+  <!-- 赛事二级页面：竞猜投注进行中元素 -->
+  <view wx:elif="{{betType == 1}}" class='r-p-i-score-list'>
+    <view wx:for="abc" class='r-p-i-score-item'>
+      <view class='r-p-i-s-l-table-row'>
+        <view class='r-p-i-s-l-t-cell r-p-t-c4'><text class='r-p-t-btn r-p-t-btn-gray'>0.53</text></view>
+        <view class='r-p-i-s-l-t-cell r-p-t-c5'><text class='r-p-t-t-orange'>猜输赢</text></view>
+        <view class='r-p-i-s-l-t-cell r-p-t-c4'><text class='r-p-t-btn r-p-t-btn-green'>0.94</text></view>
+      </view>
+      <view class='r-p-i-s-l-table-row' wx:key="">
+        <view class='r-p-i-s-l-t-cell r-p-t-c4'>赔率</view>
+        <view class='r-p-i-s-l-t-cell r-p-t-c5'>可预测</view>
+        <view class='r-p-i-s-l-t-cell r-p-t-c4'>赔率</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 赛事二级页面：竞猜投注结束元素 -->
+  <view wx:elif="{{betType == 2}}" class='r-p-i-score-list'>
+    <view wx:for="abc" class='r-p-i-score-item'>
+      <view class='r-p-i-s-l-table-row'>
+        <view class='r-p-i-s-l-t-cell r-p-t-c1'><image class='r-p-i-win' src='/resources/images/iconimg/win.png' mode='aspectFill' />0.53</view>
+        <view class='r-p-i-s-l-t-cell r-p-t-c2'><text class='r-p-t-t-orange'>猜输赢</text></view>
+        <view class='r-p-i-s-l-t-cell r-p-t-c3'>
+          <!-- <image class='r-p-i-win' src='/resources/images/iconimg/win.png' mode='aspectFill' /> -->
+        0.94</view>
+      </view>
+      <view class='r-p-i-s-l-table-row' wx:key="">
+        <view class='r-p-i-s-l-t-cell r-p-t-c1'>赔率</view>
+        <view class='r-p-i-s-l-t-cell r-p-t-c2'><text class='r-p-t-t-black'>调盘中</text></view>
+        <view class='r-p-i-s-l-t-cell r-p-t-c3'>赔率</view>
+      </view>
+    </view>
+  </view>
+
+</view>

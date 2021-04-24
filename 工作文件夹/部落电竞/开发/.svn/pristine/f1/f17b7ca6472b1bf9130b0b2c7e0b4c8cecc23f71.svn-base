@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "pp-my": "/component/popup/ppmy/pp-my"
+  }
+}

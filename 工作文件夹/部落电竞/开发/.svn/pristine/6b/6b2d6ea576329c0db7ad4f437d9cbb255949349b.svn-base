@@ -1,0 +1,144 @@
+<template>
+  <section class="mod_match_guess">
+    <modTitle :titleTxt="'赛事竞猜'" :showTab='true' :showPageTab='true'>
+      <ul class="tab">
+        <li class="active">全部比赛</li>
+        <li>2019中法对抗赛</li>
+        <li>2020Ti10系列赛</li>
+      </ul>
+      <div class="page_tab">
+        <ul>
+          <li class="active">1</li>
+          <li>2</li>
+          <li>3</li>
+        </ul>
+      </div>
+    </modTitle>
+    <div class="match_con">
+      <ul class="match_screen">
+        <!-- 每一屏只显示一页 -->
+        <li class="match_page">
+          <ul class="match_list">
+            <!-- 每一页插8个数据 -->
+            <guessItem :index='index' v-for="(item,index) in 8" :key="index" @openMore='openMore'>
+            </guessItem>
+            <moreGuess :matchMoreMark='matchMoreMark'></moreGuess>
+          </ul>
+        </li>
+      </ul>
+      <div class="to_left_page"></div>
+      <div class="to_right_page"></div>
+    </div>
+  </section>
+</template>
+
+<script>
+import modTitle from "../../components/title/title";
+import guessItem from "./components/guessItem";
+import moreGuess from "./components/moreGuess";
+import { mapGetters, mapActions } from "vuex";
+export default {
+  components: { guessItem, moreGuess, modTitle },
+  props: [],
+  data() {
+    return {
+      matchMoreMark: Number
+    };
+  },
+  computed: {
+    ...mapGetters({
+      loginInfo: "getLoginPop"
+    })
+  },
+  methods: {
+    openMore(index) {
+      console.log(11111111);
+      if (this.loginInfo.state == true) {
+        console.log("用户已登录");
+        if (this.matchMoreMark == index) {
+          this.matchMoreMark = -1;
+        } else {
+          this.matchMoreMark = index;
+        }
+      } else {
+        console.log("用户没有登录");
+        this.$store.dispatch("setLoginShowType", { state: true });
+        this.$store.dispatch("setCodeType", { state: 1});
+      }
+
+      console.log(this.matchMoreMark, index);
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_mixin";
+@import "../../assets/common/_base";
+
+.mod_match_guess {
+  display: table;
+  margin: 30px auto 0;
+}
+
+.match_con {
+  position: relative;
+  .match_screen {
+    width: 1240px;
+    padding-top: 15px;
+  }
+  .to_left_page,
+  .to_right_page {
+    @extend .g_v_mid;
+    width: 54px;
+    height: 134px;
+  }
+  .to_left_page {
+    left: -54px;
+    @include getBgImg("../../assets/images/home/to_left_page.png");
+  }
+  .to_right_page {
+    right: -54px;
+    @include getBgImg("../../assets/images/home/to_right_page.png");
+  }
+  .match_list {
+    position: relative;
+    width: 1240px;
+    &::after {
+      content: "";
+      clear: both;
+      overflow: hidden;
+      display: table;
+    }
+    h3 {
+      position: relative;
+      padding-left: 10px;
+      font-size: 14px;
+      font-weight: normal;
+      color: #ffdcd7;
+      &::after {
+        content: "";
+        @extend .g_v_mid;
+        left: 0;
+        width: 4px;
+        height: 14px;
+        background: linear-gradient(
+          to bottom,
+          rgba(246, 215, 75, 1),
+          rgba(197, 69, 4, 1)
+        );
+        background: -ms-linear-gradient(
+          to bottom,
+          rgba(246, 215, 75, 1),
+          rgba(197, 69, 4, 1)
+        );
+        background: -webkit-linear-gradient(
+          to bottom,
+          rgba(246, 215, 75, 1),
+          rgba(197, 69, 4, 1)
+        );
+      }
+    }
+  }
+}
+</style>

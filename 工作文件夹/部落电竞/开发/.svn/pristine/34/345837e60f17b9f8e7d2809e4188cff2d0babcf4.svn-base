@@ -1,0 +1,315 @@
+<view class="Page">
+<view class="main">
+<import src="../../wxParse/wxParse.wxml"/>
+<block wx:if="{{ready}}">
+<!--视频播放部分-->
+<view class='page-video-view' wx-if="{{type==3}}">
+  <!-- <video class='page-video' id="myVideo" src="{{cmsDetail.content}}" binderror="videoErrorCallback" object-fit="fill" controls show-play-btn ></video> -->
+    <!--  <block wx:if="{{platform==2&&cmsDetail.titleImg!=null}}">
+          <video class='page-video' id="myVideo"  bindplay="videoPlay" src="{{cmsDetail.content}}"
+            show-center-play-btn="{{false}}" show-mute-btn="{{true}}" binderror="videoErrorCallback"
+            poster="" custom-cache="{{false}}" object-fit="fill" controls show-play-btn >
+          </video>
+          <cover-view class="controls" style="display:{{tab_image}};">
+              <cover-image src="{{cmsDetail.titleImg}}" />
+          </cover-view>
+          <cover-view class="play" style="display:{{tab_image}};z-index:200;">
+              <cover-image bindtap="videoPlay" src="https://rs.esportzoo.com/svn/esport-res/mini/images/play.png" class="cover-image-c" />
+          </cover-view>
+      </block> -->
+          <view  class="video" >
+              <video wx:if="{{playFlag}}" class='page-video' id="myVideo" src="{{cmsDetail.content}}" show-center-play-btn="{{false}}" show-mute-btn="{{true}}"
+                poster="cmsDetail.titleImg" binderror="videoErrorCallback" poster="" custom-cache="{{false}}" object-fit="fill" controls show-play-btn
+                bindpause="puaseVideo" bindended="endVideo" >
+              </video>
+              <view wx:else  data-id="{{cmsDetail.id}}" bindtap="videoPlay"  >
+                  <image class="model-img" class="page-video" mode="aspectFill" src="{{cmsDetail.titleImg}}"></image>
+                  <view class="model-btn"></view>
+              </view>
+          </view>
+
+
+</view>
+
+<!-- 文章内页内容主要部分:长文内容 -->
+<view class='article-page-section' wx-if="{{type==1}}">
+  <!-- 文章标题部分 -->
+  <view class='article-head'>
+    <view class='article-title'>
+      <text>{{cmsDetail.title}}</text>
+    </view>
+    <view>
+      <text class='article-info'>{{cmsDetail.channelName}}</text>
+      <!-- <text class='article-info'>{{cmsDetail.views}}阅读</text> -->
+      <text class='article-info'>{{cmsDetail.publishTimeStr}}</text>
+    </view>
+  </view>
+
+  <!-- 文章作者部分 -->
+	<view class="user_card">
+		<view class="user_infor">
+			<image src="{{cmsDetail.authorIcon!=null?cmsDetail.authorIcon:'https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg'}}" mode="aspectFill" ></image>
+			<view>
+				<view class="user_name">{{cmsDetail.authorName==null?'橘子电竞官方':cmsDetail.authorName}}</view>
+				<view class="fans">
+					<text wx:if="{{cmsDetail.authorName!=null}}">{{cmsDetail.authorFans}}粉丝</text>
+        	<text class="pl10">{{cmsDetail.views}}阅读</text>
+				</view>
+			</view>
+			<view  wx:if="{{cmsDetail.authorName!=null}}" class='dsp-cell' bindtap="operateFollow">
+				<view class="follow"  wx:if="{{!cmsDetail.followFlag}}">+关注</view>
+				<view class="followed" wx:else>已关注</view>
+			</view>
+		</view>
+	</view>
+
+  <!-- 文章主体部分 -->
+  <view class='article-paragraph'>
+      <view class="wxParse">
+          <template is="wxParse" data="{{wxParseData:article.nodes}}"/>
+      </view>
+  </view>
+  <!-- 文章说明部分 -->
+  <view class='article-warn'>
+    <text>本文禁止转载或摘编</text>
+  </view>
+
+  <!-- 文章标签部分 -->
+  <!-- <view class='article-tag margin-t40'>
+    <text class='article-t article-t-blue'>LOL</text>
+    <text class='article-t article-t-red'>LCS</text>
+    <text class='article-t article-t-yellow'>刺激战场</text>
+    <i></i>
+  </view> -->
+  <!-- 文章操作部分margin-t20 -->
+  <view class='article-control'>
+    <view class='dsp-cell atc-c-item'>
+      <view bindtap="operateUp">
+        <i wx:if="{{cmsDetail.upFlag}}" class='iconfont icon-dianzan atc-c-icon' style="color:red"></i>
+        <i wx:else class='iconfont icon-dianzan atc-c-icon'></i>
+      </view>
+      <view class='atc-c-num'><text>{{cmsDetail.ups}}</text></view>
+    </view>
+    <view class='dsp-cell atc-c-item'>
+      <view bindtap="operateComment"><i class='iconfont icon-pinglun atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>{{cmsDetail.comments}}</text></view>
+    </view>
+    <!-- <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-fenxiang atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>{{cmsDetail.shares}}</text></view>
+    </view> -->
+    <view class='dsp-cell atc-c-item'>
+      <view bindtap="operateCollect">
+        <i wx:if="{{cmsDetail.favoritesFlag}}" class='iconfont icon-shoucang atc-c-icon' style="color:red"></i>
+        <i wx:else class='iconfont icon-shoucang atc-c-icon'></i>
+      </view>
+      <view class='atc-c-num'><text>{{cmsDetail.favorites}}</text></view>
+    </view>
+    <!-- <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-yichoujine atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>{{cmsDetail.rewards}}</text></view>
+    </view> -->
+  </view>
+
+</view>
+
+<!-- 文章内页内容主要部分:短文内容 -->
+<view class='article-page-section' wx-if="{{type==2}}">
+  <!-- 文章作者部分 -->
+  <view class='article-author atc-a-short'>
+   <view class='dsp-cell'>
+      <image class="article-author-avatar" src="/resources/images/avatar/cat.jpg" mode="aspectFill" />
+    </view>
+    <view class='dsp-cell w400'>
+      <view class='article-author-name'>
+        <text>强主播欧阳向日葵</text>
+      </view>
+      <view>
+        <text class='article-author-info'>1小时前</text>
+      </view>
+    </view>
+    <view class='dsp-cell'>
+      <view class='article-author-follow'>
+        <text>+ 关注</text>
+      </view>
+    </view>
+  </view>
+  <!-- 文章@部分 -->
+  <view class='article-at'>
+    <text>@欧阳长臂猿</text>
+  </view>
+  <!-- 文章主体部分 -->
+  <view class='article-paragraph'>
+
+    <view>
+      <text class='atc-tag'>#LOL#</text>
+      <text class='atc-tag-sub'>春季赛冠军牛逼</text>
+    </view>
+
+    <view class='article-at'>
+      <text>@欧阳长臂猿</text>
+    </view>
+
+    <text>快来happy一下一下一下一下一下一下一下一下一下</text>
+    <view class='article-p-image-view'>
+      <image class="article-p-image" src="/resources/images/paragraph/image1.png" mode="scaleToFill" />
+    </view>
+  </view>
+
+
+</view>
+
+<!-- 文章内页内容主要部分:视频标题 -->
+<view class='article-page-section' wx-if="{{type==3}}">
+  <!-- 文章作者部分 -->
+	<view class="user_card">
+		<view class="user_infor">
+			<image src="{{cmsDetail.authorIcon!=null?cmsDetail.authorIcon:'https://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg'}}" mode="aspectFill" ></image>
+			<view>
+				<view class="user_name">{{cmsDetail.authorName==null?'橘子电竞官方':cmsDetail.authorName}}</view>
+				<view class="fans">
+					<text wx:if="{{cmsDetail.authorName!=null}}">{{cmsDetail.authorFans}}粉丝</text>
+        	<text class="pl10">{{cmsDetail.views}}阅读</text>
+				</view>
+			</view>
+			<view  wx:if="{{cmsDetail.authorName!=null}}" bindtap="operateFollow">
+				<view class="follow"  wx:if="{{!cmsDetail.followFlag}}">+关注</view>
+				<view class="followed" wx:else>已关注</view>
+			</view>
+		</view>
+	</view>
+
+  <!-- 文章标题部分 -->
+  <view class='article-head'>
+    <view class='article-title'>
+      <text>{{cmsDetail.title}}</text>
+    </view>
+    <view>
+      <text class='article-info'>{{cmsDetail.channelName}}</text>
+      <text class='article-info'>{{cmsDetail.views}}阅读</text>
+      <text class='article-info'>{{cmsDetail.publishTimeStr}}</text>
+    </view>
+  </view>
+
+  <!-- 文章标签部分 -->
+  <!-- <view class='article-tag margin-t40'>
+    <text class='article-t article-t-blue'>LOL</text>
+    <text class='article-t article-t-red'>LCS</text>
+    <text class='article-t article-t-yellow'>刺激战场</text>
+    <i></i>
+  </view> -->
+
+  <!-- 文章操作部分 margin-t20 -->
+  <view class='article-control'>
+    <view class='dsp-cell atc-c-item'>
+      <view bindtap="operateUp">
+        <i wx:if="{{cmsDetail.upFlag}}" class='iconfont icon-dianzan atc-c-icon' style="color:red"></i>
+        <i wx:else class='iconfont icon-dianzan atc-c-icon'></i>
+      </view>
+      <view class='atc-c-num'><text>{{cmsDetail.ups}}</text></view>
+    </view>
+    <view class='dsp-cell atc-c-item'>
+      <view bindtap="operateComment"><i class='iconfont icon-pinglun atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>{{cmsDetail.comments}}</text></view>
+    </view>
+    <!-- <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-fenxiang atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>{{cmsDetail.shares}}</text></view>
+    </view> -->
+    <view class='dsp-cell atc-c-item'>
+      <view bindtap="operateCollect">
+        <i wx:if="{{cmsDetail.favoritesFlag}}" class='iconfont icon-shoucang atc-c-icon' style="color:red"></i>
+        <i wx:else class='iconfont icon-shoucang atc-c-icon'></i>
+      </view>
+      <view class='atc-c-num'><text>{{cmsDetail.favorites}}</text></view>
+    </view>
+    <!-- <view class='dsp-cell atc-c-item'>
+      <view><i class='iconfont icon-yichoujine atc-c-icon'></i></view>
+      <view class='atc-c-num'><text>{{cmsDetail.rewards}}</text></view>
+    </view> -->
+  </view>
+
+</view>
+
+
+<!-- 文章内页评论部分 -->
+<view class='article-page-section'>
+  <!-- 评论标题部分 -->
+  <view class='discuss-head'>
+    <text class='discuss-title'>评论</text>
+    <text class='discuss-num'>#{{cmsDetail.comments}}</text>
+  </view>
+  <!-- 评论列表部分 -->
+  <view class='discuss-list'>
+    <block wx-if="{{upTopCommentList.length>0}}">
+      <view wx:for="{{upTopCommentList}}" wx:key="">
+        <article-discuss-item  bindmyevent="replyFocus" id="hot_comment_{{item.commentId}}" hotFlag="1" commentItem="{{item}}" ></article-discuss-item>
+      </view>
+       <view class='discuss-more'>
+        <view class='discuss-more-view'><text class='discuss-more-text'>以上是热门评论</text></view>
+      </view>
+    </block>
+   
+    <view wx:for="{{commentList}}" wx:key="">
+      <article-discuss-item  bindmyevent="replyFocus" id="comment_{{item.commentId}}" hotFlag="0"  commentItem="{{item}}" ></article-discuss-item>
+    </view>
+  </view>
+
+</view>
+<view class='a-p-s-last'></view>
+
+<!-- 输入框聚焦时显示状态 -->
+<view wx:if='{{!showLineInput}}' class='article-page-edit'>
+  <!-- 输入框部分 -->
+  <view class='dsp-cell'>
+    <view class='atc-e-t-view atc-e-t-view-focus'>
+      <textarea class='atc-e-t atc-e-t-focus' placeholder-class	='atc-e-t-ph' bindblur='bindDTextAreaBlur' 
+      auto-focus='{{textareaFocus}}' 
+       bindinput="contentInput"
+       placeholder="{{placeholder}}" focus='{{commentFocus}}' value='{{contentValue}}'
+       cursor-spacing='100' fixed />
+    </view>
+  </view>
+  <!-- 发送部分 -->
+  <view class='dsp-cell' data-replyFatherCommentId='{{replyFatherCommentId}}' bindtap='saveComment'>
+    <button class='a-p-e-send-button' >
+      <text class='a-p-e-send'>发送</text>
+    </button>
+  </view>
+</view>
+<!-- 输入框未聚焦显示状态 -->
+<view wx:else class='article-page-edit'>
+
+  <!-- 输入框部分 -->
+  <view class='dsp-cell'>
+    <view class='atc-e-t-view atc-e-t-view-default'>
+      <text class='atc-e-t-default' bindtouchstart='bindDTextAreaFocus'>{{placeholder}}</text>
+    </view>
+  </view>
+  <!-- 点赞转发部分 -->
+  <view class='dsp-cell'>
+    <view class='dsp-cell atc-p-c-item'>
+      <view  bindtap="operateUp">
+        <i wx:if="{{cmsDetail.upFlag}}" class='iconfont icon-dianzan atc-p-c-icon' style="color:red"></i>
+        <i wx:else class='iconfont icon-dianzan atc-p-c-icon'></i>
+      </view>
+      <view class='atc-p-c-num'><text>{{cmsDetail.ups}}</text></view>
+    </view>
+    <view class='dsp-cell atc-p-c-item'>
+      <view bindtap="operateCollect">
+        <i wx:if="{{cmsDetail.favoritesFlag}}" class='iconfont icon-shoucang atc-p-c-icon' style="color:red"></i>
+        <i wx:else class='iconfont icon-shoucang atc-p-c-icon'></i>
+      </view>
+      <view class='atc-p-c-num'><text>{{cmsDetail.favorites}}</text></view>
+    </view>
+    <!-- <view class='dsp-cell atc-p-c-item'>
+      <view><i class='iconfont icon-fenxiang atc-p-c-icon'></i></view>
+      <view class='atc-p-c-num'><text>{{cmsDetail.shares}}</text></view>
+    </view> -->
+  </view>
+</view>
+
+</block>
+
+</view>
+</view>

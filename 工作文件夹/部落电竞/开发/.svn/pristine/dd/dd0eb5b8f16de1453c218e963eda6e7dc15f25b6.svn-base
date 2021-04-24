@@ -1,0 +1,70 @@
+<template>
+  <ul class="tab">
+    <li :class="{cur:currentTab == index}" v-for="(item,index) in tabList" :key="index" @click="tabCheck(index)">
+      {{item.name}}</li>
+  </ul>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: ["currentTab"],
+  data() {
+    return {
+      tabList: [
+        { name: "数据", url: "/match" },
+        { name: "工具", url: "/matchTool" },
+        { name: "专家", url: "/expert" }
+        // { name: "预测", url: "/guess/home" }
+      ]
+    };
+  },
+  activated() {},
+  mounted() {},
+  methods: {
+    tabCheck(index) {
+      // if (index == 0) {
+      //   MtaH5.clickStat("match_data");
+      // } else if (index == 1) {
+      //   MtaH5.clickStat("match_tool");
+      // } else if (index == 2) {
+      //   MtaH5.clickStat("match_guess");
+      // }
+      this.$router.push({
+        path: this.tabList[index].url
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.tab {
+  @extend .flex_v_justify;
+  padding: 0 9.3333vw;
+  li {
+    flex: 1;
+    -webkit-flex: 1;
+    font-size: 16px;
+    padding: 10px 0;
+    color: #333;
+    text-align: center;
+    &.cur {
+      position: relative;
+      color: #ff7e00;
+      &::after {
+        content: "";
+        @extend .g_c_mid;
+        bottom: 0;
+        width: 20px;
+        height: 3px;
+        background-color: #ff7e00;
+        border-radius: 2px;
+      }
+    }
+  }
+}
+</style>

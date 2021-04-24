@@ -1,0 +1,158 @@
+import Vue from 'vue';
+import $ from 'webpack-zepto';
+import VueRouter from 'vue-router';
+import filters from './filters';
+import routes from './routers';
+import './libs/rem';
+import store from './vuex';
+import FastClick from 'fastclick';
+import './assets/common/iconfont.css';
+import './assets/common/main.scss';
+import './assets/common/swiper';
+import 'jquery';
+import toastRegistry from './components/common/toast/index';
+import {
+    post,
+    get
+} from './libs/request/http';
+import axios from 'axios';
+import globalConst from './globalConst';
+import baseParamConfig from './baseParamConfig';
+import * as socketApi from './libs/websocket/socketService';
+import wx from 'weixin-js-sdk';
+
+
+Vue.prototype.socketApi = socketApi;
+Vue.prototype.wx = wx
+// 定义全局变量
+Vue.prototype.$post = post;
+Vue.prototype.$get = get;
+Vue.prototype.$axios = axios;
+Vue.prototype.globalConst = globalConst;
+Vue.prototype.baseParamConfig = baseParamConfig;
+Vue.use(VueRouter);
+Vue.use(toastRegistry);
+console.log(process.env.NODE_ENV, 'process.env.NODE_ENV');
+//事件总线
+var eventBus = {
+    install(Vue, options) {
+        Vue.prototype.$bus = new Vue()
+    }
+};
+Vue.use(eventBus);
+
+
+// 实例化Vue的filter
+Object.keys(filters).forEach(k => Vue.filter(k, filters[k]));
+
+// 实例化VueRouter
+const router = new VueRouter({
+    mode: 'history',
+    routes
+});
+// FastClick.attach(document.body);
+if ('addEventListener' in document) {
+    document.addEventListener('DOMContentLoaded', function () {
+        FastClick.attach(document.body);
+    }, false);
+}
+if (window.localStorage.user) {
+    store.dispatch('setUserInfo', JSON.parse(window.localStorage.user));
+}
+
+//统一加渠道号&登录中间验证，页面需要登录而没有登录的情况直接跳转登录 from 上一个路由,to现在的路由
+router.beforeEach((to, from, next) => {
+    if (to.meta.title) {
+        document.title = to.meta.title
+    }
+    //有cookie在加loginFlag判断的原因是避免服务端redis缓存失效
+    //在全局配置中添加的原因是避免已经登录的状态下多次调用第三方登录接口
+    var path = to.path;
+    var agentId = to.query.agentId ? to.query.agentId : baseParamConfig.agentId;
+    var biz = to.query.biz ? to.query.biz : baseParamConfig.biz;
+    console.log("agentId", agentId);
+    var ADTAG = baseParamConfig.ADTAGTable[agentId] ? baseParamConfig.ADTAGTable[agentId] : baseParamConfig.ADTAG;
+    var loginflag = to.query.loginflag
+    if (loginflag) {
+        baseParamConfig.setLoginFlag(loginflag);
+    }
+    var clientType = to.query.clientType ? to.query.clientType : baseParamConfig.clientType;
+    baseParamConfig.setClientType(clientType);
+    console.log("path=" + path + ",agentId=" + agentId + ",biz=" + biz + ",loginflag=" + loginflag + ",clientType=" + clientType + ",ADTAG=" + ADTAG);
+    if (clientType == 7) { //微信公众号进入
+        var cookieSid = null;
+        var aCookie = document.cookie.split("; ");
+        for (var i = 0; i < aCookie.length; i++) {
+            var aCrumb = aCookie[i].split("=");
+            if ("wx_account_login_cookie_sid" == aCrumb[0]) {
+                cookieSid = unescape(aCrumb[1]);
+            }
+        }
+        console.log(cookieSid, "beforeEach，微信公众号进入获取登录cookie");
+        if (!cookieSid || cookieSid == "" || cookieSid == '""') {
+            console.log("无cookie值，进入微信公众号登录");
+            window.location.href = "/api/wxlogin/toAuth?agentId=" + agentId + "&biz=" + biz + "&clientType=7" + "&backUrl=" + encodeURIComponent(window.location.href);
+            return;
+        }
+    }
+    window.sessionStorage.setItem("redirectUrl", encodeURIComponent(to.fullPath));
+    globalConst.entryUrl = to.fullPath
+    window.sessionStorage.setItem("entryUrl", to.fullPath);
+    if (to.query.agentId && to.query.biz && to.query.clientType && to.query.ADTAG && (to.query.ADTAG === ADTAG)) {
+        baseParamConfig.setAgentId(to.query.agentId);
+        baseParamConfig.setBiz(to.query.biz);
+        baseParamConfig.setClientType(to.query.clientType);
+        baseParamConfig.setADTAG(ADTAG);
+        next();
+        return;
+    }
+    if (agentId || biz || clientType) {
+        baseParamConfig.setAgentId(agentId);
+        baseParamConfig.setBiz(biz);
+        baseParamConfig.setClientType(clientType);
+        baseParamConfig.setADTAG(ADTAG);
+        let toQuery = JSON.parse(JSON.stringify(to.query));
+        let toParams = JSON.parse(JSON.stringify(to.params)) || {};
+        console.log(toParams, 'toparams');
+        toQuery.agentId = agentId;
+        toQuery.biz = biz;
+        toQuery.clientType = clientType;
+        toQuery.ADTAG = ADTAG;
+        globalConst.entryUrl = to.fullPath
+        window.sessionStorage.setItem("entryUrl", to.fullPath);
+        if (JSON.stringify(toParams) != '{}') {
+            console.log('toParams不为空');
+            next({
+                name: to.name,
+                params: toParams,
+                query: toQuery
+
+            })
+        } else {
+            next({
+                path: to.path,
+                query: toQuery
+            })
+        }
+    } else {
+        globalConst.entryUrl = to.fullPath
+        window.sessionStorage.setItem("entryUrl", to.fullPath);
+        next();
+    }
+});
+
+router.onError((error) => {
+    const pattern = /Loading chunk (\d)+ failed/g;
+    const isChunkLoadFailed = error.message.match(pattern);
+    const targetPath = router.history.pending.fullPath;
+    if (isChunkLoadFailed) {
+        router.replace(targetPath);
+    }
+});
+
+
+new Vue({
+    router,
+    store
+ 
+}).$mount('#app');

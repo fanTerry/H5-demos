@@ -1,0 +1,175 @@
+<template>
+  <div class='Page userCenterInfo_Page'>
+    <header class="mod_header">
+      <navBar pageTitle="个人资料"></navBar>
+    </header>
+
+    <div class="main">
+      <section>
+        <div class="item">
+          <span>我的头像</span>
+          <div class="flex_hc">
+             <img :src="userInfo.icon|getDefaultImg(globalConst.userDefaultIcon)" alt="">
+            <span class="link_icon"></span>
+          </div>
+          <vue-core-image-upload 
+              :class="['btn', 'btn-primary','user_input']" 
+              @imageuploaded="imageuploaded"
+              extensions="png,jpeg,jpg" 
+              :max-file-size="5242880" compress="70"
+              url="/api/user/updateUserInfo">
+             
+            </vue-core-image-upload>
+          <!-- <input class="user_input" type="file" @change="changeImage($event)" ref="avatar" accept="image/*"> -->
+        </div>
+        <div class="item">
+          <span>账户名</span>
+          <div class="flex_hc">{{userInfo.account}}</div>
+        </div>
+        <div class="item" @click="goUpdatePage(1)">
+          <span>昵称</span>
+          <div class="flex_hc">{{userInfo.nickName}}<span class="link_icon"></span></div>
+        </div>
+        <div class="item" @click="goUpdatePage(2)">
+          <span>个人简介</span>
+          <div class="flex_hc">{{userInfo.intro?userInfo.intro:"未设置"}}<span class="link_icon"></span></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="item" @click="goUpdatePage(3)">
+          <span>真实姓名</span>
+          <div class="flex_hc">{{userInfo.trueName?userInfo.trueName:"未设置"}}</div>
+        </div>
+        <div class="item" @click="goUpdatePage(4)">
+          <span>身份证号</span>
+          <div class="flex_hc">{{userInfo.certNo?userInfo.certNo:"未设置"}}</div>
+        </div>
+      </section>
+    </div>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar/index";
+import { mapMutations } from "vuex";
+import VueCoreImageUpload from "vue-core-image-upload";
+export default {
+  data() {
+    return {
+      userInfo: Object
+    };
+  },
+  created() {
+    this.userInfo = this.$store.state.userCenterInfo;
+  },
+  mounted() {},
+  methods: {
+    ...mapMutations(["USER_CENTER_INFO"]),
+    imageuploaded(res) {
+      if (res.code === "200") {
+        console.log("----", res.data.icon);
+        this.userInfo.icon = res.data.icon;
+        this.USER_CENTER_INFO(this.userInfo);
+         this.$toast("修改成功");
+      } else {
+        this.$toast(response.message);
+      }
+    },
+    changeImage($event) {
+      let form = new FormData();
+      form.append("files", this.$refs.avatar.files[0]);
+      console.log(this.$refs.avatar.files[0]);
+      return this.$axios
+        .post("/api/user/updateUserInfo", form)
+        .then(rsp => {
+          let response = rsp.data;
+          console.log("返货", response.code);
+          if (response.code === "200") {
+            console.log("返货", response);
+            this.userInfo = response;
+            this.USER_CENTER_INFO(this.userInfo);
+          } else {
+            this.$toast(response.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    goUpdatePage(type, param) {
+      this.$router.push({
+        path: "/writeInfo",
+        query: {
+          type: type
+        }
+      });
+    }
+  },
+  components: {
+    navBar,
+    "vue-core-image-upload": VueCoreImageUpload
+  }
+};
+</script>
+
+<style lang="scss">
+@import "../../../assets/common/_var";
+
+.userCenterInfo_Page {
+  .mod_header {
+    background-color: $color_main;
+    h2 {
+      color: #fff;
+    }
+    .back::before,
+    .back::after {
+      background-color: #fff;
+    }
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+section {
+  margin-top: 10px;
+}
+
+.item {
+  position: relative;
+  @extend .flex_v_justify;
+  @include getBorder(bottom, rgba(0, 0, 0, 0.1));
+  height: 44px;
+  padding: 0 20px;
+  font-size: 14px;
+  background-color: #fff;
+  img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .user_input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+  > div {
+    color: rgba(0, 0, 0, 0.4);
+  }
+  .link_icon {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    @include getArrow(10px, rgba(0, 0, 0, 0.3), right);
+  }
+  .personal_sign {
+    @include t_nowrap(180px);
+  }
+}
+</style>

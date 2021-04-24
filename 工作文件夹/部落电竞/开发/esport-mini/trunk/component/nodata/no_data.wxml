@@ -1,0 +1,5 @@
+<!--component/nodata/no_data.wxml-->
+<view class="no_data">
+  <image :src="imgUrlData" alt=""></image>
+  <p>{{textData}}</p>
+</view>

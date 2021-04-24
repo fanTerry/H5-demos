@@ -1,0 +1,89 @@
+<template>
+  <div class="Page">
+    <header class="mod-header">
+      <nav-bar :pageTitle="'反馈成功'"></nav-bar>
+    </header>
+    <div class="main">
+      <div class="cmt_succ">
+        <i></i>
+        <h3>感谢您的反馈</h3>
+        <p>每一个声音我们都用心倾听</p>
+      </div>
+    </div>
+    <footer class="mod_footer">
+      <div class="cmt_btns" @click="toHelpCenter()">
+        <a href="javascript:;" class="cmt_btn">回到帮助中心</a>
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "../../components/header/nav_bar/index.vue";
+
+export default {
+  components: { navBar },
+  props: [],
+  data() {
+    return {};
+  },
+  methods: {
+    toHelpCenter() {
+      this.$router.push({
+        path: "/helpCenter"
+      });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+.cmt_succ {
+  text-align: center;
+  margin-top: 0.75rem;
+}
+.cmt_succ i {
+  display: inline-block;
+  width: 1.16rem;
+  height: 1.18rem;
+  background: url("../../assets/images/help/icon_succ.png") no-repeat;
+  background-size: cover;
+}
+.cmt_succ h3 {
+  margin-top: 0.2rem;
+  font-weight: normal;
+  font-size: 0.34rem;
+  color: #666;
+}
+.cmt_succ p {
+  margin-top: 0.22rem;
+  font-size: 0.28rem;
+  color: #999;
+}
+.cmt_btns {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+.cmt_btns .cmt_btn {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  height: 0.9rem;
+  line-height: 0.9rem;
+  text-align: center;
+  font-size: 0.34rem;
+  color: #fff;
+  background-image: -webkit-linear-gradient(left, #e69e59, #e47b32);
+  border: 0 solid transparent;
+  -webkit-border-image: -webkit-linear-gradient(#eebb8b, #eca370) 30 30;
+  border-image: -webkit-linear-gradient(#eebb8b, #eca370) 30 30;
+  border-top-width: 0.01rem;
+}
+</style>

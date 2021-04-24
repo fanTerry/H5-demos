@@ -1,0 +1,171 @@
+// pages/help/feedBackDetail/feedBackDetail.js
+const app = getApp();
+var api = require('../../../libs/http');
+
+Page({
+
+	/**
+	 * 页面的初始数据
+	 */
+	data: {
+		myFeedbackList: [],
+		pageParam: {
+			pageNo: 1,
+			pageSize: 10
+		},
+		currPageSize: 10,
+		quetionId: null,
+		contentValue: "",
+		placeholder: ""
+	},
+
+	/**
+	 * 生命周期函数--监听页面加载
+	 */
+	onLoad: function (options) {
+		if(options.qid){
+			this.setData({
+				quetionId:options.qid
+			})
+		}
+		this.getMyReply(this.data.pageParam);
+	},
+
+	/**
+	 * 生命周期函数--监听页面初次渲染完成
+	 */
+	onReady: function () {
+
+	},
+
+	/**
+	 * 生命周期函数--监听页面显示
+	 */
+	onShow: function () {
+
+	},
+
+	/**
+	 * 生命周期函数--监听页面隐藏
+	 */
+	onHide: function () {
+
+	},
+
+	/**
+	 * 生命周期函数--监听页面卸载
+	 */
+	onUnload: function () {
+
+	},
+
+	/**
+	 * 页面相关事件处理函数--监听用户下拉动作
+	 */
+	onPullDownRefresh: function () {
+
+	},
+
+	/**
+	 * 页面上拉触底事件的处理函数
+	 */
+	onReachBottom: function () {
+
+	},
+
+	/**
+	 * 用户点击右上角分享
+	 */
+	onShareAppMessage: function () {
+
+	},
+	// 绑定输入内容
+	bindblur:function(e){
+		this.setData({
+			contentValue:e.detail.value
+		})
+	},
+	// 清除输入内容
+	cleanVal:function(){
+		this.setData({
+			contentValue:null
+		})
+	},
+	getMyReply(param) {
+		var that = this;
+		if (param) {
+			param = this.data.pageParam;
+		}
+		param.quetionId = this.data.quetionId;
+		api._postAuth("helpcenter/detailFeedback", param)
+			.then(rsp => {
+				const dataResponse = rsp;
+				if (dataResponse.code == "200") {
+					let dataList = dataResponse.data;
+					this.data.currPageSize = dataList.length;
+					if (dataList && dataList.length > 0) {
+						dataList.forEach(element => {
+							if (element.imageUrl) {
+								element.imgList = element.imageUrl.split(",");
+							}
+						});
+					}
+					this.setData({
+						myFeedbackList:that.data.myFeedbackList.concat(dataList)
+					})
+
+					return dataList;
+				} else if (dataResponse.code == "9999") {
+					wx.showToast({                           
+						title:dataResponse.message,  //标题                            
+						icon:"none"  
+					 }) 
+				}
+			})
+			.catch(error => {
+				wx.showToast({                           
+					title:"网络异常，稍后再试",  //标题                            
+					icon:"none"  
+				 }) 
+				console.log(error);
+			});
+	},
+	toSendReply() {
+		var contentValue = this.data.contentValue;
+		if (!contentValue) {
+			wx.showToast({                           
+				title:"发送内容不能为空",  //标题                            
+				icon:"none"  
+			 }) 
+		}
+		let param = {};
+		param.quetionId = this.data.quetionId;
+		param.content = contentValue;
+		api._postAuth("helpcenter/userSendReply", param)
+			.then(rsp => {
+				const dataResponse = rsp;
+				if (dataResponse.code == "200") {
+					let myMessage = dataResponse.data;
+					this.data.myFeedbackList.push(myMessage);
+					this.contentValue = "";
+					console.log("myMessage.id", myMessage.id);
+					// this.$nextTick(() => {
+					// 	this.$refs.reply.scrollViewMySend(myMessage.id);
+					// });
+					// return myMessage;
+				} else if (dataResponse.code == "9999") {
+					wx.showToast({                           
+						title:dataResponse.message,  //标题                            
+						icon:"none"  
+					 }) 
+				}
+			})
+			.catch(error => {
+				wx.showToast({                           
+					title:"网络异常，稍后再试",  //标题                            
+					icon:"none"  
+				 }) 
+				console.log(error);
+			});
+	}
+})

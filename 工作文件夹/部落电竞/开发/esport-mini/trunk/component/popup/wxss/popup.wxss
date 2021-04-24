@@ -1,0 +1,77 @@
+/* component/popup/wxss/popup.wxss */
+
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+.popup-bg {
+  width: 750rpx;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.popup-view {
+  width: 730rpx;
+  padding: 20rpx 0;
+  background: #fff;
+  border-radius: 15rpx 15rpx 0 0;
+
+  position: absolute;
+  left: 10rpx;
+  bottom: 0;
+}
+.popup-close {
+  font-size: 40rpx;
+  color: #333;
+
+  position: absolute;
+  right: 10rpx;
+  top: 0;
+}
+.popup-title {
+  text-align: center;
+  font-size: 28rpx;
+  color: #333;
+
+  margin: 0 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: solid 2rpx #ddd;
+}
+.popup-content {
+  padding: 20rpx 0;
+}
+
+.popup-btn-view {
+  padding: 10rpx 0;
+  text-align: center;
+}
+.popup-btn {
+  display: inline-block;
+  width: 280rpx;
+  height: 80rpx;
+  line-height: 70rpx;
+
+  text-align: center;
+  color: #fff;
+
+  margin: 0 20rpx;
+  border-radius: 50rpx;
+}
+
+.pp-btn-gray {
+  background: #c5c5c5;
+}
+
+.pp-btn-orange {
+  background: #ff7c19;
+}
+
+.pp-btn-green {
+  background: #44c547;
+}
+
+.pp-icon {
+  font-size: 40rpx;
+  padding-right: 20rpx;
+}

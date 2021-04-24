@@ -1,0 +1,6 @@
+<!--modules/reportpage/mdexpert/md-expert.wxml-->
+
+<view class='md-expert'>
+  <report-expert-item wx:for="{{articleList}}" wx:key='' expertArticle="{{item}}"></report-expert-item>
+    <no-data  wx:if="{{noDataFlag}}" ></no-data>
+</view>

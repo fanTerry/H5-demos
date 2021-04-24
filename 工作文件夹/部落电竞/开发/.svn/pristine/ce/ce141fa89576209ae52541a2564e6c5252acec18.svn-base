@@ -1,0 +1,113 @@
+<template>
+  <div class="Page" v-if='matchInfo'>
+    <header class="mod_header">
+      <nav-bar :pageTitle="'赛事信息'"></nav-bar>
+    </header>
+    <div class="main" :style="'background-image: url('+matchInfo.gameImage+')'">
+      <match-info :matchInfo='matchInfo'></match-info>
+    </div>
+    <footer class="mod_footer">
+
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "components/header/nav_bar/index.vue";
+import matchInfo from "./components/matchinfo.vue";
+
+export default {
+  components: {
+    navBar,
+    matchInfo
+  },
+  props: [],
+  data() {
+    return {
+      gameImage: null,
+      toolMatchId: null, //查看比赛详情页面
+      matchInfo: null
+    };
+  },
+  mounted() {
+    if (this.$route.query && this.$route.query.toolMatchId) {
+      this.toolMatchId = this.$route.query.toolMatchId;
+    }
+    this.getMatchInfoById();
+  },
+  methods: {
+    setBgImage(img) {
+      this.gameImage = img;
+    },
+    getMatchInfoById() {
+      this.$post("/api/matchtool/getMatchInfo", {
+        matchId: this.toolMatchId
+      })
+        .then(rsp => {
+          console.log(rsp, "rsp123");
+          if (rsp.code == "200") {
+            this.matchInfo = rsp.data;
+            // this.$emit('setBgImage',rsp.data.gameImage)
+          } else {
+            this.$toast(rsp.message);
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base";
+@import "../../assets/common/_mixin";
+
+.main {
+  // @include getBgImg("../../assets/images/matchtool/hpjy_header_bg.png");
+  background-size: 100% auto;
+  background-position: top center;
+  background-color: #090709;
+}
+
+// .match_info {
+//   position: relative;
+//   width: 92vw;
+//   margin: 28vw auto 0;
+//   padding-bottom: 19.4667vw;
+//   background-color: #fff;
+//   border: 1px #979797 inset;
+//   border-radius: 1.0667vw;
+//   color: #333;
+//   .pop_list {
+//     padding-top: 2.1333vw;
+//   }
+//   .pop_item {
+//     @extend .flex_v_justify;
+//     padding: 2.4vw 5.3333vw;
+//     font-size: 4vw;
+//     span {
+//       font-weight: 600;
+//     }
+//   }
+//   .pop_match_round {
+//     background-color: #f4f4f4;
+//     padding-left: 9.3333vw;
+//     background-color: #f4f4f4;
+//   }
+//   .pop_award_tips {
+//     display: block;
+//     padding: 0;
+//     span {
+//       display: block;
+//       padding: 2.4vw 5.3333vw;
+//     }
+//     p {
+//       padding: 2.4vw 5.3333vw 4.8vw;
+//       line-height: 5.6vw;
+//       background-color: #f4f4f4;
+//     }
+//   }
+// }
+</style>

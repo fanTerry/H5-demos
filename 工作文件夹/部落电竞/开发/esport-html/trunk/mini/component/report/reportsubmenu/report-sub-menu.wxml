@@ -1,0 +1,7 @@
+<!--component/report/reportsubmenu/report-sub-menu.wxml-->
+<view class='report-sub-menu clear'>
+  <view class='report-sub-menu-item report-s-m-i-cur'><text>全部</text></view>
+  <view class='report-sub-menu-item'><text>地图一</text></view>
+  <view class='report-sub-menu-item'><text>地图二</text></view>
+</view>
+

@@ -1,0 +1,8 @@
+<!--modules/memberpaycenter/memberpayitem/member-pay-item.wxml-->
+<view class='member-pay-item'>
+  <view class='m-p-i-coins'>
+    <text>1个月</text><i class="iconfont icon-aixin m-p-icon "></i>
+  </view>
+  <view class='m-p-i-cost-b'><text>¥95</text></view>
+  <view class='m-p-i-cost-a'><text>¥100</text></view>
+</view>

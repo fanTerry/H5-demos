@@ -1,0 +1,5 @@
+jms.majorCluster.send.brokerUrl=failover://(nio://daily-middle:61615?connectionTimeout=3000,nio://daily-middle:61616?connectionTimeout=3000)
+
+
+jms1.receive.broker_url=nio://daily-middle:61615?connectionTimeout=3000
+#jms2.receive.broker_url=nio://daily-middle:61616?connectionTimeout=3000

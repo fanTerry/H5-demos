@@ -1,0 +1,40 @@
+/* component/comm/useravatar/user-avatar.wxss */
+@import "/resources/wxss/base/display.wxss";
+
+.user-avatar-view {
+  position: relative;
+  width: 100rpx;
+  height: 100rpx;
+}
+.u-a-v100 {
+  width: 100rpx;
+  height: 100rpx;
+}
+.u-a-v150 {
+  width: 150rpx;
+  height: 150rpx;
+}
+.user-avatar {
+	display: block;
+  border: solid 4rpx #fff;
+  border-radius: 50%;
+}
+.u-a100 {
+  width: 80rpx;
+  height: 80rpx;
+}
+.u-a150 {
+  width: 135rpx;
+  height: 135rpx;
+}
+
+.user-signal {
+  width: 20rpx;
+  height: 20rpx;
+  background: #ff3b30;
+  border-radius: 50%;
+
+  position: absolute;
+  top: 15rpx;
+  right: 15rpx;
+}

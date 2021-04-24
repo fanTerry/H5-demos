@@ -1,0 +1,454 @@
+<template>
+  <div class="Page userCenter_Page">
+    <header class="mod_header">
+      <!-- <expertUsercard :userId="userId" ></expertUsercard> -->
+    </header>
+
+    <div class="main">
+      <section class="user_top">
+        <div class="user_info">
+          <div class="user_img" @click="goUrlPage('/userInfo')">
+            <img :src="userInfo.icon|getDefaultImg(globalConst.userDefaultIcon)" alt="">
+          </div>
+          <div>
+            <div class="name">{{userInfo.nickName?userInfo.nickName:'枫叶电竞欢迎您'}}</div>
+            <p class="tips">简介:{{userInfo.intro?userInfo.intro:'电竞爱好者集聚地'}}</p>
+          </div>
+          <!-- 会员标志 -->
+          <div class="vip_player" v-if="userInfo.nickName">
+            <span></span>会员
+          </div>
+          <!-- 登录注册按钮 -->
+          <template v-if="!userInfo.nickName">
+            <router-link to="/login">
+              <div class="login_btn">注册/登录</div>
+            </router-link>
+          </template>
+        </div>
+
+        <div class="fans_column">
+          <div @click="goUrlPage('/userCenter/myMessage')">
+            <!-- <div > -->
+            <span class="num">{{userInfo.messageNum}}</span>
+            <span class="flex_hc"><i class="message-icon"></i>消息</span>
+          </div>
+          <!-- <div @click="goUrlPage('/userCenter/myLikeArticle')">
+            <span class="num">{{userInfo.upSum}}</span>
+            <span class="flex_hc"><i class="thumbs-icon"></i>点赞</span>
+          </div> -->
+          <div @click="goUrlPage('/userCenter/myFollow')">
+            <!-- <div > -->
+            <span class="num">{{userInfo.followers}}</span>
+            <span class="flex_hc"><i class="follow-icon"></i>关注</span>
+          </div>
+          <div @click="goUrlPage('/userCenter/myFans')">
+            <span class="num">{{userInfo.fans}}</span>
+            <span class="flex_hc"><i class="fans-icon"></i>粉丝</span>
+          </div>
+        </div>
+      </section>
+      <section class="business_column">
+        <ul>
+          <li @click="goUrlPage('/wallet')">
+            钱包<span class="link_icon"></span>
+          </li>
+          <li @click="goUrlPage(clientType!=4?'/recharge':'/iosRecharge')">
+            充值<span class="link_icon"></span>
+          </li>
+          <!-- <li @click="goUrlPage('/store')">
+            商城<span class="link_icon"></span>
+          </li>
+          <li @click="goUrlPage('/myExchange')">
+            我的订单<span class="link_icon"></span>
+          </li> -->
+          <!-- <li @click="goUrlPage('/uc/bindPhone')" v-if='!bindPhoneFlag'>
+            绑定手机号<span class="link_icon"></span>
+          </li> -->
+          <li @click="goUrlMyPage('/userCenter/myRelease')">
+            我的记录<span class="link_icon"></span>
+          </li>
+          <!-- <li @click="goUrlPage('/userCenter/userPublishArticle')">
+            我的发布<span class="link_icon"></span>
+          </li> -->
+          <!-- <li @click="goUrlPage('/userArticle')">
+            付费文章<span class="link_icon"></span>
+          </li> -->
+          <!-- <li @click="goExpertApplyPage('/expertApply')" v-if="userInfo.hasExpertApply">
+            专家申请<span class="link_icon"></span>
+          </li> -->
+          <li @click="goUrlPage('/userInfo')">
+            个人设置<span class="link_icon"></span>
+          </li>
+          <li @click="goUrlPage('/helpcenter')">
+            帮助中心<span class="link_icon"></span>
+          </li>
+          <li v-if="userInfo.saleAuth" @click="goUrlPage('/userCenter/salesManage')">
+            销售管理<span class="link_icon"></span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- <section class="AQ">
+        备案/许可证编号：琼ICP备19001792号-1<br><br>琼公网安备 46902302000297号
+      </section> -->
+
+      <!-- <section class="module_section">
+        <h3>账号安全</h3>
+        <div class="bind_phoneNum">
+          <span class="firewall_icon"></span>
+          <div>
+            <p class="bind">你绑定得手机是 151*****456 吗？</p>
+            <p class="phone">手机换号可能导致无法正常使用程序</p>
+            <p class="confirm_tips">请确认是否已经换号</p>
+          </div>
+        </div>
+        <div class="confirm_btn">
+          <a>立即确认</a>
+        </div>
+      </section> -->
+
+      <!-- <section class="module_section">
+        <h3>签到领红包</h3>
+        <p class="vip_tips">
+          您有一个
+          <span>会员</span>福利带领
+        </p>
+        <div class="gift">
+          <div>
+            <img
+              src="../../assets/images/user_center/gold_coin.png"
+              alt=""
+            > 1000预测币
+          </div>
+          <div>
+            <img
+              src="../../assets/images/user_center/gift.png"
+              alt=""
+            > 小积分赚豪礼
+          </div>
+        </div>
+        <div class="confirm_btn">
+          <a>立即打开</a>
+        </div>
+      </section> -->
+
+    </div>
+    <footer class="mod_footer">
+      <tabbar></tabbar>
+    </footer>
+  </div>
+</template>
+
+<script>
+import tabbar from "../../components/tabbar/index.vue";
+import navBar from "../../components/header/nav_bar/index";
+import sessionStorage from "../../libs/storages/sessionStorage";
+import { mapMutations } from "vuex";
+export default {
+  data() {
+    return {
+      userInfo: Object,
+      clientType: null
+      // bindPhoneFlag: false //默认未绑定
+    };
+  },
+
+  mounted() {
+    this.getUserInfo();
+    // this.checkBindPhone();
+    this.clientType = this.$route.query.clientType;
+  },
+  methods: {
+    /**测试用 */
+    ...mapMutations(["USER_CENTER_INFO"]),
+    getUserInfo() {
+      let param = {};
+      this.$post("/api/usercenter/ucIndexdata", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          this.isLoading = false;
+          if (dataResponse.code == "200") {
+            console.log("个人中心首页--setHeader---请求成功");
+            this.userInfo = dataResponse.data;
+            this.$wxApi.wxRegister({
+              title: "枫叶电竞-（" + this.userInfo.nickName + "）个人中心",
+              desc: "游戏爱好者聚集地",
+              imgUrl:
+                "http://rs.esportzoo.com/svn/esport-res/mini/images/default/juzi_logo.jpg"
+            });
+            this.USER_CENTER_INFO(dataResponse.data);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    goUrlPage(url) {
+      this.$router.push({
+        path: url,
+        query: {
+          id: this.userInfo.userId
+        }
+      });
+    },
+    goExpertApplyPage(url) {
+      this.$router.push({
+        path: url,
+        query: {}
+      });
+    },
+    goUrlMyPage(url) {
+      sessionStorage.set("tabIndex", 0);
+      this.$router.push({
+        path: url,
+        query: {}
+      });
+    }
+
+    //判断是否已经绑定手机
+    // checkBindPhone() {
+    //   console.log("in checkBindPhone");
+    //   this.$post("/api/user/checkBindingPhone")
+    //     .then(dataResponse => {
+    //       console.log(dataResponse, "checkBindPhone");
+    //       if (dataResponse.code == 200) {
+    //         this.bindPhoneFlag = dataResponse.data;
+    //       } else {
+    //         this.$toast(dataResponse.message);
+    //       }
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //     });
+    // }
+  },
+  components: {
+    tabbar,
+    navBar
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_base.scss";
+@import "../../assets/common/_mixin.scss";
+@import "../../assets/common/_var.scss";
+
+.mod_header {
+  height: 44px;
+  background-color: #fff;
+}
+
+.mod_footer {
+  background-color: #fff;
+}
+
+.main {
+  .user_top {
+    background-color: #fff;
+    padding-bottom: 16px;
+  }
+  .user_info {
+    position: relative;
+    @extend .flex_hc;
+    padding: 4px 12px;
+    background-color: #fff;
+    .name {
+      @include t_nowrap(150px);
+      line-height: 1.2;
+      font-size: 20px;
+      padding-bottom: 10px;
+      font-weight: 500;
+      color: #333;
+    }
+    .tips {
+      @include t_nowrap(150px);
+      line-height: 1.2;
+      color: #bbb;
+    }
+  }
+  .user_img {
+    position: relative;
+    flex: none;
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+}
+.vip_player {
+  @extend .flex_hc;
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  font-size: 14px;
+  color: #333;
+  span {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+    @include getBgImg("../../assets/images/user_center/super_vip.png");
+  }
+}
+.login_btn {
+  @extend .g_v_mid;
+  right: 10px;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 34px;
+  color: $color_main;
+  background-color: #fff;
+}
+
+.business_column {
+  margin-top: 8px;
+  background-color: #fff;
+  li {
+    @extend .flex_v_justify;
+    height: 48px;
+    padding: 0 17px;
+    font-size: 15px;
+    color: #333;
+    span {
+      display: block;
+      width: 20px;
+      height: 20px;
+      @include getArrow(10px, #bbb, right);
+    }
+  }
+  .wallet_icon {
+    @include getBgImg("../../assets/images/user_center/wallet_icon.png");
+  }
+  .expert_icon {
+    @include getBgImg("../../assets/images/user_center/expert_icon.png");
+  }
+  .recharge_icon {
+    @include getBgImg("../../assets/images/user_center/recharge_icon.png");
+  }
+  .payment_icon {
+    @include getBgImg("../../assets/images/user_center/payment_icon.png");
+  }
+  .my_order_icon {
+    @include getBgImg("../../assets/images/user_center/my_order_icon.png");
+  }
+  .service_icon {
+    @include getBgImg("../../assets/images/user_center/service_icon.png");
+  }
+}
+
+.fans_column {
+  @extend .flex_v_justify;
+  margin: 8px 12px 0;
+  padding: 15px 23px;
+  color: #666;
+  border-radius: 6px;
+  box-shadow: 0 0 5px rgba(#000, 0.1);
+  > div {
+    text-align: center;
+  }
+  .num {
+    display: block;
+    margin: 0 auto 8px;
+    font-size: 17px;
+    line-height: 13px;
+    color: #333;
+  }
+  .thumbs-icon,
+  .follow-icon,
+  .fans-icon,
+  .message-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 1px;
+  }
+  .thumbs-icon {
+    @include getBgImg("../../assets/images/user_center/thumbs_icon.png");
+  }
+  .message-icon {
+    @include getBgImg("../../assets/images/user_center/message_icon.png");
+  }
+  .follow-icon {
+    @include getBgImg("../../assets/images/user_center/follow_icon.png");
+  }
+  .fans-icon {
+    @include getBgImg("../../assets/images/user_center/fans_icon.png");
+  }
+}
+
+.module_section {
+  padding: 0 10px;
+  h3 {
+    padding-top: 10px;
+    color: #a3a3a3;
+  }
+  .bind_phoneNum {
+    @extend .flex_hc;
+    padding: 15px 0;
+  }
+  .firewall_icon {
+    width: 70px;
+    height: 70px;
+    margin-right: 10px;
+    @include getBgImg("../../assets/images/user_center/firewall_icon.png");
+  }
+  .bind {
+    font-size: 16px;
+    color: #3e3e3e;
+  }
+  .phone {
+    padding-top: 10px;
+    font-size: 13px;
+    color: #8a8a8a;
+  }
+  .confirm_tips {
+    padding-top: 10px;
+    color: #a3a3a3;
+  }
+  .confirm_btn {
+    @include getBorder(top, rgba(#000, 0.1));
+    padding: 10px 0;
+    a {
+      @extend .flex_v_h;
+      width: 110px;
+      height: 40px;
+      margin: 0 auto;
+      font-size: 14px;
+      border-radius: 20px;
+      color: #fff;
+      background-color: $color_main;
+    }
+  }
+  .vip_tips {
+    padding-top: 15px;
+    font-size: 14px;
+    span {
+      padding: 0 3px;
+      color: #ec9805;
+    }
+  }
+  .gift {
+    @extend .flex_hc;
+    justify-content: space-around;
+    text-align: center;
+    padding: 10px 0 20px;
+    img {
+      display: block;
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 5px;
+    }
+  }
+}
+
+.AQ {
+  // text-align: center;
+  // margin-top: 30px;
+  // font-size: 15px;
+  // color: #999;
+}
+</style>

@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+		"goods-list":"/component/store/goodsList",
+		"commonBanner": "/component/bigimageswiper/bigimage-swiper",
+		"submenu-bar":"/component/submenubar/submenu-bar"
+	},
+	"window": {
+	},
+	"navigationBarTitleText": "商城"
+}

@@ -1,0 +1,383 @@
+/* modules/articlepage/article-page.wxss */
+@import "/resources/wxss/layout.wxss";
+@import "/modules/articlepage/wxss/article.wxss";
+@import "/resources/wxss/iconfont/iconfont.wxss";
+
+.page-head {
+  height: 72rpx;
+  background: #fefefe;
+  border-top: solid 2rpx #ddd;
+  border-bottom: solid 2rpx #ddd;
+}
+.page-title {
+  width: 640rpx;
+}
+.page-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin: 16rpx 20rpx 0 20rpx;
+}
+.page-icon-more {
+  width: 30rpx;
+  height: 30rpx;
+  margin: 20rpx 20rpx 0 0;
+}
+.page-video-view {
+  width: 750rpx;
+  height: 500rpx;
+}
+.page-video {
+  width: 750rpx;
+  height: 500rpx;
+}
+
+.article-page-section {
+  width: 710rpx;
+  padding: 10rpx;
+  background: #fefefe;
+  margin: 20rpx auto;
+  border-radius: 15rpx;
+}
+.a-p-s-last {
+  height: 150rpx;
+}
+/* 文章标题部分 */
+.article-head {
+  padding-bottom: 20rpx;
+}
+.article-title {
+  font-size: 34rpx;
+  font-weight: bold;
+}
+.atc-t-short{
+  color: #aaa;
+  text-align: center;
+}
+.article-info {
+  color: #aaa;
+  font-size: 22rpx;
+
+  padding-right: 20rpx;
+}
+.atc-a-short {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.article-at {
+  font-size: 22rpx;
+  line-height: 30rpx;
+}
+
+.atc-tag {
+  font-size: 22rpx;
+  color: #f85f61;
+  padding-right: 20rpx;
+}
+.atc-tag-sub {
+  font-size: 22rpx;
+  color: #818181;
+}
+
+.atc-a-v {
+  border-bottom: none;
+}
+
+/* 文章主体内容部分 */
+.article-paragraph {
+  /* padding: 30rpx 0; */
+
+  font-size: 28rpx;
+}
+.article-p-image-view {
+  font-size: 22rpx;
+  color: #aaa;
+  text-align: center;
+
+  height: 400rpx;
+  padding: 20rpx 0;
+}
+.article-p-image {
+  width: 710rpx;
+  height: 400rpx;
+}
+
+.article-warn {
+  font-size: 22rpx;
+  color: #aaa;
+}
+
+.article-tag {
+  color: #fff;
+  font-size: 22rpx;
+  font-weight: bold;
+}
+.article-t {
+  padding: 5rpx 10rpx;
+  border-radius: 15rpx;
+  margin-right: 20rpx;
+}
+.article-t-blue {
+  background: #46c4f9;
+}
+.article-t-red {
+  background: #e36986;
+}
+.article-t-yellow {
+  background: #ff9600;
+}
+
+.atc-c-item {
+  width: 145rpx;
+  text-align: center;
+}
+.atc-c-icon {
+  font-size: 50rpx;
+  color: #666;
+}
+.atc-c-num {
+  font-size: 22rpx;
+  color: #666;
+  margin-top: -20rpx;
+}
+
+.discuss-head {
+  padding-bottom: 10rpx;
+}
+.discuss-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  padding: 0 20rpx 0 10rpx;
+}
+
+.discuss-num {
+  color: #aaa;
+}
+.discuss-more {
+  width: 100%;
+  height: 20rpx;
+  margin-bottom: 40rpx;
+  border-bottom: solid 2rpx #ddd;
+}
+.discuss-more-view {
+  text-align: center;
+  line-height: 40rpx;
+}
+
+.discuss-more-text {
+  display: inline-block;
+  background: #fff;
+  color: #fea21b;
+  padding: 0 10rpx;
+}
+
+/* 文章内页编辑部分 */
+.article-page-edit {
+  width: 710rpx;
+  min-height: 80rpx;
+  padding: 0 20rpx 20rpx 20rpx;
+  background: #fff;
+
+  position: fixed;
+  bottom: 0;
+}
+.atc-e-t-view {
+  margin-top: 20rpx;
+
+  background: #f0efee;
+  border-radius: 10rpx;
+}
+.atc-e-t-view-default {
+  width: 520rpx;
+  height: 40rpx;
+  padding: 10rpx;
+}
+.atc-e-t-view-focus {
+  width: 540rpx;
+  padding: 10rpx;
+}
+.atc-e-t-ph {
+  color: #aaa;
+}
+.atc-e-t-default {
+  display: inline-block;
+  width: 420rpx;
+  color: #aaa;
+}
+.atc-e-t-focus {
+  width: 540rpx;
+  max-height: 120rpx;
+  bottom: 10rpx;
+}
+
+.act-p-e-i {
+  position: absolute;
+  font-size: 40rpx;
+  color: #aaa;
+}
+.act-p-e-i-ed {
+  top: 0;
+  left: 15rpx;
+}
+.act-p-e-i-cl {
+  top: 0;
+  right: 15rpx;
+}
+.atc-p-c-item {
+  width: 100rpx;
+  text-align: center;
+}
+.atc-p-c-icon {
+  font-size: 45rpx;
+  color: #aaa;
+}
+.atc-p-c-num {
+  font-size: 20rpx;
+  line-height: 0rpx;
+  color: #aaa;
+}
+.a-p-e-send-view {
+  float: left;
+}
+.a-p-e-send-button {
+  background: none !important;
+  border: none !important;
+
+  margin-top: -60rpx;
+}
+.a-p-e-send-button::after {
+  border: none;
+}
+.a-p-e-send {
+  display: inline-block;
+  width: 120rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  font-size: 28rpx;
+
+  color: #fff;
+  background: #fea21b;
+  border-radius: 10rpx;
+}
+
+/**资讯详情页全局样式 add by wj*/
+video {
+  width:710rpx;
+  height:410rpx;
+}
+
+.wxParse-img{
+  text-align: center;
+  padding: 1rpx 1rpx 1rpx 1rpx;
+  width:710rpx;
+  height:410rpx;
+}
+
+/*适配新的视频处理方式*/
+
+.controls {
+  position: absolute;
+  z-index: 1;
+  background-color: #fff;
+  height: 500rpx;
+  margin-top: -510rpx;
+}
+
+.play {
+  position: absolute;
+  left: 50%;
+  margin-top: -300rpx;
+  margin-left: -80rpx;
+}
+
+.cover-image-c {
+  /* margin-top: 49rpx; */
+  margin-left: 45rpx;
+  width: 90rpx;
+  height: 90rpx;
+}
+.video{
+	/* margin-bottom: 40rpx; */
+	position: relative;
+}
+.model-img{
+	width: 100%;
+	height: 420rpx;
+}
+.model-btn{
+	  position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    right:0;
+    margin:auto;
+    width: 90rpx;
+    height: 90rpx;
+    background-image: url("https://rs.esportzoo.com/svn/esport-res/mini/images/play.png");
+    background-repeat:no-repeat; 
+    background-size:100% 100%;
+    -moz-background-size:100% 100%;
+}
+.play-icon{
+    margin:26rpx 40rpx;
+    border-top:26rpx solid transparent;
+    border-left:36rpx solid #fff;
+    border-bottom:22rpx solid transparent;
+}
+
+
+.user_card{
+	position: relative;
+	line-height: 1;
+}
+
+.user_infor{
+	display: flex;
+	align-items: center;
+
+	padding: 20rpx 0;
+}
+
+.user_infor image{
+	width: 50rpx;
+	height: 50rpx;
+	margin-right: 20rpx;
+	border-radius: 50%;
+}
+
+.user_name{
+	font-size: 24rpx;
+	color: #000;
+}
+
+.fans{
+	padding-top: 10rpx;
+	font-size: 20rpx;
+	color: #aaa;
+}
+
+
+.follow,.followed{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 140rpx;
+	height: 52rpx;
+	font-size: 	28rpx;
+	border-radius: 50rpx;
+
+	position: absolute;
+	top: 50%;
+	right: 20rpx;
+	transform: translateY(-50%);
+}
+
+.follow{
+	color: #fff;
+	background-color: #ff172d;
+}
+
+.followed{
+	color: #999;
+	background-color: #ddd;
+}

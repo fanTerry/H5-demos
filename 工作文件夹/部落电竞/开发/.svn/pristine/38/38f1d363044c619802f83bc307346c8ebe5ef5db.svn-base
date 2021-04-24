@@ -1,0 +1,118 @@
+<template>
+  <div class="ui_pop">
+    <!-- 微信登录 -->
+    <div class="login" v-if="type == 1">
+      <p class="login_title">登录微信</p>
+      <img class="login_img" src="../../assets/images/pop/red_bag.png" alt="">
+      <p class="login_att">领取星星，参与竞猜</p>
+      <p class="login_tips">稀有皮肤、话费、Q币海量奖品等你拿</p>
+      <a class="login_btn">立即登录</a>
+    </div>
+
+    <!-- 二维码扫一扫 -->
+    <div class="qrCode" v-if="type == 2">
+      <a class="close"></a>
+      <img class="qrCode_img" src="" alt="">
+      <p class="qrCode_tips">微信<span>扫一扫</span>关注<br>橘子电竞快速登陆</p>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: ["type"],
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../assets/common/_icon";
+
+.ui_pop > div {
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translate(50%, -50%);
+  -webkit-transform: translate(50%, -50%);
+  width: 40px;
+  height: 40px;
+}
+
+.login {
+  width: 403px;
+  height: 536px;
+  text-align: center;
+  @include getBgImg("../../assets/images/pop/login_wx_bg.png");
+}
+
+.login_title {
+  padding-top: 72px;
+  font-size: 24px;
+  color: #ffdcd7;
+}
+
+.login_img {
+  width: 153px;
+  margin-top: 35px;
+}
+
+.login_att {
+  padding-top: 35px;
+  font-size: 24px;
+  color: #ffdcd7;
+}
+
+.login_tips {
+  padding-top: 19px;
+  font-size: 14px;
+  color: #ffbea3;
+}
+
+.login_btn {
+  display: inline-block;
+  width: 318px;
+  height: 48px;
+  margin-top: 26px;
+  line-height: 48px;
+  font-size: 16px;
+  color: #ffdcd7;
+  @include getBgImg("../../assets/images/home/guess_now.png");
+}
+
+.qrCode {
+  width: 714px;
+  height: 387px;
+  @include getBgImg("../../assets/images/pop/qrCode_bg.png");
+  .close {
+    right: 18px;
+    top: 23px;
+  }
+}
+
+.qrCode_img {
+  @extend .g_v_mid;
+  left: 72px;
+  width: 270px;
+  height: 270px;
+}
+
+.qrCode_tips {
+  @extend .g_v_mid;
+  right: 80px;
+  font-size: 30px;
+  line-height: 50px;
+  color: #fff;
+  text-align: center;
+  span {
+    color: #27c5d3;
+  }
+}
+</style>

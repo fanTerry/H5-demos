@@ -1,0 +1,22 @@
+@import '_base';
+
+// 点赞icon
+.good_icon {
+  @include getBgImg("../images/home/good_icon.png");
+}
+// 评论icon
+.comment_icon {
+  @include getBgImg("../images/home/comment_icon.png");
+}
+// 收藏icon
+.collect_icon {
+  @include getBgImg("../images/home/collect_icon.png");
+}
+// 分享icon
+.share_icon {
+  @include getBgImg("../images/home/share_icon.png");
+}
+// 奖励icon
+.reward_icon {
+  @include getBgImg("../images/home/reward_icon.png");
+}

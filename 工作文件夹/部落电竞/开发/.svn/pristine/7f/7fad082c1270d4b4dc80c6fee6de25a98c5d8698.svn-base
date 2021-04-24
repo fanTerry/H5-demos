@@ -1,0 +1,213 @@
+<template>
+  <div class="Page rechargePage">
+    <header class="mod_header">
+      <navBar :pageTitle="'星星充值'"></navBar>
+    </header>
+    <div class="main">
+      <ul class="prize_list">
+        <li v-for="(item,index) in chargeMoneyList" :key="index" :class="{'recevied':prizeDay[index] == index}">
+          <p>{{item.sendStar>0?"赠送"+item.sendStar:""}}</p>
+          <img :src="require('../../../assets/images/guess/starday'+index+'.png')" alt />
+          <span class="cost_star">{{item.starNum}}星星</span>
+          <a class="prize_get_btn" @click="rechargePrize(index)">{{item.money}}元</a>
+        </li>
+      </ul>
+    </div>
+
+    <pops :showType='showType' :showFlag='showFlag' :currChargeItem='currChargeItem' @closePop='closePop'></pops>
+
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar/index";
+import pops from "./components/pops";
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  components: { navBar, pops },
+  props: [],
+  data() {
+    return {
+      prizeDay: [],
+      showType: 0,
+      showFlag: false,
+      chargeMoneyList: [], //充值金额列表
+      currChargeItem: null //当前选择的充值选项
+      // chargeResParam: null,
+      // walletRec: null //用户星星数量
+    };
+  },
+  computed: {
+    ...mapGetters({
+      // wxuserStarNum: "getstarNum"
+    }),
+    getstarNum() {
+      // return this.wxuserStarNum.state;
+    }
+  },
+  //实时监听用户星星状态
+  watch: {
+    getstarNum(val) {
+      // this.walletRec = val;
+      console.log(val, "rechargePops用户星星");
+    }
+  },
+  mounted() {
+    //屏蔽app处理
+    if (this.$route.query.clientType == 3) {
+      this.$router.push({
+        path: "/home",
+        query: {}
+      });
+    }
+    this.openChargerDialog();
+  },
+  methods: {
+    closePop() {
+      this.showFlag = false;
+    },
+    openChargerDialog() {
+      return this.$post("/api/payment/getChargeMoneyList")
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == 200) {
+            this.chargeMoneyList = dataResponse.data;
+            this.walletRec = this.walletRec;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    rechargePrize(index) {
+      this.currChargeItem = this.chargeMoneyList[index];
+      this.showFlag = true;
+      this.showType = 1;
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.rechargePage {
+  .back::before,
+  .back::after {
+    background-color: #a26767 !important;
+  }
+}
+</style>
+
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_base";
+@import "../../../assets/common/_mixin";
+
+.Page {
+  background: #1f1212;
+}
+
+.mod_header {
+  background-color: #321919;
+}
+
+.nav_bar {
+  color: #fedcd7 !important;
+}
+
+.pop_tips {
+  @extend .g_v_c_mid;
+  width: 215px;
+  padding: 20px 0;
+  text-align: center;
+  background-color: #34201d;
+  p {
+    font-size: 14px;
+    color: #fff;
+  }
+  span {
+    display: block;
+    padding-top: 20px;
+    font-size: 20px;
+    color: #f6b70d;
+  }
+}
+.prize_list {
+  @extend .flex_hc;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  padding: 5px 0 0 10px;
+}
+li {
+  flex: 1;
+  -webkit-flex: 1;
+  padding-bottom: 18px;
+  margin: 10px 10px 0 0;
+  @include getBgImg("../../../assets/images/guess/sign_bg.png");
+  background-size: 100% 100% !important;
+  box-shadow: 0px 6px 8px 0px rgba(0, 0, 0, 0.03);
+  text-align: center;
+  &.disabled {
+    opacity: 0.2;
+    @include getBgImg("../../../assets/images/guess/sign_disabled.png");
+    .prize_get_btn {
+      color: #767676;
+      border-color: currentColor;
+    }
+  }
+  &:last-child {
+    flex: none;
+    -webkit-flex: none;
+    width: 30.6%;
+    @media (max-width: 320px) {
+      width: 46.8%;
+    }
+  }
+  &:nth-child(7) {
+    img {
+      height: 36px;
+      margin: 15px auto 23px;
+    }
+  }
+  &.recevied {
+    position: relative;
+    &::after {
+      content: "";
+      @extend .g_c_mid;
+      top: 36px;
+      width: 82px;
+      height: 48px;
+      @include getBgImg("../../../assets/images/guess/recevied.png");
+    }
+    .prize_get_btn {
+      border-color: transparent;
+      color: #cea04a;
+    }
+  }
+  p {
+    font-size: 12px;
+    height: 23px;
+    line-height: 23px;
+    color: #fedcd7;
+  }
+  img {
+    display: block;
+    height: 26px;
+    margin: 12px auto 13px;
+  }
+  .cost_star {
+    display: block;
+    color: #fedcd7;
+  }
+}
+.prize_get_btn {
+  display: inline-block;
+  width: 94px;
+  margin-top: 12px;
+  line-height: 22px;
+  font-size: 12px;
+  color: #cea04a;
+  border: 1px solid #cea04a;
+  border-radius: 14px;
+}
+</style>

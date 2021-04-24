@@ -1,0 +1,70 @@
+<header class="mod_header">
+  <navBar pageTitle="社区"></navBar>
+  <view class="tab">
+    <view class="active">关注</view>
+    <view>话题</view>
+  </view>
+</header>
+
+<view class="main" id='mainId'>
+  <!-- 搜索结果 -->
+  <scroll-view>
+    <!-- 话题 -->
+    <view class="myfollow_tab" :class="{none:showType!=110}">
+      <view class="search_con">
+        <input type="text" placeholder="搜索" v-model="searchVal"></input>
+        <i class="search"></i>
+      </view>
+      <!-- 关注列表 -->
+      <view class="user_list">
+        <view class="search_result" id='scrollId'>
+          <userInfo ></userInfo>
+        </view>
+
+        <h2>A</h2>
+        <userInfo></userInfo>
+      </view>
+    </view>
+
+    <!-- 关注 -->
+    <view class="mod_follow">
+      <view class="my_follow_topic">
+        <h3>我关注的话题
+          <a>更多热门话题
+            <span></span>
+          </a>
+        </h3>
+        <ul>
+          <li>
+            <view class="team">
+              <image mode="aspectFit" src="https://rs.esportzoo.com/upload/league/team/LoL/1_405.png" alt=""></image>
+              <p>DMOY</p>
+            </view>
+          </li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </view>
+      <!-- 文章列表组件 -->
+      <article-tab :showType='showType' :cmsContentList='cmsContentList'></article-tab>
+    </view>
+    <noData v-if="noData"> </noData>
+    <!-- <loading v-if="loading"></loading> -->
+  </scroll-view>
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <i class="iconfont icon-sousuo"></i>
+    <a>A</a>
+    <a>B</a>
+    <a>C</a>
+  </aside>
+</view>
+<a class="release_btn"></a>
+<view class="ui_pop" :class="{fadeToTop:false}">
+  <view class="tab">
+    <view class="active">短文</view>
+    <view>文章</view>
+  </view>
+</view>

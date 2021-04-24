@@ -1,0 +1,53 @@
+<!--pages/my/userInfo/userInfo.wxml-->
+<view class="main">
+  <view class="section">
+    <view class="item">
+      <span>我的头像</span>
+      <view class="flex_hc">
+        <image :src="userInfo.icon|getDefaultImg(globalConst.userDefaultIcon)" alt=""></image>
+        <i class="link_icon iconfont icon-xiangyou"></i>
+      </view>
+      <!-- <vue-core-image-upload :class="['btn', 'btn-primary','user_input']" @imageuploaded="imageuploaded" @imagechanged="imagechanged" @imageuploading="imageuploading" @errorhandle="errorhandle" extensions="png,jpeg,jpg" compress="70" url="/api/user/updateUserInfo">
+
+      </vue-core-image-upload> -->
+      <!-- <input class="user_input" type="file" @change="changeImage($event)" ref="avatar" accept="image/*"> -->
+    </view>
+    <view class="item">
+      <span>账户名</span>
+      <view class="flex_hc">{{userInfo.account}}</view>
+    </view>
+    <view class="item" >
+      <span>昵称</span>
+      <view class="flex_hc">{{userInfo.nickName}}
+        <i class="link_icon iconfont icon-xiangyou"></i>
+      </view>
+    </view>
+    <view class="item" >
+      <span>个人简介</span>
+      <view class="flex_hc">{{userInfo.intro?userInfo.intro:"未设置"}}
+        <i class="link_icon iconfont icon-xiangyou"></i>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="item" >
+      <span>真实姓名</span>
+      <view class="flex_hc">{{userInfo.trueName?userInfo.trueName:"未设置"}}
+        <i class="link_icon iconfont icon-xiangyou"></i>
+      </view>
+    </view>
+    <view class="item" >
+      <span>身份证号</span>
+      <view class="flex_hc">{{userInfo.certNo?userInfo.certNo:"未设置"}}
+        <i class="link_icon iconfont icon-xiangyou"></i>
+      </view>
+    </view>
+  </view>
+
+  <a class="login_out">退出登录</a>
+  <popAlert :showPop='showPop'  type="2">
+    <p>确定退出登录?</p>
+  </popAlert>
+  <!-- <loading v-if="isLoading" :text="'正在提交中...'"></loading> -->
+</view>

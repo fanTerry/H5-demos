@@ -1,0 +1,212 @@
+<template>
+  <div class="home_item">
+    <div class="home_team">
+      <p class="flex_hc"><img src="" alt=""><span class="name">VP</span></p>
+      <span class="vs">VS</span>
+      <p class="flex_hc"><span class="name">VP</span><img src="" alt=""></p>
+    </div>
+    <ul class="home_tabs">
+      <li :class="{active:showFlag == index}" @click="changeTab(index)" v-for="(item,index) in list" :key="index">
+        {{item}}</li>
+    </ul>
+    <div class="home_guess_item">
+      <p class="title">{{myData.title}}</p>
+      <p class="deadline">截止投注{{myData.endtime}}</p>
+      <ul class="list">
+        <li class="item"
+          :class="{'four_item':myData.team.length == 4,'than_four':myData.team.length > 4,'active':currentIndex == index}"
+          v-for="(item,index) in myData.team" :key="index" @click="currentIndex=(currentIndex == index)?'-1':index">
+          <p>{{item.name}}</p>
+          <span>{{item.odds}}</span>
+          <div class="bet" v-if="currentIndex == index">
+            <div>
+              <span>投注星星</span>
+              <div>
+                <span>1000</span>
+                <span>1000</span>
+                <span>1000</span>
+                <input type="text" placeholder="自定义">
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: ["list", "res"],
+  data() {
+    return {
+      showFlag: 0,
+      currentIndex: Number,
+      myData: []
+    };
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.myData = this.res[0];
+      console.log(this.myData);
+    });
+  },
+  methods: {
+    changeTab(index) {
+      this.showFlag = index;
+      this.myData = this.res[index];
+    }
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+
+.home_item {
+  display: inline-block;
+  vertical-align: top;
+  width: 330px;
+  height: 360px;
+  margin-right: 40px;
+  padding: 5px 0;
+  @include getBgImg("../../../assets/images/iframe/iframe_item_bg.png");
+}
+.home_team {
+  position: relative;
+  @extend .flex_v_justify;
+  padding: 10px 25px;
+  font-size: 16px;
+  color: #fedcd7;
+  img {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+  }
+  .name {
+    margin: 0 10px;
+  }
+  .vs {
+    @extend .g_v_c_mid;
+    font-size: 17px;
+    font-weight: bold;
+    font-style: italic;
+    color: rgba(255, 190, 163, 0.18);
+  }
+}
+.home_tabs {
+  @extend .flex_hc;
+  justify-content: space-around;
+  -webkit-justify-content: space-around;
+  -ms-justify-content: space-around;
+  li {
+    padding: 15px 20px 10px;
+    font-size: 14px;
+    color: #6b4139;
+    text-align: center;
+    cursor: pointer;
+  }
+  .active {
+    position: relative;
+    color: #f9994c;
+    &::after {
+      content: "";
+      @extend .g_c_mid;
+      bottom: 0;
+      width: 34px;
+      height: 3px;
+      background-color: #f9994c;
+    }
+  }
+}
+.home_guess_item {
+  position: relative;
+  padding: 20px 15px 0;
+  .title {
+    padding-left: 10px;
+    font-size: 20px;
+    color: #fedcd7;
+  }
+  .deadline {
+    padding-left: 10px;
+    padding-top: 10px;
+    color: rgba(255, 190, 163, 0.18);
+  }
+  .list {
+    @extend .flex_hc;
+    flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .item {
+    @extend .flex_v_h;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    height: 160px;
+    margin: 0 10px;
+    border: 1px solid #463025;
+    border-radius: 10px;
+    &.active {
+      border: 1px solid rgba(70, 48, 37, 1);
+      background: linear-gradient(
+        -45deg,
+        rgba(138, 90, 38, 1) 0%,
+        rgba(247, 208, 100, 1) 100%
+      );
+      background: -webkit-linear-gradient(
+        135deg,
+        rgba(138, 90, 38, 1) 0%,
+        rgba(247, 208, 100, 1) 100%
+      );
+      background: -ms-linear-gradient(
+        -45deg,
+        rgba(138, 90, 38, 1) 0%,
+        rgba(247, 208, 100, 1) 100%
+      );
+    }
+    p {
+      font-size: 16px;
+      color: #ffdcd7;
+    }
+    span {
+      padding-top: 7px;
+      color: #6e4c47;
+    }
+  }
+  .four_item,
+  .than_four {
+    flex: none;
+    -ms-flex: none;
+    -webkit-flex: none;
+  }
+  .four_item {
+    width: 130px;
+    height: 72px;
+    margin-bottom: 18px;
+  }
+  .than_four {
+    width: 80px;
+    height: 72px;
+    margin-bottom: 16px;
+  }
+}
+.bet {
+  position: absolute;
+  left: -10px;
+  top: -82px;
+  width: 410px;
+  height: 70px;
+  font-size: 14px;
+  color: #6e4c47;
+  background: #261314;
+  border: 1px solid #463025;
+  border-radius: 10px;
+}
+</style>

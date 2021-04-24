@@ -1,0 +1,30 @@
+/* component/newslist/newsimageitem/news-image-item.wxss */
+
+@import "/component/newslist/wxss/news-item.wxss";
+
+.news-image-item {
+  width: 710rpx;
+  height: 190rpx;
+  padding: 10rpx 0 20rpx 0;
+  overflow: hidden;
+
+  border-top: solid 1rpx #ddd;
+}
+
+.news-image {
+  width: 290rpx;
+  height: 180rpx;
+  margin-top: 10rpx;
+  margin-right: 20rpx;
+}
+
+.news-paragraph {
+  height: 180rpx;
+  overflow: hidden;
+}
+
+.news-title {
+  height: 120rpx;
+  line-height: 40rpx;
+  font-size: 26rpx;
+}

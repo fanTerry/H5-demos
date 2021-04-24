@@ -1,0 +1,122 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar pageTitle='地址管理'></navBar>
+    </header>
+    <div class="main">
+      <div class="location_address" v-for="item in shopAddressList">
+        <div>
+          <p><span class="name">{{item.receiverName}}</span><span class="phone_num">{{item.receiverPhone}}</span></p>
+          <p class="address">{{item.receiverAddress}}</p>
+        </div>
+        <span class="link_icon" @click="editAdress(item)"></span>
+      </div>
+    </div>
+    <footer class="mod_footer">
+      <a class="exchange_btn" @click="addAdress()">+ 添加新地址</a>
+    </footer>
+  </div>
+</template>
+
+<script>
+import navBar from "../../../components/header/nav_bar";
+export default {
+  data() {
+    return {
+      shopAddressList:[],
+    };
+  },
+  mounted(){
+    this.getAddress()
+    
+  },
+  methods: {
+    editAdress(item){
+      this.$router.push({
+        path: "/addressEdit",
+        query: {
+          address: item,
+           type: 2,
+        }
+      });
+    },
+    addAdress(){
+      this.$router.push({
+        path: "/addressEdit",
+        query: {
+          type: 1,
+        }
+      });
+    },
+    getAddress(){
+      return this.$post("/api/shopAddress/listAddress")
+        .then(rsp => {
+
+          if (rsp.code === "200") {
+            this.shopAddressList = rsp.data.shopAddressList
+          } else {
+            this.$toast(response.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  components: {
+    navBar
+  }
+};
+</script>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin";
+@import "../../../assets/common/_base";
+.Page {
+  background-color: #fff;
+}
+.location_address {
+  position: relative;
+  @extend .flex_hc;
+  margin-top: 15px;
+  padding: 12px 94px 12px 12px;
+  .location_icon {
+    width: 22px;
+    height: 22px;
+    margin-right: 8px;
+    @include getBgImg("../../../assets/images/store/location_icon.png");
+  }
+  .name {
+    font-size: 17px;
+    @include t_nowrap(100px);
+  }
+  .phone_num {
+    color: #999;
+    padding-left: 13px;
+  }
+  p {
+    @extend .flex_hc;
+    color: #333;
+    font-size: 14px;
+  }
+  .address {
+    display: block;
+    padding-top: 5px;
+    line-height: 16px;
+  }
+  .link_icon {
+    @extend .g_v_mid;
+    right: 25px;
+    width: 24px;
+    height: 24px;
+    @include getBgImg("../../../assets/images/store/edit_icon.png");
+  }
+}
+.exchange_btn {
+  @extend .flex_v_h;
+  margin: 4px auto;
+  font-size: 17px;
+  @include getBtn(210px, 40px, transparent, #fff, 40px);
+  background: linear-gradient(to right, #ffa200, #ff7b1c);
+}
+</style>

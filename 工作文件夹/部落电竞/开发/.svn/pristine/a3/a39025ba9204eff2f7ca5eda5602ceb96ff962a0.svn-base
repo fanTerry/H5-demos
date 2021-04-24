@@ -1,0 +1,700 @@
+<template>
+  <div class="Page">
+    <header class="mod_header">
+      <navBar :pageTitle="'文章详情'"></navBar>
+      <expertUsercard :userId="userId"></expertUsercard>
+    </header>
+
+    <div class="main">
+      <!-- <section class="mod_expert">
+                <h2 class="expert_title">
+                    <i class="zj_icon"></i>战绩走势
+                    <ul>
+                        <li>全部时间</li>
+                        <li class="active">近7日</li>
+                        <li>近30日</li>
+                    </ul>
+                </h2>
+                <div class="expert_con expert_grid">
+                    <div class="grid">
+                        <p>500</p>
+                        <p>总推荐数</p>
+                    </div>
+                    <div class="grid">
+                        <div>
+                            <p class="c_red">57%</p>
+                            <p>命中率</p>
+                        </div>
+                        <div>
+                            <p class="c_red">5</p>
+                            <p>连红</p>
+                        </div>
+                    </div>
+                    <div class="grid">
+                        <div>
+                            <p class="c_red">57%</p>
+                            <p>命中率</p>
+                        </div>
+                        <div>
+                            <p class="c_red">5</p>
+                            <p>连红</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="expert_con expert_forecast">
+                    <ul>
+                        <li>方案预测</li>
+                        <li class="active">专栏</li>
+                        <li>历史预测</li>
+                    </ul>
+                </div>
+            </section> -->
+
+      <section class="mod_expert">
+        <h2 class="expert_title">
+          <!-- 推荐选项胜负 -->
+          <!-- <i class="history_icon"></i>历史方案 -->
+        </h2>
+        <div class="expert_con expert_match">
+          <div class="item" v-for="(item,index) in articleInfo.matchList" :key="index">
+            <div class="left">
+              <img :src="item.homeTeamLogo" alt="">
+              <p>{{item.homeTeamName}}</p>
+            </div>
+            <div class="center">
+              <p class="name">{{item.leagueName}}</p>
+              <p class="vs">VS</p>
+              <p>{{item.matchTime |timeFormat }} {{item.statusDescription}} </p>
+            </div>
+            <div class="right">
+              <img :src="item.awayTeamLogo" alt="">
+              <p>{{item.awayTeamName}}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mod_expert">
+        <h2 class="expert_title">
+          推荐理由
+        </h2>
+        <!-- 付费后去掉no_per展开文章内容 -->
+        <div class="expert_con expert_reason " :class="{ no_per: !articleInfo.canView }">
+          <template v-if="articleInfo.canView">
+            <h2>{{articleInfo.title}}</h2>
+            <p class="time">发布时间：{{articleInfo.publishTime}}</p>
+            <p class="title">摘要</p>
+            <p class="txt" v-for="(item,index) in articleInfo.content.buyPoints" :key="index">{{item.playType}}</p>
+            <p class="title">正文</p>
+            <p class="txt" v-html="articleInfo.content.viewPoint"></p>
+          </template>
+          <div class="expert_mask" v-if="!articleInfo.canView" @click="gotoPay()">
+            <div class="lock"></div>
+            <p>请支付后查看推荐结果和理由</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="mod_expert " v-if="!articleInfo.canView">
+        <div class="expert_con expert_agreement">
+          <p>
+            <span>推荐编号</span>
+            <span class="num">{{articleInfo.articleNo}}</span>
+          </p>
+          <p>
+            <span>发布时间</span>
+            <span class="num">{{articleInfo.publishTime}}</span>
+          </p>
+          <p>
+            <span>支付星星</span>
+            <span class="num">
+              <span>{{articleInfo.price}}</span>个</span>
+          </p>
+          <p>
+            <span>查看人数</span>
+            <span class="num">{{articleInfo.views}}人</span>
+          </p>
+          <div class="agreement">
+            <span :class="{ active: isAgree}" @click="agree()"></span>我已阅读同意
+            <router-link to="/expertAgreement">
+              <a>《专家解读和推荐服务协议》</a>
+            </router-link>
+            <!-- /expertAgreement -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="mod_footer" v-if="!articleInfo.canView">
+      <pay :price="articleInfo.price" @gotoPay="gotoPay"></pay>
+    </footer>
+
+    <popUp v-if="showPay" @close="closePayDialog" :price="articleInfo.price" @chooseWay="chooseWay">
+    </popUp>
+
+    <popAlert :showPop='showPop' @close='showPop=false' @confirm='confirm' btnTxt1="已取消" btnTxt2="已完成支付" type="2">
+      <p>请确认微信支付是否已完成</p>
+    </popAlert>
+  </div>
+</template>
+
+<script>
+import hotRecommend from "../../../components/hot_recommend/index";
+import pay from "../../../components/footer/pay/index";
+import Scroll from "../../../components/common/scroll";
+import popUp from "../../../components/pop_up/pay/index";
+import navBar from "../../../components/header/nav_bar/index";
+import expertUsercard from "../../../components/expert/user_card";
+import popAlert from "components/pop_up/pop_alert";
+
+export default {
+  data() {
+    return {
+      userId: Number,
+      articleId: Number,
+      expertInfo: Object,
+      articleInfo: Object,
+      noData: false,
+      isAgree: true,
+      showPay: false,
+      payWay: [],
+      articlrQueryParam: {
+        pageNo: 1,
+        pageSize: 10,
+        showAuthPage: true
+        // returnUrl: api.getCurrentPageUrlWithArgs()
+      },
+      showPop: false
+    };
+  },
+  created() {
+    this.userId = this.$route.query.uId;
+    this.articleId = this.$route.query.aId;
+  },
+  mounted() {
+    // this.setExpertInfo();
+    this.getPageData();
+    this.getWxConfig();
+  },
+  methods: {
+    getWxConfig: function() {
+      this.$post("/api/wxlogin/getJsConfig")
+        .then(rsp => {
+          console.log(rsp, "rsp");
+          if (rsp) {
+            this.wx.config({
+              debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+              appId: rsp.appId, // 必填，公众号的唯一标识
+              timestamp: rsp.timestamp, // 必填，生成签名的时间戳
+              nonceStr: rsp.nonceStr, // 必填，生成签名的随机串
+              signature: rsp.signature, // 必填，签名，见附录1
+              jsApiList: ["chooseWXPay"]
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    closePayDialog() {
+      this.showPay = false;
+    },
+    gotoPay(price) {
+      if (!this.isAgree) {
+        this.$toast("请先勾选同意协议");
+        return;
+      }
+      this.showPay = true;
+    },
+    chooseWay(index) {
+      console.log("选择的支付方式");
+      let param = {};
+      let _self = this;
+      param.choosedPayWay = index;
+      return this.$post("/api/article/payArticle/" + this.articleId, param)
+        .then(res => {
+          if ((res.code = "200" && res.data != null)) {
+            if (index == this.globalConst.payIndexMap.get("WXH5_PAY")) {
+              console.log("微信h5");
+              if (res.data.requestUrl != "") {
+                var redirect_url = encodeURIComponent(window.location.href);
+                window.location.href = res.data.requestUrl;
+                this.showPop = true;
+              }
+              return;
+            } else if (
+              index == this.globalConst.payIndexMap.get("WXJSAPI_PAY")
+            ) {
+              this.weixinPay(res.data.requestParams, _self);
+              return;
+            }
+            this.$toast("支付成功");
+            this.closePayDialog();
+            this.getPageData();
+          } else {
+            this.$toast("支付异常，稍后再试");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    agree() {
+      this.isAgree = !this.isAgree;
+    },
+    confirm: function() {
+      this.showPop = false;
+      this.closePayDialog();
+      this.getPageData();
+    },
+    // choosePay() {
+    //   let param = {};
+    //   param.articleId = this.articleId;
+    //   return this.$post("/api/article/choosePayWay", param)
+    //     .then(rsp => {
+    //       const dataResponse = rsp;
+    //       if (dataResponse.code == "200") {
+    //         this.payWay = dataResponse.data;
+    //       }
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //     });
+    // },
+    /**获取分页资讯数据 */
+    getPageData(param) {
+      if (!param) {
+        param = this.articlrQueryParam;
+      }
+      param.userId = this.userId;
+      console.log("分页参数", param);
+      return this.$post("/api/article/detail/new/" + this.articleId, param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          console.log(dataResponse, "获取文章详情new");
+          if (dataResponse.code == "200") {
+            this.articleInfo = dataResponse.data;
+          } else if (dataResponse.code == "555") {
+            //用户未登录
+            console.log("用户未登录");
+            window.location.href =
+              "/login?agentId=" +
+              this.baseParamConfig.agentId +
+              "&biz=" +
+              this.baseParamConfig.biz;
+            console.log("用户未登录1");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    setExpertInfo(param) {
+      if (!param) {
+        param = this.articlrQueryParam;
+      }
+      console.log("分页参数", param);
+      return this.$post("/api/recExpert/baseInfo/nologin/" + this.userId, param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            console.log(dataResponse.data, "setExpertInfo---请求成功");
+            this.expertInfo = dataResponse.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    updateFollowStatus(userId, status) {
+      let param = { type: status, usrId: userId };
+      let message = "";
+      if (status == 1) {
+        message = "关注成功";
+      } else {
+        message = "取消成功";
+      }
+      console.log("update-关注", param);
+      return this.$post("/api/user/follow", param)
+        .then(rsp => {
+          const dataResponse = rsp;
+          if (dataResponse.code == "200") {
+            this.$toast(message);
+            this.expertInfo.followFlag = !this.expertInfo.followFlag;
+          }
+        })
+        .catch(error => {
+          this.$toast("网络异常，稍后再试");
+          console.log(error);
+          return dataResponse.code;
+        });
+    },
+    goBack() {
+      this.$router.back(-1);
+    },
+    weixinPay: function(params, _self) {
+      console.log(params, "params");
+      _self.wx.ready(function() {
+        _self.wx.chooseWXPay({
+          timestamp: params.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+          nonceStr: params.nonceStr, // 支付签名随机串，不长于 32 位
+          package: params.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+          signType: "MD5", // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+          paySign: params.paySign, // 支付签名
+          success: function(res) {
+            _self.$toast("支付成功");
+            _self.closePayDialog();
+            _self.getPageData();
+          },
+          cancel: function(res) {
+            _self.$toast("支付取消", 2);
+          },
+          fail: function(res) {
+            _self.$toast("支付失败", 2);
+          }
+        });
+      });
+    }
+  },
+  filters: {
+    timeFormat(array) {
+      let time = "";
+      array.forEach(element => {
+        time += element + " ";
+      });
+      return time;
+    }
+  },
+  components: {
+    hotRecommend,
+    pay,
+    Scroll,
+    popUp,
+    navBar,
+    expertUsercard,
+    popAlert
+  }
+};
+</script>
+
+
+<style lang="scss">
+@import "../../../assets/common/_var";
+.expert_reason {
+  .txt {
+    p {
+      line-height: 18px;
+    }
+    img {
+      margin-top: 10px;
+    }
+  }
+  table {
+    text-align: center;
+    th {
+      line-height: 20px;
+      color: #fff;
+      background-color: $color_main;
+      border-width: 0 1px 1px 0;
+      border-style: solid;
+      border-color: $color_main;
+    }
+    tr {
+      border-left: 1px solid #999;
+      &:first-child {
+        border: none;
+      }
+    }
+    td {
+      line-height: 20px;
+      border-width: 0 1px 1px 0;
+      border-style: solid;
+      border-color: #999;
+    }
+  }
+}
+</style>
+
+<style lang='scss' scoped>
+@import "../../../assets/common/_mixin.scss";
+@import "../../../assets/common/_base.scss";
+@import "../../../assets/common/_var.scss";
+
+.main {
+  padding-bottom: 40px;
+}
+
+.mod_expert {
+  padding-top: 1px;
+}
+
+.expert_title {
+  @extend .flex;
+  position: relative;
+  margin: 14px 0 12px;
+  padding: 0 10px;
+  font-size: 14px;
+  border-left: 2px solid $color_main;
+  ul {
+    @extend .g_v_mid;
+    right: 10px;
+    @extend .flex;
+    background-color: #f5f6f7;
+    font-weight: normal;
+  }
+  li {
+    line-height: 24px;
+    width: 56px;
+    font-size: 11px;
+    color: #a3a3a3;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    text-align: center;
+    &:first-child {
+      border-right: none;
+      border-radius: 12px 0 0 12px;
+    }
+    &:nth-child(2) {
+      border-right: none;
+      border-left: none;
+    }
+    &:last-child {
+      border-left: none;
+      border-radius: 0 12px 12px 0;
+    }
+    &.active {
+      background-color: #fea21b;
+      color: #fff;
+      border: none;
+    }
+  }
+}
+
+.expert_con {
+  margin: 0 5px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.expert_grid {
+  @extend .flex_hc;
+  margin-bottom: 10px;
+  text-align: center;
+  .grid {
+    flex: 1;
+    -webkit-flex: 1;
+    color: #818181;
+    > div {
+      padding: 4px 0;
+      border-width: 0 0 1px 1px;
+      border-style: solid;
+      border-color: rgba(0, 0, 0, 0.1);
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+  p {
+    line-height: 16px;
+  }
+}
+
+.expert_forecast {
+  ul {
+    @extend .flex;
+    margin: 10px 35px;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f5f6f7;
+    font-weight: normal;
+  }
+  li {
+    flex: 1;
+    -webkit-flex: 1;
+    height: 24px;
+    @extend .flex_v_h;
+    color: #a3a3a3;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    &:first-child {
+      border-right: none;
+      border-radius: 12px 0 0 12px;
+    }
+    &:nth-child(2) {
+      border-right: none;
+      border-left: none;
+    }
+    &:last-child {
+      border-left: none;
+      border-radius: 0 12px 12px 0;
+    }
+    &.active {
+      background-color: #fea21b;
+      color: #fff;
+      border: none;
+    }
+  }
+}
+
+.onSale_icon,
+.history_icon,
+.zj_icon {
+  width: 15px;
+  height: 15px;
+  margin-right: 1px;
+}
+
+.onSale_icon {
+  @include getBgImg("../../../assets/images/expert/onSale.png");
+}
+
+.history_icon {
+  @include getBgImg("../../../assets/images/expert/history.png");
+}
+
+.expert_match {
+  .item {
+    @extend .flex_v_justify;
+    height: 84px;
+    @include getBorder(bottom, rgba(0, 0, 0, 0.1));
+    text-align: center;
+    &:last-child {
+      background: initial;
+    }
+    > div {
+      flex: 1;
+      -webkit-flex: 1;
+      white-space: nowrap;
+    }
+    img {
+      width: 38px;
+      height: 38px;
+      margin-bottom: 5px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .vs {
+      padding: 10px 0;
+      color: #444;
+    }
+    .left,
+    .right {
+      font-size: 14px;
+    }
+    .center {
+      color: #999;
+    }
+  }
+}
+
+.expert_reason {
+  padding: 15px;
+  &.no_per {
+    position: relative;
+    height: 145px;
+    .expert_mask {
+      display: block;
+    }
+  }
+  h2 {
+    font-size: 17px;
+  }
+  .time {
+    padding-top: 15px;
+    color: #aeaeae;
+  }
+  .title {
+    color: #000;
+    font-size: 14px;
+    padding-top: 15px;
+    font-weight: bold;
+  }
+  .txt {
+    padding-top: 10px;
+    line-height: 18px;
+    color: #4a4a4a;
+  }
+  .expert_mask {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 145px;
+    color: #979797;
+    background-color: rgba(255, 255, 255, 0.95);
+    text-align: center;
+  }
+  .lock {
+    width: 50px;
+    height: 50px;
+    margin: 20px auto 10px;
+    @include getBgImg("../../../assets/images/expert/lock.png");
+  }
+}
+
+.expert_agreement {
+  padding: 15px 20px 10px;
+  margin-top: 10px;
+  p {
+    @extend .flex_v_justify;
+    padding-bottom: 15px;
+    color: #a3a3a3;
+  }
+  .num {
+    color: #333;
+    span {
+      color: $color_main;
+    }
+  }
+  .agreement {
+    @extend .flex_v_h;
+    span {
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      &.active {
+        @include getBgImg("../../../assets/images/expert/agree.png");
+        border: none;
+      }
+    }
+    a {
+      color: #679dfa;
+    }
+  }
+}
+
+.hot_recommend {
+  margin: 5px;
+  padding: 0 5px;
+  border-radius: 8px;
+  background-color: #fff;
+  .no_recommend {
+    margin: 10px 5px 0;
+    padding: 10px 0;
+    border-radius: 8px;
+    background-color: #f8f9fe;
+    text-align: center;
+    p {
+      line-height: 15px;
+      color: #a3a3a3;
+    }
+  }
+  .follow_btn {
+    @extend .flex_v_h;
+    width: 70px;
+    height: 24px;
+    font-size: 13px;
+    margin: 10px auto;
+    border-radius: 24px;
+    color: #fff;
+    background-color: $color_main;
+  }
+}
+
+.mod_footer {
+  background-color: #fff;
+}
+</style>

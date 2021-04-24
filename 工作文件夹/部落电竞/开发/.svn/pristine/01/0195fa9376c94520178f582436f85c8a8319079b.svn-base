@@ -1,0 +1,103 @@
+<template>
+
+  <mescroll-vue ref="mescroll" :down="mescrollDown" :up="mescrollUp" @init="mescrollInit">
+    <slot></slot>
+  </mescroll-vue>
+
+</template>
+
+
+<script>
+import MescrollVue from "mescroll.js/mescroll.vue";
+export default {
+  components: {
+    MescrollVue
+  },
+  props: {
+    warpId: { type: String, default: "mainId" }, //设置置顶时，必须设置父容器ID
+    hasToTop: { type: Boolean, default: true } //默认不开启回到顶部项
+  },
+  data() {
+    return {
+      mescroll: null, // mescroll实例对象
+      mescrollDown: {
+        callback: this.downCallback,
+        outOffsetRate: 0.1,
+        offset: 80,
+        inOffsetRate: 0.3
+      },
+      mescrollUp: {
+        callback: this.upCallback,
+        auto: false,
+        offset: 100,
+        isBounce: false,
+        htmlNodata: '<p class="upwarp-nodata">没有更多数据了</p>'
+      }
+    };
+  },
+  created() {
+    console.log("this.hasToTop", this.hasToTop);
+    if (this.hasToTop) {
+      this.setToTop();
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    // 如果没有配置回到顶部按钮或isBounce,则beforeRouteEnter不用写
+    next(vm => {
+      // 找到当前mescroll的ref,调用子组件mescroll-vue的beforeRouteEnter方法
+      vm.$refs.mescroll && vm.$refs.mescroll.beforeRouteEnter(); // 进入路由时,滚动到原来的列表位置,恢复回到顶部按钮和isBounce的配置
+    });
+  },
+  beforeRouteLeave(to, from, next) {
+    // 如果没有配置回到顶部按钮或isBounce,则beforeRouteLeave不用写
+    // 找到当前mescroll的ref,调用子组件mescroll-vue的beforeRouteLeave方法
+    this.$refs.mescroll && this.$refs.mescroll.beforeRouteLeave(); // 退出路由时,记录列表滚动的位置,隐藏回到顶部按钮和isBounce的配置
+    next();
+  },
+  methods: {
+    downCallback() {
+      this.$emit("downCallback");
+      this.$nextTick(() => {
+        this.mescroll.endSuccess(this.currPageSize);
+      });
+    },
+    upCallback() {
+      console.log("下拉刷新");
+      this.$emit("upCallback");
+      //   this.$nextTick(() => {
+      //     this.mescroll.endSuccess(this.currPageSize);
+      //   });
+    },
+    mescrollInit(mescroll) {
+      this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
+      this.$emit("mescrollInit", mescroll);
+    },
+    setToTop() {
+      let toTop = {
+        warpId: null,
+        src: null,
+        html: null,
+        offset: 1000,
+        warpClass: "mescroll-totop",
+        showClass: "mescroll-fade-in",
+        hideClass: "mescroll-fade-out",
+        duration: 300,
+        supportTap: false,
+        btnClick: null
+      };
+      toTop.src = require("../../assets/images/common/mescroll-totop.png");
+      if (this.warpId) {
+        toTop.warpId = this.warpId;
+        console.log("容器ID", toTop.warpId);
+      }
+      this.mescrollUp.toTop = toTop;
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.mescroll-totop {
+  bottom: 100px !important;
+}
+</style>

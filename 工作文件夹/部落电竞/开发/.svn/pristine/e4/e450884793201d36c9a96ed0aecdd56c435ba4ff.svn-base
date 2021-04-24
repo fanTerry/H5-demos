@@ -1,0 +1,145 @@
+<template>
+  <!-- <div class="slide-render-view"> -->
+    <!-- <div class="slide-wrapper"> -->
+      <!-- <div class="slide-content"> -->
+        <slide ref="slide" :autoPlay="isAutoPlay" :loop="isLoop" :showDot="isShowDot" :interval="interval" :threshold="threshold" :speed="speed">
+           <!-- <figure class="banner" v-for="item in items">
+              <ul>
+                <li><img :src="item.picUrl" alt=""></li>
+              </ul>
+              <figcaption class="title">新起点！2019年TGA腾讯电竞运动会三月分站赛赛程公布新起点！2019年TGA腾讯电竞运动会三月分站赛赛程公布</figcaption>
+            </figure> -->
+            <slot></slot>
+        </slide>
+      <!-- </div> -->
+    <!-- </div> -->
+  <!-- </div> -->
+</template>
+
+<script type="text/ecmascript-6">
+import Slide from "./slide.vue";
+const COMPONENT_NAME = "slide-render";
+export default {
+  name: COMPONENT_NAME,
+  computed: {},
+  data() {
+    return {
+      index: 1,
+      turnToPrev: false,
+      turnToNext: false,
+      isAutoPlay: true,
+      isLoop: true,
+      isShowDot: true,
+      speed: 400,
+      threshold: 0.3,
+      interval: 2000,
+      items: [
+        {
+          linkUrl: "http://y.qq.com/w/album.html?albummid=0044K2vN1sT5mE",
+          picUrl:
+            "http://img2.imgtn.bdimg.com/it/u=215489180,4292999584&fm=26&gp=0.jpg",
+          id: 11351
+        },
+        {
+          linkUrl:
+            "https://y.qq.com/m/digitalbum/gold/index.html?_video=true&id=2197820&g_f=shoujijiaodian",
+          picUrl: "http://pic8.nipic.com/20100719/4589836_104029038516_2.jpg",
+          id: 11372
+        }
+      ]
+    };
+  },
+  methods: {
+    updateAutoPlay(val) {
+      this.isAutoPlay = val;
+    },
+    updateInterval(val) {
+      if (val) {
+        this.interval = +val;
+      }
+    },
+    updateLoop(val) {
+      this.isLoop = val;
+    },
+    updateShowDot(val) {
+      this.isShowDot = val;
+    },
+    updateThreshold(val) {
+      if (val) {
+        this.threshold = +val;
+      }
+    },
+    updateSpeed(val) {
+      if (val) {
+        this.speed = +val;
+      }
+    }
+  },
+  watch: {
+    index() {
+      console.log(this.$refs);
+      this.$refs.slide.update();
+    }
+  },
+  components: {
+    Slide
+  }
+};
+</script>
+
+<style lang='less'>
+// .slide-render-view {
+//   .slide-wrapper {
+//     position: relative;
+//     .slide-content {
+//       position: absolute;
+//       top: 0;
+//       left: 0;
+//       width: 100%;
+//       height: 100%;
+//       img {
+//         height: 100%;
+//       }
+//     }
+//   }
+//   .group {
+//     margin-bottom: 1rem;
+//     border: 1px solid rgba(0, 0, 0, 0.1);
+//     border-radius: 0.3rem;
+//     background: #fff;
+//     .item {
+//       height: 3.2rem;
+//       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+//       &.sub {
+//         font-size: 14px;
+//       }
+//     }
+//     .item:last-child {
+//       border-bottom: none;
+//     }
+//     .item:nth-child(even) {
+//       background-color: rgba(0, 0, 0, 0.04);
+//     }
+//   }
+// }
+.free-option {
+  .button-container {
+    button {
+      padding: 5px;
+      border-radius: 5px;
+      background-color: #fff;
+      outline: none;
+    }
+    .active {
+      background-color: #3b99fc;
+      border: #fff 1px solid;
+      color: #fff;
+    }
+    .change-button {
+      background-color: #3b99fc;
+      padding: 5px 10px;
+      color: #fff;
+    }
+  }
+}
+</style>
